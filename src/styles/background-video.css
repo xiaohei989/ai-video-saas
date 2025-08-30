@@ -1,0 +1,148 @@
+/**
+ * 背景视频样式
+ * 确保在各种屏幕尺寸和设备上都能正确显示
+ */
+
+/* 背景视频容器 */
+.background-video-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.background-video-container video {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .background-video-container {
+    /* 移动端可能使用静态图片替代 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  
+  .background-video-container video {
+    display: none; /* 在移动端隐藏视频，使用背景图片 */
+  }
+}
+
+/* 确保内容层级正确 */
+.content-overlay {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+}
+
+/* 玻璃态效果优化 */
+.glass-card {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* 文字阴影优化 */
+.text-shadow-strong {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.text-shadow-soft {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* 按钮悬停效果 */
+.hero-button {
+  transition: all 0.3s ease;
+  transform: translateY(0);
+}
+
+.hero-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* 视频覆盖层渐变 */
+.video-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.4) 50%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+}
+
+.video-overlay.light {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(0, 0, 0, 0.2) 50%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+}
+
+/* 动画优化 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-delay-100 { animation-delay: 0.1s; }
+.animate-delay-200 { animation-delay: 0.2s; }
+.animate-delay-300 { animation-delay: 0.3s; }
+
+/* 无障碍优化 */
+@media (prefers-reduced-motion: reduce) {
+  .background-video-container video {
+    animation-play-state: paused;
+  }
+  
+  .animate-fade-in-up,
+  .hero-button {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* 高对比度模式适配 */
+@media (prefers-contrast: high) {
+  .glass-card {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+  }
+  
+  .video-overlay {
+    background: rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* 打印模式适配 */
+@media print {
+  .background-video-container {
+    display: none;
+  }
+  
+  .content-overlay {
+    background: white;
+    color: black;
+  }
+}

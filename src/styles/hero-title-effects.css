@@ -1,0 +1,369 @@
+/**
+ * Hero标题动画特效样式
+ * 包含流光渐变、发光、彩虹、霓虹灯等多种特效
+ */
+
+/* === 流光渐变特效 === */
+.hero-title-flowing {
+  background: linear-gradient(
+    45deg,
+    #8b5cf6,  /* 紫色 */
+    #3b82f6,  /* 蓝色 */
+    #06b6d4,  /* 青色 */
+    #10b981,  /* 绿色 */
+    #f59e0b,  /* 黄色 */
+    #ef4444,  /* 红色 */
+    #ec4899,  /* 粉色 */
+    #8b5cf6   /* 回到紫色 */
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: flowingGradient 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5));
+}
+
+.hero-title-flowing-hover {
+  animation: flowingGradientFast 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.8));
+}
+
+/* === 彩虹渐变特效 === */
+.hero-title-rainbow {
+  background: linear-gradient(
+    90deg,
+    #ff0000,  /* 红 */
+    #ff8000,  /* 橙 */
+    #ffff00,  /* 黄 */
+    #80ff00,  /* 黄绿 */
+    #00ff00,  /* 绿 */
+    #00ff80,  /* 绿青 */
+    #00ffff,  /* 青 */
+    #0080ff,  /* 青蓝 */
+    #0000ff,  /* 蓝 */
+    #8000ff,  /* 蓝紫 */
+    #ff00ff,  /* 紫 */
+    #ff0080,  /* 紫红 */
+    #ff0000   /* 红 */
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbowShift 6s linear infinite;
+}
+
+/* === 霓虹灯特效 === */
+.hero-title-neon {
+  color: #fff;
+  text-shadow: 
+    0 0 5px #00ffff,
+    0 0 10px #00ffff,
+    0 0 20px #00ffff,
+    0 0 40px #00ffff,
+    0 0 80px #00ffff;
+  animation: neonFlicker 2s ease-in-out infinite alternate;
+}
+
+/* === 脉冲特效 === */
+.hero-title-pulse {
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* === Glitch故障特效 === */
+.hero-title-glitch {
+  position: relative;
+  color: #fff;
+  font-weight: bold;
+  animation: glitch 2s infinite;
+}
+
+.hero-title-glitch-layer-1 {
+  color: #ff0000;
+  animation: glitch-1 2s infinite;
+  z-index: -1;
+}
+
+.hero-title-glitch-layer-2 {
+  color: #00ffff;
+  animation: glitch-2 2s infinite;
+  z-index: -2;
+}
+
+/* === 动画关键帧 === */
+
+/* 流光渐变动画 */
+@keyframes flowingGradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes flowingGradientFast {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* 彩虹移动动画 */
+@keyframes rainbowShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+/* 霓虹灯闪烁动画 */
+@keyframes neonFlicker {
+  0%, 100% {
+    text-shadow: 
+      0 0 5px #00ffff,
+      0 0 10px #00ffff,
+      0 0 20px #00ffff,
+      0 0 40px #00ffff,
+      0 0 80px #00ffff;
+  }
+  50% {
+    text-shadow: 
+      0 0 2px #00ffff,
+      0 0 5px #00ffff,
+      0 0 10px #00ffff,
+      0 0 20px #00ffff,
+      0 0 35px #00ffff;
+  }
+}
+
+/* 脉冲发光动画 */
+@keyframes pulseGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.8));
+  }
+  50% {
+    filter: drop-shadow(0 0 40px rgba(102, 126, 234, 1));
+  }
+}
+
+/* Glitch主体动画 */
+@keyframes glitch {
+  0%, 100% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+}
+
+@keyframes glitch-1 {
+  0%, 100% {
+    transform: translate(0);
+    opacity: 1;
+  }
+  10% {
+    transform: translate(-5px, -2px);
+    opacity: 0.8;
+  }
+  20% {
+    transform: translate(-10px, 2px);
+    opacity: 0.6;
+  }
+  30% {
+    transform: translate(-2px, -5px);
+    opacity: 0.8;
+  }
+  40% {
+    transform: translate(-8px, 0px);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-12px, -5px);
+    opacity: 0.7;
+  }
+  60% {
+    transform: translate(-3px, 2px);
+    opacity: 0.8;
+  }
+  70% {
+    transform: translate(-7px, -3px);
+    opacity: 0.6;
+  }
+  80% {
+    transform: translate(-5px, -8px);
+    opacity: 0.7;
+  }
+  90% {
+    transform: translate(-9px, 2px);
+    opacity: 0.5;
+  }
+}
+
+@keyframes glitch-2 {
+  0%, 100% {
+    transform: translate(0);
+    opacity: 1;
+  }
+  15% {
+    transform: translate(8px, -2px);
+    opacity: 0.7;
+  }
+  25% {
+    transform: translate(3px, 5px);
+    opacity: 0.5;
+  }
+  35% {
+    transform: translate(12px, -1px);
+    opacity: 0.8;
+  }
+  45% {
+    transform: translate(2px, 8px);
+    opacity: 0.6;
+  }
+  55% {
+    transform: translate(7px, -5px);
+    opacity: 0.7;
+  }
+  65% {
+    transform: translate(11px, 3px);
+    opacity: 0.5;
+  }
+  75% {
+    transform: translate(5px, -8px);
+    opacity: 0.8;
+  }
+  85% {
+    transform: translate(9px, 1px);
+    opacity: 0.6;
+  }
+  95% {
+    transform: translate(4px, 7px);
+    opacity: 0.7;
+  }
+}
+
+/* 呼吸动画 */
+@keyframes breathing {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.animate-breathing {
+  animation: breathing 4s ease-in-out infinite;
+}
+
+/* === 动画速度变体 === */
+.animate-flowing {
+  animation-duration: 3s;
+}
+
+.animate-flowing-slow {
+  animation-duration: 5s;
+}
+
+.animate-flowing-fast {
+  animation-duration: 1.5s;
+}
+
+/* === 发光强度变体 === */
+.text-glow-subtle {
+  filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.3));
+}
+
+.text-glow-medium {
+  filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5));
+}
+
+.text-glow-strong {
+  filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.8));
+}
+
+/* === 响应式优化 === */
+@media (max-width: 768px) {
+  .hero-title-flowing,
+  .hero-title-rainbow,
+  .hero-title-neon,
+  .hero-title-pulse {
+    /* 移动端减少动画强度 */
+    animation-duration: 4s;
+    filter: none;
+  }
+  
+  .hero-title-glitch {
+    /* 移动端关闭Glitch效果 */
+    animation: none;
+  }
+  
+  .hero-title-glitch-layer-1,
+  .hero-title-glitch-layer-2 {
+    display: none;
+  }
+}
+
+/* === 无障碍适配 === */
+@media (prefers-reduced-motion: reduce) {
+  .hero-title-flowing,
+  .hero-title-rainbow,
+  .hero-title-neon,
+  .hero-title-pulse,
+  .hero-title-glitch,
+  .animate-breathing {
+    animation: none;
+  }
+  
+  .hero-title-glitch-layer-1,
+  .hero-title-glitch-layer-2 {
+    display: none;
+  }
+  
+  /* 提供静态的渐变效果 */
+  .hero-title-flowing {
+    background: linear-gradient(45deg, #8b5cf6, #3b82f6, #06b6d4);
+    background-size: 100% 100%;
+  }
+  
+  .hero-title-rainbow {
+    background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #0000ff, #ff00ff);
+    background-size: 100% 100%;
+  }
+}
+
+/* === 高对比度适配 === */
+@media (prefers-contrast: high) {
+  .hero-title-flowing,
+  .hero-title-rainbow,
+  .hero-title-pulse {
+    -webkit-text-fill-color: white;
+    color: white;
+    background: none;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  }
+  
+  .hero-title-neon {
+    color: #00ffff;
+    text-shadow: 0 0 2px #00ffff;
+  }
+}

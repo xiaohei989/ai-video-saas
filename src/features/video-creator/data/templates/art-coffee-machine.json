@@ -1,0 +1,63 @@
+{
+  "id": "f01f880a-b9b3-4dc3-9b5f-34f2fc9fb736",
+  "slug": "art-coffee-machine",
+  "name": "艺术咖啡机魔法创作",
+  "icon": "☕",
+  "description": "将经典艺术作品或自定义图片通过神奇咖啡机转化为杯中的流体艺术",
+  "previewUrl": "/templates/videos/art-coffee-machine.mp4",
+
+  "category": "艺术/创意",
+  "tags": ["coffee", "art", "magic", "creative", "asmr", "liquid", "painting"],
+  "createdAt": "2025-01-22T11:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-29T04:30:00Z",
+  "promptTemplate": "A hand wearing a black glove inserts a card printed with {artwork} into a silver, metallic machine. The brand name \"veo3video.me\" is printed on the front of the machine. After the card is fully inserted, the camera pans down. The outlet of the machine is directly aligned with a {cup_style} cup. Then, a stream of liquid in a mix of colors such as coffee, blue, and yellow flows out of the nozzle, as if multiple pigments are being squeezed out simultaneously. Once the liquid is poured into the cup, it quickly forms a rotating vortex at the bottom. The various colors dynamically interweave and blend with the vortex, yet maintain relatively distinct color zones. As more liquid is poured, these colors eventually perfectly replicate the artwork, like a magical piece of artistic latte art. ASMR sound effects.",
+  "params": {
+    "artwork": {
+      "type": "select",
+      "label": "艺术作品",
+      "required": true,
+      "default": "Van Gogh's famous painting The Starry Night",
+      "options": [
+        {"value": "Van Gogh's famous painting The Starry Night", "label": "梵高《星夜》"},
+        {"value": "Monet's Water Lilies", "label": "莫奈《睡莲》"},
+        {"value": "Leonardo da Vinci's Mona Lisa", "label": "达芬奇《蒙娜丽莎》"},
+        {"value": "Hokusai's The Great Wave", "label": "葛饰北斋《神奈川冲浪里》"},
+        {"value": "Mondrian's Composition", "label": "蒙德里安《构成》"},
+        {"value": "Picasso's Guernica", "label": "毕加索《格尔尼卡》"},
+        {"value": "Klimt's The Kiss", "label": "克里姆特《吻》"},
+        {"value": "Munch's The Scream", "label": "蒙克《呐喊》"},
+        {"value": "Vermeer's Girl with a Pearl Earring", "label": "维米尔《戴珍珠耳环的少女》"},
+        {"value": "Botticelli's The Birth of Venus", "label": "波提切利《维纳斯的诞生》"},
+        {"value": "Dali's The Persistence of Memory", "label": "达利《记忆的永恒》"},
+        {"value": "Kandinsky's Composition VII", "label": "康定斯基《构成七》"},
+        {"value": "Rembrandt's The Night Watch", "label": "伦勃朗《夜巡》"},
+        {"value": "Michelangelo's The Creation of Adam", "label": "米开朗基罗《创造亚当》"},
+        {"value": "Banksy's Girl With Balloon", "label": "班克西《女孩与气球》"},
+        {"value": "a custom artwork image", "label": "📤 上传自定义图片"}
+      ]
+    },
+    "custom_artwork": {
+      "type": "image",
+      "label": "上传艺术图片",
+      "accept": "image/jpeg,image/png,image/webp",
+      "maxSize": 5242880,
+      "placeholder": "选择'上传自定义图片'后，在此上传您的图片"
+    },
+    "cup_style": {
+      "type": "select",
+      "label": "杯子风格",
+      "default": "European-style retro white",
+      "options": [
+        {"value": "European-style retro white", "label": "欧式复古白瓷"},
+        {"value": "modern minimalist glass", "label": "现代简约玻璃"},
+        {"value": "Japanese ceramic", "label": "日式陶瓷"},
+        {"value": "Nordic wood-textured", "label": "北欧风木纹"},
+        {"value": "industrial metal", "label": "工业风金属"},
+        {"value": "crystal clear glass", "label": "水晶玻璃"},
+        {"value": "vintage porcelain with gold rim", "label": "金边复古瓷器"},
+        {"value": "handmade pottery", "label": "手工陶艺"}
+      ]
+    }
+  }
+}

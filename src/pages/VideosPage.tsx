@@ -1,0 +1,1561 @@
+import React, { useState, useEffect, useContext, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
+import { 
+  Download, 
+  Share2, 
+  Trash2, 
+  Eye, 
+  Filter,
+  Search,
+  Grid,
+  List,
+  Plus,
+  Calendar,
+  Clock,
+  TrendingUp,
+  Loader2,
+  ArrowRight,
+  Layers
+} from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import VideoCard from '@/components/video/VideoCard'
+import LazyVideoPlayer from '@/components/video/LazyVideoPlayer'
+import supabaseVideoService from '@/services/supabaseVideoService'
+import videoShareService from '@/services/videoShareService'
+import { progressManager } from '@/services/progressManager'
+import type { VideoProgress } from '@/services/progressManager'
+import { taskRecoveryService } from '@/services/taskRecoveryService'
+import { videoPollingService } from '@/services/VideoPollingService'
+import { videoTaskManager } from '@/services/VideoTaskManager'
+import type { VideoTask } from '@/services/VideoTaskManager'
+import { formatDuration } from '@/utils/timeFormat'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { AuthContext } from '@/contexts/AuthContext'
+import type { Database } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
+import { templates } from '@/features/video-creator/data/templates'
+import { formatRelativeTime } from '@/utils/timeFormat'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+
+type Video = Database['public']['Tables']['videos']['Row']
+
+export default function VideosPage() {
+  const { t } = useTranslation()
+  const { user } = useContext(AuthContext)
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  
+  // 🚀 性能监控：记录页面生命周期时间点
+  const performanceTimers = React.useRef({
+    componentMount: performance.now(),
+    firstRender: 0,
+    dataLoaded: 0,
+    fullyInteractive: 0,
+    taskRecoveryComplete: 0
+  })
+  
+  // 在组件首次渲染时记录时间
+  React.useEffect(() => {
+    if (performanceTimers.current.firstRender === 0) {
+      performanceTimers.current.firstRender = performance.now()
+      const renderTime = performanceTimers.current.firstRender - performanceTimers.current.componentMount
+      console.log(`[PERF] 📊 VideosPage 首次渲染完成: ${Math.round(renderTime)}ms`)
+    }
+  }, [])
+  
+  console.log(`[PERF] 🎬 VideosPage 组件开始渲染 - ${new Date().toISOString()}`)
+  
+  // 🚀 性能优化：合并模态框相关状态，减少重渲染
+  const [modals, setModals] = useState({
+    videoPlayer: { open: false, video: null as Video | null },
+    share: { open: false, video: null as Video | null },
+    delete: { open: false, video: null as Video | null }
+  })
+  
+  // 🚀 性能优化：合并UI状态
+  const [uiState, setUiState] = useState({
+    viewMode: 'grid' as 'grid' | 'list',
+    filter: {} as any,
+    searchTerm: '',
+    loading: true,
+    page: 1,
+    totalPages: 1
+  })
+  
+  // 核心数据状态（保持独立以优化渲染）
+  const [videos, setVideos] = useState<Video[]>([])
+  const [filteredVideos, setFilteredVideos] = useState<Video[]>([])
+  const [statistics, setStatistics] = useState<any>(null)
+  const [completionNotification, setCompletionNotification] = useState<{
+    visible: boolean
+    video: Video | null
+  }>({ visible: false, video: null })
+  const [videoProgress, setVideoProgress] = useState<Map<string, VideoProgress>>(new Map())
+  const [taskRecovery, setTaskRecovery] = useState<{
+    isRecovering: boolean
+    restoredCount: number
+    resumedCount: number
+  }>({ isRecovering: false, restoredCount: 0, resumedCount: 0 })
+  
+  // 防止重复通知的状态
+  const [notifiedVideos, setNotifiedVideos] = useState<Set<string>>(new Set())
+  
+  // 管理广播频道 - 使用Map来跟踪videoId -> channel
+  const [broadcastChannels, setBroadcastChannels] = useState<Map<string, any>>(new Map())
+  
+  // 🚀 性能优化：缓存模板查找，避免重复计算
+  const templateMap = React.useMemo(() => {
+    const map = new Map()
+    templates.forEach(template => {
+      map.set(template.id, template)
+    })
+    console.log(`[VideosPage] 📚 模板映射缓存创建，包含 ${map.size} 个模板`)
+    return map
+  }, [])
+  
+  // 🚀 性能优化：缓存事件处理函数，避免子组件重渲染
+  const handlePlayVideo = React.useCallback(async (video: Video) => {
+    const interactionStart = performance.now()
+    console.log(`[PERF] 🎬 开始播放视频: ${video.id}`)
+    
+    if (video.video_url) {
+      setModals(prev => ({ 
+        ...prev, 
+        videoPlayer: { open: true, video }
+      }))
+      
+      try {
+        await supabaseVideoService.incrementInteraction(video.id, 'view_count')
+        const interactionTime = performance.now() - interactionStart
+        console.log(`[PERF] ✅ 视频播放交互完成: ${Math.round(interactionTime)}ms`)
+      } catch (error) {
+        console.error(`[PERF] ❌ 视频播放交互失败:`, error)
+      }
+    }
+  }, [])
+  
+  const handleShareVideo = React.useCallback((video: Video) => {
+    console.log(`[PERF] 📤 打开分享模态框: ${video.id}`)
+    const modalStart = performance.now()
+    
+    setModals(prev => ({ 
+      ...prev, 
+      share: { open: true, video }
+    }))
+    
+    const modalTime = performance.now() - modalStart
+    console.log(`[PERF] ✅ 分享模态框打开: ${Math.round(modalTime)}ms`)
+  }, [])
+  
+  const handleDeleteVideo = React.useCallback((video: Video) => {
+    console.log(`[PERF] 🗑️ 打开删除确认: ${video.id}`)
+    const deleteModalStart = performance.now()
+    
+    setModals(prev => ({ 
+      ...prev, 
+      delete: { open: true, video }
+    }))
+    
+    const deleteModalTime = performance.now() - deleteModalStart
+    console.log(`[PERF] ✅ 删除确认模态框打开: ${Math.round(deleteModalTime)}ms`)
+  }, [])
+  
+  // 使用useRef管理轮询，避免多重interval
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const lastKnownStatusRef = useRef<string | null>(null)
+  
+  // 添加初始化状态管理，防止重复执行
+  const initializationRef = useRef<{
+    isRecovering: boolean
+    isTaskManagerInitialized: boolean
+    currentUserId: string | null
+  }>({
+    isRecovering: false,
+    isTaskManagerInitialized: false,
+    currentUserId: null
+  })
+
+  // 处理视频更新的函数（用于广播监听器）
+  const handleVideoUpdate = (updatedVideo: Video) => {
+    console.log('[VideosPage] 📡 Received broadcast video update:', updatedVideo.id, updatedVideo.status)
+    
+    // 更新视频列表中的对应记录
+    setVideos(prev => prev.map(v => 
+      v.id === updatedVideo.id ? updatedVideo : v
+    ))
+    
+    // 如果视频完成，清理进度数据并显示通知
+    if (updatedVideo.status === 'completed') {
+      // 立即清理进度数据
+      setVideoProgress(prev => {
+        const newMap = new Map(prev)
+        newMap.delete(updatedVideo.id)
+        return newMap
+      })
+      console.log(`[VideosPage] 📡 Broadcast: Video completed, cleared progress data: ${updatedVideo.id}`)
+      
+      // 强制UI重新渲染，确保显示视频预览
+      setTimeout(() => {
+        setVideos(prev => prev.map(v => 
+          v.id === updatedVideo.id ? { ...updatedVideo } : v
+        ))
+      }, 100)
+      
+      // 显示完成通知
+      showCompletionNotification(updatedVideo)
+    }
+    
+    loadStatistics() // 重新加载统计
+  }
+  
+
+  useEffect(() => {
+    if (user) {
+      // 检查是否需要重新初始化（用户切换或首次加载）
+      const needsInitialization = !initializationRef.current.currentUserId || 
+                                  initializationRef.current.currentUserId !== user.id
+      
+      console.log('[VideosPage] useEffect触发:', { 
+        userId: user.id, 
+        needsInitialization, 
+        currentUserId: initializationRef.current.currentUserId,
+        isRecovering: initializationRef.current.isRecovering 
+      })
+      
+      // 🚀 关键优化：并行加载数据，快速显示页面内容
+      console.log('[VideosPage] 🚀 启动快速并行初始化...')
+      console.log(`[PERF] ⚡ 并行初始化开始时间: ${Math.round(performance.now() - performanceTimers.current.componentMount)}ms`)
+      const quickInitStart = performance.now()
+      
+      // 立即并行加载关键数据，不等待任何其他操作
+      console.log(`[PERF] 🔥 开始并行请求: 视频数据 + 统计数据`)
+      Promise.all([
+        loadVideos(),
+        loadStatistics()
+      ]).then(() => {
+        const quickInitTime = performance.now() - quickInitStart
+        const totalTimeFromMount = performance.now() - performanceTimers.current.componentMount
+        
+        console.log(`[PERF] ⚡ ========== 快速初始化完成 ==========`)
+        console.log(`[PERF] 📊 并行加载耗时: ${Math.round(quickInitTime)}ms`)
+        console.log(`[PERF] 🎯 从组件挂载到数据加载完成: ${Math.round(totalTimeFromMount)}ms`)
+        console.log(`[PERF] ✅ 页面内容现在已经可见，用户可以交互`)
+        console.log(`[PERF] =======================================`)
+        
+        // 页面内容现在已经可见，用户可以交互
+      }).catch(error => {
+        const quickInitTime = performance.now() - quickInitStart
+        console.error(`[PERF] ❌ 快速初始化失败: ${Math.round(quickInitTime)}ms`, error)
+      })
+      
+      // 只在需要时执行任务恢复 - 在后台异步执行，不阻塞页面
+      if (needsInitialization && !initializationRef.current.isRecovering) {
+        console.log('[VideosPage] 🔄 启动后台任务恢复流程...')
+        
+        // 更新当前用户ID
+        initializationRef.current.currentUserId = user.id
+        
+        // 恢复处理中的任务
+        const recoverTasks = async () => {
+          if (initializationRef.current.isRecovering) {
+            console.log('[VideosPage] 任务恢复已在进行中，跳过...')
+            return
+          }
+          
+          initializationRef.current.isRecovering = true
+          setTaskRecovery(prev => ({ ...prev, isRecovering: true }))
+          
+          try {
+            console.log('[VideosPage] 开始任务恢复...')
+            const result = await taskRecoveryService.recoverProcessingTasks(user.id)
+          
+          console.log('[VideosPage] 任务恢复完成:', result)
+          setTaskRecovery({
+            isRecovering: false,
+            restoredCount: result.restoredCount,
+            resumedCount: result.resumedPollingCount
+          })
+          
+          // 清理卡住的任务
+          console.log('[VideosPage] 开始清理卡住的任务...')
+          const cleanedCount = await taskRecoveryService.cleanupStuckTasks(user.id)
+          if (cleanedCount > 0) {
+            console.log(`[VideosPage] 清理了 ${cleanedCount} 个卡住的任务`)
+          }
+          
+          // 恢复后重新加载视频列表以获取最新状态
+          if (result.restoredCount > 0 || result.resumedPollingCount > 0 || cleanedCount > 0) {
+            loadVideos()
+            
+            // 恢复的视频监听器将由 useEffect 中的 activeSubscriptions 自动管理
+            if (result.restoredVideoIds && result.restoredVideoIds.length > 0) {
+              console.log('[VideosPage] 恢复的视频监听器将在下次视频列表更新时自动创建:', result.restoredVideoIds)
+            }
+          }
+          
+          // 3秒后隐藏恢复状态指示器
+          setTimeout(() => {
+            setTaskRecovery(prev => ({ 
+              ...prev, 
+              restoredCount: 0, 
+              resumedCount: 0 
+            }))
+          }, 3000)
+          
+          } catch (error) {
+            console.error('[VideosPage] 任务恢复失败:', error)
+            setTaskRecovery(prev => ({ ...prev, isRecovering: false }))
+          } finally {
+            initializationRef.current.isRecovering = false
+          }
+        }
+        
+        // 初始化任务管理器
+        const initTaskManager = async () => {
+          if (initializationRef.current.isTaskManagerInitialized) {
+            console.log('[VideosPage] 任务管理器已初始化，跳过...')
+            return
+          }
+          
+          try {
+            console.log('[VideosPage] 初始化任务管理器...')
+            const activeTasks = await videoTaskManager.initialize(user.id)
+            console.log(`[VideosPage] 任务管理器初始化完成，发现 ${activeTasks.length} 个活跃任务`)
+            
+            initializationRef.current.isTaskManagerInitialized = true
+          
+          // 执行状态一致性检查
+          console.log('[VideosPage] 🔍 执行状态一致性检查...')
+          const consistencyResult = await progressManager.validateStateConsistency(user.id)
+          if (consistencyResult.fixed > 0) {
+            console.log(`[VideosPage] 🔧 状态一致性检查修复了 ${consistencyResult.fixed} 个不一致`)
+            // 如果有修复，重新加载视频列表
+            loadVideos()
+          }
+          
+          // 启动轮询服务，持续监控任务状态（即使当前没有活跃任务也要启动，以便监控新任务）
+          console.log('[VideosPage] 启动轮询服务监控任务状态')
+          videoPollingService.start({
+              userId: user.id,
+              onTaskUpdate: (task: VideoTask) => {
+                console.log(`[VideosPage] 任务状态更新: ${task.id} -> ${task.status} (${task.progress}%)`)
+                
+                // 更新进度显示
+                if (task.status === 'processing' || task.status === 'pending') {
+                  progressManager.updateProgress(task.id, {
+                    progress: task.progress,
+                    status: task.status,
+                    statusText: task.statusText,
+                    qingyunTaskId: task.veo3JobId
+                  })
+                }
+              },
+              onTaskComplete: (task: VideoTask) => {
+                console.log(`[VideosPage] ✅ 任务完成: ${task.id}`)
+                
+                // 标记进度完成
+                if (task.videoUrl) {
+                  progressManager.markAsCompleted(task.id, task.videoUrl)
+                }
+                
+                // 重新加载视频列表以显示最新状态
+                loadVideos()
+                loadStatistics()
+              },
+              onTaskFailed: (task: VideoTask) => {
+                console.log(`[VideosPage] ❌ 任务失败: ${task.id}`)
+                
+                // 标记进度失败
+                progressManager.markAsFailed(task.id, task.errorMessage || '任务处理失败')
+                
+                // 重新加载视频列表
+                loadVideos()
+                loadStatistics()
+              }
+            })
+            
+            // 启动状态同步检查定时器
+            console.log('[VideosPage] 🔄 启动状态同步检查定时器')
+            const stopSyncTimer = progressManager.startStateSyncTimer(user.id)
+            
+            // 将清理函数保存到ref中，以便在组件卸载时调用
+            if (!initializationRef.current.currentUserId) {
+              initializationRef.current = {
+                ...initializationRef.current,
+                stopSyncTimer
+              } as any
+            }
+          } catch (error) {
+            console.error('[VideosPage] 任务管理器初始化失败:', error)
+            initializationRef.current.isTaskManagerInitialized = false
+          }
+        }
+
+        // 🚀 关键优化：后台异步执行任务恢复，不阻塞页面显示
+        const backgroundInitStart = performance.now()
+        console.log('[VideosPage] 🔄 开始后台任务恢复和管理器初始化...')
+        
+        // 后台异步执行恢复流程（保持逻辑依赖关系）
+        setTimeout(() => {
+          console.log(`[PERF] 🔄 ========== 后台任务恢复开始 ==========`)
+          console.log(`[PERF] ⏰ 后台流程开始时间: ${Math.round(performance.now() - performanceTimers.current.componentMount)}ms`)
+          
+          const recoveryStart = performance.now()
+          recoverTasks()
+            .then((recoveryResult) => {
+              const recoveryTime = performance.now() - recoveryStart
+              performanceTimers.current.taskRecoveryComplete = performance.now()
+              
+              console.log(`[PERF] ✅ 任务恢复阶段完成: ${Math.round(recoveryTime)}ms`)
+              console.log(`[PERF] 📊 恢复统计: 进度${recoveryResult?.restoredCount || 0}个, 轮询${recoveryResult?.resumedPollingCount || 0}个`)
+              
+              // 恢复完成后再初始化任务管理器
+              const taskManagerStart = performance.now()
+              console.log(`[PERF] 🔧 开始任务管理器初始化...`)
+              return initTaskManager().then(() => {
+                const taskManagerTime = performance.now() - taskManagerStart
+                console.log(`[PERF] ✅ 任务管理器初始化完成: ${Math.round(taskManagerTime)}ms`)
+              })
+            })
+            .then(() => {
+              const backgroundInitTime = performance.now() - backgroundInitStart
+              const totalTimeFromMount = performance.now() - performanceTimers.current.componentMount
+              
+              console.log(`[PERF] 🎉 ========== 完整后台初始化完成 ==========`)
+              console.log(`[PERF] ⏱️  后台流程总耗时: ${Math.round(backgroundInitTime)}ms`)
+              console.log(`[PERF] 🕐 从挂载到完全初始化: ${Math.round(totalTimeFromMount)}ms`)
+              console.log(`[PERF] 📈 性能分解:`)
+              console.log(`[PERF]   - 首次渲染: ${Math.round(performanceTimers.current.firstRender - performanceTimers.current.componentMount)}ms`)
+              console.log(`[PERF]   - 数据加载: ${Math.round(performanceTimers.current.dataLoaded - performanceTimers.current.componentMount)}ms`) 
+              console.log(`[PERF]   - 任务恢复: ${Math.round(performanceTimers.current.taskRecoveryComplete - performanceTimers.current.componentMount)}ms`)
+              console.log(`[PERF] =======================================`)
+            })
+            .catch(error => {
+              const backgroundInitTime = performance.now() - backgroundInitStart
+              console.error(`[PERF] ❌ 后台初始化失败: ${Math.round(backgroundInitTime)}ms`, error)
+            })
+        }, 0) // 使用 setTimeout 0 让它在下个事件循环执行，不阻塞当前渲染
+      } else {
+        console.log('[VideosPage] 跳过初始化，当前状态:', {
+          needsInitialization,
+          isRecovering: initializationRef.current.isRecovering
+        })
+      }
+      
+      // 订阅用户视频创建
+      const unsubscribeNewVideos = supabaseVideoService.subscribeToUserVideos(
+        user.id,
+        (newVideo) => {
+          console.log('[VideosPage] New video created:', newVideo)
+          // 添加到视频列表顶部
+          setVideos(prev => [newVideo, ...prev])
+          loadStatistics() // 重新加载统计
+        }
+      )
+      
+      // 订阅用户视频更新（监听状态变化）
+      const unsubscribeUpdates = supabaseVideoService.subscribeToAllUserVideoUpdates(
+        user.id,
+        (updatedVideo) => {
+          console.log('[VideosPage] Video updated via global subscription:', updatedVideo.id, updatedVideo.status)
+          
+          // 更新视频列表中的对应记录
+          setVideos(prev => prev.map(v => 
+            v.id === updatedVideo.id ? updatedVideo : v
+          ))
+          
+          // 如果视频完成，清理进度数据并显示通知（如果是高亮视频）
+          if (updatedVideo.status === 'completed') {
+            // 立即清理进度数据
+            setVideoProgress(prev => {
+              const newMap = new Map(prev)
+              newMap.delete(updatedVideo.id)
+              return newMap
+            })
+            console.log(`[VideosPage] Video completed, cleared progress data: ${updatedVideo.id}`)
+            
+            // 强制UI重新渲染，确保显示视频预览
+            setTimeout(() => {
+              setVideos(prev => prev.map(v => 
+                v.id === updatedVideo.id ? { ...updatedVideo } : v
+              ))
+            }, 100)
+          }
+          
+          loadStatistics() // 重新加载统计
+        }
+      )
+      
+      // 广播监听器由 useEffect 中的 activeSubscriptions 管理，这里不需要重复创建
+      
+      // 清理不需要的广播频道（不在当前页面的视频）
+      const currentVideoIds = videos.map(v => v.id)
+      setBroadcastChannels(prev => {
+        const cleanedMap = new Map()
+        const currentVideoIdSet = new Set(currentVideoIds)
+        
+        prev.forEach((channel, videoId) => {
+          if (currentVideoIdSet.has(videoId)) {
+            // 保留当前页面的视频频道
+            cleanedMap.set(videoId, channel)
+          } else {
+            // 清理不需要的频道
+            channel.unsubscribe()
+            console.log(`[VideosPage] 📡 Cleaned up unused channel: ${videoId}`)
+          }
+        })
+        
+        return cleanedMap
+      })
+      
+      return () => {
+        console.log('[VideosPage] 开始清理...', { 
+          userId: user?.id, 
+          isTaskManagerInitialized: initializationRef.current.isTaskManagerInitialized 
+        })
+        
+        unsubscribeNewVideos()
+        unsubscribeUpdates()
+        
+        // 只有已初始化的服务才需要停止
+        if (initializationRef.current.isTaskManagerInitialized) {
+          // 停止轮询服务
+          console.log('[VideosPage] 停止轮询服务')
+          videoPollingService.stop()
+          
+          // 清理任务管理器
+          console.log('[VideosPage] 清理任务管理器')
+          videoTaskManager.cleanup()
+          
+          // 停止状态同步定时器
+          if ((initializationRef.current as any).stopSyncTimer) {
+            console.log('[VideosPage] 🔒 停止状态同步定时器')
+            ;(initializationRef.current as any).stopSyncTimer()
+          }
+          
+          // 重置初始化状态
+          initializationRef.current.isTaskManagerInitialized = false
+        }
+        
+        // 重置恢复状态
+        initializationRef.current.isRecovering = false
+        
+        // 清理广播频道
+        broadcastChannels.forEach((channel, videoId) => {
+          channel.unsubscribe()
+          console.log(`[VideosPage] 📡 Unsubscribed from channel: ${videoId}`)
+        })
+        setBroadcastChannels(new Map()) // 清空广播频道Map
+        console.log('[VideosPage] 📡 清理完成')
+      }
+    }
+  }, [user, page])
+
+
+  useEffect(() => {
+    // 🚀 性能监控：过滤操作性能追踪
+    console.log(`[PERF] 🔍 触发视频过滤，当前视频数: ${videos.length}`)
+    const filterStart = performance.now()
+    
+    applyFilters()
+    
+    const filterTime = performance.now() - filterStart
+    console.log(`[PERF] ✅ 视频过滤触发完成: ${Math.round(filterTime)}ms`)
+  }, [videos, uiState.filter, uiState.searchTerm, applyFilters]) // 修复依赖项
+  
+  // 订阅数据库状态更新和内存进度更新
+  const activeSubscriptions = React.useRef<Map<string, () => void>>(new Map())
+  const progressSubscriptions = React.useRef<Map<string, () => void>>(new Map())
+  
+  // 🚀 性能优化：使用 useMemo 缓存订阅依赖项，避免不必要的重新订阅
+  const videosSubscriptionKey = React.useMemo(() => {
+    // 只关注需要订阅的视频（处理中、等待中、最近完成的）
+    const relevantVideos = videos.filter(video => {
+      const recentlyCompleted = video.status === 'completed' && 
+        video.processing_completed_at && 
+        (new Date().getTime() - new Date(video.processing_completed_at).getTime()) < 5 * 60 * 1000
+      
+      return video.status === 'processing' || video.status === 'pending' || recentlyCompleted
+    })
+    
+    return relevantVideos.map(v => `${v.id}-${v.status}`).join(',')
+  }, [videos])
+  
+  useEffect(() => {
+    if (!user) return
+    
+    // 🚀 性能优化：只处理需要订阅的视频，减少循环开销
+    const subscriptionStart = performance.now()
+    console.log('[VideosPage] 🔄 优化后的订阅管理开始...')
+    console.log(`[PERF] 📡 开始创建订阅，当前视频数: ${videos.length}`)
+    
+    // 清理已经不需要的数据库订阅
+    const currentVideoIds = new Set(videos.map(v => v.id))
+    for (const [videoId, unsubscribe] of activeSubscriptions.current.entries()) {
+      if (!currentVideoIds.has(videoId)) {
+        unsubscribe()
+        activeSubscriptions.current.delete(videoId)
+      }
+    }
+    
+    // 清理已经不需要的进度订阅
+    for (const [videoId, unsubscribe] of progressSubscriptions.current.entries()) {
+      if (!currentVideoIds.has(videoId)) {
+        unsubscribe()
+        progressSubscriptions.current.delete(videoId)
+      }
+    }
+    
+    // 🚀 性能优化：只为真正需要监控的视频创建订阅
+    const relevantVideos = videos.filter(video => {
+      const recentlyCompleted = video.status === 'completed' && 
+        video.processing_completed_at && 
+        (new Date().getTime() - new Date(video.processing_completed_at).getTime()) < 5 * 60 * 1000 // 5分钟内
+      
+      return video.status === 'processing' || 
+             video.status === 'pending' || 
+             recentlyCompleted
+    })
+    
+    console.log(`[VideosPage] 📊 需要订阅的视频数量: ${relevantVideos.length} / ${videos.length}`)
+    
+    relevantVideos.forEach(video => {
+      const shouldSubscribe = !activeSubscriptions.current.has(video.id)
+      
+      if (shouldSubscribe) {
+        
+        const unsubscribe = supabaseVideoService.subscribeToVideoUpdates(
+          video.id,
+          (updatedVideo) => {
+            console.log('[VideosPage] Video status updated:', updatedVideo.status)
+            
+            // 更新视频列表中的对应记录
+            setVideos(prev => prev.map(v => 
+              v.id === updatedVideo.id ? updatedVideo : v
+            ))
+            
+            // 如果视频完成，清理进度数据、显示通知并清理订阅
+            if (updatedVideo.status === 'completed') {
+              // 立即清理进度数据
+              setVideoProgress(prev => {
+                const newMap = new Map(prev)
+                newMap.delete(updatedVideo.id)
+                return newMap
+              })
+              console.log(`[VideosPage] Video completed via individual subscription, cleared progress data: ${updatedVideo.id}`)
+              
+              // 强制UI重新渲染，确保显示视频预览
+              setTimeout(() => {
+                setVideos(prev => prev.map(v => 
+                  v.id === updatedVideo.id ? { ...updatedVideo } : v
+                ))
+              }, 100)
+              
+              showCompletionNotification(updatedVideo)
+              const unsub = activeSubscriptions.current.get(video.id)
+              if (unsub) {
+                unsub()
+                activeSubscriptions.current.delete(video.id)
+              }
+            }
+            
+            loadStatistics()
+          }
+        )
+        
+        activeSubscriptions.current.set(video.id, unsubscribe)
+        console.log(`[VideosPage] Subscribed to video status updates: ${video.id}`)
+      }
+      
+      // 进度订阅（订阅处理中或等待中的视频）
+      const shouldSubscribeProgress = (
+        video.status === 'processing' || 
+        video.status === 'pending'
+      ) && !progressSubscriptions.current.has(video.id)
+      
+      if (shouldSubscribeProgress) {
+        
+        // 首先尝试从 progressManager 获取带 fallback 的进度数据
+        const initialProgress = progressManager.getProgressWithFallback(video.id, video.status)
+        if (initialProgress) {
+          setVideoProgress(prev => {
+            const newMap = new Map(prev)
+            newMap.set(video.id, initialProgress)
+            return newMap
+          })
+          console.log(`[VideosPage] Initialized progress for ${video.id}: ${initialProgress.progress}%`)
+        }
+        
+        const unsubscribeProgress = progressManager.subscribe(
+          video.id,
+          (progress) => {
+            console.log(`[VideosPage] Progress updated for ${video.id}: ${progress.progress}%`)
+            
+            setVideoProgress(prev => {
+              const newMap = new Map(prev)
+              newMap.set(video.id, progress)
+              return newMap
+            })
+          }
+        )
+        
+        progressSubscriptions.current.set(video.id, unsubscribeProgress)
+        console.log(`[VideosPage] Subscribed to progress updates: ${video.id}`)
+      }
+    })
+    
+    // 组件卸载时清理所有订阅
+    return () => {
+      for (const unsubscribe of activeSubscriptions.current.values()) {
+        unsubscribe()
+      }
+      activeSubscriptions.current.clear()
+      
+      for (const unsubscribe of progressSubscriptions.current.values()) {
+        unsubscribe()
+      }
+      progressSubscriptions.current.clear()
+    }
+    
+    // 🚀 性能监控：订阅创建完成时间统计
+    const subscriptionTime = performance.now() - subscriptionStart
+    const totalFromMount = performance.now() - performanceTimers.current.componentMount
+    console.log(`[PERF] ✅ 订阅管理完成: ${Math.round(subscriptionTime)}ms`)
+    console.log(`[PERF] 📊 活跃订阅: DB订阅 ${activeSubscriptions.current.size} 个, 进度订阅 ${progressSubscriptions.current.size} 个`)
+    console.log(`[PERF] 🕐 从挂载到订阅完成: ${Math.round(totalFromMount)}ms`)
+    
+  }, [user, videosSubscriptionKey]) // 🚀 性能优化：使用缓存的依赖项，避免重复计算
+
+  // 显示完成通知
+  const showCompletionNotification = async (video: Video) => {
+    // 防止重复通知
+    if (notifiedVideos.has(video.id)) {
+      console.log(`[VideosPage] Completion notification already shown for video: ${video.id}`)
+      return
+    }
+    
+    console.log(`[VideosPage] Showing completion notification for video: ${video.id}`)
+    
+    // 标记已通知，防止重复
+    setNotifiedVideos(prev => new Set(prev).add(video.id))
+    
+    // 1. 先从数据库获取最新的视频数据，确保有最新的状态
+    try {
+      const latestVideo = await supabaseVideoService.getVideo(video.id)
+      if (latestVideo) {
+        // 2. 更新videos状态中的对应记录，确保使用最新数据
+        setVideos(prev => prev.map(v => 
+          v.id === latestVideo.id ? latestVideo : v
+        ))
+        console.log(`[VideosPage] Updated video state with latest data: ${latestVideo.id}, status: ${latestVideo.status}`)
+        
+        // 3. 使用最新数据显示通知
+        setCompletionNotification({ visible: true, video: latestVideo })
+      } else {
+        // 如果获取不到最新数据，使用传入的数据
+        setCompletionNotification({ visible: true, video })
+      }
+    } catch (error) {
+      console.warn('[VideosPage] Failed to fetch latest video data, using provided data:', error)
+      setCompletionNotification({ visible: true, video })
+    }
+    
+    // 4. 立即清理进度数据，确保不再显示进度条
+    setVideoProgress(prev => {
+      const newMap = new Map(prev)
+      newMap.delete(video.id)
+      return newMap
+    })
+    console.log(`[VideosPage] Cleared progress data for completed video: ${video.id}`)
+    
+    // 5. 不要在这里清理progressManager中的数据，让它自然延迟清理
+    // progressManager.clearProgress(video.id)
+    
+    // 播放通知音（如果浏览器允许）
+    try {
+      const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjiAw+/VeSsFJHbD7+6qVRMJSJns8qJbCApGjt7yu2k=')
+      audio.volume = 0.3
+      audio.play().catch(() => {}) // 忽略自动播放限制
+    } catch (e) {
+      // 忽略音频播放错误
+    }
+    
+    // 5秒后自动隐藏通知
+    setTimeout(() => {
+      setCompletionNotification({ visible: false, video: null })
+      
+    }, 5000) // 延长通知显示时间到5秒
+  }
+
+  const loadVideos = React.useCallback(async () => {
+    if (!user) return
+    
+    // 🚀 性能监控：数据加载计时开始
+    const loadStart = performance.now()
+    console.log(`[PERF] 📡 开始加载视频数据...`)
+    console.log(`[PERF] 📋 查询参数: 状态=${uiState.filter.status || 'all'}, 搜索=${uiState.searchTerm || 'none'}, 页码=${uiState.page}`)
+    
+    setUiState(prev => ({ ...prev, loading: true }))
+    try {
+      const { videos: fetchedVideos, total, pageSize } = await supabaseVideoService.getUserVideos(
+        user.id,
+        {
+          status: uiState.filter.status,
+          searchTerm: uiState.searchTerm || undefined
+        },
+        {
+          page: uiState.page,
+          pageSize: 12,
+          sortBy: 'created_at',
+          sortOrder: 'desc'
+        }
+      )
+      
+      const loadTime = performance.now() - loadStart
+      performanceTimers.current.dataLoaded = performance.now()
+      
+      console.log(`[PERF] ✅ 视频数据加载完成: ${Math.round(loadTime)}ms`)
+      console.log(`[PERF] 📊 加载结果: ${fetchedVideos.length} 个视频, 总计 ${total} 个`)
+      console.log(`[PERF] 📈 累计时间: ${Math.round(performanceTimers.current.dataLoaded - performanceTimers.current.componentMount)}ms`)
+      
+      setVideos(fetchedVideos)
+      setUiState(prev => ({ ...prev, totalPages: Math.ceil(total / pageSize) }))
+      
+      // 记录页面完全可交互的时间点
+      if (performanceTimers.current.fullyInteractive === 0) {
+        performanceTimers.current.fullyInteractive = performance.now()
+        const totalInteractiveTime = performanceTimers.current.fullyInteractive - performanceTimers.current.componentMount
+        console.log(`[PERF] 🎯 页面完全可交互: ${Math.round(totalInteractiveTime)}ms`)
+      }
+      
+    } catch (error) {
+      const loadTime = performance.now() - loadStart
+      console.error(`[PERF] ❌ 视频数据加载失败: ${Math.round(loadTime)}ms`, error)
+    } finally {
+      setUiState(prev => ({ ...prev, loading: false }))
+    }
+  }, [user, uiState.filter.status, uiState.searchTerm, uiState.page]) // 🚀 性能优化：缓存函数，精确依赖
+
+  const loadStatistics = React.useCallback(async () => {
+    if (!user) return
+    
+    // 🚀 性能监控：统计数据加载计时
+    const statsStart = performance.now()
+    console.log(`[PERF] 📊 开始加载统计数据...`)
+    
+    try {
+      const stats = await supabaseVideoService.getUserStatistics(user.id)
+      const statsTime = performance.now() - statsStart
+      console.log(`[PERF] ✅ 统计数据加载完成: ${Math.round(statsTime)}ms`)
+      console.log(`[PERF] 📈 统计结果:`, stats)
+      
+      setStatistics(stats)
+    } catch (error) {
+      const statsTime = performance.now() - statsStart
+      console.error(`[PERF] ❌ 统计数据加载失败: ${Math.round(statsTime)}ms`, error)
+    }
+  }, [user]) // 🚀 性能优化：缓存统计加载函数
+
+  // 🚀 性能优化：使用 useMemo 缓存过滤结果，避免重复计算
+  const applyFilters = React.useCallback(() => {
+    // 🚀 性能监控：过滤计算计时
+    const filterStart = performance.now()
+    console.log(`[PERF] 🔍 开始过滤视频列表，原始数量: ${videos.length}`)
+    
+    let filtered = [...videos]
+
+    // Apply status filter (already applied in loadVideos, but kept for local filtering)
+    if (uiState.filter.status) {
+      filtered = filtered.filter(v => v.status === uiState.filter.status)
+    }
+
+    // Apply search (already applied in loadVideos, but kept for local filtering)
+    if (uiState.searchTerm) {
+      const term = uiState.searchTerm.toLowerCase()
+      filtered = filtered.filter(v => 
+        (v.title?.toLowerCase().includes(term) || false) ||
+        (v.prompt?.toLowerCase().includes(term) || false)
+      )
+    }
+
+    const filterTime = performance.now() - filterStart
+    console.log(`[PERF] ✅ 视频过滤完成: ${Math.round(filterTime)}ms, 结果数量: ${filtered.length}`)
+    
+    setFilteredVideos(filtered)
+    
+    // 🚀 性能监控：输出完整性能报告（延迟执行确保状态更新完成）
+    setTimeout(() => {
+      const now = performance.now()
+      const totalTime = now - performanceTimers.current.componentMount
+      
+      console.log(`[PERF] 📊 ========== VideosPage 性能报告 ==========`)
+      console.log(`[PERF] 🕐 总耗时: ${Math.round(totalTime)}ms`)
+      console.log(`[PERF] 📈 关键节点时间:`)
+      console.log(`[PERF]   ├─ 首次渲染: ${Math.round(performanceTimers.current.firstRender - performanceTimers.current.componentMount)}ms`)
+      if (performanceTimers.current.dataLoaded > 0) {
+        console.log(`[PERF]   ├─ 数据加载: ${Math.round(performanceTimers.current.dataLoaded - performanceTimers.current.componentMount)}ms`)
+      }
+      if (performanceTimers.current.fullyInteractive > 0) {
+        console.log(`[PERF]   ├─ 完全可交互: ${Math.round(performanceTimers.current.fullyInteractive - performanceTimers.current.componentMount)}ms`)
+      }
+      if (performanceTimers.current.taskRecoveryComplete > 0) {
+        console.log(`[PERF]   └─ 任务恢复完成: ${Math.round(performanceTimers.current.taskRecoveryComplete - performanceTimers.current.componentMount)}ms`)
+      }
+      console.log(`[PERF] 📊 当前状态: ${videos.length} 视频, ${filtered.length} 已过滤`)
+      console.log(`[PERF] =========================================`)
+    }, 50) // 延迟50ms确保所有状态更新完成
+  }, [videos, uiState.filter.status, uiState.searchTerm]) // 🚀 性能优化：精确依赖，缓存函数
+
+
+  const handleDownloadVideo = React.useCallback(async (video: Video) => {
+    console.log('[VideosPage] handleDownloadVideo 被调用:', {
+      videoId: video.id,
+      videoUrl: video.video_url,
+      title: video.title,
+      status: video.status
+    })
+    
+    if (!video.video_url) {
+      console.warn('[VideosPage] 视频URL为空，无法下载')
+      toast.error('视频URL不存在，无法下载')
+      return
+    }
+    
+    // 显示开始下载的提示
+    toast.info('正在启动下载，如果没有自动下载，请在新窗口中右键保存视频', { 
+      id: 'download-' + video.id,
+      duration: 3000
+    })
+    
+    try {
+      const filename = `${video.title || 'video'}-${video.id}.mp4`
+      console.log('[VideosPage] 准备下载，文件名:', filename)
+      
+      await videoShareService.downloadVideo(video.id, video.video_url, {
+        filename: filename
+      })
+      
+      console.log('[VideosPage] 下载服务调用完成，更新下载计数')
+      await supabaseVideoService.incrementInteraction(video.id, 'download_count')
+      
+      // 延迟显示成功消息，给浏览器时间开始下载
+      setTimeout(() => {
+        toast.success('下载已开始，请查看浏览器下载列表', { 
+          id: 'download-' + video.id,
+          duration: 4000
+        })
+      }, 1000)
+      
+      loadVideos() // Reload to update download count
+    } catch (error) {
+      console.error('[VideosPage] 下载失败:', error)
+      toast.error('下载失败，请重试。如果问题持续，请尝试在新窗口中右键保存', { 
+        id: 'download-' + video.id,
+        duration: 5000
+      })
+    }
+  }, [loadVideos]) // 🚀 性能优化：缓存下载函数
+
+  const confirmDeleteVideo = React.useCallback(async () => {
+    if (!user || !videoToDelete) {
+      console.error('[VideosPage] 删除视频失败：缺少用户或视频信息')
+      return
+    }
+    
+    console.log(`[VideosPage] 开始删除视频: ${videoToDelete.id}, 用户: ${user.id}`)
+    
+    try {
+      // 显示加载状态
+      const loadingToast = toast.loading('正在删除视频...')
+      
+      const success = await supabaseVideoService.hardDeleteVideo(videoToDelete.id, user.id)
+      
+      // 关闭加载提示
+      toast.dismiss(loadingToast)
+      
+      if (success) {
+        // 1. 清理进度数据
+        console.log(`[VideosPage] 清理已删除视频的进度数据: ${videoToDelete.id}`)
+        setVideoProgress(prev => {
+          const newMap = new Map(prev)
+          newMap.delete(videoToDelete.id)
+          return newMap
+        })
+        
+        // 2. 清理progressManager中的数据
+        progressManager.clearProgress(videoToDelete.id)
+        
+        // 3. 取消该视频的所有订阅
+        const videoSubscription = activeSubscriptions.current.get(videoToDelete.id)
+        if (videoSubscription) {
+          videoSubscription()
+          activeSubscriptions.current.delete(videoToDelete.id)
+          console.log(`[VideosPage] 已取消数据库订阅: ${videoToDelete.id}`)
+        }
+        
+        const progressSubscription = progressSubscriptions.current.get(videoToDelete.id)
+        if (progressSubscription) {
+          progressSubscription()
+          progressSubscriptions.current.delete(videoToDelete.id)
+          console.log(`[VideosPage] 已取消进度订阅: ${videoToDelete.id}`)
+        }
+        
+        // 4. 重新加载视频列表
+        await loadVideos()
+        
+        console.log(`[VideosPage] 视频删除成功: ${videoToDelete.id}`)
+        toast.success('视频已删除')
+      } else {
+        console.error('[VideosPage] 永久删除视频失败，请检查控制台获取详细错误信息')
+        toast.error('删除失败，请重试。如问题持续，请检查网络连接或联系客服。')
+      }
+    } catch (error) {
+      console.error('[VideosPage] 删除视频过程中出错:', error)
+      toast.error('删除过程中出现错误，请重试')
+    } finally {
+      setModals(prev => ({ 
+        ...prev, 
+        delete: { open: false, video: null }
+      }))
+    }
+  }, [user, modals.delete.video, loadVideos]) // 🚀 性能优化：缓存删除确认函数
+
+  const handleShare = async (platform: string) => {
+    if (selectedShareVideo) {
+      await videoShareService.shareVideo(selectedShareVideo.id, {
+        platform: platform as any,
+        title: selectedShareVideo.title || undefined
+      })
+      await supabaseVideoService.incrementInteraction(selectedShareVideo.id, 'share_count')
+      setShareModalOpen(false)
+      loadVideos() // Reload to update share count
+    }
+  }
+
+  return (
+    <TooltipProvider>
+    <div className="space-y-6 relative">
+      {/* 完成通知 */}
+      {completionNotification.visible && completionNotification.video && (
+        <div 
+          className="fixed top-4 right-4 z-50 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-4 rounded-lg shadow-xl animate-in slide-in-from-right-full duration-300 border border-green-400 cursor-pointer hover:shadow-2xl transition-shadow"
+          onClick={() => {
+            // 点击通知时播放视频
+            if (completionNotification.video) {
+              handlePlayVideo(completionNotification.video)
+              setCompletionNotification({ visible: false, video: null })
+            }
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 bg-white rounded-full animate-ping"></div>
+            <div>
+              <div className="font-semibold flex items-center gap-2">
+                🎉 视频生成完成！
+              </div>
+              <div className="text-sm opacity-90">{completionNotification.video.title}</div>
+              <div className="text-xs opacity-75 mt-1">
+                {(() => {
+                  // 计算总耗时
+                  if (completionNotification.video.processing_started_at && completionNotification.video.processing_completed_at) {
+                    const startTime = new Date(completionNotification.video.processing_started_at).getTime()
+                    const endTime = new Date(completionNotification.video.processing_completed_at).getTime()
+                    const totalSeconds = Math.round((endTime - startTime) / 1000)
+                    const timeStr = formatDuration(totalSeconds)
+                    return `${t('videos.elapsedTime')}: ${timeStr} • ${t('common.view')}`
+                  }
+                  return t('common.view')
+                })()}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 任务恢复状态指示器 */}
+      {(taskRecovery.isRecovering || taskRecovery.restoredCount > 0 || taskRecovery.resumedCount > 0) && (
+        <div className="fixed top-4 left-4 z-50 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-3 rounded-lg shadow-xl animate-in slide-in-from-left-full duration-300 border border-blue-400">
+          <div className="flex items-center gap-3">
+            {taskRecovery.isRecovering ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <div className="text-sm font-medium">正在恢复任务...</div>
+              </>
+            ) : (
+              <>
+                <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                <div className="text-sm">
+                  <div className="font-medium">任务恢复完成</div>
+                  <div className="text-xs opacity-90">
+                    恢复进度: {taskRecovery.restoredCount} | 恢复轮询: {taskRecovery.resumedCount}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+      
+      {/* Header */}
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold">{t('video.myVideos')}</h1>
+          <p className="text-muted-foreground mt-2">
+            Manage and download your generated videos
+          </p>
+        </div>
+        <Link to="/create">
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            Create New Video
+          </Button>
+        </Link>
+      </div>
+
+      {/* Statistics Cards */}
+      {statistics && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Videos</p>
+                  <p className="text-2xl font-bold">{statistics.total}</p>
+                </div>
+                <TrendingUp className="h-8 w-8 text-muted-foreground" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Completed</p>
+                  <p className="text-2xl font-bold text-green-600">{statistics.completed}</p>
+                </div>
+                <Eye className="h-8 w-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Processing</p>
+                  <p className="text-2xl font-bold text-blue-600">{statistics.processing}</p>
+                </div>
+                <Clock className="h-8 w-8 text-blue-600" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Credits Used</p>
+                  <p className="text-2xl font-bold">{statistics.totalCredits}</p>
+                </div>
+                <Calendar className="h-8 w-8 text-muted-foreground" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Filters and Search */}
+      <div className="flex gap-4 flex-wrap">
+        <div className="flex-1 min-w-[200px]">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search videos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </div>
+        
+        <select
+          className="px-3 py-2 border rounded-md"
+          value={filter.status || ''}
+          onChange={(e) => setFilter({ ...filter, status: e.target.value as any })}
+        >
+          <option value="">All Status</option>
+          <option value="completed">Completed</option>
+          <option value="processing">Processing</option>
+          <option value="pending">Pending</option>
+          <option value="failed">Failed</option>
+        </select>
+
+        <div className="flex gap-2">
+          <Button
+            variant={viewMode === 'grid' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => setViewMode('grid')}
+          >
+            <Grid className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={viewMode === 'list' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => setViewMode('list')}
+          >
+            <List className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Videos Grid/List */}
+      {loading ? (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : filteredVideos.length === 0 ? (
+        <Card className="text-center py-12">
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              {searchTerm || filter.status ? 'No videos found matching your criteria' : t('video.noVideos')}
+            </p>
+            <Link to="/create">
+              <Button>{t('video.generateFirst')}</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' : 'space-y-4'}>
+            {filteredVideos.map((video) => {
+              // Get template ID from metadata if not in template_id field
+              const templateId = video.template_id || video.metadata?.templateId
+              
+              
+              return (
+              <Card 
+                key={video.id} 
+                className="overflow-hidden hover:shadow-lg transition-all duration-300"
+              >
+                <div className="aspect-video bg-muted relative group cursor-pointer" onClick={() => handlePlayVideo(video)}>
+                  {video.status === 'completed' && video.video_url ? (
+                    <LazyVideoPlayer
+                      src={video.video_url}
+                      poster={video.thumbnail_url}
+                      className="w-full h-full"
+                      objectFit="cover"
+                      showPlayButton={true}
+                      showVolumeControl={true}
+                      autoPlayOnHover={false}
+                      alt={video.title || 'Video preview'}
+                      enableLazyLoad={true}
+                      enableThumbnailCache={true}
+                      enableNetworkAdaptive={false}
+                      enableProgressiveLoading={true}
+                    />
+                  ) : video.thumbnail_url ? (
+                    <img 
+                      src={video.thumbnail_url} 
+                      alt={video.title || 'Video thumbnail'}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+                      {(video.status === 'processing' || video.status === 'pending') && !video.video_url ? (
+                        // 处理中：居中显示加载动画和进度
+                        <div className="text-center">
+                          <Loader2 className="h-16 w-16 animate-spin text-blue-500 mx-auto mb-4" />
+                          <div className="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-2">
+                            {(() => {
+                              const progress = videoProgress.get(video.id)
+                              return progress ? `${Math.round(progress.progress)}%` : '0%'
+                            })()}
+                          </div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                            {(() => {
+                              const progress = videoProgress.get(video.id)
+                              const statusText = progress?.statusText || (video.status === 'pending' ? t('videoCreator.preparing') : t('videoCreator.processing'))
+                              
+                              // 显示耗时信息
+                              if (progress?.elapsedTime && progress.elapsedTime > 0) {
+                                const minutes = Math.floor(progress.elapsedTime / 60)
+                                const seconds = progress.elapsedTime % 60
+                                const timeStr = minutes > 0 ? `${minutes}:${seconds.toString().padStart(2, '0')}` : `${seconds}s`
+                                
+                                // 显示剩余时间估算
+                                if (progress.estimatedRemainingTime && progress.estimatedRemainingTime > 10) {
+                                  const remMinutes = Math.floor(progress.estimatedRemainingTime / 60)
+                                  const remSeconds = progress.estimatedRemainingTime % 60
+                                  const remTimeStr = remMinutes > 0 ? `${remMinutes}:${remSeconds.toString().padStart(2, '0')}` : `${remSeconds}s`
+                                  return `${statusText} (${timeStr} / ~${remTimeStr})`
+                                } else {
+                                  return `${statusText} (${timeStr})`
+                                }
+                              }
+                              
+                              return statusText
+                            })()}
+                          </div>
+                          {(() => {
+                            const progress = videoProgress.get(video.id)
+                            const percent = progress?.progress || 0
+                            return percent > 0 && (
+                              <div className="w-32 bg-gray-300 dark:bg-gray-600 rounded-full h-2 overflow-hidden">
+                                <div 
+                                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-1000 ease-out"
+                                  style={{ width: `${percent}%` }}
+                                >
+                                  {/* 添加流动动画效果 */}
+                                  <div className="h-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
+                                </div>
+                              </div>
+                            )
+                          })()}
+                        </div>
+                      ) : (
+                        // 其他状态：显示图标
+                        <Eye className="h-12 w-12 text-muted-foreground" />
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Overlay for click to play full screen */}
+                  <div 
+                    className="absolute inset-0 bg-transparent hover:bg-black/10 transition-colors flex items-center justify-center"
+                    style={{ pointerEvents: video.status === 'completed' ? 'none' : 'auto' }}
+                  >
+                    {video.status === 'completed' && !video.video_url && (
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Eye className="h-12 w-12 text-white drop-shadow-lg" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <CardContent className="p-3">
+                  {/* Time and Template Info */}
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1 flex-shrink-0">
+                      <Clock className="h-3 w-3" />
+                      {formatRelativeTime(video.created_at)}
+                    </span>
+                    {templateId && (
+                      <>
+                        <span className="text-muted-foreground/50">•</span>
+                        <span className="flex items-center gap-1 truncate min-w-0">
+                          <Layers className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">{templates.find(t => t.id === templateId)?.name || t('video.customTemplate')}</span>
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  
+                  <div className="flex justify-between items-center mt-2">
+                    <div className="flex gap-2 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Eye className="h-3 w-3" />
+                        {video.view_count}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Download className="h-3 w-3" />
+                        {video.download_count}
+                      </span>
+                    </div>
+                    <div className="flex gap-1">
+                      <Tooltip delayDuration={0}>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            size="icon" 
+                            variant="ghost" 
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              // 如果有 template_id 则跳转到对应模板，否则跳转到默认创建页
+                              if (templateId) {
+                                // 将视频的参数编码为URL参数，以便在create页面复用
+                                const params = video.parameters || {};
+                                const paramsStr = encodeURIComponent(JSON.stringify(params));
+                                navigate(`/create?template=${templateId}&params=${paramsStr}`);
+                              } else {
+                                navigate('/create');
+                              }
+                            }}
+                          >
+                            <ArrowRight className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{templateId ? '使用相同配置重新生成' : t('video.actions.createNew')}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      
+                      {video.video_url && (
+                        <>
+                          <Tooltip delayDuration={0}>
+                            <TooltipTrigger asChild>
+                              <Button size="icon" variant="ghost" onClick={(e) => { e.stopPropagation(); handleDownloadVideo(video); }}>
+                                <Download className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{t('video.actions.download')}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                          
+                          <Tooltip delayDuration={0}>
+                            <TooltipTrigger asChild>
+                              <Button size="icon" variant="ghost" onClick={(e) => { e.stopPropagation(); handleShareVideo(video); }}>
+                                <Share2 className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{t('video.actions.share')}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </>
+                      )}
+                      
+                      <Tooltip delayDuration={0}>
+                        <TooltipTrigger asChild>
+                          <Button size="icon" variant="ghost" onClick={(e) => { e.stopPropagation(); handleDeleteVideo(video); }}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{t('video.actions.delete')}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )})}
+          </div>
+          
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center gap-2 mt-6">
+              <Button 
+                variant="outline" 
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+              >
+                上一页
+              </Button>
+              <span className="flex items-center px-4">
+                第 {page} / {totalPages} 页
+              </span>
+              <Button 
+                variant="outline"
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+              >
+                下一页
+              </Button>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Video Player Modal */}
+      {showVideoPlayer && selectedVideo?.video_url && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <div className="relative max-w-4xl w-full">
+            <Button
+              className="absolute -top-12 right-0 text-white"
+              variant="ghost"
+              onClick={() => setShowVideoPlayer(false)}
+            >
+              Close
+            </Button>
+            <LazyVideoPlayer
+              src={selectedVideo.video_url}
+              poster={selectedVideo.thumbnail_url || undefined}
+              onDownload={() => handleDownloadVideo(selectedVideo)}
+              onShare={() => handleShareVideo(selectedVideo)}
+              enableLazyLoad={false}
+              enableThumbnailCache={true}
+              enableNetworkAdaptive={false}
+              enableProgressiveLoading={true}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Share Modal */}
+      {shareModalOpen && selectedShareVideo && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <Card className="max-w-md w-full">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Share Video</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <Button variant="outline" onClick={() => handleShare('twitter')}>
+                  Twitter
+                </Button>
+                <Button variant="outline" onClick={() => handleShare('facebook')}>
+                  Facebook
+                </Button>
+                <Button variant="outline" onClick={() => handleShare('linkedin')}>
+                  LinkedIn
+                </Button>
+                <Button variant="outline" onClick={() => handleShare('whatsapp')}>
+                  WhatsApp
+                </Button>
+                <Button variant="outline" onClick={() => handleShare('telegram')}>
+                  Telegram
+                </Button>
+                <Button variant="outline" onClick={() => handleShare('copy')}>
+                  Copy Link
+                </Button>
+              </div>
+              <Button
+                className="w-full mt-4"
+                variant="outline"
+                onClick={() => setShareModalOpen(false)}
+              >
+                Cancel
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认删除</AlertDialogTitle>
+            <AlertDialogDescription>
+              确定要删除视频 "{videoToDelete?.title || '未命名视频'}" 吗？此操作不可撤销。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setVideoToDelete(null)}>取消</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDeleteVideo}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              删除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+    </TooltipProvider>
+  )
+}

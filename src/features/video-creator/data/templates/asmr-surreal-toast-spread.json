@@ -1,0 +1,65 @@
+{
+  "id": "401bf980-9845-4ae9-bf01-d1731e3d9e04",
+  "slug": "asmr-surreal-toast-spread",
+  "name": "ASMR Surreal Toast Spread",
+  "icon": "🎭",
+  "description": "将各种意想不到的微型物品当作黄油涂抹在吐司上，创造视觉冲击的ASMR体验",
+  "previewUrl": "/templates/videos/asmr-surreal-toast-spread.mp4",
+  "tags": ["asmr", "超现实", "视觉冲击", "创意", "迷你", "魔幻", "吐司", "涂抹"],
+  "createdAt": "2024-08-24T12:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-29T04:30:00Z",
+  "promptTemplate": "A super-realistic 8K close-up: showing a hand tilting and shaking a {container_type} to dump out {item_quantity} {miniature_items} onto a thick golden slice of freshly baked toast with a crispy surface. The miniature creatures tumble out chaotically, falling and bouncing in disoriented, off-balance poses - some landing upside down, others sideways, many stumbling and rolling as they hit the toast surface. They appear dizzy and confused from the sudden fall, wobbling unsteadily as they try to regain their footing with clumsy, awkward movements. Some are still spinning or flipping over from the impact, creating a scene of adorable chaos and disarray. Then using a knife to attempt to spread these disoriented, stumbling miniature items on the toast, but they continue to be wobbly and unbalanced - the living creatures keep struggling to stand upright while being gently nudged by the knife, some still dizzy and swaying, others crawling or rolling around in confused circles. The knife slowly and smoothly glides across the toast, but the miniature items resist being spread while still recovering from their tumbling fall, creating an extraordinary and surreal texture as these tiny, unsteady objects continue their disoriented movements while being gently pressed across the bread surface. The whole scene has unique sounds of the animated objects tumbling, bouncing, and moving clumsily against the bread, all softly illuminated by warm studio lights. The shallow depth of field blurs the background, focusing on the texture of the toast and the bizarre yet captivating spread of these living, stumbling miniature beings. Shot from top to bottom, ASMR cooking video perspective - creating maximum visual shock through the contrast of inanimate cooking actions with lively, disoriented miniature creatures.",
+  "params": {
+    "miniature_items": {
+      "type": "select",
+      "label": "微型物品（视觉冲击）",
+      "required": true,
+      "default": "miniature Pikachus with different expressions, some sparkling with electricity and wagging their tails",
+      "options": [
+        { "value": "Coca-Cola, Pepsi, and Sprite cans", "label": "🥤 经典饮料罐" },
+        { "value": "tiny elephants walking and swaying their trunks, miniature giraffes stretching their necks, and small pandas rolling around", "label": "🐘 迷你动物园" },
+        { "value": "miniature Pikachus with different expressions, some sparkling with electricity and wagging their tails", "label": "⚡ 皮卡丘军团" },
+        { "value": "tiny Ferrari, Lamborghini, and Porsche cars", "label": "🏎️ 微缩跑车" },
+        { "value": "miniature T-Rex roaring and stomping, small Triceratops shaking their heads, and tiny Pterodactyls flapping their wings", "label": "🦕 小小恐龙" },
+        { "value": "miniature Earth, Mars, and Saturn planets", "label": "🪐 微型星球" },
+        { "value": "tiny robots with glowing LED eyes", "label": "🤖 小小机器人" },
+        { "value": "miniature Eiffel Tower, Big Ben, and Statue of Liberty", "label": "🗼 微缩建筑" },
+        { "value": "tiny diamonds, rubies, and emeralds", "label": "💎 迷你宝石" },
+        { "value": "miniature unicorns with rainbow manes galloping and tossing their heads", "label": "🦄 小小独角兽" },
+        { "value": "tiny astronauts in colorful spacesuits floating and moving their arms", "label": "👨‍🚀 微型太空人" },
+        { "value": "colorful miniature LEGO bricks", "label": "🧱 迷你乐高积木" },
+        { "value": "tiny glowing mushrooms in various colors", "label": "🍄 微型蘑菇" },
+        { "value": "miniature octopuses waving their tentacles, seahorses swimming gracefully, and starfish slowly moving their arms", "label": "🐙 小小海洋生物" },
+        { "value": "tiny golden beetles crawling around, colorful butterflies fluttering their wings, and dragonflies hovering in place", "label": "🦋 微型昆虫" },
+        { "value": "miniature gummy bears, lollipops, and chocolates", "label": "🍬 迷你糖果" },
+        { "value": "tiny realistic eyeballs with different iris colors", "label": "👁️ 微型眼球" },
+        { "value": "miniature anime figurines and action figures", "label": "🎌 小小手办" }
+      ]
+    },
+    "container_type": {
+      "type": "select",
+      "label": "容器类型",
+      "required": true,
+      "default": "transparent glass jar",
+      "options": [
+        { "value": "transparent glass jar", "label": "透明玻璃罐" },
+        { "value": "crystal container", "label": "水晶容器" },
+        { "value": "vintage mason jar", "label": "复古梅森罐" }
+      ]
+    },
+    "item_quantity": {
+      "type": "slider",
+      "label": "物品数量",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "default": 25
+    },
+    "makePublic": {
+      "type": "toggle",
+      "label": "Make video public",
+      "default": false
+    }
+  }
+}

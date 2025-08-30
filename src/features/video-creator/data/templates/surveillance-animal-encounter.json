@@ -1,0 +1,115 @@
+{
+  "id": "8151cddb-757c-45ec-a490-463d6dbe7e88",
+  "slug": "surveillance-animal-encounter",
+  "name": "监控摄像头动物奇遇",
+  "icon": "📹",
+  "description": "创建独特的监控摄像头视角动物互动视频，带有夜视效果和鱼眼镜头畸变",
+  "previewUrl": "/templates/videos/surveillance-animal-encounter.mp4",
+
+  "category": "动物/奇幻",
+  "tags": ["surveillance", "animals", "night-vision", "fisheye", "dramatic", "humor"],
+  "createdAt": "2025-01-22T10:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-29T04:30:00Z",
+  "promptTemplate": "Low-quality surveillance video style, black and white, {night_vision} in night vision mode, high contrast, rough film texture. Fixed perspective: {lens_type} lens (simulating real cat's eye perspective), peeking from behind the interior door. The light is dim, and the {scene_location} is shrouded in darkness. A huge {main_animal} walks slowly and majestically towards the door with heavy steps. Walking with the {main_animal} is a {companion_animal}. They walk to the door in unison. When they stop in front of the door, the {companion_animal}'s eyes turn to the cat's eye lens (lens position). {action_type}. The {main_animal} is expressionless and indifferent to the {companion_animal}'s behavior. Due to the cat's eye perspective, the edges of the picture are slightly dark. It is quiet all around, with only the faint chirping of insects in the distance.",
+  "params": {
+    "night_vision": {
+      "type": "select",
+      "label": "夜视效果",
+      "default": "strong green fluorescence",
+      "options": [
+        {"value": "strong green fluorescence", "label": "强绿色荧光"},
+        {"value": "white phosphor", "label": "白磷光"},
+        {"value": "thermal imaging", "label": "热成像"},
+        {"value": "subtle green tint", "label": "淡绿色调"}
+      ]
+    },
+    "lens_type": {
+      "type": "select",
+      "label": "镜头类型",
+      "default": "ultra-wide-angle fisheye",
+      "options": [
+        {"value": "ultra-wide-angle fisheye", "label": "超广角鱼眼"},
+        {"value": "standard wide-angle", "label": "标准广角"},
+        {"value": "normal lens", "label": "普通镜头"},
+        {"value": "telephoto lens", "label": "长焦镜头"}
+      ]
+    },
+    "main_animal": {
+      "type": "select",
+      "label": "主要动物（大型）",
+      "required": true,
+      "default": "Siberian tiger",
+      "options": [
+        {"value": "Siberian tiger", "label": "西伯利亚虎 🐅"},
+        {"value": "African lion", "label": "非洲狮 🦁"},
+        {"value": "Leopard", "label": "花豹 🐆"},
+        {"value": "Giant panda", "label": "大熊猫 🐼"},
+        {"value": "Grizzly bear", "label": "灰熊 🐻"},
+        {"value": "Polar bear", "label": "北极熊 🐻‍❄️"},
+        {"value": "Gray wolf", "label": "灰狼 🐺"},
+        {"value": "Arctic wolf", "label": "北极狼 🐺"},
+        {"value": "Gorilla", "label": "大猩猩 🦍"},
+        {"value": "Elephant", "label": "大象 🐘"},
+        {"value": "Rhinoceros", "label": "犀牛 🦏"},
+        {"value": "Hippopotamus", "label": "河马 🦛"},
+        {"value": "Moose", "label": "驼鹿 🦌"},
+        {"value": "Kangaroo", "label": "袋鼠 🦘"}
+      ]
+    },
+    "companion_animal": {
+      "type": "select",
+      "label": "伴随动物（小型）",
+      "required": true,
+      "default": "tabby cat",
+      "options": [
+        {"value": "tabby cat", "label": "虎斑猫 🐈"},
+        {"value": "orange cat", "label": "橘猫 🐈"},
+        {"value": "siamese cat", "label": "暹罗猫 🐈"},
+        {"value": "persian cat", "label": "波斯猫 🐈"},
+        {"value": "chihuahua", "label": "吉娃娃 🐕"},
+        {"value": "corgi", "label": "柯基 🐕"},
+        {"value": "french bulldog", "label": "法斗 🐕"},
+        {"value": "rabbit", "label": "兔子 🐰"},
+        {"value": "ferret", "label": "雪貂 🦦"},
+        {"value": "raccoon", "label": "浣熊 🦝"},
+        {"value": "red panda", "label": "小熊猫 🐾"},
+        {"value": "squirrel", "label": "松鼠 🐿️"},
+        {"value": "hedgehog", "label": "刺猬 🦔"},
+        {"value": "red fox", "label": "赤狐 🦊"},
+        {"value": "wolf cub", "label": "狼崽 🐺"},
+        {"value": "meerkat", "label": "狐獴 🐾"},
+        {"value": "capuchin monkey", "label": "卷尾猴 🐒"},
+        {"value": "lemur", "label": "狐猴 🐵"},
+        {"value": "hamster", "label": "仓鼠 🐹"}
+      ]
+    },
+    "action_type": {
+      "type": "select",
+      "label": "动作类型",
+      "default": "Like a human, the small animal raises one front paw provocatively, deliberately straightening only the longest middle finger",
+      "options": [
+        {"value": "Like a human, the small animal raises one front paw provocatively, deliberately straightening only the longest middle finger, while all other fingers are tightly bent and retracted, forming a clear and precise movement, imitating the insulting 'middle finger' gesture of humans. The shape of the paw imitates the human hand. The movement is slow and full of irony, and it remains in this position after completion, with eyes penetrating the lens and looking directly at the viewer", "label": "挑衅中指手势"},
+        {"value": "The small animal raises its paw in a friendly wave, moving it side to side in a human-like greeting gesture, maintaining eye contact with the camera", "label": "友好挥手"},
+        {"value": "The small animal points directly at the camera with one extended claw, as if recognizing the viewer, holding the pose for several seconds", "label": "指向镜头"},
+        {"value": "The small animal makes a scratching gesture in the air, as if trying to reach through the lens, with claws fully extended", "label": "空中抓挠"},
+        {"value": "The small animal playfully raises both front paws in a 'hands up' gesture, as if surrendering", "label": "举起双爪"},
+        {"value": "The small animal slowly blinks at the camera, then turns its head away dismissively", "label": "轻蔑转头"}
+      ]
+    },
+    "scene_location": {
+      "type": "select",
+      "label": "场景位置",
+      "default": "dilapidated porch",
+      "options": [
+        {"value": "dilapidated porch", "label": "破旧门廊"},
+        {"value": "modern doorway", "label": "现代门口"},
+        {"value": "apartment hallway", "label": "公寓走廊"},
+        {"value": "garden entrance", "label": "花园入口"},
+        {"value": "abandoned building entrance", "label": "废弃建筑入口"},
+        {"value": "underground parking entrance", "label": "地下停车场入口"},
+        {"value": "old warehouse door", "label": "旧仓库门"}
+      ]
+    }
+  }
+}

@@ -1,0 +1,214 @@
+/**
+ * 流光按钮特效样式
+ * 包含边框流光、背景流光、发光等效果
+ */
+
+/* === 流光边框动画 === */
+.animate-flowing-border {
+  animation: flowingBorder 3s ease-in-out infinite;
+}
+
+.animate-flowing-border-slow {
+  animation: flowingBorder 5s ease-in-out infinite;
+}
+
+.animate-flowing-border-fast {
+  animation: flowingBorder 1.5s ease-in-out infinite;
+}
+
+/* === 流光背景动画 === */
+.animate-flowing-bg {
+  animation: flowingBackground 3s ease-in-out infinite;
+}
+
+.animate-flowing-bg-slow {
+  animation: flowingBackground 5s ease-in-out infinite;
+}
+
+.animate-flowing-bg-fast {
+  animation: flowingBackground 1.5s ease-in-out infinite;
+}
+
+/* === 发光强度变体 === */
+.drop-shadow-glow-subtle {
+  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.3));
+}
+
+.drop-shadow-glow-medium {
+  filter: drop-shadow(0 0 16px rgba(139, 92, 246, 0.5));
+}
+
+.drop-shadow-glow-strong {
+  filter: drop-shadow(0 0 24px rgba(139, 92, 246, 0.8));
+}
+
+/* === 动画关键帧 === */
+
+/* 边框流光动画 */
+@keyframes flowingBorder {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* 背景流光动画 */
+@keyframes flowingBackground {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* 悬停增强效果 */
+.group:hover .animate-flowing-border,
+.group:hover .animate-flowing-bg {
+  animation-duration: 1.5s;
+}
+
+.group:hover .drop-shadow-glow-subtle {
+  filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.5));
+}
+
+.group:hover .drop-shadow-glow-medium {
+  filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.7));
+}
+
+.group:hover .drop-shadow-glow-strong {
+  filter: drop-shadow(0 0 32px rgba(139, 92, 246, 1));
+}
+
+/* === 特殊按钮样式 === */
+
+/* 霓虹风格按钮 */
+.neon-button {
+  color: #00ffff;
+  border: 2px solid #00ffff;
+  text-shadow: 0 0 10px #00ffff;
+  box-shadow: 
+    inset 0 0 10px rgba(0, 255, 255, 0.1),
+    0 0 20px rgba(0, 255, 255, 0.4);
+}
+
+.neon-button:hover {
+  background: rgba(0, 255, 255, 0.1);
+  box-shadow: 
+    inset 0 0 20px rgba(0, 255, 255, 0.2),
+    0 0 40px rgba(0, 255, 255, 0.8);
+}
+
+/* 彩虹流光按钮 */
+.rainbow-flowing {
+  background: linear-gradient(
+    45deg,
+    #ff0000,  /* 红 */
+    #ff8000,  /* 橙 */
+    #ffff00,  /* 黄 */
+    #80ff00,  /* 黄绿 */
+    #00ff00,  /* 绿 */
+    #00ff80,  /* 绿青 */
+    #00ffff,  /* 青 */
+    #0080ff,  /* 青蓝 */
+    #0000ff,  /* 蓝 */
+    #8000ff,  /* 蓝紫 */
+    #ff00ff,  /* 紫 */
+    #ff0080,  /* 紫红 */
+    #ff0000   /* 红 */
+  );
+  background-size: 300% 100%;
+  animation: rainbowFlow 4s linear infinite;
+}
+
+@keyframes rainbowFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 300% 50%;
+  }
+}
+
+/* === 响应式优化 === */
+@media (max-width: 768px) {
+  /* 移动端减少动画强度 */
+  .animate-flowing-border,
+  .animate-flowing-bg {
+    animation-duration: 4s;
+  }
+  
+  .drop-shadow-glow-medium,
+  .drop-shadow-glow-strong {
+    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.3));
+  }
+}
+
+/* === 无障碍适配 === */
+@media (prefers-reduced-motion: reduce) {
+  .animate-flowing-border,
+  .animate-flowing-bg {
+    animation: none;
+  }
+  
+  .drop-shadow-glow-subtle,
+  .drop-shadow-glow-medium, 
+  .drop-shadow-glow-strong {
+    filter: none;
+  }
+}
+
+/* === 高对比度适配 === */
+@media (prefers-contrast: high) {
+  .drop-shadow-glow-subtle,
+  .drop-shadow-glow-medium,
+  .drop-shadow-glow-strong {
+    filter: none;
+    border: 2px solid white;
+  }
+  
+  .neon-button {
+    color: white;
+    border-color: white;
+    text-shadow: none;
+    box-shadow: none;
+  }
+}
+
+/* === 按钮尺寸适配 === */
+.flowing-btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.flowing-btn-md {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+.flowing-btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+}
+
+.flowing-btn-xl {
+  padding: 1.25rem 2.5rem;
+  font-size: 1.25rem;
+}
+
+/* === 禁用状态 === */
+.flowing-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  animation: none;
+  filter: none;
+  transform: none;
+}
+
+.flowing-button:disabled:hover {
+  transform: none;
+  animation: none;
+  filter: none;
+}

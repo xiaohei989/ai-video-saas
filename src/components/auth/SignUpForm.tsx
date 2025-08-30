@@ -1,0 +1,491 @@
+import React, { useState, useEffect } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { useAuth } from '@/contexts/AuthContext'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { useTranslation } from 'react-i18next'
+import { Loader2, Mail, Lock, User, Tag, Shield, AlertTriangle } from 'lucide-react'
+import { validateEmailAsync } from '@/services/emailValidator'
+import { collectDeviceEnvironment, type DeviceFingerprint } from '@/utils/deviceFingerprint'
+import { supabase } from '@/lib/supabase'
+
+// Google 图标组件
+const GoogleIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+  </svg>
+)
+
+export default function SignUpForm() {
+  const { t } = useTranslation()
+  const { signUp, signInWithGoogle, loading } = useAuth()
+  const [searchParams] = useSearchParams()
+  
+  // 表单状态
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [username, setUsername] = useState('')
+  const [fullName, setFullName] = useState('')
+  const [referralCode, setReferralCode] = useState(searchParams.get('invite') || searchParams.get('ref') || '')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  
+  // 安全相关状态
+  const [deviceFingerprint, setDeviceFingerprint] = useState<DeviceFingerprint | null>(null)
+  const [ipAddress, setIpAddress] = useState<string | null>(null)
+  const [securityChecking, setSecurityChecking] = useState(false)
+  const [securityBlocked, setSecurityBlocked] = useState<string | null>(null)
+  const [emailValidating, setEmailValidating] = useState(false)
+  
+  // 收集设备指纹
+  useEffect(() => {
+    const initSecurity = async () => {
+      try {
+        setSecurityChecking(true)
+        const deviceEnv = await collectDeviceEnvironment()
+        
+        setDeviceFingerprint(deviceEnv.fingerprint)
+        setIpAddress(deviceEnv.ipAddress)
+        
+        // 检查是否为自动化环境
+        if (deviceEnv.automationDetection.isLikelyBot) {
+          setSecurityBlocked('检测到自动化环境，请使用真实浏览器注册')
+          return
+        }
+        
+        // 如果有IP地址，检查IP注册限制
+        if (deviceEnv.ipAddress) {
+          const { data: ipCheck, error } = await supabase.rpc('check_ip_registration_limit', {
+            p_ip_address: deviceEnv.ipAddress,
+            p_time_window_hours: 24,
+            p_max_registrations: 5
+          })
+          
+          if (error) {
+            console.warn('IP check failed:', error)
+          } else if (ipCheck && !ipCheck.can_register) {
+            setSecurityBlocked(ipCheck.reason)
+            return
+          }
+        }
+        
+        // 检查设备指纹限制
+        const { data: deviceCheck, error: deviceError } = await supabase.rpc('check_device_fingerprint_limit', {
+          p_fingerprint_hash: deviceEnv.fingerprintHash,
+          p_max_registrations: 3
+        })
+        
+        if (deviceError) {
+          console.warn('Device fingerprint check failed:', deviceError)
+        } else if (deviceCheck && !deviceCheck.can_register) {
+          setSecurityBlocked(deviceCheck.reason)
+          return
+        }
+        
+      } catch (error) {
+        console.warn('Security initialization failed:', error)
+      } finally {
+        setSecurityChecking(false)
+      }
+    }
+    
+    initSecurity()
+  }, [])
+
+  // 邮箱实时验证
+  const handleEmailChange = async (newEmail: string) => {
+    setEmail(newEmail)
+    
+    if (newEmail && newEmail.includes('@')) {
+      setEmailValidating(true)
+      try {
+        const validation = await validateEmailAsync(newEmail)
+        if (!validation.isValid) {
+          setErrors(prev => ({ ...prev, email: validation.error || '邮箱无效' }))
+        } else {
+          setErrors(prev => {
+            const { email, ...rest } = prev
+            return rest
+          })
+        }
+      } catch (error) {
+        console.warn('Email validation failed:', error)
+      } finally {
+        setEmailValidating(false)
+      }
+    }
+  }
+
+  // 验证表单
+  const validateForm = async (): Promise<boolean> => {
+    const newErrors: Record<string, string> = {}
+
+    // 安全检查
+    if (securityBlocked) {
+      newErrors.security = securityBlocked
+      setErrors(newErrors)
+      return false
+    }
+
+    if (!email) {
+      newErrors.email = t('auth.emailRequired')
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = t('auth.invalidEmail')
+    } else {
+      // 异步验证邮箱
+      try {
+        const validation = await validateEmailAsync(email)
+        if (!validation.isValid) {
+          newErrors.email = validation.error || '邮箱无效'
+        }
+      } catch (error) {
+        console.warn('Email validation during form submit failed:', error)
+      }
+    }
+
+    if (!password) {
+      newErrors.password = t('auth.passwordRequired')
+    } else if (password.length < 8) {
+      newErrors.password = '密码至少需要8个字符'
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+      newErrors.password = '密码需要包含大小写字母和数字'
+    }
+
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = t('auth.passwordMismatch')
+    }
+
+    if (username && !/^[a-zA-Z0-9_-]{3,20}$/.test(username)) {
+      newErrors.username = t('auth.invalidUsername')
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  // 记录注册尝试（失败时记录）
+  const recordFailure = async (reason: string) => {
+    try {
+      if (ipAddress) {
+        await supabase.rpc('record_registration_attempt', {
+          p_ip_address: ipAddress,
+          p_email: email,
+          p_user_agent: navigator.userAgent,
+          p_device_fingerprint: deviceFingerprint,
+          p_success: false,
+          p_failure_reason: reason
+        })
+      }
+    } catch (recordError) {
+      console.warn('Failed to record registration attempt:', recordError)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    const isValid = await validateForm()
+    if (!isValid) {
+      return
+    }
+
+    try {
+      setIsSubmitting(true)
+      
+      // 执行注册（传递安全信息）
+      await signUp(email, password, {
+        username,
+        full_name: fullName,
+        referral_code: referralCode || undefined,
+        device_fingerprint: deviceFingerprint,
+        ip_address: ipAddress || undefined,
+      })
+      
+      // 注册成功，记录成功的注册尝试
+      try {
+        if (ipAddress) {
+          await supabase.rpc('record_registration_attempt', {
+            p_ip_address: ipAddress,
+            p_email: email,
+            p_user_agent: navigator.userAgent,
+            p_device_fingerprint: deviceFingerprint,
+            p_success: true
+          })
+        }
+      } catch (recordError) {
+        console.warn('Failed to record successful registration:', recordError)
+      }
+      
+      alert(t('auth.signUpSuccess'))
+    } catch (err: any) {
+      console.error('Sign up error:', err)
+      
+      let errorReason = 'unknown_error'
+      let errorMessage = t('auth.signUpError') + ': ' + err.message
+      
+      if (err.message?.includes('already registered')) {
+        setErrors({ email: t('auth.emailAlreadyRegistered') })
+        errorReason = 'email_already_exists'
+      } else if (err.message?.includes('weak password')) {
+        setErrors({ password: t('auth.weakPassword') })
+        errorReason = 'weak_password'
+      } else if (err.message?.includes('invalid email')) {
+        setErrors({ email: '邮箱格式无效' })
+        errorReason = 'invalid_email'
+      } else {
+        alert(errorMessage)
+        errorReason = 'auth_service_error'
+      }
+      
+      // 记录失败尝试
+      await recordFailure(errorReason)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleGoogleSignUp = async () => {
+    try {
+      setIsSubmitting(true)
+      await signInWithGoogle()
+    } catch (err: any) {
+      console.error('Google sign up error:', err)
+      alert(t('auth.googleSignUpError') + ': ' + err.message)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold text-center">
+          {t('auth.signUp')}
+        </CardTitle>
+        <CardDescription className="text-center">
+          {t('auth.signUpDescription')}
+        </CardDescription>
+        
+        {/* 安全状态显示 */}
+        {securityChecking && (
+          <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
+            <Shield className="h-4 w-4 animate-pulse" />
+            <span>正在进行安全检查...</span>
+          </div>
+        )}
+        
+        {securityBlocked && (
+          <div className="flex items-center space-x-2 text-sm text-red-600 bg-red-50 p-2 rounded border">
+            <AlertTriangle className="h-4 w-4" />
+            <span>{securityBlocked}</span>
+          </div>
+        )}
+        
+        {errors.security && (
+          <div className="flex items-center space-x-2 text-sm text-red-600 bg-red-50 p-2 rounded border">
+            <AlertTriangle className="h-4 w-4" />
+            <span>{errors.security}</span>
+          </div>
+        )}
+      </CardHeader>
+      
+      <CardContent className="space-y-4">
+        {/* Google OAuth 按钮 */}
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          onClick={handleGoogleSignUp}
+          disabled={isSubmitting || loading}
+        >
+          {isSubmitting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <GoogleIcon className="mr-2 h-4 w-4" />
+          )}
+          {t('auth.signUpWithGoogle')}
+        </Button>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">
+              {t('auth.orContinueWith')}
+            </span>
+          </div>
+        </div>
+
+        {/* 注册表单 */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">{t('auth.username')}</Label>
+              <div className="relative">
+                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder={t('auth.usernamePlaceholder')}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={isSubmitting || loading}
+                  className="pl-10"
+                />
+              </div>
+              {errors.username && (
+                <p className="text-xs text-red-600">{errors.username}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="fullName">{t('auth.fullName')}</Label>
+              <Input
+                id="fullName"
+                type="text"
+                placeholder={t('auth.fullNamePlaceholder')}
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                disabled={isSubmitting || loading}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email">{t('auth.email')} *</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="email"
+                type="email"
+                placeholder={t('auth.emailPlaceholder')}
+                value={email}
+                onChange={(e) => handleEmailChange(e.target.value)}
+                disabled={isSubmitting || loading || securityBlocked !== null}
+                className="pl-10"
+                required
+              />
+            </div>
+            {emailValidating && (
+              <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                <span>验证邮箱...</span>
+              </div>
+            )}
+            {errors.email && (
+              <p className="text-xs text-red-600">{errors.email}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password">{t('auth.password')} *</Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="password"
+                type="password"
+                placeholder={t('auth.passwordPlaceholder')}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isSubmitting || loading}
+                className="pl-10"
+                required
+              />
+            </div>
+            {errors.password && (
+              <p className="text-xs text-red-600">{errors.password}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">{t('auth.confirmPassword')} *</Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder={t('auth.confirmPasswordPlaceholder')}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={isSubmitting || loading}
+                className="pl-10"
+                required
+              />
+            </div>
+            {errors.confirmPassword && (
+              <p className="text-xs text-red-600">{errors.confirmPassword}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="referralCode">{t('auth.referralCode')}</Label>
+            <div className="relative">
+              <Tag className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="referralCode"
+                type="text"
+                placeholder={t('auth.referralCodePlaceholder')}
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value)}
+                disabled={isSubmitting || loading}
+                className="pl-10"
+              />
+            </div>
+          </div>
+
+          <div className="text-xs text-muted-foreground">
+            {t('auth.termsAgreement')}{' '}
+            <Link to="/terms" className="text-primary hover:underline">
+              {t('auth.termsOfService')}
+            </Link>{' '}
+            {t('auth.and')}{' '}
+            <Link to="/privacy" className="text-primary hover:underline">
+              {t('auth.privacyPolicy')}
+            </Link>
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isSubmitting || loading || securityBlocked !== null || securityChecking}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t('auth.signingUp')}
+              </>
+            ) : securityChecking ? (
+              <>
+                <Shield className="mr-2 h-4 w-4 animate-pulse" />
+                安全检查中...
+              </>
+            ) : securityBlocked ? (
+              <>
+                <AlertTriangle className="mr-2 h-4 w-4" />
+                注册已被阻止
+              </>
+            ) : (
+              t('auth.signUp')
+            )}
+          </Button>
+        </form>
+      </CardContent>
+
+      <CardFooter className="flex flex-col space-y-2">
+        <div className="text-sm text-center text-muted-foreground">
+          {t('auth.alreadyHaveAccount')}{' '}
+          <Link to="/signin" className="text-primary hover:underline">
+            {t('auth.signIn')}
+          </Link>
+        </div>
+      </CardFooter>
+    </Card>
+  )
+}

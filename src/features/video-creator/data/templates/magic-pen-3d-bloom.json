@@ -1,0 +1,96 @@
+{
+  "id": "09423d7c-ef56-4ba6-8955-0d9b8b35dbff",
+  "slug": "magic-pen-3d-bloom",
+  "name": "魔法画笔3D绽放",
+  "icon": "✨",
+  "description": "用魔法画笔在书页上触发3D立体绽放效果的ASMR视频",
+  "previewUrl": "/templates/videos/magic-pen-3d-bloom.mp4",
+
+  "category": "艺术/ASMR",
+  "tags": ["asmr", "magic", "3d", "art", "bloom", "creative", "surreal", "pen", "drawing"],
+  "createdAt": "2025-01-24T11:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-29T04:30:00Z",
+  "promptTemplate": "This surreal AI-generated ASMR video, presented in extreme close-up, features a delicate hand holding a {pen_type} as it slowly moves across a black and white sketch of {base_sketch} on the pages of a vintage book. The brush's touch triggers a 3D explosion of {creation_type} ({color_palette} colors, with elements unfolding and popping out). Warm yellow lighting illuminates the illustration, creating a soothing atmosphere. The ASMR sound effects include the rustling of the brush and the crisp sound of {sound_effect}. The close-up footage captures the interaction between the pen and the illustration, with motion blur simulating the movement and delivering 8K hyper-realistic detail.",
+  "params": {
+    "pen_type": {
+      "type": "select",
+      "label": "画笔类型",
+      "required": true,
+      "default": "transparent pen containing colored particles",
+      "options": [
+        {"value": "transparent pen containing colored particles", "label": "透明粒子笔 ✨"},
+        {"value": "crystal wand with glowing core", "label": "水晶魔杖 🔮"},
+        {"value": "wooden paintbrush with magic bristles", "label": "魔法画笔 🖌️"},
+        {"value": "metallic calligraphy pen", "label": "金属书法笔 🖋️"},
+        {"value": "glass fountain pen with liquid ink", "label": "玻璃钢笔 ✒️"},
+        {"value": "feather quill with shimmering tip", "label": "羽毛笔 🪶"},
+        {"value": "bamboo brush with ink", "label": "毛笔 🖌️"}
+      ]
+    },
+    "base_sketch": {
+      "type": "select",
+      "label": "基础图案",
+      "required": true,
+      "default": "cracked earth",
+      "options": [
+        {"value": "cracked earth", "label": "龟裂大地 🏜️"},
+        {"value": "desert dunes", "label": "沙漠沙丘 🏖️"},
+        {"value": "ocean waves", "label": "海洋波浪 🌊"},
+        {"value": "mountain landscape", "label": "山脉景观 🏔️"},
+        {"value": "abstract patterns", "label": "抽象图案 🎨"},
+        {"value": "geometric shapes", "label": "几何图形 📐"},
+        {"value": "tree branches", "label": "树枝 🌳"},
+        {"value": "city skyline", "label": "城市天际线 🏙️"},
+        {"value": "spiral galaxy", "label": "螺旋星系 🌌"}
+      ]
+    },
+    "creation_type": {
+      "type": "select",
+      "label": "3D生成物",
+      "required": true,
+      "default": "colorful flowers with petals unfolding and stamens popping out",
+      "options": [
+        {"value": "colorful flowers with petals unfolding and stamens popping out", "label": "绽放花朵 🌸"},
+        {"value": "butterflies emerging and flying", "label": "飞舞蝴蝶 🦋"},
+        {"value": "birds taking flight", "label": "飞翔鸟儿 🐦"},
+        {"value": "crystals growing and sparkling", "label": "生长水晶 💎"},
+        {"value": "stars and galaxies swirling", "label": "旋转星系 ⭐"},
+        {"value": "coral reef blooming", "label": "珊瑚生长 🪸"},
+        {"value": "mushrooms sprouting", "label": "蘑菇萌发 🍄"},
+        {"value": "vines and leaves growing", "label": "藤蔓生长 🌿"},
+        {"value": "fireworks exploding", "label": "烟花绽放 🎆"},
+        {"value": "bubbles floating up", "label": "气泡升起 🫧"}
+      ]
+    },
+    "color_palette": {
+      "type": "select",
+      "label": "颜色组合",
+      "required": true,
+      "default": "red, yellow, pink, and blue",
+      "options": [
+        {"value": "red, yellow, pink, and blue", "label": "红黄粉蓝 🌈"},
+        {"value": "soft pastel rainbow", "label": "柔和彩虹 🎨"},
+        {"value": "autumn orange, red, and brown", "label": "秋季暖色 🍂"},
+        {"value": "ocean blues and greens", "label": "海洋蓝绿 🌊"},
+        {"value": "sunset orange, purple, and pink", "label": "夕阳色彩 🌅"},
+        {"value": "monochrome black to white gradient", "label": "黑白渐变 ⚫⚪"},
+        {"value": "neon vibrant colors", "label": "霓虹亮色 💫"},
+        {"value": "gold and silver metallic", "label": "金银金属 ✨"},
+        {"value": "purple and teal mystical", "label": "紫青神秘 🔮"}
+      ]
+    },
+    "sound_effect": {
+      "type": "select",
+      "label": "音效细节",
+      "default": "flowers blooming",
+      "options": [
+        {"value": "flowers blooming", "label": "花朵绽放声"},
+        {"value": "crystals chiming", "label": "水晶叮当声"},
+        {"value": "paper crinkling", "label": "纸张沙沙声"},
+        {"value": "magical sparkles", "label": "魔法闪烁声"},
+        {"value": "gentle whoosh", "label": "轻柔呼啸声"}
+      ]
+    }
+  }
+}

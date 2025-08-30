@@ -1,0 +1,102 @@
+{
+  "id": "5a46006a-7da2-47a1-909a-9d4cda1c096d",
+  "slug": "miniature-animals-surprise",
+  "name": "迷你动物惊喜盒子",
+  "icon": "🦒",
+  "description": "超现实的微型动物藏在意想不到的容器中，开门瞬间的惊喜揭露",
+  "previewUrl": "/templates/videos/miniature-animals-surprise.mp4",
+
+  "category": "动物/惊喜",
+  "tags": ["miniature", "animals", "surprise", "realistic", "cute", "unexpected", "macro", "fantasy"],
+  "createdAt": "2025-01-24T10:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-29T04:30:00Z",
+  "promptTemplate": "Ultra-realistic documentary shot: The back of a human hand gently opens the rustic wooden {container_type} door toward the camera. Inside, {animal_count} extremely lifelike miniature {animal_type} are nestled in a compact straw nest. The animals {animal_action}. Setting: {environment} with late morning sunlight, casting soft natural shadows. The {container_type} is mounted on a fence pole. Camera: ARRI Alexa Mini LF with 35mm prime macro lens, locked-off frontal shot at door level, f/2.8, perfectly centered composition. Ultra-realistic with hyperrealism, advanced fur/scale simulation, subsurface skin scattering, micro eye reflections. Ambient sounds include soft nature sounds, subtle wood creak, and tiny creature sounds. Mood: surprising, calm, and softly joyful.",
+  "params": {
+    "animal_type": {
+      "type": "select",
+      "label": "动物类型",
+      "required": true,
+      "default": "baby giraffes",
+      "options": [
+        {"value": "baby giraffes", "label": "小长颈鹿 🦒"},
+        {"value": "baby elephants", "label": "小象 🐘"},
+        {"value": "baby pandas", "label": "熊猫宝宝 🐼"},
+        {"value": "baby lions", "label": "小狮子 🦁"},
+        {"value": "baby dragons", "label": "小龙 🐉"},
+        {"value": "baby phoenixes", "label": "小凤凰 🔥"},
+        {"value": "baby unicorns", "label": "独角兽宝宝 🦄"},
+        {"value": "baby griffins", "label": "小狮鹫 🦅"},
+        {"value": "baby pegasus", "label": "小飞马 ✨"},
+        {"value": "baby nine-tailed foxes", "label": "九尾狐幼崽 🦊"},
+        {"value": "baby zebras", "label": "小斑马 🦓"},
+        {"value": "baby koalas", "label": "考拉宝宝 🐨"},
+        {"value": "baby penguins", "label": "小企鹅 🐧"},
+        {"value": "baby owls", "label": "猫头鹰宝宝 🦉"},
+        {"value": "baby cerberus puppies", "label": "地狱犬幼崽 🐺"},
+        {"value": "baby hippogriffs", "label": "鹰马兽宝宝 🦋"},
+        {"value": "baby qilins", "label": "小麒麟 🦌"},
+        {"value": "baby white tigers", "label": "白虎幼崽 🐅"}
+      ]
+    },
+    "animal_count": {
+      "type": "select",
+      "label": "动物数量",
+      "default": "two",
+      "options": [
+        {"value": "one", "label": "一只"},
+        {"value": "two", "label": "两只"},
+        {"value": "three", "label": "三只"},
+        {"value": "a family of four", "label": "一家四口"}
+      ]
+    },
+    "container_type": {
+      "type": "select",
+      "label": "容器类型",
+      "required": true,
+      "default": "birdhouse",
+      "options": [
+        {"value": "birdhouse", "label": "鸟屋 🏠"},
+        {"value": "vintage mailbox", "label": "复古邮箱 📮"},
+        {"value": "large flower pot", "label": "大花盆 🪴"},
+        {"value": "antique teacup", "label": "古董茶杯 ☕"},
+        {"value": "old shoebox", "label": "旧鞋盒 📦"},
+        {"value": "tree hollow", "label": "树洞 🌳"},
+        {"value": "miniature castle", "label": "迷你城堡 🏰"},
+        {"value": "glass terrarium", "label": "玻璃生态箱 🔮"},
+        {"value": "ancient treasure chest", "label": "古老宝箱 💎"},
+        {"value": "mushroom house", "label": "蘑菇房 🍄"}
+      ]
+    },
+    "animal_action": {
+      "type": "select",
+      "label": "动物动作",
+      "required": true,
+      "default": "are alert and waiting; one gently yawns, both subtly move their ears and blink",
+      "options": [
+        {"value": "are alert and waiting; one gently yawns, both subtly move their ears and blink", "label": "警觉等待，打哈欠"},
+        {"value": "are sleeping peacefully, then slowly wake up", "label": "安静睡觉，慢慢醒来"},
+        {"value": "curiously look at the camera with big eyes", "label": "好奇地看镜头"},
+        {"value": "playfully interact with each other", "label": "互相玩耍"},
+        {"value": "are eating from tiny bowls", "label": "从小碗里进食"},
+        {"value": "stand up excitedly when door opens", "label": "开门时兴奋站起"},
+        {"value": "are practicing their tiny roars or chirps", "label": "练习小吼叫或啁啾声"},
+        {"value": "are reading tiny magical books", "label": "阅读迷你魔法书"}
+      ]
+    },
+    "environment": {
+      "type": "select",
+      "label": "环境场景",
+      "default": "Open field with lush green grass and blue sky",
+      "options": [
+        {"value": "Open field with lush green grass and blue sky", "label": "绿草蓝天的开阔田野"},
+        {"value": "Blooming garden with colorful flowers", "label": "鲜花盛开的花园"},
+        {"value": "Peaceful forest clearing with dappled sunlight", "label": "斑驳阳光的森林空地"},
+        {"value": "Cozy backyard with wooden fence", "label": "带木栅栏的温馨后院"},
+        {"value": "Magical garden with floating lights and mystical fog", "label": "有浮光和神秘雾气的魔法花园"},
+        {"value": "Enchanted forest with glowing mushrooms", "label": "有发光蘑菇的魔法森林"},
+        {"value": "Cloud kingdom floating in the sky", "label": "天空中的云朵王国"}
+      ]
+    }
+  }
+}
