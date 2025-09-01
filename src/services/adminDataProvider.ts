@@ -8,8 +8,6 @@ import {
   deleteTemplateFiles
 } from './templateFileService'
 
-// 添加初始化调试信息
-console.log('[AdminDataProvider] Initializing with base URL:', `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`)
 
 const API_BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`
 
@@ -203,18 +201,35 @@ export const adminDataProvider: DataProvider = {
   // 获取单个资源
   getOne: async (resource, params) => {
     try {
+      console.log(`[DataProvider] getOne called for ${resource} with id:`, params.id)
+      
       // 对于直接查询的资源
       if (resource === 'templates' || resource === 'settings' || resource === 'logs') {
         const table = resource === 'templates' ? 'templates' : 
                      resource === 'settings' ? 'system_settings' : 'admin_operations_log'
         
+        let selectQuery = '*'
+        if (resource === 'templates') {
+          // 为模板添加关联查询
+          selectQuery = `
+            *,
+            author:profiles!author_id(username, email, avatar_url),
+            reviewed_by_admin:profiles!reviewed_by(username, email)
+          `
+        }
+        
         const { data, error } = await supabase
           .from(table)
-          .select('*')
+          .select(selectQuery)
           .eq('id', params.id)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error(`[DataProvider] getOne error for ${resource}:`, error)
+          throw error
+        }
+        
+        console.log(`[DataProvider] getOne result for ${resource}:`, data)
         return { data }
       }
 
@@ -244,6 +259,14 @@ export const adminDataProvider: DataProvider = {
       }
 
       const result = await adminApiCall({ endpoint, method: 'POST', body })
+      
+      // 处理不同API的响应格式
+      if (resource === 'users' && result.data) {
+        return { data: result.data }
+      } else if (resource === 'tickets' && result.data) {
+        return { data: result.data }
+      }
+      
       return { data: result }
     } catch (error) {
       console.error(`[DataProvider] getOne error for ${resource}:`, error)
@@ -359,12 +382,25 @@ export const adminDataProvider: DataProvider = {
           body.action = 'create'
           body = { ...body, ...params.data }
           break
+        case 'ticket-replies':
+          endpoint = 'admin-tickets'
+          body.action = 'reply'
+          body.ticketId = params.data.ticketId
+          body.content = params.data.content
+          body.isInternal = params.data.isInternal
+          break
         default:
           throw new Error(`Unsupported resource creation: ${resource}`)
       }
 
       const result = await adminApiCall({ endpoint, method: 'POST', body })
-      return { data: { id: result.id || new Date().getTime().toString(), ...params.data } }
+      
+      // 对于回复操作，后端只返回成功消息，不返回数据
+      if (resource === 'ticket-replies') {
+        return { data: { id: new Date().getTime().toString(), ...params.data } }
+      }
+      
+      return { data: { id: result?.id || new Date().getTime().toString(), ...params.data } }
     } catch (error) {
       console.error(`[DataProvider] create error for ${resource}:`, error)
       throw error
@@ -531,6 +567,11 @@ export const adminDataProvider: DataProvider = {
           endpoint = 'admin-templates'
           body.action = 'delete'
           body.templateId = params.id
+          break
+        case 'tickets':
+          endpoint = 'admin-tickets'
+          body.action = 'delete'
+          body.ticketId = params.id
           break
         default:
           throw new Error(`Unsupported resource deletion: ${resource}`)

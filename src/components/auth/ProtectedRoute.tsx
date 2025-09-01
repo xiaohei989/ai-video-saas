@@ -29,7 +29,6 @@ export default function ProtectedRoute({
     // 给认证流程200ms的缓冲时间来完成user状态设置
     const bufferId = setTimeout(() => {
       setAuthBuffer(false)
-      console.log('[PROTECTED ROUTE] 📋 认证缓冲期结束，开始最终检查')
     }, 200)
     
     // 添加强制重定向超时机制（3秒后强制重定向）

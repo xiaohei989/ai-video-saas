@@ -72,7 +72,6 @@ class VideoLoaderService {
         saveData: connection.saveData || false
       }
       
-      console.log('[VideoLoader] Network detected:', this.networkInfo)
     } else {
       // 后备方案：通过加载测试来估算网络速度
       this.estimateNetworkSpeed()

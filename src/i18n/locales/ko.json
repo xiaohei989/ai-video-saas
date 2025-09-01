@@ -70,7 +70,12 @@
     "passwordTooShort": "비밀번호는 최소 6자 이상이어야 합니다",
     "invalidUsername": "잘못된 사용자명 형식",
     "emailAlreadyRegistered": "이메일이 이미 등록되어 있습니다",
-    "googleSignUpError": "Google 회원가입 실패"
+    "googleSignUpError": "Google 회원가입 실패",
+    "completingLogin": "로그인을 완료하는 중...",
+    "verifyingCredentials": "잠시만 기다려 주세요, 인증 정보를 확인 중입니다",
+    "sessionError": "세션을 설정할 수 없습니다, 다시 로그인해 주세요",
+    "authError": "로그인 중 오류가 발생했습니다",
+    "redirectingToLogin": "로그인 페이지로 이동 중입니다..."
   },
   "user": {
     "guest": "게스트",
@@ -78,7 +83,9 @@
     "editProfile": "프로필 편집",
     "myTemplates": "내 템플릿",
     "settings": "설정",
-    "signOut": "로그아웃"
+    "signOut": "로그아웃",
+    "completingLogin": "로그인을 완료하는 중...",
+    "verifyingCredentials": "잠시만 기다려 주세요, 인증 정보를 확인 중입니다"
   },
   "userCenter": {
     "welcome": "환영합니다",
@@ -423,6 +430,8 @@
     "waitingForProcessing": "처리 대기 중",
     "untitledVideo": "제목 없는 비디오",
     "regenerateTitle": "동일한 설정으로 재생성",
+    "download": "비디오 다운로드",
+    "share": "비디오 공유",
     "previousPage": "이전",
     "nextPage": "다음",
     "pageInfo": "{{current}} / {{total}} 페이지",
@@ -653,6 +662,310 @@
     "highQuality": "고품질",
     "generateVideo": "비디오 생성",
     "generating": "생성 중..."
+  },
+  "helpCenter": {
+    "title": "고객지원센터",
+    "subtitle": "자주묻는질문 및 고객지원",
+    "navigation": {
+      "faq": "자주묻는질문",
+      "support": "고객지원",
+      "contact": "문의하기",
+      "myTickets": "내 티켓"
+    },
+    "faq": {
+      "title": "자주묻는질문",
+      "subtitle": "궁금한 점에 대한 답변을 찾아보세요",
+      "searchPlaceholder": "자주묻는질문 검색...",
+      "noResults": "질문을 찾을 수 없습니다",
+      "categories": {
+        "all": "전체",
+        "product": "제품 문제",
+        "technical": "기술 지원",
+        "account": "계정 관리",
+        "billing": "결제 및 요금",
+        "other": "기타"
+      },
+      "loadMore": "더 보기",
+      "helpful": "이 답변이 도움이 되었나요?",
+      "yes": "예",
+      "no": "아니오",
+      "thankYou": "피드백 감사합니다!",
+      "questions": [
+        {
+          "id": "1",
+          "question": "첫 번째 비디오를 어떻게 생성하나요？",
+          "answer": "템플릿을 선택하고 매개변수를 입력한 후 '비디오 생성' 버튼을 클릭하세요. 비디오 생성은 보통 1-3분이 소요됩니다.",
+          "category": "product"
+        },
+        {
+          "id": "2",
+          "question": "크레딧은 어떻게 계산되나요？",
+          "answer": "표준 품질 비디오는 20크레딧, 고품질 비디오는 100크레딧을 소모합니다. 구독 또는 개별 구매를 통해 크레딧을 얻을 수 있습니다.",
+          "category": "billing"
+        },
+        {
+          "id": "3",
+          "question": "비디오 생성이 실패하면 어떻게 해야 하나요？",
+          "answer": "비디오 생성이 실패하면 크레딧이 자동으로 환불됩니다. 네트워크 연결을 확인하고 다시 시도하거나 고객 지원에 문의하세요.",
+          "category": "technical"
+        }
+      ]
+    },
+    "support": {
+      "title": "티켓 제출",
+      "subtitle": "답변을 찾을 수 없나요? 고객지원팀에 문의하세요",
+      "form": {
+        "subject": "제목",
+        "subjectPlaceholder": "문제에 대한 간단한 설명",
+        "category": "카테고리",
+        "pleaseSelect": "선택해 주세요...",
+        "categories": {
+          "product": "제품 문제",
+          "sales": "영업 문의",
+          "technical": "기술 지원",
+          "account": "계정 문제",
+          "billing": "결제 문제",
+          "other": "기타"
+        },
+        "priority": "우선순위",
+        "priorities": {
+          "low": "낮음",
+          "medium": "보통",
+          "high": "높음",
+          "urgent": "긴급"
+        },
+        "description": "상세 설명",
+        "descriptionPlaceholder": "문제에 대해 자세히 설명해 주세요...",
+        "attachments": "첨부파일",
+        "attachmentsHint": "선택사항: 관련 스크린샷이나 파일 업로드",
+        "submit": "티켓 제출",
+        "submitting": "제출 중...",
+        "submitSuccess": "피드백 감사합니다. 귀하의 티켓을 접수했으며 처리 중입니다.",
+        "submitError": "제출에 실패했습니다. 다시 시도해 주세요"
+      },
+      "validation": {
+        "subjectRequired": "제목을 입력해 주세요",
+        "subjectTooShort": "제목은 최소 5자 이상이어야 합니다",
+        "subjectTooLong": "제목은 100자를 초과할 수 없습니다",
+        "categoryRequired": "카테고리를 선택해 주세요",
+        "descriptionRequired": "상세 설명을 입력해 주세요",
+        "descriptionTooShort": "상세 설명은 최소 10자 이상이어야 합니다",
+        "descriptionTooLong": "상세 설명은 2000자를 초과할 수 없습니다",
+        "fileTooLarge": "파일 크기는 10MB를 초과할 수 없습니다",
+        "fileTypeNotSupported": "지원되지 않는 파일 형식입니다"
+      }
+    },
+    "tickets": {
+      "title": "내 티켓",
+      "subtitle": "고객지원 티켓을 보고 관리하세요",
+      "noTickets": "티켓이 없습니다",
+      "noTicketsDescription": "아직 티켓을 제출하지 않았습니다",
+      "createFirst": "첫 번째 티켓 제출하기",
+      "status": {
+        "open": "열림",
+        "in_progress": "처리중",
+        "waiting_user": "사용자 대기중",
+        "resolved": "해결됨",
+        "closed": "닫힘"
+      },
+      "priority": {
+        "low": "낮음",
+        "medium": "보통",
+        "high": "높음",
+        "urgent": "긴급"
+      },
+      "details": {
+        "ticketNumber": "티켓 번호",
+        "created": "생성일",
+        "lastUpdate": "마지막 업데이트",
+        "assignedTo": "담당자",
+        "messages": "메시지"
+      },
+      "actions": {
+        "view": "세부정보 보기",
+        "reply": "답글",
+        "close": "티켓 닫기"
+      },
+      "reply": {
+        "placeholder": "답글을 입력하세요...",
+        "submit": "답글 보내기",
+        "success": "답글이 성공적으로 전송되었습니다",
+        "error": "답글 전송에 실패했습니다"
+      },
+      "close": {
+        "confirm": "이 티켓을 닫으시겠습니까?",
+        "success": "티켓이 성공적으로 닫혔습니다",
+        "error": "티켓을 닫는데 실패했습니다"
+      }
+    },
+    "common": {
+      "loading": "로딩 중...",
+      "error": "로딩에 실패했습니다. 페이지를 새로고침하고 다시 시도해 주세요",
+      "empty": "데이터가 없습니다",
+      "retry": "다시 시도",
+      "back": "뒤로",
+      "next": "다음",
+      "previous": "이전",
+      "loginRequired": "계속하려면 로그인해 주세요",
+      "contactSupport": "고객지원 문의",
+      "supportEmail": "support@example.com",
+      "pleaseLoginToViewTickets": "티켓 기록을 보려면 로그인해 주세요",
+      "login": "로그인",
+      "customerService": "고객지원",
+      "sending": "전송 중..."
+    }
+  },
+  "helpCenter": {
+    "title": "고객지원센터",
+    "subtitle": "자주묻는질문 및 고객지원",
+    "navigation": {
+      "faq": "자주묻는질문",
+      "support": "고객지원",
+      "contact": "문의하기",
+      "myTickets": "내 티켓"
+    },
+    "faq": {
+      "title": "자주묻는질문",
+      "subtitle": "궁금한 점에 대한 답변을 찾아보세요",
+      "searchPlaceholder": "자주묻는질문 검색...",
+      "noResults": "질문을 찾을 수 없습니다",
+      "categories": {
+        "all": "전체",
+        "product": "제품 문제",
+        "technical": "기술 지원",
+        "account": "계정 관리",
+        "billing": "결제 및 요금",
+        "other": "기타"
+      },
+      "loadMore": "더 보기",
+      "helpful": "이 답변이 도움이 되었나요?",
+      "yes": "예",
+      "no": "아니오",
+      "thankYou": "피드백 감사합니다!",
+      "questions": [
+        {
+          "id": "1",
+          "question": "첫 번째 비디오를 어떻게 생성하나요？",
+          "answer": "템플릿을 선택하고 매개변수를 입력한 후 '비디오 생성' 버튼을 클릭하세요. 비디오 생성은 보통 1-3분이 소요됩니다.",
+          "category": "product"
+        },
+        {
+          "id": "2",
+          "question": "크레딧은 어떻게 계산되나요？",
+          "answer": "표준 품질 비디오는 20크레딧, 고품질 비디오는 100크레딧을 소모합니다. 구독 또는 개별 구매를 통해 크레딧을 얻을 수 있습니다.",
+          "category": "billing"
+        },
+        {
+          "id": "3",
+          "question": "비디오 생성이 실패하면 어떻게 해야 하나요？",
+          "answer": "비디오 생성이 실패하면 크레딧이 자동으로 환불됩니다. 네트워크 연결을 확인하고 다시 시도하거나 고객 지원에 문의하세요.",
+          "category": "technical"
+        }
+      ]
+    },
+    "support": {
+      "title": "티켓 제출",
+      "subtitle": "답변을 찾을 수 없나요? 고객지원팀에 문의하세요",
+      "form": {
+        "subject": "제목",
+        "subjectPlaceholder": "문제에 대한 간단한 설명",
+        "category": "카테고리",
+        "pleaseSelect": "선택해 주세요...",
+        "categories": {
+          "product": "제품 문제",
+          "sales": "영업 문의",
+          "technical": "기술 지원",
+          "account": "계정 문제",
+          "billing": "결제 문제",
+          "other": "기타"
+        },
+        "priority": "우선순위",
+        "priorities": {
+          "low": "낮음",
+          "medium": "보통",
+          "high": "높음",
+          "urgent": "긴급"
+        },
+        "description": "상세 설명",
+        "descriptionPlaceholder": "문제에 대해 자세히 설명해 주세요...",
+        "attachments": "첨부파일",
+        "attachmentsHint": "선택사항: 관련 스크린샷이나 파일 업로드",
+        "submit": "티켓 제출",
+        "submitting": "제출 중...",
+        "submitSuccess": "피드백 감사합니다. 귀하의 티켓을 접수했으며 처리 중입니다.",
+        "submitError": "제출에 실패했습니다. 다시 시도해 주세요"
+      },
+      "validation": {
+        "subjectRequired": "제목을 입력해 주세요",
+        "subjectTooShort": "제목은 최소 5자 이상이어야 합니다",
+        "subjectTooLong": "제목은 100자를 초과할 수 없습니다",
+        "categoryRequired": "카테고리를 선택해 주세요",
+        "descriptionRequired": "상세 설명을 입력해 주세요",
+        "descriptionTooShort": "상세 설명은 최소 10자 이상이어야 합니다",
+        "descriptionTooLong": "상세 설명은 2000자를 초과할 수 없습니다",
+        "fileTooLarge": "파일 크기는 10MB를 초과할 수 없습니다",
+        "fileTypeNotSupported": "지원되지 않는 파일 형식입니다"
+      }
+    },
+    "tickets": {
+      "title": "내 티켓",
+      "subtitle": "고객지원 티켓을 보고 관리하세요",
+      "noTickets": "티켓이 없습니다",
+      "noTicketsDescription": "아직 티켓을 제출하지 않았습니다",
+      "createFirst": "첫 번째 티켓 제출하기",
+      "status": {
+        "open": "열림",
+        "in_progress": "처리중",
+        "waiting_user": "사용자 대기중",
+        "resolved": "해결됨",
+        "closed": "닫힘"
+      },
+      "priority": {
+        "low": "낮음",
+        "medium": "보통",
+        "high": "높음",
+        "urgent": "긴급"
+      },
+      "details": {
+        "ticketNumber": "티켓 번호",
+        "created": "생성일",
+        "lastUpdate": "마지막 업데이트",
+        "assignedTo": "담당자",
+        "messages": "메시지"
+      },
+      "actions": {
+        "view": "세부정보 보기",
+        "reply": "답글",
+        "close": "티켓 닫기"
+      },
+      "reply": {
+        "placeholder": "답글을 입력하세요...",
+        "submit": "답글 보내기",
+        "success": "답글이 성공적으로 전송되었습니다",
+        "error": "답글 전송에 실패했습니다"
+      },
+      "close": {
+        "confirm": "이 티켓을 닫으시겠습니까?",
+        "success": "티켓이 성공적으로 닫혔습니다",
+        "error": "티켓을 닫는데 실패했습니다"
+      }
+    },
+    "common": {
+      "loading": "로딩 중...",
+      "error": "로딩에 실패했습니다. 페이지를 새로고침하고 다시 시도해 주세요",
+      "empty": "데이터가 없습니다",
+      "retry": "다시 시도",
+      "back": "뒤로",
+      "next": "다음",
+      "previous": "이전",
+      "loginRequired": "계속하려면 로그인해 주세요",
+      "contactSupport": "고객지원 문의",
+      "supportEmail": "support@example.com",
+      "pleaseLoginToViewTickets": "티켓 기록을 보려면 로그인해 주세요",
+      "login": "로그인",
+      "customerService": "고객지원",
+      "sending": "전송 중..."
+    }
   },
   "footer": {
     "quickLinks": "빠른 링크",

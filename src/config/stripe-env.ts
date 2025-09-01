@@ -198,7 +198,6 @@ export const stripeConfig = getStripeConfig();
 // 在开发环境下打印配置信息
 if (import.meta.env.DEV) {
   const envInfo = getStripeEnvironmentInfo();
-  console.log(`🔧 Stripe配置: ${envInfo.environment} (${envInfo.mode})`);
   
   // 验证配置
   const validation = validateStripeConfig();

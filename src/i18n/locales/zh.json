@@ -73,7 +73,12 @@
     "googleSignUpError": "Google注册失败",
     "signingOut": "登出中...",
     "signOutSuccess": "登出成功",
-    "signOutError": "登出失败"
+    "signOutError": "登出失败",
+    "completingLogin": "正在完成登录...",
+    "verifyingCredentials": "请稍候，正在验证您的登录信息",
+    "sessionError": "无法建立会话，请重新登录",
+    "authError": "登录过程中出现错误",
+    "redirectingToLogin": "即将跳转到登录页面..."
   },
   "user": {
     "guest": "访客",
@@ -423,6 +428,8 @@
     "waitingForProcessing": "等待处理",
     "untitledVideo": "未命名视频",
     "regenerateTitle": "使用相同配置重新生成",
+    "download": "下载视频",
+    "share": "分享视频",
     "previousPage": "上一页",
     "nextPage": "下一页",
     "pageInfo": "第 {{current}} / {{total}} 页",
@@ -669,6 +676,158 @@
     "highQuality": "高清质量",
     "generateVideo": "生成视频",
     "generating": "生成中..."
+  },
+  "helpCenter": {
+    "title": "帮助中心",
+    "subtitle": "常见问题和技术支持",
+    "navigation": {
+      "faq": "常见问题",
+      "support": "技术支持",
+      "contact": "联系我们",
+      "myTickets": "我的工单"
+    },
+    "faq": {
+      "title": "常见问题",
+      "subtitle": "查找您问题的答案",
+      "searchPlaceholder": "搜索常见问题...",
+      "noResults": "没有找到相关问题",
+      "categories": {
+        "all": "全部",
+        "product": "产品问题",
+        "technical": "技术支持",
+        "account": "账户管理",
+        "billing": "付费相关",
+        "other": "其他问题"
+      },
+      "loadMore": "加载更多",
+      "helpful": "这个答案有帮助吗？",
+      "yes": "是的",
+      "no": "没有",
+      "thankYou": "感谢您的反馈！",
+      "questions": [
+        {
+          "id": "1",
+          "question": "如何生成我的第一个视频？",
+          "answer": "选择一个模板，填写参数，点击\"生成视频\"按钮即可。视频生成通常需要1-3分钟。",
+          "category": "product"
+        },
+        {
+          "id": "2", 
+          "question": "积分是如何计算的？",
+          "answer": "标准质量视频消耗20积分，高质量视频消耗100积分。您可以通过订阅或单独购买获得积分。",
+          "category": "billing"
+        },
+        {
+          "id": "3",
+          "question": "视频生成失败怎么办？", 
+          "answer": "如果视频生成失败，积分会自动退还。请检查网络连接并重试，或联系客服。",
+          "category": "technical"
+        }
+      ]
+    },
+    "support": {
+      "title": "提交工单",
+      "subtitle": "无法找到答案？联系我们的支持团队",
+      "form": {
+        "subject": "标题",
+        "subjectPlaceholder": "简要描述您的问题",
+        "category": "问题类型",
+        "pleaseSelect": "请选择...",
+        "categories": {
+          "product": "产品问题",
+          "sales": "销售咨询", 
+          "technical": "技术支持",
+          "account": "账户问题",
+          "billing": "付费问题",
+          "other": "其他"
+        },
+        "priority": "优先级",
+        "priorities": {
+          "low": "低",
+          "medium": "中",
+          "high": "高",
+          "urgent": "紧急"
+        },
+        "description": "详细描述",
+        "descriptionPlaceholder": "请详细描述您遇到的问题...",
+        "attachments": "附件",
+        "attachmentsHint": "可选：上传相关截图或文件",
+        "submit": "提交工单",
+        "submitting": "提交中...",
+        "submitSuccess": "感谢您的反馈，我们已经收到您的工单，正在处理中。",
+        "submitError": "提交失败，请重试"
+      },
+      "validation": {
+        "subjectRequired": "请填写标题",
+        "subjectTooShort": "标题至少需要5个字符",
+        "subjectTooLong": "标题不能超过100个字符",
+        "categoryRequired": "请选择问题类型",
+        "descriptionRequired": "请填写详细描述",
+        "descriptionTooShort": "描述至少需要10个字符",
+        "descriptionTooLong": "描述不能超过2000个字符",
+        "fileTooLarge": "文件大小不能超过10MB",
+        "fileTypeNotSupported": "不支持的文件类型"
+      }
+    },
+    "tickets": {
+      "title": "我的工单",
+      "subtitle": "查看和管理您的支持工单",
+      "noTickets": "暂无工单",
+      "noTicketsDescription": "您还没有提交任何工单",
+      "createFirst": "提交第一个工单",
+      "status": {
+        "open": "未处理",
+        "in_progress": "处理中",
+        "waiting_user": "等待回复",
+        "resolved": "已解决",
+        "closed": "已关闭"
+      },
+      "priority": {
+        "low": "低",
+        "medium": "中", 
+        "high": "高",
+        "urgent": "紧急"
+      },
+      "details": {
+        "ticketNumber": "工单号",
+        "created": "创建时间",
+        "lastUpdate": "最后更新",
+        "assignedTo": "负责人",
+        "messages": "消息记录"
+      },
+      "actions": {
+        "view": "查看详情",
+        "reply": "回复",
+        "close": "关闭工单"
+      },
+      "reply": {
+        "placeholder": "输入您的回复...",
+        "submit": "发送回复",
+        "success": "回复发送成功",
+        "error": "回复发送失败"
+      },
+      "close": {
+        "confirm": "确定要关闭此工单吗？",
+        "success": "工单已关闭",
+        "error": "关闭工单失败"
+      }
+    },
+    "common": {
+      "loading": "加载中...",
+      "error": "加载失败，请刷新页面重试",
+      "empty": "暂无数据",
+      "retry": "重试",
+      "back": "返回",
+      "next": "下一步",
+      "previous": "上一步",
+      "loginRequired": "请先登录后再继续",
+      "contactSupport": "联系技术支持",
+      "supportEmail": "support@example.com",
+      "pleaseLoginToViewTickets": "请登录查看您的工单历史",
+      "login": "登录",
+      "customerService": "客服",
+      "sending": "发送中..."
+    }
   },
   "footer": {
     "quickLinks": "快速链接",

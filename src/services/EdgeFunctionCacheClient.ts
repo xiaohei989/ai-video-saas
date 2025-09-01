@@ -76,8 +76,6 @@ class EdgeFunctionCacheClient {
     this.CACHE_FUNCTION_URL = `${supabaseUrl}/functions/v1/get-cached-data`
     this.COUNTER_FUNCTION_URL = `${supabaseUrl}/functions/v1/batch-update-counters`
     
-    console.log('[EDGE CACHE CLIENT] 初始化Redis缓存客户端')
-    console.log('[EDGE CACHE CLIENT] Cache Function URL:', this.CACHE_FUNCTION_URL)
   }
 
   /**
@@ -87,7 +85,6 @@ class EdgeFunctionCacheClient {
     // 先检查本地缓存
     const localData = this.getLocalCache<T>(key)
     if (localData !== null) {
-      console.log(`[EDGE CACHE CLIENT] 本地缓存命中: ${key}`)
       return localData
     }
 
@@ -115,7 +112,6 @@ class EdgeFunctionCacheClient {
         return result.data as T
       }
 
-      console.log(`[EDGE CACHE CLIENT] Redis缓存未命中: ${key}`)
       return null
     } catch (error) {
       console.error(`[EDGE CACHE CLIENT] 获取缓存失败 ${key}:`, error)
@@ -149,7 +145,6 @@ class EdgeFunctionCacheClient {
       if (result.success) {
         // 同时缓存到本地
         this.setLocalCache(key, value, ttl * 1000) // 转换为毫秒
-        console.log(`[EDGE CACHE CLIENT] 缓存设置成功: ${key}`)
         return true
       }
 

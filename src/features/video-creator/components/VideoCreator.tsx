@@ -24,9 +24,8 @@ export default function VideoCreator() {
   const { user } = useContext(AuthContext)
   
   // Find template from URL parameter or default to first template
-  const initialTemplate = templateIdFromUrl 
-    ? templates.find(t => t.id === templateIdFromUrl) || templates[0]
-    : templates[0]
+  const foundTemplate = templateIdFromUrl ? templates.find(t => t.slug === templateIdFromUrl) : null
+  const initialTemplate = foundTemplate || templates[0]
   
   const [selectedTemplate, setSelectedTemplate] = useState(initialTemplate)
   const [params, setParams] = useState<Record<string, any>>(() => {
@@ -34,10 +33,6 @@ export default function VideoCreator() {
     if (paramsFromUrl) {
       try {
         const urlParams = JSON.parse(decodeURIComponent(paramsFromUrl))
-        console.log('=== 从URL恢复参数配置 ===')
-        console.log('Template:', initialTemplate.name)
-        console.log('恢复的参数:', urlParams)
-        console.log('=========================')
         return urlParams
       } catch (error) {
         console.error('解析URL参数失败:', error)
@@ -77,7 +72,7 @@ export default function VideoCreator() {
   // Handle template selection from URL parameter on component mount
   useEffect(() => {
     if (templateIdFromUrl) {
-      const templateFromUrl = templates.find(t => t.id === templateIdFromUrl)
+      const templateFromUrl = templates.find(t => t.slug === templateIdFromUrl)
       if (templateFromUrl && templateFromUrl.id !== selectedTemplate.id) {
         setSelectedTemplate(templateFromUrl)
         
@@ -155,7 +150,7 @@ export default function VideoCreator() {
       
       // Update URL to reflect the new template selection
       const newSearchParams = new URLSearchParams(searchParams)
-      newSearchParams.set('template', templateId)
+      newSearchParams.set('template', template.slug)
       navigate({ search: newSearchParams.toString() }, { replace: true })
       
       // Log the random combination for debugging

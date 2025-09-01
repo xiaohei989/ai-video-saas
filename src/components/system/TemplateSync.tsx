@@ -72,12 +72,10 @@ export function TemplateSync() {
       hasRun = true
 
       try {
-        console.log('🔄 开始一次性模板同步检查...')
         const result = await checkSync()
         // 如果同步成功，更新缓存
         if (result && !result.needsSync) {
           updateCache(result.totalDbTemplates)
-          console.log('✅ 模板同步检查完成，缓存已更新')
         }
       } catch (error) {
         console.error('模板同步失败:', error)
@@ -94,7 +92,6 @@ export function TemplateSync() {
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
       if (status.isChecking) {
-        console.log('🔍 正在检查模板同步状态...')
       }
       if (status.isSyncing) {
         console.log('🔄 正在同步模板到数据库...')

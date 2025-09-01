@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { 
   Download, 
   Share2, 
@@ -94,7 +95,6 @@ export default function VideosPageNew() {
 
     const initializePage = async () => {
       // 🚀 关键优化：不设置loading=true，避免显示loading界面
-      console.log('[VideosPage] 🚀 开始页面初始化，无loading显示')
 
       try {
         // 1. 并行加载视频列表和初始化任务管理器，提升速度
@@ -103,7 +103,6 @@ export default function VideosPageNew() {
           videoTaskManager.initialize(user.id)
         ])
         
-        console.log('[VideosPage] ✅ 数据加载和任务初始化完成')
         
         const taskMap = new Map(tasks.map(task => [task.id, task]))
         setActiveTasks(taskMap)
@@ -125,7 +124,6 @@ export default function VideosPageNew() {
       } finally {
         // 🚀 标记初始加载完成
         setIsInitialLoad(false)
-        console.log('[VideosPage] 🎉 初始加载流程完全结束')
       }
     }
 
@@ -645,55 +643,84 @@ export default function VideosPageNew() {
 
                     {/* 操作按钮 */}
                     <div className="flex justify-between items-center">
-                      <div className="flex gap-1">
-                        {/* 使用相同配置重新生成按钮 */}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            const templateId = video.template_id || video.metadata?.templateId
-                            if (templateId) {
-                              const params = video.parameters || {}
-                              const paramsStr = encodeURIComponent(JSON.stringify(params))
-                              navigate(`/create?template=${templateId}&params=${paramsStr}`)
-                            } else {
-                              navigate('/create')
-                            }
-                          }}
-                          title={t('videos.regenerateTitle')}
-                        >
-                          <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
-                        </Button>
+                      <TooltipProvider>
+                        <div className="flex gap-1">
+                          {/* 使用相同配置重新生成按钮 */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const templateId = video.metadata?.templateId || video.template_id
+                                  if (templateId) {
+                                    const params = video.parameters || {}
+                                    const paramsStr = encodeURIComponent(JSON.stringify(params))
+                                    navigate(`/create?template=${templateId}&params=${paramsStr}`)
+                                  } else {
+                                    navigate('/create')
+                                  }
+                                }}
+                              >
+                                <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{t('videos.regenerateTitle')}</p>
+                            </TooltipContent>
+                          </Tooltip>
 
-                        {video.video_url && (
-                          <>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDownload(video)}
-                            >
-                              <Download className="w-4 h-4" strokeWidth={1.5} />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                setSelectedShareVideo(video)
-                                setShareModalOpen(true)
-                              }}
-                            >
-                              <Share2 className="w-4 h-4" strokeWidth={1.5} />
-                            </Button>
-                          </>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setDeleteDialog({ open: true, video })}
-                        >
-                          <Trash2 className="w-4 h-4 text-red-500" strokeWidth={1.5} />
-                        </Button>
-                      </div>
+                          {video.video_url && (
+                            <>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleDownload(video)}
+                                  >
+                                    <Download className="w-4 h-4" strokeWidth={1.5} />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{t('videos.download')}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      setSelectedShareVideo(video)
+                                      setShareModalOpen(true)
+                                    }}
+                                  >
+                                    <Share2 className="w-4 h-4" strokeWidth={1.5} />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{t('videos.share')}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </>
+                          )}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setDeleteDialog({ open: true, video })}
+                              >
+                                <Trash2 className="w-4 h-4 text-red-500" strokeWidth={1.5} />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{t('videos.delete')}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                      </TooltipProvider>
                       
                       <div className="text-xs text-muted-foreground">
                         {formatRelativeTime(video.created_at)}

@@ -86,11 +86,6 @@ class VideoQueueService {
     this.userConcurrentLimits.pro = parseInt(process.env.VITE_USER_CONCURRENT_PRO || '5')
     this.userConcurrentLimits.premium = parseInt(process.env.VITE_USER_CONCURRENT_PREMIUM || '10')
 
-    console.log('[QUEUE SERVICE] Initialized with config:', {
-      systemMaxConcurrent: this.systemMaxConcurrent,
-      queueCheckInterval: this.queueCheckInterval,
-      userLimits: this.userConcurrentLimits
-    })
   }
 
   /**
@@ -98,7 +93,6 @@ class VideoQueueService {
    */
   async initialize(): Promise<void> {
     try {
-      console.log('[QUEUE SERVICE] Initializing queue service...')
       
       // 检查数据库是否支持队列功能
       const hasQueueSupport = await this.checkQueueSupport()
@@ -119,7 +113,6 @@ class VideoQueueService {
       // 启动队列处理定时器
       this.startQueueProcessor()
       
-      console.log('[QUEUE SERVICE] Queue service initialized successfully')
     } catch (error) {
       console.error('[QUEUE SERVICE] Failed to initialize:', error)
       console.log('[QUEUE SERVICE] Starting in fallback mode...')
@@ -178,7 +171,6 @@ class VideoQueueService {
         for (const video of activeVideos) {
           this.activeJobs.set(video.id, video.user_id)
         }
-        console.log(`[QUEUE SERVICE] Restored ${activeVideos.length} active jobs`)
       }
     } catch (error) {
       console.error('[QUEUE SERVICE] Error restoring active jobs:', error)
@@ -219,7 +211,6 @@ class VideoQueueService {
           }
           this.queuedJobs.set(video.id, job)
         }
-        console.log(`[QUEUE SERVICE] Restored ${queuedVideos.length} queued jobs`)
       }
     } catch (error) {
       console.error('[QUEUE SERVICE] Error restoring queued jobs:', error)
@@ -558,7 +549,6 @@ class VideoQueueService {
       this.processQueue()
     }, this.queueCheckInterval)
 
-    console.log(`[QUEUE SERVICE] Queue processor started with ${this.queueCheckInterval}ms interval`)
   }
 
   /**

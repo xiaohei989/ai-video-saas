@@ -278,6 +278,14 @@ const AuditStatusField: React.FC<{ source: string }> = ({ source }) => {
 const TemplatePreview: React.FC<{ template: DatabaseTemplate }> = ({ template }) => {
   const [showVideo, setShowVideo] = useState(false)
 
+  if (!template) {
+    return (
+      <div className="text-center text-gray-500">
+        模板数据不可用
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-4">
       {/* 缩略图 */}
@@ -406,12 +414,13 @@ const TemplateParametersField: React.FC<{ source: string }> = ({ source }) => {
   )
 }
 
-// 模板操作按钮
+// 模板操作下拉菜单
 const TemplateActionsButtons: React.FC = () => {
   const record = useRecordContext()
   const [update] = useUpdate()
   const notify = useNotify()
   const refresh = useRefresh()
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleApprove = () => {
     const notes = prompt('审核备注（可选）:')
@@ -437,6 +446,7 @@ const TemplateActionsButtons: React.FC = () => {
         },
       }
     )
+    setMenuOpen(false)
   }
 
   const handleReject = () => {
@@ -465,6 +475,7 @@ const TemplateActionsButtons: React.FC = () => {
         },
       }
     )
+    setMenuOpen(false)
   }
 
   const handleToggleActive = () => {
@@ -485,43 +496,87 @@ const TemplateActionsButtons: React.FC = () => {
         },
       }
     )
+    setMenuOpen(false)
   }
 
   if (!record) return null
 
   return (
-    <div className="flex gap-1">
-      {record.audit_status === 'pending' && (
-        <>
-          <Button onClick={handleApprove} size="small" color="success">
-            <Check className="h-3 w-3 mr-1" />
-            批准
-          </Button>
-          <Button onClick={handleReject} size="small" color="error">
-            <X className="h-3 w-3 mr-1" />
-            拒绝
-          </Button>
-        </>
-      )}
-      
-      <Button onClick={handleToggleActive} size="small" variant="outlined">
-        {record.is_active ? '禁用' : '启用'}
+    <div className="relative">
+      <Button
+        onClick={() => setMenuOpen(!menuOpen)}
+        size="small"
+        variant="outlined"
+        className="flex items-center gap-1"
+      >
+        操作
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
       </Button>
-      
-      {record.preview_url && (
-        <Button 
-          onClick={() => window.open(record.preview_url, '_blank')}
-          size="small" 
-          variant="outlined"
-        >
-          <Eye className="h-3 w-3 mr-1" />
-          预览
-        </Button>
+
+      {menuOpen && (
+        <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+          <div className="py-1">
+            {record.audit_status === 'pending' && (
+              <>
+                <button
+                  onClick={handleApprove}
+                  className="flex items-center w-full px-4 py-2 text-sm text-green-700 hover:bg-green-50"
+                >
+                  <Check className="h-4 w-4 mr-2" />
+                  批准
+                </button>
+                <button
+                  onClick={handleReject}
+                  className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  拒绝
+                </button>
+                <hr className="my-1" />
+              </>
+            )}
+            
+            <button
+              onClick={handleToggleActive}
+              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            >
+              <SettingsIcon className="h-4 w-4 mr-2" />
+              {record.is_active ? '禁用' : '启用'}
+            </button>
+
+            {record.preview_url && (
+              <button
+                onClick={() => {
+                  window.open(record.preview_url, '_blank')
+                  setMenuOpen(false)
+                }}
+                className="flex items-center w-full px-4 py-2 text-sm text-blue-700 hover:bg-blue-50"
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                预览视频
+              </button>
+            )}
+
+            <hr className="my-1" />
+            
+            <div className="flex items-center justify-around py-2">
+              <ShowButton />
+              <EditButton />
+              <DeleteButton />
+            </div>
+          </div>
+        </div>
       )}
-      
-      <ShowButton />
-      <EditButton />
-      <DeleteButton />
+
+      {/* 点击外部关闭菜单 */}
+      {menuOpen && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
     </div>
   )
 }
@@ -550,20 +605,14 @@ export const TemplateList: React.FC = () => (
       <TextField source="name" label="模板名称" />
       <TextField source="slug" label="标识符" />
       <TextField source="category" label="分类" />
-      <TextField source="version" label="版本" />
       
       {/* 状态信息 */}
       <AuditStatusField source="audit_status" label="审核状态" />
-      <BooleanField source="is_premium" label="高级" />
       <BooleanField source="is_active" label="启用" />
-      <BooleanField source="is_public" label="公开" />
-      <BooleanField source="is_featured" label="推荐" />
       
       {/* 统计信息 */}
-      <NumberField source="credit_cost" label="积分" />
       <NumberField source="usage_count" label="使用数" />
       <NumberField source="like_count" label="点赞" />
-      <NumberField source="view_count" label="浏览" />
       
       {/* 时间信息 */}
       <DateField source="created_at" label="创建时间" showTime />
@@ -686,7 +735,16 @@ export const TemplateShow: React.FC = () => {
               <CardTitle>媒体文件</CardTitle>
             </CardHeader>
             <CardContent>
-              <TemplatePreview template={useRecordContext() as DatabaseTemplate} />
+              {(() => {
+                const record = useRecordContext()
+                return record ? (
+                  <TemplatePreview template={record as DatabaseTemplate} />
+                ) : (
+                  <div className="text-center text-gray-500">
+                    加载模板信息中...
+                  </div>
+                )
+              })()}
             </CardContent>
           </Card>
 

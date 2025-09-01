@@ -45,6 +45,9 @@ import PrivacyPolicyPage from './pages/legal/PrivacyPolicyPage'
 import TermsOfServicePage from './pages/legal/TermsOfServicePage'
 import CookiePolicyPage from './pages/legal/CookiePolicyPage'
 
+// Help Center
+import HelpCenterPage from './pages/HelpCenterPage'
+
 // Admin pages
 import AdminRoute from './components/admin/AdminRoute'
 import AdminApp from './components/admin/AdminApp'
@@ -85,6 +88,9 @@ function App() {
               <Route path="/privacy" element={<Layout><PrivacyPolicyPage /></Layout>} />
               <Route path="/terms" element={<Layout><TermsOfServicePage /></Layout>} />
               <Route path="/cookies" element={<Layout><CookiePolicyPage /></Layout>} />
+              
+              {/* Help Center */}
+              <Route path="/help" element={<Layout><HelpCenterPage /></Layout>} />
               
               {/* Protected routes */}
               <Route element={<ProtectedRoute />}>

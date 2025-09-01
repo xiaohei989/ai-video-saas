@@ -139,7 +139,6 @@ export function useTemplateLikes({
       const hasCache = loadFromCache()
       if (!hasCache && !force) {
         // 未登录且无缓存时，也调用API获取点赞数
-        console.log('[useTemplateLikes] Guest user: fetching like counts from API')
       }
       // 继续执行，让未登录用户也能获取点赞数
     }
@@ -158,7 +157,6 @@ export function useTemplateLikes({
       setError(null)
       lastRefreshRef.current = now
 
-      console.log('[useTemplateLikes] Fetching fresh data from API')
       const statuses = await templateLikeService.checkMultipleLikeStatus(stableTemplateIds)
       
       // 转换为缓存格式并存储
@@ -196,7 +194,6 @@ export function useTemplateLikes({
 
       setLikeStatuses(newMap)
       
-      console.log(`[useTemplateLikes] Refreshed ${statuses.length} template statuses`)
     } catch (err) {
       console.error('Error refreshing template likes:', err)
       setError('获取点赞状态失败')

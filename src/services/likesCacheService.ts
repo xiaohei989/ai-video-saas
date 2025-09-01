@@ -297,10 +297,6 @@ class LikesCacheService {
       }
     }
 
-    // 输出清理统计（开发环境）
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[LikesCache] Cleanup completed. Cache size: ${this.cache.size}, Batch cache size: ${this.batchCache.size}`)
-    }
   }
 
   /**

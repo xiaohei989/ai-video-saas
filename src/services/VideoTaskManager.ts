@@ -60,7 +60,6 @@ class VideoTaskManager {
       }
       
       this.initialized = true
-      console.log(`[TASK MANAGER] 初始化完成，加载了 ${this.activeTasks.size} 个活跃任务`)
       
       return Array.from(this.activeTasks.values())
     } catch (error) {

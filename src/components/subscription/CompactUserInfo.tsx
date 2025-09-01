@@ -114,11 +114,11 @@ export default function CompactUserInfo({
 
   const getDateFormat = () => {
     switch (i18n.language) {
-      case 'zh': return 'MM月dd日'
-      case 'ja': return 'MM月dd日'
-      case 'ko': return 'MM월dd일'
-      case 'es': return 'dd MMM'
-      default: return 'MMM dd'
+      case 'zh': return 'yyyy年MM月dd日'
+      case 'ja': return 'yyyy年MM月dd日'
+      case 'ko': return 'yyyy년MM월dd일'
+      case 'es': return 'dd MMM yyyy'
+      default: return 'MMM dd, yyyy'
     }
   }
 

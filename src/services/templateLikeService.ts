@@ -266,7 +266,6 @@ class TemplateLikeService {
       // 先检查批量缓存
       const cachedBatch = likesCacheService.getBatch(templateIds)
       if (cachedBatch) {
-        console.log(`[TemplateLikeService] Using cached batch status for ${templateIds.length} templates`)
         return templateIds.map(id => {
           const cached = cachedBatch.get(id)
           return cached ? {
@@ -304,7 +303,6 @@ class TemplateLikeService {
         return cachedResults
       }
 
-      console.log(`[TemplateLikeService] Fetching ${uncachedIds.length}/${templateIds.length} uncached templates`)
 
       const { data: { user } } = await supabase.auth.getUser()
       

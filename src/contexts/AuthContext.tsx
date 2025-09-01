@@ -91,13 +91,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                                (supabaseSession && supabaseSession !== 'null') ||
                                recentlyAuthenticated
       
-      console.log('[AUTH] 🔍 智能预检查结果:', {
-        hasAuthToken: !!supabaseAuthToken,
-        hasSession: !!supabaseSession, 
-        recentlyAuth: recentlyAuthenticated,
-        willSkipLoading: hasAnyValidCache,
-        decision: hasAnyValidCache ? '直接显示内容' : '显示loading'
-      })
       
       return {
         shouldSkipLoading: hasAnyValidCache,
@@ -261,7 +254,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const initializeAuth = async () => {
       try {
-        console.log('[AUTH] 🚀 开始认证初始化...')
         const authStart = performance.now()
         
         // 🚀 性能优化：设置合理的网络超时，平衡速度和稳定性
@@ -275,7 +267,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data: { session }, error } = await sessionPromise as any
         const authTime = performance.now() - authStart
         
-        console.log(`[AUTH] ✅ 会话获取完成: ${Math.round(authTime)}ms`)
         
         if (error) {
           console.error('AuthContext: Error getting session:', error)
@@ -294,7 +285,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             try {
               // 更新本地缓存状态，为下次访问做准备
               localStorage.setItem('__auth_last_success', Date.now().toString())
-              console.log('[AUTH] 💾 已更新认证成功缓存')
             } catch (error) {
               console.warn('[AUTH] 缓存更新失败:', error)
             }
@@ -304,15 +294,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (timeoutId) {
             clearTimeout(timeoutId)
             timeoutId = null
-            console.log(`[AUTH] 🔒 已清除超时计时器`)
           }
           
-          console.log(`[AUTH] ⚡ Loading状态已清除: ${Math.round(performance.now() - authStart)}ms`)
           
           // 在后台异步获取profile，不阻塞应用
           if (session?.user) {
             fetchProfile(session.user.id, session.user.email).then(() => {
-              console.log('[AUTH] 📋 用户profile获取完成')
             }).catch(err => {
               console.error('AuthContext: Profile fetch failed:', err)
             })
@@ -411,18 +398,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         // 处理认证事件
-        console.log(`[AUTH] Authentication event: ${event}`, { 
-          isInitialLoad: isInitialLoadRef.current,
-          currentPath: window.location.pathname 
-        })
         
         switch (event) {
           case 'INITIAL_SESSION':
             // 初始会话加载，不进行导航，保持用户在当前页面
-            console.log('[AUTH] Initial session loaded, setting isInitialLoad to false', {
-              currentPath: window.location.pathname,
-              action: 'staying_on_current_page'
-            })
             isInitialLoadRef.current = false
             
             // 🚀 关键修复：初始会话加载完成时，确保清除loading状态和超时计时器
@@ -459,20 +438,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const isUserInitiatedSignIn = !isInitialLoadRef.current && 
               isOnAuthPage && !isOnProtectedPage
             
-            console.log('[AUTH] SIGNED_IN event detected', {
-              isInitialLoad: isInitialLoadRef.current,
-              currentPath: currentPath,
-              isOnPublicPage,
-              isOnAuthPage,
-              isOnProtectedPage,
-              willNavigate: isUserInitiatedSignIn
-            })
             
             if (isUserInitiatedSignIn) {
               console.log('[AUTH] User-initiated sign in from auth page, navigating to templates')
               navigate('/templates')
             } else {
-              console.log('[AUTH] Token refresh, session restoration, or already on target page - staying put')
             }
             
             // 标记初始加载已完成
@@ -529,7 +499,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (timeoutId) {
         clearTimeout(timeoutId)
         timeoutId = null
-        console.log('[AUTH] 🧹 组件卸载：已清理超时计时器')
       }
       
       stopTokenCheck() // 清理Token检查定时器

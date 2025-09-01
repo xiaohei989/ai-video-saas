@@ -7,7 +7,7 @@ const corsHeaders = {
 }
 
 interface TicketManagementRequest {
-  action: 'list' | 'get_details' | 'assign' | 'update_status' | 'reply' | 'create' | 'list_faqs' | 'create_faq' | 'update_faq' | 'delete_faq'
+  action: 'list' | 'get_details' | 'assign' | 'update_status' | 'reply' | 'create' | 'delete' | 'list_faqs' | 'create_faq' | 'update_faq' | 'delete_faq'
   ticketId?: string
   assignedAdminId?: string
   status?: string
@@ -80,7 +80,7 @@ serve(async (req) => {
             user:profiles!user_id(username, email, avatar_url),
             assigned_admin:profiles!assigned_admin_id(username, email, avatar_url),
             _count_messages:ticket_messages(count)
-          `)
+          `, { count: 'exact' })
 
         // 应用过滤条件
         if (filters?.status) {
@@ -158,7 +158,7 @@ serve(async (req) => {
           .from('ticket_messages')
           .select(`
             *,
-            sender:profiles!sender_id(username, email, avatar_url)
+            sender:profiles!sender_id(username, email, avatar_url, role, full_name)
           `)
           .eq('ticket_id', requestData.ticketId)
           .order('created_at', { ascending: true })
@@ -167,7 +167,7 @@ serve(async (req) => {
           JSON.stringify({
             success: true,
             data: {
-              ticket,
+              ...ticket,
               messages: messages || []
             }
           }),
@@ -391,6 +391,50 @@ serve(async (req) => {
           JSON.stringify({
             success: true,
             message: 'FAQ updated successfully'
+          }),
+          {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 200,
+          }
+        )
+      }
+
+      case 'delete': {
+        if (!requestData.ticketId) {
+          throw new Error('Ticket ID is required')
+        }
+
+        // 先删除相关消息
+        const { error: messagesError } = await supabaseClient
+          .from('ticket_messages')
+          .delete()
+          .eq('ticket_id', requestData.ticketId)
+
+        if (messagesError) throw messagesError
+
+        // 删除工单
+        const { error } = await supabaseClient
+          .from('support_tickets')
+          .delete()
+          .eq('id', requestData.ticketId)
+
+        if (error) throw error
+
+        // 记录操作日志
+        await supabaseClient
+          .from('admin_operations_log')
+          .insert({
+            admin_id: user.id,
+            operation_type: 'delete_ticket',
+            target_type: 'ticket',
+            target_id: requestData.ticketId,
+            operation_details: { deleted_at: new Date().toISOString() }
+          })
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            message: 'Ticket deleted successfully'
           }),
           {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },

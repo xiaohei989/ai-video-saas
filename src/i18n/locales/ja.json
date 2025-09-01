@@ -70,7 +70,12 @@
     "passwordTooShort": "パスワードは6文字以上必要です",
     "invalidUsername": "無効なユーザー名形式",
     "emailAlreadyRegistered": "メールアドレスは既に登録されています",
-    "googleSignUpError": "Googleサインアップ失敗"
+    "googleSignUpError": "Googleサインアップ失敗",
+    "completingLogin": "ログインを完了しています...",
+    "verifyingCredentials": "お待ちください、認証情報を確認中です",
+    "sessionError": "セッションを確立できません、再度ログインしてください",
+    "authError": "ログイン中にエラーが発生しました",
+    "redirectingToLogin": "ログインページにリダイレクトしています..."
   },
   "user": {
     "guest": "ゲスト",
@@ -78,7 +83,9 @@
     "editProfile": "プロフィール編集",
     "myTemplates": "マイテンプレート",
     "settings": "設定",
-    "signOut": "サインアウト"
+    "signOut": "サインアウト",
+    "completingLogin": "ログインを完了しています...",
+    "verifyingCredentials": "お待ちください、認証情報を確認中です"
   },
   "userCenter": {
     "welcome": "ようこそ",
@@ -423,6 +430,8 @@
     "waitingForProcessing": "処理待ち",
     "untitledVideo": "無題の動画",
     "regenerateTitle": "同じ設定で再生成",
+    "download": "動画をダウンロード",
+    "share": "動画を共有",
     "previousPage": "前へ",
     "nextPage": "次へ",
     "pageInfo": "{{current}} / {{total}} ページ",
@@ -653,6 +662,158 @@
     "highQuality": "高画質",
     "generateVideo": "動画生成",
     "generating": "生成中..."
+  },
+  "helpCenter": {
+    "title": "ヘルプセンター",
+    "subtitle": "よくある質問とサポート",
+    "navigation": {
+      "faq": "よくある質問",
+      "support": "サポート",
+      "contact": "お問い合わせ",
+      "myTickets": "マイチケット"
+    },
+    "faq": {
+      "title": "よくある質問",
+      "subtitle": "お探しの答えを見つけてください",
+      "searchPlaceholder": "よくある質問を検索...",
+      "noResults": "質問が見つかりません",
+      "categories": {
+        "all": "すべて",
+        "product": "製品の問題",
+        "technical": "技術サポート",
+        "account": "アカウント管理",
+        "billing": "請求・支払い",
+        "other": "その他"
+      },
+      "loadMore": "もっと読み込む",
+      "helpful": "この回答は役に立ちましたか？",
+      "yes": "はい",
+      "no": "いいえ",
+      "thankYou": "フィードバックありがとうございます！",
+      "questions": [
+        {
+          "id": "1",
+          "question": "最初の動画を生成するにはどうすればよいですか？",
+          "answer": "テンプレートを選択し、パラメータを入力して「動画生成」ボタンをクリックしてください。動画生成には通常1〜3分かかります。",
+          "category": "product"
+        },
+        {
+          "id": "2", 
+          "question": "クレジットはどのように計算されますか？",
+          "answer": "標準品質の動画は20クレジット、高品質の動画は100クレジットを消費します。サブスクリプションまたは個別購入でクレジットを取得できます。",
+          "category": "billing"
+        },
+        {
+          "id": "3",
+          "question": "動画生成が失敗した場合はどうすればよいですか？",
+          "answer": "動画生成が失敗した場合、クレジットは自動的に返金されます。ネットワーク接続を確認して再試行するか、カスタマーサポートにお問い合わせください。",
+          "category": "technical"
+        }
+      ]
+    },
+    "support": {
+      "title": "チケット作成",
+      "subtitle": "答えが見つからない場合は、サポートチームにお問い合わせください",
+      "form": {
+        "subject": "件名",
+        "subjectPlaceholder": "問題の概要を入力してください",
+        "category": "カテゴリー",
+        "pleaseSelect": "選択してください...",
+        "categories": {
+          "product": "製品の問題",
+          "sales": "営業相談",
+          "technical": "技術サポート",
+          "account": "アカウント問題",
+          "billing": "請求問題",
+          "other": "その他"
+        },
+        "priority": "優先度",
+        "priorities": {
+          "low": "低",
+          "medium": "中",
+          "high": "高",
+          "urgent": "緊急"
+        },
+        "description": "詳細説明",
+        "descriptionPlaceholder": "問題について詳しく説明してください...",
+        "attachments": "添付ファイル",
+        "attachmentsHint": "オプション：関連するスクリーンショットやファイルをアップロード",
+        "submit": "チケット送信",
+        "submitting": "送信中...",
+        "submitSuccess": "フィードバックありがとうございます。チケットを受信し、処理を開始いたします。",
+        "submitError": "送信に失敗しました。もう一度お試しください"
+      },
+      "validation": {
+        "subjectRequired": "件名は必須です",
+        "subjectTooShort": "件名は5文字以上である必要があります",
+        "subjectTooLong": "件名は100文字以内である必要があります",
+        "categoryRequired": "カテゴリーを選択してください",
+        "descriptionRequired": "詳細説明は必須です",
+        "descriptionTooShort": "詳細説明は10文字以上である必要があります",
+        "descriptionTooLong": "詳細説明は2000文字以内である必要があります",
+        "fileTooLarge": "ファイルサイズは10MBを超えることはできません",
+        "fileTypeNotSupported": "サポートされていないファイルタイプです"
+      }
+    },
+    "tickets": {
+      "title": "マイチケット",
+      "subtitle": "サポートチケットを表示・管理",
+      "noTickets": "チケットがありません",
+      "noTicketsDescription": "まだチケットを送信していません",
+      "createFirst": "最初のチケットを送信",
+      "status": {
+        "open": "オープン",
+        "in_progress": "処理中",
+        "waiting_user": "ユーザー待ち",
+        "resolved": "解決済み",
+        "closed": "クローズ"
+      },
+      "priority": {
+        "low": "低",
+        "medium": "中",
+        "high": "高",
+        "urgent": "緊急"
+      },
+      "details": {
+        "ticketNumber": "チケット番号",
+        "created": "作成日",
+        "lastUpdate": "最終更新",
+        "assignedTo": "担当者",
+        "messages": "メッセージ"
+      },
+      "actions": {
+        "view": "詳細表示",
+        "reply": "返信",
+        "close": "チケットを閉じる"
+      },
+      "reply": {
+        "placeholder": "返信を入力してください...",
+        "submit": "返信送信",
+        "success": "返信が正常に送信されました",
+        "error": "返信の送信に失敗しました"
+      },
+      "close": {
+        "confirm": "このチケットを閉じてもよろしいですか？",
+        "success": "チケットが正常に閉じられました",
+        "error": "チケットを閉じるのに失敗しました"
+      }
+    },
+    "common": {
+      "loading": "読み込み中...",
+      "error": "読み込みに失敗しました。ページを更新して再度お試しください",
+      "empty": "データがありません",
+      "retry": "再試行",
+      "back": "戻る",
+      "next": "次へ",
+      "previous": "前へ",
+      "loginRequired": "続行するにはログインしてください",
+      "contactSupport": "サポートに連絡",
+      "supportEmail": "support@example.com",
+      "pleaseLoginToViewTickets": "チケット履歴を表示するにはログインしてください",
+      "login": "ログイン",
+      "customerService": "カスタマーサポート",
+      "sending": "送信中..."
+    }
   },
   "footer": {
     "quickLinks": "クイックリンク",

@@ -2,7 +2,6 @@ import React, { useMemo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Play, Loader2, Clock, Zap, Monitor, Smartphone } from 'lucide-react'
 import { Template } from '../data/templates'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { CustomSelect } from '@/components/ui/custom-select'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -86,7 +85,7 @@ export default function PreviewPanel({
   }, [startTime, isGenerating, progress, t])
   return (
     <div className="h-full overflow-y-auto flex justify-center">
-      <div className="max-w-4xl w-full p-3 lg:p-6">
+      <div className="max-w-2xl w-full p-3 lg:p-4">
         
         {/* 控制栏 */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4 p-3 bg-muted/30 border border-border rounded-lg">
@@ -122,9 +121,7 @@ export default function PreviewPanel({
 
         </div>
         
-        <Card className="bg-card">
-          <CardContent className="p-0">
-            <div className="aspect-video bg-muted rounded-lg overflow-hidden flex items-center justify-center relative">
+            <div className="aspect-video bg-muted rounded-lg overflow-hidden flex items-center justify-center relative max-h-80">
               {/* 左上角点赞按钮 */}
               <div className="absolute top-3 left-3 z-10">
                 {(() => {
@@ -218,8 +215,6 @@ export default function PreviewPanel({
                 </div>
               )}
             </div>
-          </CardContent>
-        </Card>
         
         {template.description && (
           <p className="mt-3 text-center text-sm text-muted-foreground max-w-2xl mx-auto">

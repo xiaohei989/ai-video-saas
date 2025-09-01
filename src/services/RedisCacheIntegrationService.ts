@@ -63,12 +63,10 @@ class RedisCacheIntegrationService {
     }
 
     try {
-      console.log(`[REDIS CACHE INTEGRATION] 获取用户订阅 (缓存优先): ${userId}`)
       
       // 使用Edge Function Redis缓存
       const tier = await edgeCacheClient.getUserSubscription(userId)
       
-      console.log(`[REDIS CACHE INTEGRATION] 用户订阅获取成功: ${userId} -> ${tier}`)
       return tier
     } catch (error) {
       console.error('[REDIS CACHE INTEGRATION] Redis缓存获取失败，回退到数据库:', error)
