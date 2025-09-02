@@ -61,6 +61,32 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       host: true,
       open: true,
+      // 添加代理配置解凍CORS问题
+      proxy: {
+        // 代理filesystem.site的视频请求
+        '/api/filesystem': {
+          target: 'https://filesystem.site',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/filesystem/, ''),
+          configure: (proxy, options) => {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              // 添加CORS头
+              proxyReq.setHeader('Access-Control-Allow-Origin', '*');
+            });
+          }
+        },
+        // 代理heyoo.oss的视频请求
+        '/api/heyoo': {
+          target: 'https://heyoo.oss-ap-southeast-1.aliyuncs.com',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/heyoo/, ''),
+          configure: (proxy, options) => {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              proxyReq.setHeader('Access-Control-Allow-Origin', '*');
+            });
+          }
+        }
+      }
     },
     build: {
       outDir: 'build',

@@ -1160,7 +1160,7 @@ export default function VideosPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Processing</p>
+                  <p className="text-sm text-muted-foreground">{t('videoCreator.processing')}</p>
                   <p className="text-2xl font-bold text-blue-600">{statistics.processing}</p>
                 </div>
                 <Clock className="h-8 w-8 text-blue-600" />

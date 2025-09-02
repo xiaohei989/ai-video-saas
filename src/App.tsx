@@ -48,6 +48,9 @@ import CookiePolicyPage from './pages/legal/CookiePolicyPage'
 // Help Center
 import HelpCenterPage from './pages/HelpCenterPage'
 
+// Test pages
+import TestApicoreApi from './pages/TestApicoreApi'
+
 // Admin pages
 import AdminRoute from './components/admin/AdminRoute'
 import AdminApp from './components/admin/AdminApp'
@@ -91,6 +94,9 @@ function App() {
               
               {/* Help Center */}
               <Route path="/help" element={<Layout><HelpCenterPage /></Layout>} />
+              
+              {/* Test pages (development only) */}
+              <Route path="/test/apicore" element={<Layout><TestApicoreApi /></Layout>} />
               
               {/* Protected routes */}
               <Route element={<ProtectedRoute />}>

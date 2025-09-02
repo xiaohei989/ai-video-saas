@@ -1,3 +1,5 @@
+import { getProxyVideoUrl, createCorsVideo } from './videoUrlProxy'
+
 /**
  * 从视频中提取缩略图
  * @param videoUrl 视频URL
@@ -9,7 +11,8 @@ export async function extractVideoThumbnail(
   frameTime: number = 0.33
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    const video = document.createElement('video')
+    // 🔧 使用CORS安全的视频元素
+    const video = createCorsVideo(videoUrl)
     const canvas = document.createElement('canvas')
     const context = canvas.getContext('2d')
     
@@ -18,13 +21,8 @@ export async function extractVideoThumbnail(
       return
     }
     
-    // 设置视频属性
-    // 只对外部URL设置crossOrigin，避免本地文件的CORS问题
-    if (videoUrl.startsWith('http://') || videoUrl.startsWith('https://')) {
-      video.crossOrigin = 'anonymous'
-    }
+    // 视频属性已在createCorsVideo中设置
     video.muted = true
-    video.playsInline = true
     
     // 监听视频加载元数据
     video.addEventListener('loadedmetadata', () => {
@@ -55,13 +53,22 @@ export async function extractVideoThumbnail(
       }
     })
     
-    // 错误处理
+    // 增强错误处理，包括CORS错误
     video.addEventListener('error', (e) => {
+      console.error(`[VIDEO THUMBNAIL] 视频加载失败: ${videoUrl}`, e)
+      
+      // 如果是CORS错误，尝试使用备用方案
+      if (videoUrl.includes('filesystem.site') || videoUrl.includes('heyoo.oss')) {
+        console.warn(`[VIDEO THUMBNAIL] 检测到第三方域名CORS问题，使用备用缩略图`)
+        // 返回一个默认的视频图标或占位图
+        resolve('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NzM4ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuinhumikTwvdGV4dD48L3N2Zz4=')
+        return
+      }
+      
       reject(new Error(`Failed to load video: ${e}`))
     })
     
-    // 设置视频源
-    video.src = videoUrl
+    // 视频源已在createCorsVideo中设置
     video.load()
   })
 }

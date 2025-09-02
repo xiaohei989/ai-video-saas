@@ -238,7 +238,7 @@ export default function TemplatesPage() {
               {/* 生成按钮 */}
               <Button 
                 className="w-full mt-4"
-                onClick={() => navigate(`/create?template=${template.id}`)}
+                onClick={() => navigate(`/create?template=${template.slug}`)}
               >
                 <Sparkles className="h-4 w-4 mr-2" />
                 {t('template.generate')}

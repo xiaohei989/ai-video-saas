@@ -6,6 +6,7 @@
 import i18n from '@/i18n/config'
 import { videoTaskManager, type VideoTask } from './VideoTaskManager'
 import supabaseVideoService from './supabaseVideoService'
+import { detectApiProvider, getApiProviderDisplayName } from '@/utils/apiProviderDetector'
 
 interface PollingConfig {
   userId: string
@@ -152,7 +153,7 @@ class VideoPollingService {
 
       // 🔧 智能恢复机制：检查青云API连接状态
       if ((video.status === 'processing' || video.status === 'pending') && video.veo3_job_id) {
-        await this.checkAndRestoreQingyunAPI(video, taskId)
+        await this.checkAndRestoreAPI(video, taskId)
       }
 
       // 🚀 增强完成检测逻辑
@@ -286,7 +287,7 @@ class VideoPollingService {
       : new Date(video.created_at)
 
     let progress = 0
-    let statusText = '准备中...'
+    let statusText = i18n.t('videoCreator.preparing')
 
     // 从metadata中提取进度信息
     if (video.metadata?.progressData) {
@@ -299,7 +300,7 @@ class VideoPollingService {
       
       if (video.status === 'pending') {
         progress = Math.min(10, elapsedMinutes * 2)
-        statusText = '准备中...'
+        statusText = i18n.t('videoCreator.preparing')
       } else if (video.status === 'processing') {
         progress = Math.min(99, 10 + (elapsedMinutes / 1.5) * 89)
         statusText = progress > 80 ? i18n.t('videoCreator.almostComplete') : i18n.t('videoCreator.generating')
@@ -333,12 +334,15 @@ class VideoPollingService {
   }
 
   /**
-   * 检查并恢复青云API连接
-   * 如果发现任务有veo3_job_id但青云API轮询不存在，则自动恢复
+   * 检查并恢复API连接（支持青云API和APICore）
+   * 如果发现任务有veo3_job_id但API轮询不存在，则自动恢复
    */
-  private async checkAndRestoreQingyunAPI(video: any, taskId: string): Promise<void> {
+  private async checkAndRestoreAPI(video: any, taskId: string): Promise<void> {
+    // 🔧 根据task ID格式自动检测API提供商
+    const apiProvider = detectApiProvider(video.veo3_job_id);
+    const apiDisplayName = getApiProviderDisplayName(apiProvider);
     try {
-      console.log(`[POLLING] 🔍 检查青云API连接状态: ${video.id} (job: ${video.veo3_job_id})`)
+      console.log(`[POLLING] 🔍 检查${apiDisplayName}连接状态: ${video.id} (job: ${video.veo3_job_id})`)
       
       // 动态导入veo3Service以避免循环依赖
       const { veo3Service } = await import('./veo3Service')
@@ -347,22 +351,30 @@ class VideoPollingService {
       const jobStatus = await veo3Service.getJobStatus(video.veo3_job_id)
       
       if (!jobStatus) {
-        console.log(`[POLLING] ⚠️ 检测到青云API连接丢失: ${video.id}，尝试恢复...`)
+        console.log(`[POLLING] ⚠️ 检测到${apiDisplayName}连接丢失: ${video.id}，尝试恢复...`)
         
-        // 尝试恢复青云API轮询
-        const restored = await veo3Service.restoreJob(video.veo3_job_id, video.id)
+        // 尝试恢复API轮询（根据API提供商自动选择方法）
+        const restored = await veo3Service.restoreJob(video.veo3_job_id, video.id, apiProvider)
         
         if (restored) {
           console.log(`[POLLING] ✅ 青云API连接恢复成功: ${video.id}`)
           
           // 更新进度管理器，标记为已恢复
           const { progressManager } = await import('./progressManager')
-          progressManager.updateProgress(video.id, {
+          const progressUpdate: any = {
             status: video.status as any,
-            statusText: '重新连接API成功',
-            qingyunTaskId: video.veo3_job_id,
+            statusText: i18n.t('videoCreator.generating'), // 多语言状态文本
             lastPollingStatus: 'auto-restored'
-          })
+          };
+          
+          // 根据API提供商设置正确的task ID字段
+          if (apiProvider === 'apicore') {
+            progressUpdate.apicoreTaskId = video.veo3_job_id;
+          } else {
+            progressUpdate.qingyunTaskId = video.veo3_job_id;
+          }
+          
+          progressManager.updateProgress(video.id, progressUpdate)
         } else {
           console.warn(`[POLLING] ❌ 青云API连接恢复失败: ${video.id}`)
           
@@ -371,31 +383,47 @@ class VideoPollingService {
           const elapsedMinutes = (Date.now() - startTime.getTime()) / (1000 * 60)
           
           if (elapsedMinutes > 10) { // 超过10分钟
-            console.warn(`[POLLING] ⏰ 任务运行超时 ${Math.round(elapsedMinutes)} 分钟，青云API恢复失败: ${video.id}`)
+            console.warn(`[POLLING] ⏰ 任务运行超时 ${Math.round(elapsedMinutes)} 分钟，${apiDisplayName}恢复失败: ${video.id}`)
             
             // 可以考虑标记为失败或发送通知，但这里先记录警告
             const { progressManager } = await import('./progressManager')
-            progressManager.updateProgress(video.id, {
+            const timeoutUpdate: any = {
               status: video.status as any,
-              statusText: 'API连接断开，正在重试...',
-              qingyunTaskId: video.veo3_job_id,
+              statusText: i18n.t('videoCreator.processing'), // 多语言状态文本
               lastPollingStatus: 'connection-lost'
-            })
+            };
+            
+            // 根据API提供商设置正确的task ID字段
+            if (apiProvider === 'apicore') {
+              timeoutUpdate.apicoreTaskId = video.veo3_job_id;
+            } else {
+              timeoutUpdate.qingyunTaskId = video.veo3_job_id;
+            }
+            
+            progressManager.updateProgress(video.id, timeoutUpdate)
           }
         }
       } else {
         // 连接正常，更新最后检查时间
-        console.log(`[POLLING] ✅ 青云API连接正常: ${video.id}`)
+        console.log(`[POLLING] ✅ ${apiDisplayName}连接正常: ${video.id}`)
         
         const { progressManager } = await import('./progressManager')
-        progressManager.updateProgress(video.id, {
+        const normalUpdate: any = {
           status: video.status as any,
-          qingyunTaskId: video.veo3_job_id,
           lastPollingStatus: 'connection-verified'
-        })
+        };
+        
+        // 根据API提供商设置正确的task ID字段
+        if (apiProvider === 'apicore') {
+          normalUpdate.apicoreTaskId = video.veo3_job_id;
+        } else {
+          normalUpdate.qingyunTaskId = video.veo3_job_id;
+        }
+        
+        progressManager.updateProgress(video.id, normalUpdate)
       }
     } catch (error) {
-      console.error(`[POLLING] 💥 检查青云API连接时出错 ${video.id}:`, error)
+      console.error(`[POLLING] 💥 检查${apiDisplayName}连接时出错 ${video.id}:`, error)
     }
   }
 

@@ -129,7 +129,7 @@ class VideoTaskManager {
       ...task,
       status: 'completed',
       progress: 100,
-      statusText: '生成完成！',
+      statusText: i18n.t('videoCreator.completed'),
       videoUrl
     }
 
@@ -155,7 +155,7 @@ class VideoTaskManager {
     const failedTask: VideoTask = {
       ...task,
       status: 'failed',
-      statusText: '生成失败',
+      statusText: i18n.t('videoCreator.failed'),
       errorMessage
     }
 
@@ -261,7 +261,7 @@ class VideoTaskManager {
       : new Date(video.created_at)
 
     let progress = 0
-    let statusText = '准备中...'
+    let statusText = i18n.t('videoCreator.preparing')
 
     // 从metadata中提取进度信息
     if (video.metadata?.progressData) {
@@ -274,7 +274,7 @@ class VideoTaskManager {
       
       if (video.status === 'pending') {
         progress = Math.min(10, elapsedMinutes * 2)
-        statusText = '准备中...'
+        statusText = i18n.t('videoCreator.preparing')
       } else if (video.status === 'processing') {
         progress = Math.min(99, 10 + (elapsedMinutes / 1.5) * 89)
         statusText = progress > 80 ? i18n.t('videoCreator.almostComplete') : i18n.t('videoCreator.generating')

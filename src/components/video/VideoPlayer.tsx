@@ -7,6 +7,7 @@ import { extractVideoThumbnail } from '@/utils/videoThumbnail'
 import videoLoaderService, { type LoadProgress } from '@/services/VideoLoaderService'
 import thumbnailCacheService from '@/services/ThumbnailCacheService'
 import ProtectedDownloadService from '@/services/protectedDownloadService'
+import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 
 interface VideoPlayerProps {
   src: string
@@ -317,7 +318,7 @@ export default function VideoPlayer({
     >
       <video
         ref={videoRef}
-        src={src}
+        src={getProxyVideoUrl(src)}
         poster={poster || extractedPoster || undefined}
         className={`w-full h-full ${objectFit === 'cover' ? 'object-cover' : 'object-contain'}`}
         onClick={togglePlay}

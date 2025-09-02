@@ -24,7 +24,7 @@ export default function VideoCreator() {
   const { user } = useContext(AuthContext)
   
   // Find template from URL parameter or default to first template
-  const foundTemplate = templateIdFromUrl ? templates.find(t => t.slug === templateIdFromUrl) : null
+  const foundTemplate = templateIdFromUrl ? templates.find(t => t.id === templateIdFromUrl || t.slug === templateIdFromUrl) : null
   const initialTemplate = foundTemplate || templates[0]
   
   const [selectedTemplate, setSelectedTemplate] = useState(initialTemplate)
@@ -72,7 +72,7 @@ export default function VideoCreator() {
   // Handle template selection from URL parameter on component mount
   useEffect(() => {
     if (templateIdFromUrl) {
-      const templateFromUrl = templates.find(t => t.slug === templateIdFromUrl)
+      const templateFromUrl = templates.find(t => t.id === templateIdFromUrl || t.slug === templateIdFromUrl)
       if (templateFromUrl && templateFromUrl.id !== selectedTemplate.id) {
         setSelectedTemplate(templateFromUrl)
         
@@ -271,7 +271,12 @@ export default function VideoCreator() {
           prompt: prompt,
           parameters: params,
           creditsUsed: requiredCredits,
-          isPublic: false
+          isPublic: false,
+          // 新增宽高比和质量参数
+          aspectRatio: aspectRatio,
+          quality: quality === 'high' ? 'pro' : 'fast',
+          // 可以根据用户设置或模板需求选择API提供商
+          apiProvider: import.meta.env.VITE_PRIMARY_VIDEO_API as 'qingyun' | 'apicore' || 'qingyun'
         }
       })
 

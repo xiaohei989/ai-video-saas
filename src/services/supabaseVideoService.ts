@@ -45,11 +45,17 @@ class SupabaseVideoService {
     status?: Video['status']
     isPublic?: boolean
     veo3JobId?: string
+    aspectRatio?: '16:9' | '9:16'
+    quality?: 'fast' | 'pro'
+    apiProvider?: 'qingyun' | 'apicore'
   }): Promise<Video | null> {
     try {
-      // Store template ID in metadata since it's not a UUID
+      // Store template ID and other parameters in metadata since they're not direct DB fields
       const metadata: Record<string, any> = {
-        templateId: data.templateId || null
+        templateId: data.templateId || null,
+        aspectRatio: data.aspectRatio || '16:9',
+        quality: data.quality || 'fast',
+        apiProvider: data.apiProvider || 'qingyun'
       }
 
       const { data: video, error } = await supabase
@@ -60,7 +66,13 @@ class SupabaseVideoService {
           title: data.title || null,
           description: data.description || null,
           prompt: data.prompt || null,
-          parameters: data.parameters || {},
+          parameters: {
+            ...data.parameters || {},
+            // 也在parameters中存储一份，方便后续使用
+            aspectRatio: data.aspectRatio || '16:9',
+            quality: data.quality || 'fast',
+            apiProvider: data.apiProvider || 'qingyun'
+          },
           credits_used: data.creditsUsed,
           status: data.status || 'pending',
           is_public: data.isPublic || false,

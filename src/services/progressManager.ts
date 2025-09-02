@@ -15,8 +15,10 @@ export interface VideoProgress {
   startedAt?: Date
   elapsedTime?: number // 秒
   estimatedRemainingTime?: number // 秒
-  // 新增持久化相关字段
+  // API提供商信息
+  apiProvider?: 'qingyun' | 'apicore' // 使用的API提供商
   qingyunTaskId?: string // 青云API任务ID
+  apicoreTaskId?: string // APICore任务ID
   pollingAttempts?: number // 轮询次数
   lastPollingStatus?: string // 最后轮询状态
 }

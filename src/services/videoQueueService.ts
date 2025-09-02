@@ -39,6 +39,9 @@ export interface SubmitJobRequest {
     parameters?: Record<string, any>
     creditsUsed: number
     isPublic?: boolean
+    aspectRatio?: '16:9' | '9:16'
+    quality?: 'fast' | 'pro'
+    apiProvider?: 'qingyun' | 'apicore'
   }
   priority?: number
 }
@@ -360,7 +363,10 @@ class VideoQueueService {
       parameters: request.videoData.parameters,
       creditsUsed: request.videoData.creditsUsed,
       status: 'pending',
-      isPublic: request.videoData.isPublic
+      isPublic: request.videoData.isPublic,
+      aspectRatio: request.videoData.aspectRatio || '16:9',
+      quality: request.videoData.quality || 'fast',
+      apiProvider: request.videoData.apiProvider || 'qingyun'
     })
 
     if (!videoRecord) {
@@ -461,14 +467,22 @@ class VideoQueueService {
       const veo3Service = (await import('./veo3Service')).default
 
       // 调用视频生成API
+      // 从视频记录中获取配置参数，如果没有则使用默认值
+      const aspectRatio = (video.parameters?.aspectRatio as '16:9' | '9:16') || '16:9'
+      const quality = (video.parameters?.quality as 'fast' | 'pro') || import.meta.env.VITE_DEFAULT_VIDEO_QUALITY as 'fast' | 'pro' || 'fast'
+      const apiProvider = (video.parameters?.apiProvider as 'qingyun' | 'apicore') || import.meta.env.VITE_PRIMARY_VIDEO_API as 'qingyun' | 'apicore' || 'qingyun'
+      
+      console.log(`[QUEUE SERVICE] 视频生成参数: aspectRatio=${aspectRatio}, quality=${quality}, apiProvider=${apiProvider}`)
+      
       const response = await veo3Service.generateVideo({
         prompt: video.prompt || '',
         template: video.template_id || '',
         parameters: video.parameters || {},
         userId: userId,
         credits: video.credits_used || 0,
-        aspectRatio: '16:9',
-        model: 'fast', // 可以根据用户订阅等级动态设置
+        aspectRatio: aspectRatio,
+        model: quality,
+        apiProvider: apiProvider,
         videoRecordId: videoId
       })
 
