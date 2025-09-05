@@ -61,22 +61,46 @@ export function getEdgeStripeMode(): 'test' | 'production' {
 function getEnvironmentEdgeConfig(mode: 'test' | 'production'): EdgeStripeConfig {
   // 优先使用环境变量中的配置（支持动态切换）
   const secretKey = Deno.env.get('STRIPE_SECRET_KEY');
-  const basicPrice = Deno.env.get('VITE_STRIPE_BASIC_PRICE_ID');
-  const proPrice = Deno.env.get('VITE_STRIPE_PRO_PRICE_ID');
-  const enterprisePrice = Deno.env.get('VITE_STRIPE_ENTERPRISE_PRICE_ID');
   
-  if (secretKey && basicPrice && proPrice && enterprisePrice) {
+  // 🔧 修复：根据模式获取正确的环境变量名
+  const envPrefix = mode === 'test' ? 'VITE_STRIPE_TEST_' : 'VITE_STRIPE_PROD_';
+  
+  const basicPrice = Deno.env.get('VITE_STRIPE_BASIC_PRICE_ID') || Deno.env.get(`${envPrefix}BASIC_PRICE_ID`);
+  const proPrice = Deno.env.get('VITE_STRIPE_PRO_PRICE_ID') || Deno.env.get(`${envPrefix}PRO_PRICE_ID`);
+  const enterprisePrice = Deno.env.get('VITE_STRIPE_ENTERPRISE_PRICE_ID') || Deno.env.get(`${envPrefix}ENTERPRISE_PRICE_ID`);
+  
+  // 🔧 修复：添加年度价格ID获取
+  const basicAnnualPrice = Deno.env.get('VITE_STRIPE_BASIC_ANNUAL_PRICE_ID') || Deno.env.get(`${envPrefix}BASIC_ANNUAL_PRICE_ID`);
+  const proAnnualPrice = Deno.env.get('VITE_STRIPE_PRO_ANNUAL_PRICE_ID') || Deno.env.get(`${envPrefix}PRO_ANNUAL_PRICE_ID`);
+  const enterpriseAnnualPrice = Deno.env.get('VITE_STRIPE_ENTERPRISE_ANNUAL_PRICE_ID') || Deno.env.get(`${envPrefix}ENTERPRISE_ANNUAL_PRICE_ID`);
+  
+  console.log(`[EDGE_CONFIG] 🔍 Environment variables for ${mode}:`, {
+    secretKey: secretKey ? '✅' : '❌',
+    basicPrice: basicPrice || '❌',
+    proPrice: proPrice || '❌', 
+    enterprisePrice: enterprisePrice || '❌',
+    basicAnnualPrice: basicAnnualPrice || '❌',
+    proAnnualPrice: proAnnualPrice || '❌',
+    enterpriseAnnualPrice: enterpriseAnnualPrice || '❌'
+  });
+  
+  if (secretKey && basicPrice && proPrice && enterprisePrice && 
+      basicAnnualPrice && proAnnualPrice && enterpriseAnnualPrice) {
     return {
       secretKey,
       webhookSecret: '', // 必须使用环境变量 STRIPE_WEBHOOK_SIGNING_SECRET
       prices: {
         basic: basicPrice,
         pro: proPrice,
-        enterprise: enterprisePrice
+        enterprise: enterprisePrice,
+        basicAnnual: basicAnnualPrice,
+        proAnnual: proAnnualPrice,
+        enterpriseAnnual: enterpriseAnnualPrice
       }
     };
   }
   
+  console.log(`[EDGE_CONFIG] ⚠️ Falling back to static config for ${mode}`);
   // 回退到静态配置
   return EDGE_STRIPE_CONFIGS[mode];
 }
@@ -145,7 +169,12 @@ export function getEdgeStripePriceId(planId: 'basic' | 'pro' | 'enterprise'): st
 export function mapPriceIdToTier(priceId: string): string {
   console.log(`[PRICE_MAPPING] 🔍 Input Price ID: ${priceId}`)
   
-  const allConfigs = [EDGE_STRIPE_CONFIGS.test, EDGE_STRIPE_CONFIGS.production];
+  // 🔧 修复：获取当前实际配置（包含环境变量）
+  const currentConfig = getEdgeStripeConfig();
+  const allConfigs = [currentConfig, EDGE_STRIPE_CONFIGS.test, EDGE_STRIPE_CONFIGS.production];
+  
+  console.log(`[PRICE_MAPPING] 🔍 Current mode: ${getEdgeStripeMode()}`)
+  console.log(`[PRICE_MAPPING] 🔍 Current config prices:`, currentConfig.prices)
   
   for (const config of allConfigs) {
     console.log(`[PRICE_MAPPING] 🔍 Checking config:`, config.prices)
@@ -181,7 +210,24 @@ export function mapPriceIdToTier(priceId: string): string {
   
   console.log(`[PRICE_MAPPING] ⚠️ No exact match found, trying fallback matching...`)
   
-  // 兜底模式匹配
+  // 🔧 改进：更精确的fallback匹配逻辑
+  // 先检查已知的测试价格ID模式
+  const knownTestPrices = {
+    'price_1S0DRpGBOWryw3zINE9dAMkH': 'basic',          // 测试基础版月付
+    'price_1S0DSRGBOWryw3zIhUvxPGv5': 'pro',            // 测试专业版月付  
+    'price_1S0DT6GBOWryw3zIDi08pwgl': 'enterprise',     // 测试企业版月付
+    'price_1S1f6ZGBOWryw3zI6Spn5iNf': 'basic-annual',   // 测试基础版年付
+    'price_1S1fHBGBOWryw3zIK8731Uhx': 'pro-annual',     // 测试专业版年付
+    'price_1S1fHoGBOWryw3zIxME77BMZ': 'enterprise-annual' // 测试企业版年付
+  };
+  
+  if (knownTestPrices[priceId]) {
+    const result = knownTestPrices[priceId];
+    console.log(`[PRICE_MAPPING] ✅ Known test price matched: ${priceId} -> ${result}`);
+    return result;
+  }
+  
+  // 兜底模式匹配（字符串包含检查）
   if (priceId.includes('basic')) {
     const result = priceId.includes('annual') || priceId.includes('year') ? 'basic-annual' : 'basic';
     console.log(`[PRICE_MAPPING] 🎯 Fallback basic result: ${result}`)
@@ -199,6 +245,7 @@ export function mapPriceIdToTier(priceId: string): string {
   }
   
   console.error(`[PRICE_MAPPING] ❌ Unknown price ID: ${priceId}, defaulting to basic`);
+  console.error(`[PRICE_MAPPING] ❌ Available configs:`, allConfigs.map(c => c.prices));
   return 'basic'; // 默认基础版
 }
 

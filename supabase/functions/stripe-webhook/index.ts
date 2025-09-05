@@ -37,7 +37,7 @@ const TIER_VALUES = {
   free: 0,
   basic: 1,
   pro: 2,
-  premium: 3,  // enterprise对应premium
+  enterprise: 3,  // 统一使用enterprise
   // 年度计划使用相同的基础价值（因为年度是计费周期变化，不是等级变化）
   'basic-annual': 1,
   'pro-annual': 2,
@@ -49,7 +49,7 @@ const TIER_CREDITS = {
   free: 0,
   basic: 200,
   pro: 1500,
-  premium: 6000,
+  enterprise: 6000,  // 统一使用enterprise
   // 年度计划的积分配额（年度总积分）
   'basic-annual': 2400,     // 200 * 12
   'pro-annual': 18000,      // 1500 * 12  
@@ -511,6 +511,24 @@ async function handleNewSubscription(
   console.log('[NEW_SUBSCRIPTION] 🆕 Input tier:', tier)
   console.log('[NEW_SUBSCRIPTION] 🆕 TierType check:', typeof tier, tier)
   console.log('[NEW_SUBSCRIPTION] 🆕 subscriptionData:', JSON.stringify(subscriptionData, null, 2))
+  
+  // 🔧 在创建新订阅前，先取消用户的其他active订阅
+  console.log('[NEW_SUBSCRIPTION] 🔄 Cancelling existing active subscriptions...')
+  const { error: cancelError } = await supabase
+    .from('subscriptions')
+    .update({ 
+      status: 'cancelled', 
+      updated_at: new Date().toISOString() 
+    })
+    .eq('user_id', subscriptionData.user_id)
+    .eq('status', 'active')
+
+  if (cancelError) {
+    console.warn('[NEW_SUBSCRIPTION] ⚠️ Error cancelling existing subscriptions:', cancelError)
+    // 不抛出错误，继续创建新订阅
+  } else {
+    console.log('[NEW_SUBSCRIPTION] ✅ Existing active subscriptions cancelled')
+  }
   
   // 创建订阅记录 - 添加详细调试
   console.log('[NEW_SUBSCRIPTION] 🔄 Attempting database insert...')

@@ -12,7 +12,7 @@ export class SubscriptionService {
       'free': 'basic',
       'basic': 'basic',
       'pro': 'pro',
-      'premium': 'enterprise', // 数据库中的premium对应前端的enterprise
+      'enterprise': 'enterprise', // 统一使用enterprise
       
       // 年度计划映射
       'basic-annual': 'basic-annual',
@@ -42,19 +42,24 @@ export class SubscriptionService {
    */
   static async getCurrentSubscription(userId: string): Promise<Subscription | null> {
     try {
+      // 🔧 修复: 添加排序和LIMIT防止多记录错误
       const { data, error } = await supabase
         .from('subscriptions')
         .select('*')
         .eq('user_id', userId)
         .eq('status', 'active')
-        .single()
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          // 没有找到订阅记录
-          return null
-        }
+        console.error('获取订阅信息失败:', error)
         throw error
+      }
+
+      // maybeSingle() 返回 null 当没有记录时，这是正常情况（免费用户）
+      if (!data) {
+        return null
       }
 
       return {

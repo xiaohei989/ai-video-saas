@@ -288,6 +288,7 @@ class StripeService {
    */
   async getUserSubscription(userId: string): Promise<SubscriptionStatus | null> {
     try {
+      // 🔧 修复: 添加排序和LIMIT防止多记录错误
       const { data, error } = await supabase
         .from('subscriptions')
         .select(`
@@ -301,14 +302,17 @@ class StripeService {
         `)
         .eq('user_id', userId)
         .eq('status', 'active')
-        .single()
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          // No subscription found
-          return null
-        }
         console.error('Error fetching subscription:', error)
+        return null
+      }
+
+      // maybeSingle() 返回 null 当没有记录时，这是正常情况（免费用户）
+      if (!data) {
         return null
       }
 
