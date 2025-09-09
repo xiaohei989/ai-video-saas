@@ -95,6 +95,19 @@ export default function ConfigPanel({
     }
   }, [params.character_type, params.historical_scene, selectedTemplate.slug])
 
+  // Baby Profession Interview: Auto-fill dialogues when profession changes
+  useEffect(() => {
+    if (selectedTemplate.slug === 'baby-profession-interview' && params.baby_profession) {
+      const defaultDialogue = PromptGenerator.getDefaultDialogueForProfession(selectedTemplate, params.baby_profession)
+      
+      if (defaultDialogue.reporter_question && defaultDialogue.baby_response) {
+        // Only update if the current values are empty or match the previous profession's defaults
+        onParamChange('reporter_question', defaultDialogue.reporter_question)
+        onParamChange('baby_response', defaultDialogue.baby_response)
+      }
+    }
+  }, [params.baby_profession, selectedTemplate.slug])
+
   // Reset validation error when parameters change
   useEffect(() => {
     setShowValidationError(false)

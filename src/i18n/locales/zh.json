@@ -159,6 +159,16 @@
     "updateSuccess": "资料更新成功",
     "usernameExists": "用户名已被占用",
     "updateError": "更新资料失败",
+    "avatarUploadFailed": "头像上传失败",
+    "continueWithoutAvatar": "继续保存其他信息",
+    "profileUpdatedExceptAvatar": "个人资料已更新（头像除外）",
+    "usernameAlreadyTaken": "用户名已被使用，请选择其他用户名",
+    "networkError": "网络连接异常，请重试",
+    "loginStatusError": "登录状态异常，请重新登录后再试",
+    "permissionError": "没有权限上传头像，请联系客服",
+    "unsupportedFileType": "图片格式不支持，请使用JPG、PNG、GIF或WebP格式",
+    "fileTooLarge": "图片文件太大，请压缩后重试（限制5MB）",
+    "uploadFailed": "头像上传失败",
     "userNotFound": "用户未找到",
     "userNotFoundDescription": "您查找的用户不存在",
     "loginToFollow": "请登录以关注用户",
@@ -316,6 +326,16 @@
       "placeholder": "排序方式"
     }
   },
+  "pagination": {
+    "showing": "显示第 {{start}}-{{end}} 项，共 {{total}} 项",
+    "itemsPerPage": "每页显示",
+    "items": "项",
+    "navigation": "分页导航",
+    "firstPage": "第一页",
+    "prevPage": "上一页",
+    "nextPage": "下一页",
+    "lastPage": "最后一页"
+  },
   "video": {
     "myVideos": "我的视频",
     "loading": "正在加载视频...",
@@ -374,6 +394,13 @@
     "buy": "购买积分",
     "history": "交易历史",
     "insufficient": "积分不足"
+  },
+  "upgradeDialog": {
+    "title": "需要付费订阅",
+    "description": "9:16 竖屏格式是付费用户专享功能。升级到任意付费计划即可解锁此功能，享受更多创作可能性。",
+    "cancel": "取消",
+    "upgrade": "立即升级",
+    "aspectRatioRestriction": "9:16 格式需要付费订阅"
   },
   "videoCreator": {
     "outputQuality": "输出质量",
@@ -450,7 +477,19 @@
     "videoUrlNotExists": "视频URL不存在，无法下载",
     "downloadStarting": "正在启动下载，如果没有自动下载，请在新窗口中右键保存视频",
     "downloadStarted": "下载已开始，请查看浏览器下载列表",
-    "downloadFailed": "下载失败，请重试。如果问题持续，请尝试在新窗口中右键保存"
+    "downloadFailed": "下载失败，请重试。如果问题持续，请尝试在新窗口中右键保存",
+    "downloading": "下载中...",
+    "downloadHD": "下载高清版",
+    "upgradeToDownload": "升级后可下载",
+    "upgradePrompt": {
+      "title": "升级后可无限下载高清视频！",
+      "description": "现在升级享受专业版所有功能",
+      "bannerTitle": "升级解锁下载功能",
+      "bannerDescription": "付费用户可无限下载高清视频，永久保存您的创作",
+      "upgradeNow": "立即升级",
+      "checkingSubscription": "检测订阅状态中...",
+      "subscriptionStatusLoading": "加载订阅状态中..."
+    }
   },
   "pricing": {
     "popular": "热门",
@@ -560,7 +599,7 @@
     "planDetails": {
       "mostPopular": "最受欢迎",
       "monthly": "月",
-      "yearly": "年",
+      "yearly": "/年",
       "monthlyCredits": "每月 {{credits}} 积分",
       "yearlyCredits": "每年 {{credits}} 积分",
       "nextRenewal": "下次续费: {{date}}",
@@ -570,25 +609,25 @@
       "title": "功能特性",
       "basic": [
         "每月200积分",
-        "标准视频质量 (20积分/视频)",
-        "基础模板库",
+        "无限高清视频下载",
+        "同时生成：3个视频",
+        "9:16 竖屏格式（付费专享）",
         "邮件支持"
       ],
       "pro": [
         "每月1500积分",
-        "高质量视频 (100积分/视频)",
-        "标准视频 (20积分/视频)",
-        "完整模板库",
+        "无限高清视频下载",
+        "同时生成：5个视频",
+        "9:16 竖屏格式（付费专享）",
         "优先支持"
       ],
       "enterprise": [
         "每月6000积分",
-        "高质量视频 (100积分/视频)",
-        "标准视频 (20积分/视频)",
-        "无限模板使用",
+        "无限高清视频下载",
+        "同时生成：10个视频",
+        "9:16 竖屏格式（付费专享）",
         "专属客服",
-        "API访问",
-        "团队协作"
+        "API访问"
       ]
     },
     "status": {
@@ -645,14 +684,30 @@
     "cancel": "取消",
     "save": "保存",
     "saving": "保存中...",
-    "delete": "删除",
+    "delete": "删除", 
     "edit": "编辑",
     "view": "查看",
     "viewAll": "查看全部",
     "share": "分享",
     "signOut": "退出",
     "backToHome": "返回首页",
-    "loadMore": "加载更多"
+    "loadMore": "加载更多",
+    "unknownError": "未知错误"
+  },
+  "shareModal": {
+    "title": "分享视频获得积分",
+    "description": "展示你的作品，邀请朋友注册，双方都能获得积分奖励！",
+    "shareRewards": "分享奖励",
+    "showCreation": "展示你的4元作品",
+    "inviteFriends": "邀请朋友: +20积分",
+    "rewardNote": "💡 朋友注册后你们都获得20积分奖励！",
+    "copyShareContent": "复制分享内容",
+    "copied": "已复制！",
+    "copiedToClipboard": "已复制到剪贴板！",
+    "shareContentText": "🤯 我用4块钱做了这个爆款视频！\n\n📺 直接观看：{{videoUrl}}\n\n以前要花几千块的专业视频，现在AI帮你4块钱搞定！零技术，普通人也能做！\n\n💰 想试试吗？\n用我的邀请码注册，免费获得20积分：\n👉 {{inviteUrl}}\n\n#4块钱视频 #AI神器 #免费积分 #零门槛 #爆款秘籍",
+    "instagramCopied": "Instagram内容已复制！请在Instagram中粘贴发布",
+    "platformOpened": "已打开{{platform}}分享页面！",
+    "getReferralCodeFailed": "获取邀请码失败"
   },
   "theme": {
     "theme": "主题",
@@ -767,6 +822,20 @@
         "descriptionTooLong": "描述不能超过2000个字符",
         "fileTooLarge": "文件大小不能超过10MB",
         "fileTypeNotSupported": "不支持的文件类型"
+      },
+      "freeUserSupport": {
+        "emailSupportTitle": "邮件支持",
+        "emailSupportDescription": "作为免费用户，您可以通过邮件与我们联系。我们会在24-48小时内回复您的问题。",
+        "contactEmail": "联系邮箱",
+        "sendEmail": "发送邮件",
+        "upgradePrompt": "想要获得更快的响应？",
+        "upgradeLink": "升级到付费计划",
+        "upgradeDescription": "享受优先支持服务",
+        "ticketSystemTitle": "工单系统仅限付费用户",
+        "ticketSystemDescription": "升级到任意付费计划即可使用工单系统，享受更快的技术支持响应。",
+        "freeUserContactPrompt": "免费用户请通过邮件联系",
+        "upgradeToPaid": "升级到付费计划",
+        "loginPromptSupport": "请先登录以联系客服支持"
       }
     },
     "tickets": {
@@ -840,6 +909,101 @@
     "connect": "联系我们",
     "allRightsReserved": "保留所有权利。"
   },
+  "privacy": {
+    "cookieConsent": {
+      "title": "我们使用Cookie来改善您的体验",
+      "description": "我们使用Google Analytics来了解您如何使用我们的网站，以便改进我们的服务。这些数据是匿名的，不会用于广告。",
+      "accept": "接受所有",
+      "decline": "仅必要Cookie", 
+      "showDetails": "了解详情",
+      "hideDetails": "隐藏详情",
+      "essential": "必要Cookie",
+      "essentialDesc": "用于网站基本功能，包括登录状态和主题设置。",
+      "analytics": "分析Cookie",
+      "analyticsDesc": "Google Analytics用于了解网站使用情况，帮助我们改进产品。",
+      "dataInfo": "数据完全匿名化，不包含个人身份信息。您可以随时在隐私设置中更改此选择。",
+      "policyLink": "查看我们的",
+      "privacyPolicy": "隐私政策",
+      "and": "和",
+      "cookiePolicy": "Cookie政策"
+    }
+  },
+  "analytics": {
+    "testPage": {
+      "title": "Google Analytics 测试面板",
+      "subtitle": "测试和验证Analytics事件跟踪功能",
+      "status": {
+        "title": "Analytics状态",
+        "description": "当前Analytics服务状态和配置信息",
+        "enabled": "已启用",
+        "waitingConsent": "等待用户同意",
+        "measurementId": "Measurement ID",
+        "debugMode": "Debug模式",
+        "userConsent": "用户同意",
+        "environment": "环境",
+        "printDebugInfo": "打印调试信息",
+        "notConfigured": "未配置"
+      },
+      "presetEvents": {
+        "title": "预设事件测试",
+        "description": "点击按钮发送预设的Analytics事件",
+        "templateView": "模板查看",
+        "templateViewDesc": "跟踪用户查看模板事件",
+        "templateLike": "模板点赞",
+        "templateLikeDesc": "跟踪用户点赞模板事件",
+        "videoGenerationStart": "视频生成开始",
+        "videoGenerationStartDesc": "跟踪视频生成开始事件",
+        "videoGenerationComplete": "视频生成完成",
+        "videoGenerationCompleteDesc": "跟踪视频生成完成事件",
+        "videoDownload": "视频下载",
+        "videoDownloadDesc": "跟踪视频下载事件",
+        "videoShare": "视频分享",
+        "videoShareDesc": "跟踪视频分享事件",
+        "subscriptionStart": "订阅开始",
+        "subscriptionStartDesc": "跟踪用户开始订阅流程",
+        "creditsPurchase": "积分购买",
+        "creditsPurchaseDesc": "跟踪积分购买事件",
+        "themeChange": "主题切换",
+        "themeChangeDesc": "跟踪主题切换事件",
+        "errorTracking": "错误跟踪",
+        "errorTrackingDesc": "跟踪错误事件",
+        "sendEvent": "发送事件"
+      },
+      "customEvents": {
+        "title": "自定义事件测试",
+        "description": "创建和发送自定义Analytics事件",
+        "actionLabel": "事件名称 (action)",
+        "actionPlaceholder": "例: button_click",
+        "categoryLabel": "事件类别 (category)",
+        "categoryPlaceholder": "例: user_interaction",
+        "labelLabel": "事件标签 (label)",
+        "labelPlaceholder": "例: header_button",
+        "valueLabel": "事件值 (value)",
+        "valuePlaceholder": "例: 1",
+        "sendCustomEvent": "发送自定义事件",
+        "fillRequired": "请填写事件名称和类别"
+      },
+      "instructions": {
+        "title": "使用说明",
+        "step1": {
+          "title": "1. 配置GA Measurement ID:",
+          "description": "在.env文件中设置 VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX"
+        },
+        "step2": {
+          "title": "2. 用户同意:",
+          "description": "用户需要在Cookie横幅中同意Analytics跟踪才能发送事件"
+        },
+        "step3": {
+          "title": "3. 查看数据:",
+          "description": "事件发送后，可在Google Analytics实时报告中查看数据（通常延迟1-5分钟）"
+        },
+        "step4": {
+          "title": "4. 调试:",
+          "description": "开发环境下事件仅在控制台打印，不会发送到GA。生产环境会正常发送。"
+        }
+      }
+    }
+  },
   "legal": {
     "privacyPolicy": {
       "title": "隐私政策",
@@ -879,6 +1043,94 @@
       "legalDocument": "法律文档",
       "printPdf": "打印 / PDF",
       "backToTop": "返回顶部"
+    }
+  },
+  "common": {
+    "retry": "重试",
+    "remaining": "剩余",
+    "loading": "加载中...",
+    "error": "错误",
+    "cancel": "取消",
+    "confirm": "确认"
+  },
+  "video": {
+    "preview": "视频预览",
+    "previewPaused": "视频预览暂停",
+    "previewFailed": "视频预览失败",
+    "loading": "视频加载中...",
+    "loadFailed": "视频加载失败",
+    "player": "视频播放器",
+    "thumbnail": "视频缩略图",
+    "cache": {
+      "confirmClear": "确定要清除所有视频相关缓存吗？这将清除视频预览、缩略图缓存等数据。",
+      "clearing": "正在清除缓存...",
+      "cleared": "缓存清除成功"
+    }
+  },
+  "admin": {
+    "clearVideoCache": "清除视频缓存",
+    "clearCacheConfirm": "确定要清除所有视频相关缓存吗？这将清除视频预览、缩略图缓存等数据。",
+    "cacheCleared": "视频缓存清除成功",
+    "debugInfo": "管理员系统调试信息",
+    "checking": "检查中...",
+    "recheck": "重新检查",
+    "refreshAuth": "刷新管理员认证",
+    "refreshCacheStats": "刷新缓存统计",
+    "sessionStatus": "会话状态",
+    "userPermissions": "用户权限",
+    "localStorage": "本地存储",
+    "apiTest": "API测试",
+    "authRefreshed": "管理员认证已刷新",
+    "noPermission": "当前用户没有管理员权限",
+    "refreshFailed": "刷新失败"
+  },
+  "seo": {
+    "pages": {
+      "home": {
+        "title": "ASMR视频AI生成器 | 治愈放松视频轻松制作 | 免费试用",
+        "description": "专业ASMR视频AI生成平台，30秒制作治愈放松短视频。提供丰富模板库，支持个性化定制，适合抖音、小红书等平台。立即免费试用！",
+        "keywords": "ASMR视频,AI视频生成,治愈视频,放松视频,短视频制作,AI视频生成器,视频模板,一键生成,抖音视频,小红书视频"
+      },
+      "templates": {
+        "title": "热门ASMR视频模板 | AI一键生成治愈短视频 | 专业模板库",
+        "description": "精选热门ASMR视频模板，AI一键生成专业治愈短视频。包含创意、视觉冲击、放松等多种风格，适合各类内容创作需求。",
+        "keywords": "ASMR模板,视频模板库,AI生成模板,治愈视频模板,放松视频素材,短视频模板,创意视频模板"
+      },
+      "create": {
+        "title": "AI ASMR视频生成器 | 30秒制作专业治愈视频",
+        "description": "强大的AI ASMR视频生成工具，选择模板、输入参数，30秒内制作专业治愈视频。支持个性化定制，一键导出高清视频。",
+        "keywords": "ASMR视频制作,AI视频生成器,治愈视频制作,放松视频生成,视频创作工具,AI视频编辑器"
+      },
+      "videos": {
+        "title": "我的ASMR视频作品 | AI生成视频管理中心",
+        "description": "管理您的ASMR视频作品，查看生成历史、下载高清视频、分享到社交平台。AI生成的治愈视频作品一站式管理。",
+        "keywords": "我的视频,ASMR作品,视频管理,视频下载,视频分享,治愈视频收藏"
+      },
+      "pricing": {
+        "title": "ASMR视频制作价格 | AI视频生成器订阅套餐 | 积分购买",
+        "description": "ASMR视频AI生成器优惠价格套餐，月订阅最低9.99美元起。支持积分购买、邀请奖励，性价比超高的视频制作方案。",
+        "keywords": "ASMR视频价格,AI视频生成器价格,视频制作套餐,视频制作订阅,AI视频工具价格"
+      },
+      "profile": {
+        "title": "用户中心 | ASMR视频创作者个人中心",
+        "description": "管理您的个人资料、查看视频作品、设置账户信息。专为ASMR视频创作者设计的个人管理中心。",
+        "keywords": "用户中心,个人中心,ASMR创作者,视频创作者,账户管理"
+      },
+      "signin": {
+        "title": "登录 | ASMR视频AI生成器",
+        "description": "登录您的ASMR视频AI生成器账户，继续您的创作之旅。支持Google快速登录，安全便捷。",
+        "keywords": "登录,用户登录,ASMR视频登录,AI视频生成器登录"
+      },
+      "signup": {
+        "title": "注册 | 免费开始ASMR视频创作之旅",
+        "description": "免费注册ASMR视频AI生成器，立即开始您的治愈视频创作之旅。新用户注册即送免费积分。",
+        "keywords": "注册,免费注册,ASMR视频注册,AI视频生成器注册,免费试用"
+      },
+      "help": {
+        "title": "帮助中心 | ASMR视频制作教程与FAQ",
+        "description": "ASMR视频AI生成器帮助中心，提供详细制作教程、常见问题解答、技术支持。快速上手视频创作。",
+        "keywords": "帮助中心,视频制作教程,ASMR制作指南,常见问题,技术支持,使用教程"
+      }
     }
   }
 }

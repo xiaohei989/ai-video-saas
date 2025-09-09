@@ -1,0 +1,344 @@
+{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "slug": "selfie-vlog-animals",
+  "name": "Selfie Vlog Animals",
+  "icon": "📱",
+  "description": "Two anthropomorphic animals having a casual conversation in selfie-style video format",
+  "previewUrl": "/templates/videos/selfie-vlog-animals.mp4",
+  "credits": 20,
+
+  "tags": ["animals", "selfie", "vlog", "conversation", "anthropomorphic", "casual", "forest"],
+  "createdAt": "2025-01-21T12:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-21T12:00:00Z",
+
+  "promptTemplate": {
+    "model": "veo3",
+    "duration": "8s",
+    "aspect_ratio": "16:9",
+    
+    "product": {
+      "name": "Selfie Vlog Animals",
+      "type": "Anthropomorphic Animal Conversation",
+      "brand_style": "Realistic, casual, friendly vlog style"
+    },
+
+    "visual_core": {
+      "description": "An anthropomorphic {main_character} and an anthropomorphic {side_character} filming themselves in selfie style, having a natural conversation in a forest setting.",
+      "style": "photorealistic anthropomorphic {main_character} and {side_character}, casual vlog aesthetic",
+      "camera": "handheld selfie perspective with natural shake and movement",
+      "lighting": "warm natural daylight with dynamic forest shadows",
+      "environment": "sunlit forest clearing with moving light patterns and shimmering river background"
+    },
+
+    "elements": [
+      "{main_character_description} holding camera in selfie position",
+      "{side_character_description} occasionally leaning into frame",
+      "natural handheld camera movement and micro-adjustments",
+      "sunlit forest clearing with dappled light",
+      "shimmering river visible in background",
+      "casual conversational gestures and expressions"
+    ],
+
+    "audio": {
+      "dialogue": "natural conversation between {main_character} and {side_character}",
+      "ambience": "gentle forest sounds, rustling leaves",
+      "tone": "casual, friendly, playful vlog atmosphere"
+    },
+
+    "shots": [
+      {
+        "time": "0-3s",
+        "description": "Selfie-style shot with natural handheld shake, as if the camera is held by the {main_character} itself. {main_character_description} standing upright naturally, mouth moving expressively as if speaking, one paw raised making casual gestures. Next to the {main_character}, {side_character_description} occasionally leans into frame, smiling at the camera. Background is a sunlit forest clearing with moving light patterns.",
+        "camera": "medium close-up selfie framing for two characters",
+        "audio": "ambient forest sounds, casual introductory chatter"
+      },
+      {
+        "time": "3-6s",
+        "description": "Camera sways slightly with each small movement, focus shifting subtly as the {main_character} turns toward the {side_character}. {main_character} says in a playful tone: '{dialogue_main_1}' {side_character} laughs and replies: '{dialogue_side_1}' Both characters exchange a quick glance and laugh naturally.",
+        "camera": "slight sway and natural micro-adjustments, maintaining selfie perspective",
+        "audio": "clear dialogue with natural laughter and reactions"
+      },
+      {
+        "time": "6-8s",
+        "description": "{main_character} lowers paw and points toward a shimmering river in the background: '{dialogue_main_2}' {side_character} responds enthusiastically: '{dialogue_side_2}' Camera jiggles slightly as if adjusting grip, then tilts upward toward the bright sky for a cheerful ending.",
+        "camera": "gentle tilt and adjustment, ending on upward sky shot",
+        "audio": "enthusiastic dialogue with gradual ambient fade"
+      }
+    ],
+
+    "camera": {
+      "movement": "noticeable but smooth handheld shake, slight sway and natural micro-adjustments, no visible device",
+      "fov": "medium close-up selfie framing for two characters"
+    },
+
+    "style": {
+      "lighting": "warm daylight with dynamic shadows",
+      "color_grade": "cinematic and vibrant",
+      "frame_rate": "high FPS for smooth realism"
+    },
+
+    "keywords": [
+      "selfie vlog",
+      "anthropomorphic animals", 
+      "{main_character}",
+      "{side_character}",
+      "handheld camera",
+      "natural conversation",
+      "forest setting",
+      "casual friendly"
+    ]
+  },
+
+  "params": {
+    "main_character": {
+      "type": "select",
+      "label": "Main Character",
+      "required": true,
+      "default": "tiger",
+      "options": [
+        {
+          "value": "tiger",
+          "label": "🐯 Tiger",
+          "metadata": {
+            "main_character_description": "Realistic anthropomorphic tiger"
+          }
+        },
+        {
+          "value": "lion",
+          "label": "🦁 Lion",
+          "metadata": {
+            "main_character_description": "Majestic anthropomorphic lion"
+          }
+        },
+        {
+          "value": "wolf",
+          "label": "🐺 Wolf",
+          "metadata": {
+            "main_character_description": "Cool anthropomorphic wolf"
+          }
+        },
+        {
+          "value": "yeti",
+          "label": "❄️ Yeti",
+          "metadata": {
+            "main_character_description": "Fluffy white anthropomorphic yeti"
+          }
+        },
+        {
+          "value": "bigfoot",
+          "label": "🦶 Bigfoot",
+          "metadata": {
+            "main_character_description": "Mysterious anthropomorphic bigfoot"
+          }
+        },
+        {
+          "value": "capybara",
+          "label": "🦫 Capybara",
+          "metadata": {
+            "main_character_description": "Chill anthropomorphic capybara"
+          }
+        },
+        {
+          "value": "cat",
+          "label": "🐱 Cat",
+          "metadata": {
+            "main_character_description": "Elegant anthropomorphic cat"
+          }
+        },
+        {
+          "value": "dog",
+          "label": "🐕 Dog",
+          "metadata": {
+            "main_character_description": "Friendly anthropomorphic dog"
+          }
+        },
+        {
+          "value": "panda",
+          "label": "🐼 Panda",
+          "metadata": {
+            "main_character_description": "Cheerful anthropomorphic panda"
+          }
+        },
+        {
+          "value": "rabbit",
+          "label": "🐰 Rabbit",
+          "metadata": {
+            "main_character_description": "Energetic anthropomorphic rabbit"
+          }
+        },
+        {
+          "value": "bear",
+          "label": "🐻 Bear",
+          "metadata": {
+            "main_character_description": "Strong anthropomorphic bear"
+          }
+        },
+        {
+          "value": "koala",
+          "label": "🐨 Koala",
+          "metadata": {
+            "main_character_description": "Relaxed anthropomorphic koala"
+          }
+        },
+        {
+          "value": "penguin",
+          "label": "🐧 Penguin",
+          "metadata": {
+            "main_character_description": "Cute anthropomorphic penguin"
+          }
+        }
+      ]
+    },
+
+    "side_character": {
+      "type": "select",
+      "label": "Side Character",
+      "required": true,
+      "default": "panda",
+      "options": [
+        {
+          "value": "tiger",
+          "label": "🐯 Tiger",
+          "metadata": {
+            "side_character_description": "Realistic anthropomorphic tiger"
+          }
+        },
+        {
+          "value": "lion",
+          "label": "🦁 Lion",
+          "metadata": {
+            "side_character_description": "Majestic anthropomorphic lion"
+          }
+        },
+        {
+          "value": "wolf",
+          "label": "🐺 Wolf",
+          "metadata": {
+            "side_character_description": "Cool anthropomorphic wolf"
+          }
+        },
+        {
+          "value": "yeti",
+          "label": "❄️ Yeti",
+          "metadata": {
+            "side_character_description": "Fluffy white anthropomorphic yeti"
+          }
+        },
+        {
+          "value": "bigfoot",
+          "label": "🦶 Bigfoot",
+          "metadata": {
+            "side_character_description": "Mysterious anthropomorphic bigfoot"
+          }
+        },
+        {
+          "value": "capybara",
+          "label": "🦫 Capybara",
+          "metadata": {
+            "side_character_description": "Chill anthropomorphic capybara"
+          }
+        },
+        {
+          "value": "cat",
+          "label": "🐱 Cat",
+          "metadata": {
+            "side_character_description": "Elegant anthropomorphic cat"
+          }
+        },
+        {
+          "value": "dog",
+          "label": "🐕 Dog",
+          "metadata": {
+            "side_character_description": "Friendly anthropomorphic dog"
+          }
+        },
+        {
+          "value": "panda",
+          "label": "🐼 Panda",
+          "metadata": {
+            "side_character_description": "Cheerful anthropomorphic panda"
+          }
+        },
+        {
+          "value": "rabbit",
+          "label": "🐰 Rabbit",
+          "metadata": {
+            "side_character_description": "Energetic anthropomorphic rabbit"
+          }
+        },
+        {
+          "value": "bear",
+          "label": "🐻 Bear",
+          "metadata": {
+            "side_character_description": "Strong anthropomorphic bear"
+          }
+        },
+        {
+          "value": "koala",
+          "label": "🐨 Koala",
+          "metadata": {
+            "side_character_description": "Relaxed anthropomorphic koala"
+          }
+        },
+        {
+          "value": "penguin",
+          "label": "🐧 Penguin",
+          "metadata": {
+            "side_character_description": "Cute anthropomorphic penguin"
+          }
+        }
+      ]
+    },
+
+    "dialogue_main_1": {
+      "type": "text",
+      "label": "Main Character Line 1",
+      "placeholder": "Enter main character's first line...",
+      "required": true,
+      "default": "I told him we're jogging today, guess what he brought?"
+    },
+
+    "dialogue_main_2": {
+      "type": "text",
+      "label": "Main Character Line 2",
+      "placeholder": "Enter main character's second line...",
+      "required": true,
+      "default": "That's our gym today!"
+    },
+
+    "dialogue_side_1": {
+      "type": "text",
+      "label": "Side Character Line 1",
+      "placeholder": "Enter side character's first line...",
+      "required": true,
+      "default": "Snacks, of course!"
+    },
+
+    "dialogue_side_2": {
+      "type": "text",
+      "label": "Side Character Line 2",
+      "placeholder": "Enter side character's second line...",
+      "required": true,
+      "default": "And that's my post-workout meal!"
+    },
+
+    "main_character_description": {
+      "type": "hidden",
+      "linkedTo": "main_character",
+      "linkType": "metadata"
+    },
+
+    "side_character_description": {
+      "type": "hidden",
+      "linkedTo": "side_character", 
+      "linkType": "metadata"
+    },
+
+    "makePublic": {
+      "type": "toggle",
+      "label": "Make video public",
+      "default": false
+    }
+  }
+}

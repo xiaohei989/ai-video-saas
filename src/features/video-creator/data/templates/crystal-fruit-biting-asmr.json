@@ -1,0 +1,68 @@
+{
+  "id": "a8c5f2d9-4e7b-3a6c-8f1d-2b9e5a8c4f7e",
+  "slug": "crystal-fruit-biting-asmr",
+  "name": "Crystal Fruit Biting ASMR",
+  "icon": "💎",
+  "description": "Surrealistic ASMR close-up of biting into crystal-like fruits with customizable colors and materials",
+  "previewUrl": "/templates/videos/crystal-fruit-biting-asmr.mp4",
+
+  "tags": ["asmr", "crystal", "fruit", "biting", "surrealistic", "close-up", "sensory", "glass-art"],
+  "createdAt": "2025-01-29T20:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-29T20:00:00Z",
+  "promptTemplate": "Surrealistic ASMR close-up, a woman gently bites into a smooth, {color} {material}-like {fruit_type}. The surface exudes a soft sheen, rich in texture, with a delicate stem remaining on top, reminiscent of {material} art. Her lips part gently as a fair-skinned hand with neatly trimmed nails cradles the {fruit_type}. Captured in slow motion, she bites into the {fruit_type} flesh, and at the instant of biting, small, {color} {material} fragments burst from between her teeth and lips. These fragments refract soft light, naturally falling down in a slow and rhythmic chewing pace. The moist sound of chewing intertwines with the crisp, subtle cracks characteristic of {material}. Each bite is an ASMR feast—layered, quiet, and delicate, transporting viewers into a sensory haze. Emphasizing touch, sound, and vivid visual details to satisfy ASMR cravings.",
+
+  "params": {
+    "fruit_type": {
+      "type": "select",
+      "label": "Fruit Type",
+      "required": true,
+      "default": "apple",
+      "options": [
+        { "value": "apple", "label": "Apple 🍎" },
+        { "value": "strawberry", "label": "Strawberry 🍓" },
+        { "value": "cherry", "label": "Cherry 🍑" },
+        { "value": "grape", "label": "Grape 🍇" },
+        { "value": "kiwi", "label": "Kiwi 🥝" },
+        { "value": "orange", "label": "Orange 🍊" },
+        { "value": "lemon", "label": "Lemon 🍋" },
+        { "value": "mango", "label": "Mango 🥭" }
+      ]
+    },
+    "color": {
+      "type": "select",
+      "label": "Color",
+      "required": true,
+      "default": "translucent pink",
+      "options": [
+        { "value": "translucent pink", "label": "Translucent Pink 💗" },
+        { "value": "translucent blue", "label": "Translucent Blue 💙" },
+        { "value": "translucent green", "label": "Translucent Green 💚" },
+        { "value": "translucent yellow", "label": "Translucent Yellow 💛" },
+        { "value": "translucent purple", "label": "Translucent Purple 💜" },
+        { "value": "translucent white", "label": "Translucent White 🤍" },
+        { "value": "translucent orange", "label": "Translucent Orange 🧡" },
+        { "value": "translucent red", "label": "Translucent Red ❤️" }
+      ]
+    },
+    "material": {
+      "type": "select",
+      "label": "Material",
+      "required": true,
+      "default": "crystal",
+      "options": [
+        { "value": "crystal", "label": "Crystal 💎" },
+        { "value": "ice", "label": "Ice 🧊" },
+        { "value": "glass", "label": "Glass 🪟" },
+        { "value": "amber", "label": "Amber 🍯" },
+        { "value": "hydrogel", "label": "Hydrogel 💧" },
+        { "value": "soap", "label": "Soap 🧼" }
+      ]
+    },
+    "makePublic": {
+      "type": "toggle",
+      "label": "Make video public",
+      "default": false
+    }
+  }
+}

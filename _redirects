@@ -1,0 +1,78 @@
+# Cloudflare Pages 重定向配置
+# AI Video SaaS SPA 路由处理
+
+# API代理 - 解决CORS问题
+/api/qingyun/*  https://api.qingyuntop.top/:splat  200
+/api/apicore/*  https://api.apicore.ai/:splat  200
+/api/filesystem/*  https://filesystem.site/:splat  200
+/api/heyoo/*  https://heyoo.oss-ap-southeast-1.aliyuncs.com/:splat  200
+
+# Stripe相关重定向
+/stripe/*  https://js.stripe.com/:splat  200
+
+# 社交媒体分享重定向（如果需要）
+/share/:id  /share?id=:id  200
+
+# PWA相关文件
+/sw.js  /service-worker.js  200
+/workbox-*.js  /static/js/workbox-:splat  200
+
+# 资源文件重定向
+/static/*  /assets/:splat  200
+
+# 旧版API路径重定向到新版
+/v1/api/*  /api/:splat  301
+/old-api/*  /api/:splat  301
+
+# 管理员路径重定向
+/admin  /admin/  301
+/dashboard  /admin/dashboard  301
+
+# 用户中心路径优化
+/profile  /user-center  301
+/settings  /user-center/account  301
+
+# 语言路径处理（如果使用路径国际化）
+/zh/*  /:splat  200
+/en/*  /:splat  200
+/ja/*  /:splat  200
+/ko/*  /:splat  200
+/es/*  /:splat  200
+
+# 移动端特定重定向
+/m/*  /:splat  200
+/mobile/*  /:splat  200
+
+# 错误页面重定向
+/404  /  404
+/500  /  500
+/error  /  500
+
+# 健康检查端点
+/health  /  200
+/ping  /  200
+/status  /  200
+
+# 旧版页面重定向
+/templates  /  301
+/create  /create-video  301
+/videos  /my-videos  301
+
+# 营销页面重定向（如果有）
+/pricing  /  301
+/features  /  301
+/about  /  301
+
+# 法律页面
+/terms  /terms-of-service  301
+/privacy  /privacy-policy  301
+/cookies  /cookie-policy  301
+
+# 帮助和支持
+/help  /help-center  301
+/support  /help-center  301
+/faq  /help-center  301
+
+# SPA 路由 - 必须放在最后
+# 所有未匹配的路径都重定向到 index.html（React Router处理）
+/*  /index.html  200

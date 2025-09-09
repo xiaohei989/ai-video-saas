@@ -1,0 +1,391 @@
+{
+  "id": "6f5e4d3c-2b1a-4e9f-8c7d-1a2b3c4d5e6f",
+  "slug": "blueprint-to-product",
+  "name": "Blueprint to Product",
+  "icon": "📐",
+  "description": "Transform technical blueprints into fully assembled products with stunning 3D effects",
+  "previewUrl": "/templates/videos/blueprint-to-product.mp4",
+  "credits": 20,
+  
+  "tags": ["blueprint", "3d", "assembly", "product", "luxury", "tech", "transformer", "cinematic", "engineering"],
+  "createdAt": "2025-01-31T10:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-31T10:00:00Z",
+  
+  "promptTemplate": {
+    "model": "veo3",
+    "duration": "8s",
+    "aspect_ratio": "16:9",
+
+    "visual_core": {
+      "description": "{visual_description}",
+      "style": "{style}",
+      "camera": "{camera_movement}",
+      "lighting": "{lighting}",
+      "environment": "{environment}"
+    },
+
+    "elements": "{elements}",
+
+    "audio": {
+      "sfx": "{sfx}",
+      "ambience": "{ambience}",
+      "music": "{music}"
+    },
+
+    "timeline": [
+      {
+        "time": "0-2s",
+        "action": "{timeline_0_2s}",
+        "camera": "{camera_0_2s}",
+        "audio": "{audio_0_2s}"
+      },
+      {
+        "time": "2-5s",
+        "action": "{timeline_2_5s}",
+        "camera": "{camera_2_5s}",
+        "audio": "{audio_2_5s}"
+      },
+      {
+        "time": "5-8s",
+        "action": "{timeline_5_8s}",
+        "camera": "{camera_5_8s}",
+        "audio": "{audio_5_8s}"
+      }
+    ],
+
+    "cta": {
+      "motion": "{cta_motion}",
+      "text": "{brand_text}",
+      "style": "{cta_style}"
+    }
+  },
+  
+  "params": {
+    "product_type": {
+      "type": "select",
+      "label": "Product Type",
+      "required": true,
+      "default": "luxury_watch",
+      "options": [
+        {
+          "value": "luxury_watch",
+          "label": "⌚ Luxury Watch",
+          "metadata": {
+            "visual_description": "From an old leather-bound book illustration of a vintage pocket watch, golden gears rise and assemble into a ticking luxury timepiece, glowing with precision.",
+            "style": "luxury cinematic, mechanical realism",
+            "camera_movement": "macro close-up on gears → orbit as they assemble → hero shot of complete timepiece",
+            "lighting": "dramatic golden highlights, metallic reflections, deep shadows",
+            "environment": "dim mahogany desk, glowing gears floating in mid-air",
+            "elements": ["ancient leather book with pocket watch sketch", "gears, cogs, springs assembling in the air", "gold and steel watch case forming", "light glinting across polished metal"],
+            "sfx": "metallic ticks, gear clicks, winding spring",
+            "ambience": "low mechanical hum",
+            "music": "luxury orchestral score with deep strings and brass",
+            "timeline_0_2s": "Macro focus on a sketched pocket watch. The ink begins to shimmer in gold.",
+            "camera_0_2s": "close push-in on illustration",
+            "audio_0_2s": "soft ticking fades in",
+            "timeline_2_5s": "Golden gears float upward, locking into place with precision, forming a watch body.",
+            "camera_2_5s": "orbit macro around interlocking gears",
+            "audio_2_5s": "metallic clicks + ticking grows louder",
+            "timeline_5_8s": "Fully formed watch hovers above the book, its hands ticking with glowing precision.",
+            "camera_5_8s": "wide hero shot with golden reflections",
+            "audio_5_8s": "final resonant tick + orchestral swell",
+            "cta_motion": "watch freezes mid-air, golden flare reveals brand name",
+            "cta_style": "engraved metallic typography glowing in gold"
+          }
+        },
+        {
+          "value": "sports_car",
+          "label": "🏎️ Sports Car",
+          "metadata": {
+            "visual_description": "From automotive design blueprints on an illuminated desk, carbon fiber panels and chrome engine rise and assemble into a roaring supercar with glowing headlights.",
+            "style": "automotive commercial, high-performance realism",
+            "camera_movement": "macro close-up on blueprints → orbit around assembling engine → hero shot of complete supercar",
+            "lighting": "dramatic studio lighting, chrome reflections, blue accent lights",
+            "environment": "engineer's desk with illuminated blueprints, parts floating with precision",
+            "elements": ["technical automotive blueprints", "carbon fiber body panels assembling", "V12 engine block with chrome finish", "headlights flaring to life", "tire smoke and exhaust flames"],
+            "sfx": "engine roar, hydraulic assembly, metal snapping",
+            "ambience": "garage atmosphere with mechanical hum",
+            "music": "aggressive orchestral with powerful brass and percussion",
+            "timeline_0_2s": "Macro focus on automotive blueprints. Technical lines pulse with electric blue energy.",
+            "camera_0_2s": "close push-in on blueprint details",
+            "audio_0_2s": "blueprint paper unfolding + distant engine hum",
+            "timeline_2_5s": "Engine components and carbon fiber panels float upward, locking together with hydraulic precision.",
+            "camera_2_5s": "orbit macro around assembling engine and chassis",
+            "audio_2_5s": "hydraulic assembly sounds + metal snapping into place",
+            "timeline_5_8s": "Completed supercar rotates slowly, headlights flare, engine roars with visible exhaust heat.",
+            "camera_5_8s": "wide hero shot with dramatic lighting",
+            "audio_5_8s": "engine ignition roar + orchestral crescendo",
+            "cta_motion": "car freezes with headlight flare revealing brand name",
+            "cta_style": "sleek modern typography with motion blur and chrome finish"
+          }
+        },
+        {
+          "value": "smartphone",
+          "label": "📱 Smartphone",
+          "metadata": {
+            "visual_description": "From holographic circuit board schematics floating above a tech lab, nano chips and OLED display rise and assemble into a flagship smartphone with holographic interface.",
+            "style": "tech commercial, futuristic minimalism",
+            "camera_movement": "macro close-up on circuits → orbit around assembling components → hero shot of complete phone",
+            "lighting": "clean white lighting with cyan accents, holographic glow",
+            "environment": "clean tech lab table, holographic displays, components floating with precision",
+            "elements": ["holographic circuit schematics", "nano-scale processors assembling", "curved OLED display layers", "titanium frame formation", "holographic UI projecting"],
+            "sfx": "electronic beeps, magnetic snaps, capacitor charging",
+            "ambience": "high-tech lab atmosphere with subtle electric hum",
+            "music": "minimalist electronic score with digital textures",
+            "timeline_0_2s": "Macro focus on holographic circuit schematics. Pathways pulse with cyan electricity.",
+            "camera_0_2s": "close push-in on glowing circuit patterns",
+            "audio_0_2s": "electronic initialization beeps + data processing sounds",
+            "timeline_2_5s": "Nano chips magnetize together, display layers align perfectly, titanium frame segments lock.",
+            "camera_2_5s": "orbit macro around assembling components",
+            "audio_2_5s": "magnetic assembly snaps + capacitor charging sounds",
+            "timeline_5_8s": "Phone powers on with boot sequence, holographic interface projects above screen.",
+            "camera_5_8s": "wide hero shot with holographic effects",
+            "audio_5_8s": "boot-up chime sequence + digital orchestral swell",
+            "cta_motion": "phone hovers with holographic brand name projection",
+            "cta_style": "futuristic holographic text with digital distortion effects"
+          }
+        },
+        {
+          "value": "transformer",
+          "label": "🤖 Transformer Robot",
+          "metadata": {
+            "visual_description": "From ancient Cybertronian schematics with glowing alien symbols, armor plates and energon core rise and assemble into a massive Transformer robot in battle stance.",
+            "style": "sci-fi cinematic, mechanical transformation realism",
+            "camera_movement": "macro close-up on alien symbols → orbit around transforming parts → hero shot of battle-ready robot",
+            "lighting": "dramatic lighting with blue energy accents, energon core glow",
+            "environment": "metallic tablet with ancient symbols, parts transforming with energy crackling",
+            "elements": ["ancient Cybertronian tablet with glowing symbols", "transforming armor plates", "energon core igniting with blue flame", "servo motors and weapon systems", "optical sensors flashing blue"],
+            "sfx": "metallic transformation, servo whirs, energon humming, weapon charging",
+            "ambience": "alien technology atmosphere with energy crackling",
+            "music": "epic orchestral with electronic elements and robotic themes",
+            "timeline_0_2s": "Macro focus on Cybertronian schematics. Alien symbols pulse with blue energon energy.",
+            "camera_0_2s": "close push-in on glowing alien symbols",
+            "audio_0_2s": "alien technology activation + energon core startup",
+            "timeline_2_5s": "Armor plates transform and lock with precision, servo motors whir, energon core ignites.",
+            "camera_2_5s": "orbit macro around transforming components",
+            "audio_2_5s": "metallic transformation sounds + servo motor whirs",
+            "timeline_5_8s": "Robot stands heroically, arm transforms to plasma cannon, optical sensors flash blue.",
+            "camera_5_8s": "wide hero shot with dramatic energy effects",
+            "audio_5_8s": "weapon charging + brief robotic voice + orchestral climax",
+            "cta_motion": "robot strikes heroic pose with energy surge revealing brand name",
+            "cta_style": "cybernetic glowing blue typography with circuit line patterns"
+          }
+        },
+        {
+          "value": "time_machine",
+          "label": "🔮 Time Machine",
+          "metadata": {
+            "visual_description": "From Leonardo da Vinci's mechanical sketches on aged parchment, bronze gears and crystal orbs rise and assemble into an intricate time travel device with swirling temporal energy.",
+            "style": "steampunk renaissance, mechanical mysticism",
+            "camera_movement": "macro close-up on da Vinci sketches → orbit around floating clockwork → hero shot of completed time machine",
+            "lighting": "warm candlelight with blue temporal energy, brass reflections, swirling time distortions",
+            "environment": "Renaissance workshop with ancient manuscripts, floating gears casting shadows, temporal ripples in air",
+            "elements": ["Leonardo da Vinci mechanical sketches", "bronze clockwork gears floating", "crystal temporal core glowing blue", "ornate time dial with moving hands", "swirling temporal energy vortex"],
+            "sfx": "clockwork ticking, gear mechanisms, temporal energy humming, crystal resonance",
+            "ambience": "ancient workshop atmosphere with mystical energy",
+            "music": "orchestral with clockwork rhythm and mystical themes",
+            "timeline_0_2s": "Macro focus on da Vinci's sketches. Ink lines begin to glow with temporal blue energy.",
+            "camera_0_2s": "close push-in on glowing mechanical drawings",
+            "audio_0_2s": "parchment rustling + soft temporal humming",
+            "timeline_2_5s": "Bronze gears and crystal orbs float upward, clockwork mechanisms interlocking with precise clicks, temporal core igniting.",
+            "camera_2_5s": "orbit macro around assembling clockwork with blue energy trails",
+            "audio_2_5s": "gear clicking + crystal resonance + temporal energy building",
+            "timeline_5_8s": "Complete time machine activates, temporal vortex swirls, time dials spin rapidly, reality ripples around device.",
+            "camera_5_8s": "wide hero shot with temporal distortion effects",
+            "audio_5_8s": "temporal activation surge + orchestral crescendo + time ripple effects",
+            "cta_motion": "time machine creates temporal rift revealing brand name through time distortion",
+            "cta_style": "renaissance brass typography with temporal glow effects"
+          }
+        },
+        {
+          "value": "dna_robot",
+          "label": "🧬 DNA Robot",
+          "metadata": {
+            "visual_description": "From scientific DNA helix diagrams on laboratory charts, glowing genetic strands unwind and reassemble into a sophisticated nanoscale medical robot with precision mechanical components.",
+            "style": "bio-tech medical, futuristic nano-engineering",
+            "camera_movement": "macro close-up on DNA diagrams → dive into molecular level → pullback to reveal nano robot",
+            "lighting": "clean laboratory lighting with bioluminescent DNA glow, laser precision beams",
+            "environment": "high-tech medical laboratory, holographic displays, molecular diagrams floating in air",
+            "elements": ["scientific DNA helix charts", "glowing genetic base pairs separating", "nano mechanical components assembling", "microscopic precision tools extending", "bioluminescent energy patterns"],
+            "sfx": "molecular assembly sounds, precision micro-mechanics, electronic beeps, DNA strand separation",
+            "ambience": "sterile laboratory with subtle electronic hum",
+            "music": "minimalist electronic with biological rhythm patterns",
+            "timeline_0_2s": "Macro focus on DNA structure diagrams. Genetic sequences begin to glow and separate into base pairs.",
+            "camera_0_2s": "close push-in on glowing molecular structure",
+            "audio_0_2s": "laboratory equipment humming + molecular vibration sounds",
+            "timeline_2_5s": "DNA strands unwind and transform into mechanical components, nano-scale robot parts assembling with atomic precision.",
+            "camera_2_5s": "microscopic orbit around assembling nano-components",
+            "audio_2_5s": "molecular assembly + precision micro-mechanics + electronic assembly",
+            "timeline_5_8s": "Complete nano-robot activates, microscopic tools extend, bioluminescent energy pulses through structure, ready for medical mission.",
+            "camera_5_8s": "dramatic microscopic to macro reveal of functioning nano-robot",
+            "audio_5_8s": "system activation + medical scanner beeps + electronic orchestral swell",
+            "cta_motion": "nano-robot projects holographic brand name through laser scanning beam",
+            "cta_style": "holographic medical typography with DNA helix patterns"
+          }
+        },
+        {
+          "value": "mechanical_dragon",
+          "label": "🐉 Mechanical Dragon",
+          "metadata": {
+            "visual_description": "From medieval bestiary illustrations on ancient parchment, steel plates and hydraulic mechanisms rise and assemble into a massive mechanical dragon with glowing eyes and fire-breathing capability.",
+            "style": "medieval steampunk, mechanical beast realism",
+            "camera_movement": "macro close-up on bestiary drawings → orbit around assembling steel dragon → epic wide shot of complete mechanical beast",
+            "lighting": "forge fire lighting with steel reflections, glowing mechanical eyes, flame illumination",
+            "environment": "medieval forge workshop, ancient manuscripts, floating steel plates with sparks flying",
+            "elements": ["medieval bestiary dragon illustrations", "steel armor plates interlocking", "hydraulic joint mechanisms", "glowing mechanical eyes", "fire-breathing apparatus with flames"],
+            "sfx": "heavy metal assembly, hydraulic mechanisms, mechanical roars, forge fire crackling",
+            "ambience": "medieval forge atmosphere with dragon mechanical sounds",
+            "music": "epic orchestral with medieval themes and mechanical rhythms",
+            "timeline_0_2s": "Macro focus on medieval dragon illustration. Ancient ink begins to smolder and transform into glowing steel.",
+            "camera_0_2s": "close push-in on transforming bestiary drawing",
+            "audio_0_2s": "parchment crackling with forge fire + distant mechanical rumbling",
+            "timeline_2_5s": "Steel plates and hydraulic joints float upward, assembling into dragon form with mechanical precision, joints locking with powerful clicks.",
+            "camera_2_5s": "dynamic orbit around massive assembling dragon structure",
+            "audio_2_5s": "heavy metal clanking + hydraulic assembly + mechanical joint locks",
+            "timeline_5_8s": "Complete mechanical dragon rears up, eyes glow with inner fire, spreads steel wings, breathes flames with mechanical roar.",
+            "camera_5_8s": "epic wide hero shot with dragon spreading wings and breathing fire",
+            "audio_5_8s": "mechanical dragon roar + wing deployment + flame burst + orchestral climax",
+            "cta_motion": "dragon breathes fire that forms brand name in flames before cooling to steel letters",
+            "cta_style": "forged steel typography with flame effects and medieval ornamentation"
+          }
+        }
+      ]
+    },
+    
+    "visual_description": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "style": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "camera_movement": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "lighting": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "environment": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "elements": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "sfx": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "ambience": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "music": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "timeline_0_2s": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "camera_0_2s": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "audio_0_2s": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "timeline_2_5s": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "camera_2_5s": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "audio_2_5s": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "timeline_5_8s": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "camera_5_8s": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "audio_5_8s": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "cta_motion": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "cta_style": {
+      "type": "hidden",
+      "linkedTo": "product_type",
+      "linkType": "metadata"
+    },
+    
+    "brand_text": {
+      "type": "text",
+      "label": "Custom Text",
+      "placeholder": "Enter your brand or message",
+      "required": true,
+      "default": "Engineered to Perfection",
+      "maxLength": 50
+    },
+    
+    "makePublic": {
+      "type": "toggle",
+      "label": "Make video public",
+      "default": false
+    }
+  }
+}

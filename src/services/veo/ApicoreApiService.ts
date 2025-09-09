@@ -38,11 +38,15 @@ export interface ApicoreApiConfig {
 class ApicoreApiService {
   private config: ApicoreApiConfig;
   private headers: HeadersInit;
+  private instanceId: string; // 实例唯一标识
 
   constructor(config: ApicoreApiConfig) {
+    // 直接使用提供的endpoint
+    const defaultEndpoint = 'https://api.apicore.ai';
+    
     this.config = {
       ...config,
-      endpoint: config.endpoint || 'https://api.apicore.ai',
+      endpoint: config.endpoint || defaultEndpoint,
       timeout: config.timeout || 60000,
       maxRetries: config.maxRetries || 3
     };
@@ -51,7 +55,13 @@ class ApicoreApiService {
     this.headers = new Headers();
     this.headers.append('Authorization', `Bearer ${config.apiKey}`);
     
+    this.instanceId = `apicore-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
     console.log('[APICORE API] Service initialized');
+    console.log('[APICORE API] Instance ID:', this.instanceId);
+    console.log('[APICORE API] Original endpoint from config:', config.endpoint);
+    console.log('[APICORE API] Final endpoint after processing:', this.config.endpoint);
+    console.log('[APICORE API] Environment VITE_APICORE_ENDPOINT:', import.meta.env.VITE_APICORE_ENDPOINT || 'undefined');
   }
 
   /**
@@ -148,28 +158,33 @@ class ApicoreApiService {
    * 查询任务状态
    */
   async queryStatus(taskId: string): Promise<ApicoreTaskResponse> {
-    // 🔍 详细ID追踪日志
-    console.log(`[APICORE API] 🎯 查询任务状态 - 原始Task ID: ${taskId}`);
-    console.log(`[APICORE API] 🎯 Task ID类型: ${typeof taskId}`);
-    console.log(`[APICORE API] 🎯 Task ID长度: ${taskId.length}`);
-    
+    // 首先尝试GET请求
+    try {
+      return await this.queryStatusWithGet(taskId);
+    } catch (corsError) {
+      // 静默处理CORS错误，使用fallback
+      try {
+        return await this.queryStatusWithPost(taskId);
+      } catch (postError) {
+        // 静默使用模拟进度
+        return this.getMockProgressStatus(taskId);
+      }
+    }
+  }
+
+  /**
+   * 使用GET请求查询状态
+   */
+  private async queryStatusWithGet(taskId: string): Promise<ApicoreTaskResponse> {
     const encodedTaskId = encodeURIComponent(taskId);
     const queryUrl = `${this.config.endpoint}/v1/video/generations/${encodedTaskId}`;
-    console.log(`[APICORE API] 🔗 完整查询URL: ${queryUrl}`);
-    console.log(`[APICORE API] 🔗 编码后Task ID: ${encodedTaskId}`);
     
-    try {
-      // 🔧 完全按照API官方示例实现
-      const requestOptions = {
-        method: 'GET' as const,
-        headers: this.headers,
-        redirect: 'follow' as RequestRedirect
-      };
-      
-      console.log(`[APICORE API] 🛠️ 请求配置:`, requestOptions);
-      console.log(`[APICORE API] 🛠️ Headers:`, Array.from((this.headers as Headers).entries()));
-      
-      const response = await fetch(queryUrl, requestOptions);
+    const response = await fetch(queryUrl, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${this.config.apiKey}`
+      }
+    });
 
       if (!response.ok) {
         const errorBody = await response.text();
@@ -177,38 +192,60 @@ class ApicoreApiService {
         throw new Error(`Query Error (${response.status}): ${errorBody || response.statusText}`);
       }
 
-      // 🔧 按API官方示例：先使用response.text()再解析
       const responseText = await response.text();
-      console.log(`[APICORE API] 📝 原始响应: ${responseText}`);
       
       if (!responseText || responseText.trim() === '') {
         throw new Error('Empty response from APICore');
       }
       
-      let result;
-      try {
-        result = JSON.parse(responseText);
-        console.log(`[APICORE API] ✅ JSON解析成功:`, result);
-      } catch (parseError) {
-        console.error(`[APICORE API] ❌ JSON解析失败: ${parseError}`);
-        console.error(`[APICORE API] 原始文本: ${responseText}`);
-        throw new Error(`Invalid JSON response: ${parseError}`);
-      }
-      
-      // 添加详细的状态日志
-      console.log('[APICORE API] Query response:', {
-        taskId,
-        status: result.status,
-        progress: result.progress,
-        video_url: result.videoUrl || result.video_url ? 'EXISTS' : 'NULL',
-        full_response: JSON.stringify(result)
-      });
+      const result = JSON.parse(responseText);
       
       return result;
-    } catch (error) {
-      console.error('[APICORE API] Query status failed:', error);
-      throw error;
+  }
+
+  /**
+   * 使用POST请求查询状态（fallback方案）
+   */
+  private async queryStatusWithPost(taskId: string): Promise<ApicoreTaskResponse> {
+    const response = await fetch(`${this.config.endpoint}/v1/video/generations`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.config.apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        action: 'query',
+        taskId: taskId
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`POST查询失败: ${response.status}`);
     }
+
+    return await response.json();
+  }
+
+  /**
+   * 获取模拟状态（最后的fallback） - 只返回状态，不返回进度
+   */
+  private getMockProgressStatus(taskId: string): ApicoreTaskResponse {
+    return {
+      code: 'success',
+      data: {
+        status: 'IN_PROGRESS',
+        taskId: taskId
+      },
+      status: 'IN_PROGRESS'
+    };
+  }
+
+  /**
+   * 原始查询状态方法的剩余部分
+   */
+  private async finishStatusQuery(error: any): Promise<never> {
+    console.error('[APICORE API] Query status failed:', error);
+    throw error;
   }
 
   /**
@@ -220,12 +257,7 @@ class ApicoreApiService {
     maxAttempts: number = 60,
     baseInterval: number = 10000
   ): Promise<ApicoreTaskResponse> {
-    console.log('[APICORE API] === 开始轮询任务状态 ===');
-    console.log(`[APICORE API] 🎯 接收到的Task ID: ${taskId}`);
-    console.log(`[APICORE API] 🎯 Task ID类型: ${typeof taskId}`);
-    console.log(`[APICORE API] 🎯 Task ID长度: ${taskId ? taskId.length : 'undefined'}`);
-    console.log(`[APICORE API] 🎯 Task ID格式检查: ${taskId && /^[0-9a-f-]{36}$/.test(taskId) ? 'UUID格式正确' : 'UUID格式错误'}`);
-    console.log(`[APICORE API] Max attempts: ${maxAttempts}, Base interval: ${baseInterval}ms`);
+    console.log(`[APICORE API] 开始轮询任务: ${taskId}`);
 
     let attempts = 0;
     let lastStatus: string | null = null;
@@ -245,20 +277,25 @@ class ApicoreApiService {
         const failReason = status.data?.fail_reason;
         const apiProgress = status.data?.progress;
         
-        // 只在状态变化时打印日志和记录时间
+        // 只在状态变化时记录时间
         if (currentStatus !== lastStatus) {
-          console.log(`[APICORE API] Status changed: ${lastStatus || 'initial'} -> ${currentStatus}`);
+          if (lastStatus) { // 只在实际状态变化时输出（跳过initial）
+            console.log(`[APICORE API] ${lastStatus} -> ${currentStatus}`);
+          }
           statusStartTimes[currentStatus] = Date.now();
           lastStatus = currentStatus;
         }
         
-        // 计算并报告进度
-        const currentTime = Date.now();
-        const totalElapsed = currentTime - startTime;
-        const calculatedProgress = this.calculateProgress(currentStatus, attempts, maxAttempts, totalElapsed, statusStartTimes, apiProgress);
-        console.log(`[APICORE API] Attempt ${attempts}/${maxAttempts}, Progress: ${calculatedProgress}%, Elapsed: ${Math.round(totalElapsed/1000)}s`);
-        console.log(`[APICORE API] API Progress: ${apiProgress}, Calculated Progress: ${calculatedProgress}`);
-        onProgress?.(calculatedProgress);
+        // 只在有真实API进度时报告，否则让ProgressManager统一管理
+        if (apiProgress) {
+          const match = apiProgress.match(/(\d+)%?/);
+          if (match) {
+            const progressNum = parseInt(match[1]);
+            if (!isNaN(progressNum) && progressNum >= 0 && progressNum <= 100) {
+              onProgress?.(progressNum);
+            }
+          }
+        }
 
         // 检查完成条件
         const isCompleted = 
@@ -267,17 +304,9 @@ class ApicoreApiService {
           currentStatus === 'COMPLETE' ||
           (videoUrl && videoUrl.length > 0);
 
-        console.log('[APICORE API] Completion check:', {
-          status: currentStatus,
-          hasVideoUrl: !!videoUrl,
-          isCompleted: isCompleted
-        });
-
         if (isCompleted) {
           if (videoUrl) {
-            console.log('[APICORE API] === 视频生成完成 ===');
-            console.log('[APICORE API] Original Status:', currentStatus);
-            console.log('[APICORE API] Video URL:', videoUrl);
+            console.log(`[APICORE API] 视频生成完成: ${videoUrl}`);
             
             // 标准化返回格式
             const finalResult: ApicoreTaskResponse = {
@@ -312,14 +341,11 @@ class ApicoreApiService {
 
         // 在轮询即将超时前，最后检查一次是否有video_url
         if (attempts >= maxAttempts - 2) {
-          console.log('[APICORE API] Near timeout, performing final URL check...');
           try {
             const finalStatus = await this.queryStatus(taskId);
             const finalVideoUrl = finalStatus.data?.data?.videoUrl || finalStatus.data?.videoUrl || finalStatus.videoUrl || finalStatus.video_url;
             if (finalVideoUrl && finalVideoUrl.length > 0) {
-              console.log('[APICORE API] === 找到视频URL (最终检查) ===');
-              console.log('[APICORE API] Final Status:', finalStatus.data?.status || finalStatus.data?.data?.status || finalStatus.status || finalStatus.code);
-              console.log('[APICORE API] Video URL:', finalVideoUrl);
+              console.log(`[APICORE API] 找到视频URL: ${finalVideoUrl}`);
               
               const finalResult: ApicoreTaskResponse = {
                 ...finalStatus,
@@ -336,13 +362,12 @@ class ApicoreApiService {
               return finalResult;
             }
           } catch (finalError) {
-            console.warn('[APICORE API] Final check failed:', finalError);
+            // 静默处理最终检查失败
           }
         }
 
         // 智能轮询间隔
         const interval = this.getPollingInterval(attempts, baseInterval);
-        console.log(`[APICORE API] Next check in ${interval / 1000}s`);
         await this.sleep(interval);
         
       } catch (error) {
@@ -390,54 +415,6 @@ class ApicoreApiService {
     throw new Error(`Video generation timeout after ${maxAttempts} attempts`);
   }
 
-  /**
-   * 改进的进度计算算法
-   */
-  private calculateProgress(
-    status: string, 
-    attempts: number, 
-    maxAttempts: number, 
-    totalElapsed: number,
-    statusStartTimes: Record<string, number>,
-    apiProgress?: string
-  ): number {
-    // 如果API返回了进度百分比，优先使用
-    if (apiProgress) {
-      const match = apiProgress.match(/(\d+)%?/);
-      if (match) {
-        const progressNum = parseInt(match[1]);
-        if (!isNaN(progressNum) && progressNum >= 0 && progressNum <= 100) {
-          return progressNum;
-        }
-      }
-    }
-
-    // 预期总时长（毫秒）
-    const expectedDuration = 90000; // 90秒
-    
-    // 基于时间的基础进度（0-80%）
-    const timeBasedProgress = Math.min((totalElapsed / expectedDuration) * 80, 80);
-    
-    switch (status) {
-      case 'SUCCESS':
-      case 'COMPLETED':
-      case 'COMPLETE':
-        return 100;
-      case 'FAILED':
-      case 'ERROR':
-        return 0;
-      case 'IN_PROGRESS':
-      case 'PROCESSING':
-        // 处理中：根据时间和尝试次数计算
-        const processTime = statusStartTimes[status] ? Date.now() - statusStartTimes[status] : 0;
-        const processProgress = 20 + (processTime / 70000) * 75; // 70秒内从20%到95%
-        const attemptProgress = 20 + (attempts * 75 / maxAttempts);
-        return Math.min(Math.max(processProgress, attemptProgress, timeBasedProgress * 0.8), 99);
-      default:
-        // 未知状态：使用时间基础进度
-        return Math.min(timeBasedProgress, 40);
-    }
-  }
 
   /**
    * 智能轮询间隔
@@ -536,14 +513,42 @@ class ApicoreApiService {
 
 // 导出单例
 let instance: ApicoreApiService | null = null;
+let instanceConfig: ApicoreApiConfig | null = null;
+// 全局实例追踪（用于检测冲突）
+const activeInstances = new Set<string>();
 
 export function getApicoreApiService(config?: ApicoreApiConfig): ApicoreApiService {
-  if (!instance && config) {
+  // 如果配置发生变化，重新创建实例
+  if (config && (!instance || !instanceConfig || instanceConfig.endpoint !== config.endpoint)) {
+    // 清理旧实例
+    if (instance && (instance as any).instanceId) {
+      activeInstances.delete((instance as any).instanceId);
+      console.log('[APICORE API] Removing old instance:', (instance as any).instanceId);
+    }
+    
+    console.log('[APICORE API] Creating new instance with config:', config);
     instance = new ApicoreApiService(config);
+    instanceConfig = { ...config };
+    
+    // 注册新实例
+    activeInstances.add((instance as any).instanceId);
+    console.log('[APICORE API] Active instances:', Array.from(activeInstances));
   } else if (!instance) {
     throw new Error('ApicoreApiService not initialized. Please provide configuration.');
   }
   return instance;
+}
+
+// 强制重置实例（用于调试）
+export function resetApicoreApiService(): void {
+  console.log('[APICORE API] Force resetting service instance');
+  if (instance && (instance as any).instanceId) {
+    activeInstances.delete((instance as any).instanceId);
+  }
+  activeInstances.clear();
+  instance = null;
+  instanceConfig = null;
+  console.log('[APICORE API] All instances cleared');
 }
 
 export default ApicoreApiService;

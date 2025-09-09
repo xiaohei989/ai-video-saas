@@ -3,6 +3,7 @@ import { User, Session, AuthError } from '@supabase/supabase-js'
 import { supabase, ensureValidSession } from '@/lib/supabase'
 import { useNavigate } from 'react-router-dom'
 import { referralService } from '@/services/referralService'
+import { edgeCacheClient } from '@/services/EdgeFunctionCacheClient'
 
 // 认证上下文类型定义
 interface AuthContextType {
@@ -151,20 +152,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // 获取用户资料
   const fetchProfile = async (userId: string, userEmail?: string) => {
     try {
-      
       // 创建基本profile对象作为后备（使用外部函数）
       const basicProfileData = createBasicProfile(userId, userEmail || session?.user?.email || '')
       
-      // 创建带超时的查询
+      // 🚀 优先使用缓存获取profile
+      try {
+        const cachedProfile = await edgeCacheClient.getUserProfile(userId)
+        
+        if (cachedProfile) {
+          const profileData: Profile = {
+            id: cachedProfile.id,
+            email: cachedProfile.email,
+            username: cachedProfile.username,
+            full_name: cachedProfile.full_name,
+            avatar_url: cachedProfile.avatar_url,
+            bio: cachedProfile.bio,
+            website: cachedProfile.website,
+            social_links: cachedProfile.social_links,
+            language: cachedProfile.language,
+            credits: cachedProfile.credits,
+            total_credits_earned: cachedProfile.total_credits_earned,
+            total_credits_spent: cachedProfile.total_credits_spent,
+            referral_code: cachedProfile.referral_code,
+            follower_count: cachedProfile.follower_count,
+            following_count: cachedProfile.following_count,
+            template_count: cachedProfile.template_count,
+            is_verified: cachedProfile.is_verified,
+            created_at: cachedProfile.created_at,
+            updated_at: cachedProfile.updated_at
+          }
+          setProfile(profileData)
+          return profileData
+        }
+      } catch (cacheError) {
+        console.info('[AUTH] 缓存服务暂不可用，从数据库获取profile')
+      }
+      
+      // 缓存未命中或失败，从数据库获取
+      console.log('[AUTH] 🔄 缓存未命中，从数据库获取最新profile数据')
+      
+      // 创建带超时的查询（缩短到1.5秒，因为有缓存作为主要来源）
       const profileQuery = supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single()
       
-      // 2秒超时Promise
+      // 1.5秒超时Promise（比之前更短，因为不是主要数据源）
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Profile fetch timeout')), 2000)
+        setTimeout(() => reject(new Error('Profile fetch timeout')), 1500)
       })
       
       try {
@@ -175,32 +211,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ]) as any
         
         if (error) {
-          console.error('Error fetching profile:', error)
+          console.error('[AUTH] 数据库查询profile出错:', error)
           
           // 如果是表不存在的错误
           if (error.code === 'PGRST116' || error.message?.includes('relation') || error.message?.includes('does not exist')) {
-            console.warn('Profiles table not found, using basic profile')
+            console.warn('[AUTH] Profiles表不存在，使用基本profile')
             const basicProfile = createBasicProfile()
             setProfile(basicProfile as Profile)
             return basicProfile
           }
           
-          // 其他错误，返回null但不崩溃
-          setProfile(null)
-          return null
+          // 其他错误，返回基本profile但不崩溃
+          console.warn('[AUTH] 数据库查询失败，使用基本profile')
+          const basicProfile = createBasicProfile(userId, userEmail)
+          setProfile(basicProfile as Profile)
+          return basicProfile
         }
         
-        setProfile(data)
-        return data
+        if (data) {
+          console.log('[AUTH] ✅ 数据库查询成功，已加载用户profile')
+          setProfile(data)
+          
+          // 后台更新缓存，将新数据存入缓存系统
+          try {
+            await edgeCacheClient.getUserProfile(userId)
+          } catch (err) {
+            // 静默处理缓存更新失败，不影响用户体验
+          }
+          
+          return data
+        }
+        
+        // 没有数据，使用基本profile
+        console.warn('[AUTH] 数据库中没有找到profile，使用基本profile')
+        const basicProfile = createBasicProfile(userId, userEmail)
+        setProfile(basicProfile as Profile)
+        return basicProfile
+        
       } catch (timeoutError) {
-        console.warn('Profile fetch timed out, using basic profile')
-        // 超时了，使用基本profile
+        // 数据库查询超时，使用基本profile，这在有缓存系统的情况下是正常的
         const basicProfile = createBasicProfile(userId, userEmail)
         setProfile(basicProfile as Profile)
         return basicProfile
       }
     } catch (err) {
-      console.error('Unexpected error fetching profile:', err)
+      console.error('[AUTH] fetchProfile发生意外错误:', err)
       // 确保不会因为profile获取失败而导致应用崩溃
       const basicProfile = createBasicProfile(userId, userEmail)
       setProfile(basicProfile as Profile)
@@ -253,8 +308,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let timeoutId: NodeJS.Timeout | null = null
 
     const initializeAuth = async () => {
+      const authStart = performance.now()
       try {
-        const authStart = performance.now()
         
         // 🚀 性能优化：设置合理的网络超时，平衡速度和稳定性
         const sessionPromise = Promise.race([
@@ -789,6 +844,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error
 
       setProfile(data)
+      
+      // 🚀 更新缓存中的profile数据
+      if (data) {
+        edgeCacheClient.updateUserProfileCache(user.id, updates).catch(err => {
+          console.warn('[AUTH] 更新profile缓存失败:', err)
+        })
+      }
+      
       return data
     } catch (err) {
       setError(err as AuthError)
@@ -801,6 +864,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // 刷新用户资料
   const refreshProfile = async () => {
     if (!user) return
+    
+    // 🚀 清除缓存后重新获取，确保获取最新数据
+    edgeCacheClient.invalidateUserCache(user.id).catch(err => {
+      console.warn('[AUTH] 清除用户缓存失败:', err)
+    })
+    
     await fetchProfile(user.id)
   }
 

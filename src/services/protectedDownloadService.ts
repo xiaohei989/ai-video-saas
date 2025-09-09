@@ -76,24 +76,53 @@ export class ProtectedDownloadService {
           await videoShareService.downloadVideo(videoId, videoUrl, {
             filename: defaultFilename
           })
+          
+          if (showProgress) {
+            setTimeout(() => {
+              toast.success('下载开始！请查看浏览器下载列表', { 
+                id: 'download-' + videoId,
+                duration: 4000
+              })
+            }, 1000)
+          }
+          
         } catch (shareServiceError) {
           console.warn('[ProtectedDownload] videoShareService 失败，使用直接下载:', shareServiceError)
-          // 直接下载备用方案
-          const a = document.createElement('a')
-          a.href = videoUrl
-          a.download = defaultFilename
-          document.body.appendChild(a)
-          a.click()
-          document.body.removeChild(a)
-        }
-        
-        if (showProgress) {
-          setTimeout(() => {
-            toast.success('下载开始！', { 
-              id: 'download-' + videoId,
-              duration: 4000
-            })
-          }, 1000)
+          
+          // 检查是否是CORS错误
+          const isCorsError = shareServiceError instanceof Error && (
+            shareServiceError.message.includes('Failed to fetch') ||
+            shareServiceError.message.includes('CORS') ||
+            shareServiceError.message.includes('NetworkError')
+          )
+          
+          if (isCorsError) {
+            // CORS错误，使用新窗口打开
+            if (showProgress) {
+              toast.info('由于浏览器安全限制，将在新窗口中打开视频，请右键保存', { 
+                id: 'download-' + videoId,
+                duration: 6000
+              })
+            }
+            
+            window.open(videoUrl, '_blank')
+            
+          } else {
+            // 其他错误，使用直接下载备用方案
+            const a = document.createElement('a')
+            a.href = videoUrl
+            a.download = defaultFilename
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+            
+            if (showProgress) {
+              toast.success('下载链接已创建', { 
+                id: 'download-' + videoId,
+                duration: 3000
+              })
+            }
+          }
         }
         
       } else {
@@ -156,18 +185,63 @@ export class ProtectedDownloadService {
             await videoShareService.downloadVideo(videoId, videoUrl, {
               filename: defaultFilename
             })
+            
+            if (showProgress) {
+              toast.success('下载已启动（无水印版本）', { 
+                duration: 4000
+              })
+            }
+            
           } catch (shareServiceError) {
             console.warn('[ProtectedDownload] 降级下载时 videoShareService 失败，使用直接下载:', shareServiceError)
-            // 直接下载备用方案
-            const a = document.createElement('a')
-            a.href = videoUrl
-            a.download = defaultFilename
-            document.body.appendChild(a)
-            a.click()
-            document.body.removeChild(a)
+            
+            // 检查是否是CORS错误
+            const isCorsError = shareServiceError instanceof Error && (
+              shareServiceError.message.includes('Failed to fetch') ||
+              shareServiceError.message.includes('CORS') ||
+              shareServiceError.message.includes('NetworkError')
+            )
+            
+            if (isCorsError) {
+              // CORS错误，使用新窗口打开
+              if (showProgress) {
+                toast.info('由于浏览器安全限制，将在新窗口中打开视频，请右键保存', { 
+                  duration: 6000
+                })
+              }
+              
+              window.open(videoUrl, '_blank')
+              onComplete?.() // 调用完成回调
+              
+            } else {
+              // 其他错误，使用直接下载备用方案
+              const a = document.createElement('a')
+              a.href = videoUrl
+              a.download = defaultFilename
+              document.body.appendChild(a)
+              a.click()
+              document.body.removeChild(a)
+              
+              if (showProgress) {
+                toast.success('下载链接已创建', { 
+                  duration: 3000
+                })
+              }
+              
+              onComplete?.() // 调用完成回调
+            }
           }
           
-          onError?.(`水印处理失败: ${watermarkError instanceof Error ? watermarkError.message : '未知错误'}`)
+          // 只有在非CORS错误时才报告水印失败
+          const isCorsWatermarkError = watermarkError instanceof Error && (
+            watermarkError.message.includes('视频加载失败') ||
+            watermarkError.message.includes('Failed to fetch') ||
+            watermarkError.message.includes('CORS')
+          )
+          
+          if (!isCorsWatermarkError) {
+            onError?.(`水印处理失败: ${watermarkError instanceof Error ? watermarkError.message : '未知错误'}`)
+          }
         }
       }
       

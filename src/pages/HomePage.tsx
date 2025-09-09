@@ -6,11 +6,15 @@ import { ArrowRight, Volume2, VolumeX } from 'lucide-react'
 import BackgroundVideo from '@/components/video/BackgroundVideo'
 import AnimatedHeroTitle from '@/components/ui/AnimatedHeroTitle'
 import { defaultBackgroundVideoConfig } from '@/config/backgroundVideos'
+import { useSEO } from '@/hooks/useSEO'
 
 export default function HomePage() {
   const { t } = useTranslation()
   const [isMuted, setIsMuted] = useState(true)
   const videoRef = useRef<any>(null)
+
+  // SEO优化
+  useSEO('home')
 
   // 静音切换处理
   const handleMuteToggle = () => {

@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Crown, CreditCard, Star } from 'lucide-react'
 import { SubscriptionService } from '@/services/subscriptionService'
-import type { Subscription } from '@/types'
+import { edgeCacheClient } from '@/services/EdgeFunctionCacheClient'
+import type { Subscription, SubscriptionTier } from '@/types'
 
 interface MembershipBadgeProps {
   userId: string
@@ -27,10 +28,32 @@ export default function MembershipBadge({
   const loadMembership = async () => {
     try {
       setLoading(true)
-      const data = await SubscriptionService.getCurrentSubscription(userId)
-      setSubscription(data)
+      // 🚀 优化：优先使用缓存获取订阅信息
+      const tier = await edgeCacheClient.getUserSubscription(userId)
+      
+      if (tier && tier !== 'free') {
+        // 如果有有效订阅，构建简化的subscription对象
+        setSubscription({
+          id: '',
+          userId: userId,
+          stripeSubscriptionId: '',
+          planId: tier as any,
+          status: 'active' as const,
+          currentPeriodStart: new Date(),
+          currentPeriodEnd: new Date(),
+          cancelAtPeriodEnd: false,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+      } else {
+        // 免费用户或缓存未命中时，回退到原方法
+        const data = await SubscriptionService.getCurrentSubscription(userId)
+        setSubscription(data)
+      }
     } catch (error) {
-      console.error('Failed to load membership info:', error)
+      console.error('[MembershipBadge] 加载会员信息失败:', error)
+      // 错误时设置为null，显示免费用户状态
+      setSubscription(null)
     } finally {
       setLoading(false)
     }

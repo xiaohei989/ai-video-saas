@@ -21,7 +21,6 @@ export function detectApiProvider(taskId: string): ApiProvider {
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(taskId);
   
   if (isUUID) {
-    console.log(`[API DETECTOR] 检测到APICore任务: ${taskId}`);
     return 'apicore';
   }
 

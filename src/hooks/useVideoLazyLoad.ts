@@ -209,6 +209,21 @@ export function useVideoLazyLoad(
         }))
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Video load failed'
+        
+        // 对于模板视频的加载取消错误，自动重试一次
+        const isTemplateVideo = videoUrl.startsWith('/templates/videos/')
+        const isLoadCancelled = errorMessage === 'Load cancelled'
+        
+        if (isTemplateVideo && isLoadCancelled && !state.hasError) {
+          setTimeout(() => {
+            if (!state.isLoaded && !state.isLoading) {
+              retry().catch(() => {
+                // 静默处理重试失败
+              })
+            }
+          }, 2000)
+        }
+        
         setState(prev => ({
           ...prev,
           isLoading: false,
@@ -232,9 +247,15 @@ export function useVideoLazyLoad(
   /**
    * 取消加载
    */
-  const cancel = useCallback((): void => {
+  const cancel = useCallback((force: boolean = false): void => {
     if (state.isLoading && videoUrl) {
-      videoLoaderService.cancelLoad(videoUrl)
+      // 对于本地模板视频，不轻易取消，除非强制
+      const isTemplateVideo = videoUrl.startsWith('/templates/videos/')
+      if (isTemplateVideo && !force) {
+        return
+      }
+      
+      videoLoaderService.cancelLoad(videoUrl, force)
       setState(prev => ({
         ...prev,
         isLoading: false,
@@ -253,11 +274,22 @@ export function useVideoLazyLoad(
       ...prev,
       hasError: false,
       error: null,
-      isLoaded: false
+      isLoaded: false,
+      isLoading: false
     }))
     
-    await load()
-  }, [load])
+    // 清理之前的状态
+    if (videoUrl) {
+      videoLoaderService.cancelLoad(videoUrl, true) // 强制取消之前的加载
+    }
+    
+    // 延迟100ms后重新加载，避免竞态
+    setTimeout(() => {
+      load().catch(() => {
+        // 静默处理重试失败
+      })
+    }, 100)
+  }, [load, videoUrl])
 
   /**
    * 标记用户交互

@@ -1,12 +1,12 @@
 {
   "id": "8151cddb-757c-45ec-a490-463d6dbe7e88",
   "slug": "surveillance-animal-encounter",
-  "name": "监控摄像头动物奇遇",
+  "name": "Surveillance Animal Encounter",
   "icon": "📹",
-  "description": "创建独特的监控摄像头视角动物互动视频，带有夜视效果和鱼眼镜头畸变",
+  "description": "Create unique surveillance camera perspective animal interaction videos with night vision effects and fisheye lens distortion",
   "previewUrl": "/templates/videos/surveillance-animal-encounter.mp4",
 
-  "category": "动物/奇幻",
+  "category": "Animals/Fantasy",
   "tags": ["surveillance", "animals", "night-vision", "fisheye", "dramatic", "humor"],
   "createdAt": "2025-01-22T10:00:00Z",
   "version": "1.0.0",
@@ -15,100 +15,100 @@
   "params": {
     "night_vision": {
       "type": "select",
-      "label": "夜视效果",
+      "label": "Night Vision Effect",
       "default": "strong green fluorescence",
       "options": [
-        {"value": "strong green fluorescence", "label": "强绿色荧光"},
-        {"value": "white phosphor", "label": "白磷光"},
-        {"value": "thermal imaging", "label": "热成像"},
-        {"value": "subtle green tint", "label": "淡绿色调"}
+        {"value": "strong green fluorescence", "label": "Strong Green Fluorescence"},
+        {"value": "white phosphor", "label": "White Phosphor"},
+        {"value": "thermal imaging", "label": "Thermal Imaging"},
+        {"value": "subtle green tint", "label": "Subtle Green Tint"}
       ]
     },
     "lens_type": {
       "type": "select",
-      "label": "镜头类型",
+      "label": "Lens Type",
       "default": "ultra-wide-angle fisheye",
       "options": [
-        {"value": "ultra-wide-angle fisheye", "label": "超广角鱼眼"},
-        {"value": "standard wide-angle", "label": "标准广角"},
-        {"value": "normal lens", "label": "普通镜头"},
-        {"value": "telephoto lens", "label": "长焦镜头"}
+        {"value": "ultra-wide-angle fisheye", "label": "Ultra-wide-angle Fisheye"},
+        {"value": "standard wide-angle", "label": "Standard Wide-angle"},
+        {"value": "normal lens", "label": "Normal Lens"},
+        {"value": "telephoto lens", "label": "Telephoto Lens"}
       ]
     },
     "main_animal": {
       "type": "select",
-      "label": "主要动物（大型）",
+      "label": "Main Animal (Large)",
       "required": true,
       "default": "Siberian tiger",
       "options": [
-        {"value": "Siberian tiger", "label": "西伯利亚虎 🐅"},
-        {"value": "African lion", "label": "非洲狮 🦁"},
-        {"value": "Leopard", "label": "花豹 🐆"},
-        {"value": "Giant panda", "label": "大熊猫 🐼"},
-        {"value": "Grizzly bear", "label": "灰熊 🐻"},
-        {"value": "Polar bear", "label": "北极熊 🐻‍❄️"},
-        {"value": "Gray wolf", "label": "灰狼 🐺"},
-        {"value": "Arctic wolf", "label": "北极狼 🐺"},
-        {"value": "Gorilla", "label": "大猩猩 🦍"},
-        {"value": "Elephant", "label": "大象 🐘"},
-        {"value": "Rhinoceros", "label": "犀牛 🦏"},
-        {"value": "Hippopotamus", "label": "河马 🦛"},
-        {"value": "Moose", "label": "驼鹿 🦌"},
-        {"value": "Kangaroo", "label": "袋鼠 🦘"}
+        {"value": "Siberian tiger", "label": "Siberian Tiger 🐅"},
+        {"value": "African lion", "label": "African Lion 🦁"},
+        {"value": "Leopard", "label": "Leopard 🐆"},
+        {"value": "Giant panda", "label": "Giant Panda 🐼"},
+        {"value": "Grizzly bear", "label": "Grizzly Bear 🐻"},
+        {"value": "Polar bear", "label": "Polar Bear 🐻‍❄️"},
+        {"value": "Gray wolf", "label": "Gray Wolf 🐺"},
+        {"value": "Arctic wolf", "label": "Arctic Wolf 🐺"},
+        {"value": "Gorilla", "label": "Gorilla 🦍"},
+        {"value": "Elephant", "label": "Elephant 🐘"},
+        {"value": "Rhinoceros", "label": "Rhinoceros 🦏"},
+        {"value": "Hippopotamus", "label": "Hippopotamus 🦛"},
+        {"value": "Moose", "label": "Moose 🦌"},
+        {"value": "Kangaroo", "label": "Kangaroo 🦘"}
       ]
     },
     "companion_animal": {
       "type": "select",
-      "label": "伴随动物（小型）",
+      "label": "Companion Animal (Small)",
       "required": true,
       "default": "tabby cat",
       "options": [
-        {"value": "tabby cat", "label": "虎斑猫 🐈"},
-        {"value": "orange cat", "label": "橘猫 🐈"},
-        {"value": "siamese cat", "label": "暹罗猫 🐈"},
-        {"value": "persian cat", "label": "波斯猫 🐈"},
-        {"value": "chihuahua", "label": "吉娃娃 🐕"},
-        {"value": "corgi", "label": "柯基 🐕"},
-        {"value": "french bulldog", "label": "法斗 🐕"},
-        {"value": "rabbit", "label": "兔子 🐰"},
-        {"value": "ferret", "label": "雪貂 🦦"},
-        {"value": "raccoon", "label": "浣熊 🦝"},
-        {"value": "red panda", "label": "小熊猫 🐾"},
-        {"value": "squirrel", "label": "松鼠 🐿️"},
-        {"value": "hedgehog", "label": "刺猬 🦔"},
-        {"value": "red fox", "label": "赤狐 🦊"},
-        {"value": "wolf cub", "label": "狼崽 🐺"},
-        {"value": "meerkat", "label": "狐獴 🐾"},
-        {"value": "capuchin monkey", "label": "卷尾猴 🐒"},
-        {"value": "lemur", "label": "狐猴 🐵"},
-        {"value": "hamster", "label": "仓鼠 🐹"}
+        {"value": "tabby cat", "label": "Tabby Cat 🐈"},
+        {"value": "orange cat", "label": "Orange Cat 🐈"},
+        {"value": "siamese cat", "label": "Siamese Cat 🐈"},
+        {"value": "persian cat", "label": "Persian Cat 🐈"},
+        {"value": "chihuahua", "label": "Chihuahua 🐕"},
+        {"value": "corgi", "label": "Corgi 🐕"},
+        {"value": "french bulldog", "label": "French Bulldog 🐕"},
+        {"value": "rabbit", "label": "Rabbit 🐰"},
+        {"value": "ferret", "label": "Ferret 🦦"},
+        {"value": "raccoon", "label": "Raccoon 🦝"},
+        {"value": "red panda", "label": "Red Panda 🐾"},
+        {"value": "squirrel", "label": "Squirrel 🐿️"},
+        {"value": "hedgehog", "label": "Hedgehog 🦔"},
+        {"value": "red fox", "label": "Red Fox 🦊"},
+        {"value": "wolf cub", "label": "Wolf Cub 🐺"},
+        {"value": "meerkat", "label": "Meerkat 🐾"},
+        {"value": "capuchin monkey", "label": "Capuchin Monkey 🐒"},
+        {"value": "lemur", "label": "Lemur 🐵"},
+        {"value": "hamster", "label": "Hamster 🐹"}
       ]
     },
     "action_type": {
       "type": "select",
-      "label": "动作类型",
+      "label": "Action Type",
       "default": "Like a human, the small animal raises one front paw provocatively, deliberately straightening only the longest middle finger",
       "options": [
-        {"value": "Like a human, the small animal raises one front paw provocatively, deliberately straightening only the longest middle finger, while all other fingers are tightly bent and retracted, forming a clear and precise movement, imitating the insulting 'middle finger' gesture of humans. The shape of the paw imitates the human hand. The movement is slow and full of irony, and it remains in this position after completion, with eyes penetrating the lens and looking directly at the viewer", "label": "挑衅中指手势"},
-        {"value": "The small animal raises its paw in a friendly wave, moving it side to side in a human-like greeting gesture, maintaining eye contact with the camera", "label": "友好挥手"},
-        {"value": "The small animal points directly at the camera with one extended claw, as if recognizing the viewer, holding the pose for several seconds", "label": "指向镜头"},
-        {"value": "The small animal makes a scratching gesture in the air, as if trying to reach through the lens, with claws fully extended", "label": "空中抓挠"},
-        {"value": "The small animal playfully raises both front paws in a 'hands up' gesture, as if surrendering", "label": "举起双爪"},
-        {"value": "The small animal slowly blinks at the camera, then turns its head away dismissively", "label": "轻蔑转头"}
+        {"value": "Like a human, the small animal raises one front paw provocatively, deliberately straightening only the longest middle finger, while all other fingers are tightly bent and retracted, forming a clear and precise movement, imitating the insulting 'middle finger' gesture of humans. The shape of the paw imitates the human hand. The movement is slow and full of irony, and it remains in this position after completion, with eyes penetrating the lens and looking directly at the viewer", "label": "Provocative Middle Finger Gesture"},
+        {"value": "The small animal raises its paw in a friendly wave, moving it side to side in a human-like greeting gesture, maintaining eye contact with the camera", "label": "Friendly Wave"},
+        {"value": "The small animal points directly at the camera with one extended claw, as if recognizing the viewer, holding the pose for several seconds", "label": "Point at Camera"},
+        {"value": "The small animal makes a scratching gesture in the air, as if trying to reach through the lens, with claws fully extended", "label": "Air Scratching"},
+        {"value": "The small animal playfully raises both front paws in a 'hands up' gesture, as if surrendering", "label": "Raise Both Paws"},
+        {"value": "The small animal slowly blinks at the camera, then turns its head away dismissively", "label": "Dismissive Head Turn"}
       ]
     },
     "scene_location": {
       "type": "select",
-      "label": "场景位置",
+      "label": "Scene Location",
       "default": "dilapidated porch",
       "options": [
-        {"value": "dilapidated porch", "label": "破旧门廊"},
-        {"value": "modern doorway", "label": "现代门口"},
-        {"value": "apartment hallway", "label": "公寓走廊"},
-        {"value": "garden entrance", "label": "花园入口"},
-        {"value": "abandoned building entrance", "label": "废弃建筑入口"},
-        {"value": "underground parking entrance", "label": "地下停车场入口"},
-        {"value": "old warehouse door", "label": "旧仓库门"}
+        {"value": "dilapidated porch", "label": "Dilapidated Porch"},
+        {"value": "modern doorway", "label": "Modern Doorway"},
+        {"value": "apartment hallway", "label": "Apartment Hallway"},
+        {"value": "garden entrance", "label": "Garden Entrance"},
+        {"value": "abandoned building entrance", "label": "Abandoned Building Entrance"},
+        {"value": "underground parking entrance", "label": "Underground Parking Entrance"},
+        {"value": "old warehouse door", "label": "Old Warehouse Door"}
       ]
     }
   }

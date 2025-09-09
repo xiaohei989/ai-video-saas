@@ -1,0 +1,55 @@
+{
+  "id": "b8d9f3e2-6c4a-5f7b-0e1d-4a9c7b2e8f5a",
+  "slug": "energy-object-cutting-asmr",
+  "name": "Energy Object Cutting ASMR",
+  "icon": "⚡",
+  "description": "Ultra-detailed HD ASMR experience of cutting through various energy objects and supernatural phenomena",
+  "previewUrl": "/templates/videos/energy-object-cutting-asmr.mp4",
+
+  "tags": ["asmr", "cutting", "energy", "8k", "atmospheric", "sci-fi", "supernatural"],
+  "createdAt": "2025-01-29T15:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-29T15:00:00Z",
+  "promptTemplate": "Ultra-detailed HD ASMR video with a human hand slicing through an ultra-realistic {cutting_object} resting on a {cutting_surface}. The blade crackles when it comes into contact with the energy mass, cutting through perfectly to create clean slices with spectacular interior effects and immersive ASMR soundscape. Cinematic lighting accentuates the luminous effects and energy trails. No background distractions. Focus on visual detail and rich, atmospheric ASMR sounds in perfect harmony.",
+
+  "params": {
+    "cutting_object": {
+      "type": "select",
+      "label": "Object to Cut",
+      "required": true,
+      "default": "plasma ball",
+      "options": [
+        { "value": "plasma ball", "label": "Plasma Ball 🔮" },
+        { "value": "lightning sphere", "label": "Lightning Sphere ⚡" },
+        { "value": "storm cloud", "label": "Storm Cloud ⛈️" },
+        { "value": "nebula cloud", "label": "Nebula Cloud 🌌" },
+        { "value": "fire orb", "label": "Fire Orb 🔥" },
+        { "value": "water sphere", "label": "Water Sphere 💧" },
+        { "value": "crystal core", "label": "Crystal Core 💎" },
+        { "value": "energy shield", "label": "Energy Shield 🌐" },
+        { "value": "antimatter orb", "label": "Antimatter Orb 🛸" },
+        { "value": "black hole", "label": "Black Hole 🕳️" },
+        { "value": "tornado", "label": "Tornado 🌪️" },
+        { "value": "aurora field", "label": "Aurora Field 🌅" }
+      ]
+    },
+    "cutting_surface": {
+      "type": "select",
+      "label": "Cutting Surface",
+      "required": true,
+      "default": "wooden cutting board",
+      "options": [
+        { "value": "wooden cutting board", "label": "Wooden Cutting Board" },
+        { "value": "marble countertop", "label": "Marble Countertop" },
+        { "value": "glass surface", "label": "Glass Surface" },
+        { "value": "metal platform", "label": "Metal Platform" },
+        { "value": "stone slate", "label": "Stone Slate" }
+      ]
+    },
+    "makePublic": {
+      "type": "toggle",
+      "label": "Make video public",
+      "default": false
+    }
+  }
+}

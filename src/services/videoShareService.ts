@@ -303,7 +303,7 @@ class VideoShareService {
       
       console.log('[VideoShareService] 数据流读取完成，创建Blob')
       // 合并所有数据块为Blob
-      const blob = new Blob(chunks, { type: 'video/mp4' })
+      const blob = new Blob(chunks as BlobPart[], { type: 'video/mp4' })
       console.log('[VideoShareService] Blob创建完成，大小:', blob.size, 'bytes')
       
       // 创建临时下载URL
@@ -349,45 +349,74 @@ class VideoShareService {
       const { toast } = await import('sonner')
       
       // CORS错误或网络错误时的降级方案
-      if (error.message.includes('Failed to fetch') || 
-          error.message.includes('CORS') || 
-          error.message.includes('NetworkError') ||
-          error.message.includes('TypeError')) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      if (errorMessage.includes('Failed to fetch') || 
+          errorMessage.includes('CORS') || 
+          errorMessage.includes('NetworkError') ||
+          errorMessage.includes('TypeError')) {
         console.log('[VideoShareService] 检测到网络限制，使用降级方案')
         
-        // 降级方案：直接打开链接
-        toast.warning(i18n.t('video.browserRestriction'), { 
-          id: 'download-' + filename 
+        // 清除之前的加载提示
+        toast.dismiss('download-' + filename)
+        
+        // 更友好的用户提示
+        toast.info('由于跨域限制，将在新窗口中打开视频', { 
+          id: 'download-' + filename,
+          duration: 4000
         })
         
-        // 尝试使用iframe（可能触发某些浏览器的下载）
-        const iframe = document.createElement('iframe')
-        iframe.style.display = 'none'
-        iframe.src = url
-        document.body.appendChild(iframe)
-        console.log('[VideoShareService] 降级方案：iframe已创建')
-        
-        setTimeout(() => {
-          if (document.body.contains(iframe)) {
-            document.body.removeChild(iframe)
-            console.log('[VideoShareService] 降级方案：iframe已清理')
+        // 直接打开新窗口（最可靠的方式）
+        try {
+          window.open(url, '_blank', 'noopener,noreferrer')
+          console.log('[VideoShareService] 新窗口已打开')
+          
+          // 延迟显示保存指引
+          setTimeout(() => {
+            toast.info('请在新窗口中右键点击视频，选择"另存为"进行下载', { 
+              id: 'save-instruction-' + filename,
+              duration: 6000
+            })
+          }, 1000)
+          
+        } catch (windowError) {
+          console.error('[VideoShareService] 打开新窗口失败:', windowError)
+          
+          // 如果新窗口被阻塞，尝试创建下载链接
+          try {
+            const a = document.createElement('a')
+            a.href = url
+            a.target = '_blank'
+            a.rel = 'noopener noreferrer'
+            a.download = filename
+            a.style.display = 'none'
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+            
+            toast.success('下载链接已创建', { 
+              id: 'download-' + filename,
+              duration: 3000
+            })
+            
+          } catch (linkError) {
+            console.error('[VideoShareService] 创建下载链接失败:', linkError)
+            
+            // 最后的降级：显示链接让用户手动复制
+            toast.error('无法自动下载，请复制链接手动下载：' + url.substring(0, 50) + '...', { 
+              id: 'download-' + filename,
+              duration: 8000
+            })
           }
-        }, 3000)
+        }
         
-        // 同时打开新窗口作为备用
-        setTimeout(() => {
-          window.open(url, '_blank')
-          toast.info(i18n.t('video.saveAsInstruction'), { 
-            id: 'download-' + filename,
-            duration: 5000 
-          })
-          console.log('[VideoShareService] 降级方案：新窗口已打开')
-        }, 500)
+        // 不再使用iframe，因为它通常不能绕过CORS
         
       } else {
         // 其他错误
-        toast.error(i18n.t('video.downloadError', { error: error.message }), { 
-          id: 'download-' + filename 
+        toast.dismiss('download-' + filename)
+        toast.error(`下载失败: ${errorMessage}`, { 
+          id: 'download-' + filename,
+          duration: 5000
         })
       }
     }

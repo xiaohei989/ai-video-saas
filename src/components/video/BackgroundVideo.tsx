@@ -181,7 +181,6 @@ export default function BackgroundVideo({
 
   // 同步外部muted属性到内部状态
   useEffect(() => {
-    console.log('BackgroundVideo: 外部muted属性变化:', muted)
     setIsMuted(muted)
   }, [muted])
 
@@ -197,9 +196,19 @@ export default function BackgroundVideo({
       // 如果取消静音，需要重新播放以确保音频生效
       if (!isMuted) {
         video.pause()
-        video.play().catch(console.error)
+        video.play().catch((err) => {
+          // 忽略组件卸载时的正常中断错误
+          if (err.name !== 'AbortError') {
+            console.error('Video play failed:', err)
+          }
+        })
       } else {
-        video.play().catch(console.error)
+        video.play().catch((err) => {
+          // 忽略组件卸载时的正常中断错误
+          if (err.name !== 'AbortError') {
+            console.error('Video play failed:', err)
+          }
+        })
       }
     } else {
       video.pause()

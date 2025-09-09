@@ -53,15 +53,35 @@ export async function extractVideoThumbnail(
       }
     })
     
-    // 增强错误处理，包括CORS错误
-    video.addEventListener('error', (e) => {
+    // 增强错误处理，包括CORS和代理错误
+    video.addEventListener('error', async (e) => {
       console.error(`[VIDEO THUMBNAIL] 视频加载失败: ${videoUrl}`, e)
       
-      // 如果是CORS错误，尝试使用备用方案
+      // 如果是代理请求失败，尝试直接访问原始URL
+      if (videoUrl.startsWith('/api/filesystem/') || videoUrl.startsWith('/api/heyoo/')) {
+        console.warn(`[VIDEO THUMBNAIL] 代理请求失败，尝试直接访问原始URL`)
+        
+        let originalUrl = videoUrl
+        if (videoUrl.startsWith('/api/filesystem/')) {
+          originalUrl = `https://filesystem.site${videoUrl.replace('/api/filesystem', '')}`
+        } else if (videoUrl.startsWith('/api/heyoo/')) {
+          originalUrl = `https://heyoo.oss-ap-southeast-1.aliyuncs.com${videoUrl.replace('/api/heyoo', '')}`
+        }
+        
+        try {
+          // 尝试使用原始URL重新提取缩略图
+          const directThumbnail = await extractVideoThumbnailDirect(originalUrl, frameTime)
+          resolve(directThumbnail)
+          return
+        } catch (directError) {
+          console.error(`[VIDEO THUMBNAIL] 直接访问也失败: ${originalUrl}`, directError)
+        }
+      }
+      
+      // 根据不同域名提供不同的备用缩略图
       if (videoUrl.includes('filesystem.site') || videoUrl.includes('heyoo.oss')) {
-        console.warn(`[VIDEO THUMBNAIL] 检测到第三方域名CORS问题，使用备用缩略图`)
-        // 返回一个默认的视频图标或占位图
-        resolve('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NzM4ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuinhumikTwvdGV4dD48L3N2Zz4=')
+        console.warn(`[VIDEO THUMBNAIL] 检测到第三方域名问题，使用高质量备用缩略图`)
+        resolve(getEnhancedDefaultThumbnail())
         return
       }
       
@@ -179,4 +199,73 @@ export class VideoPreviewAnimation {
     this.stop()
     this.thumbnails = []
   }
+}
+
+/**
+ * 直接访问原始URL提取缩略图（不使用代理）
+ */
+async function extractVideoThumbnailDirect(
+  videoUrl: string,
+  frameTime: number = 0.33
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video')
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')
+    
+    if (!context) {
+      reject(new Error('Failed to get canvas context'))
+      return
+    }
+    
+    // 不设置crossOrigin，直接尝试访问
+    video.muted = true
+    video.playsInline = true
+    
+    video.addEventListener('loadedmetadata', () => {
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
+      video.currentTime = Math.min(frameTime, video.duration)
+    })
+    
+    video.addEventListener('seeked', () => {
+      try {
+        context.drawImage(video, 0, 0, canvas.width, canvas.height)
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8)
+        video.remove()
+        canvas.remove()
+        resolve(dataUrl)
+      } catch (error) {
+        reject(error)
+      }
+    })
+    
+    video.addEventListener('error', (e) => {
+      reject(new Error(`Direct access failed: ${e}`))
+    })
+    
+    video.src = videoUrl
+    video.load()
+  })
+}
+
+/**
+ * 获取增强的默认缩略图
+ */
+function getEnhancedDefaultThumbnail(): string {
+  const svg = `
+    <svg width="320" height="180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
+      <defs>
+        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect width="320" height="180" fill="url(#bg)"/>
+      <circle cx="160" cy="90" r="25" fill="rgba(255,255,255,0.9)"/>
+      <polygon points="150,75 150,105 175,90" fill="#667eea"/>
+      <text x="160" y="130" font-family="Arial, sans-serif" font-size="12" fill="white" text-anchor="middle">AI视频</text>
+    </svg>
+  `
+  return `data:image/svg+xml;base64,${btoa(svg)}`
 }

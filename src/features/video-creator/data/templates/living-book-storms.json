@@ -1,0 +1,244 @@
+{
+  "id": "f9e8d7c6-b5a4-3928-1e0f-6c5b4a392817",
+  "slug": "living-book-storms",
+  "name": "Living Book of Storms",
+  "icon": "📖",
+  "description": "An ancient book transforms into a living diorama with ships battling through storms",
+  "previewUrl": "/templates/videos/living-book-storms.mp4",
+  "credits": 15,
+  
+  "tags": ["magic", "book", "storm", "ship", "fantasy", "cinematic", "diorama"],
+  "createdAt": "2025-01-30T10:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-30T10:00:00Z",
+  
+  "promptTemplate": {
+    "model": "veo3",
+    "duration": "8s",
+    "aspect_ratio": "16:9",
+
+    "product": {
+      "name": "Living Book of Storms",
+      "type": "Fantasy Diorama Effect",
+      "brand_style": "Hyper-realistic, cinematic, magical realism"
+    },
+
+    "visual_core": {
+      "description": "An ancient book transforms into a living diorama of a stormy sea with {ship_description} battling the tempest, culminating with magical glowing text materializing above the scene.",
+      "style": "photorealistic fantasy, cinematic magic",
+      "camera": "macro close-up glide → pullback reveal → wide diorama shot",
+      "lighting": "dim library glow → lightning flashes with harsh shadows",
+      "environment": "old library desk, candlelight, pages of the book becoming ocean waves"
+    },
+
+    "elements": [
+      "ancient open book with yellowed pages",
+      "illustrated {ship_description} and stormy sea",
+      "miniature {ship_material} ship with tiny {crew_type}",
+      "waves crashing inside the book",
+      "lightning flash casting shadow across desk",
+      "glowing magical text '{cta_text}' floating above the scene"
+    ],
+
+    "audio": {
+      "sfx": "book pages rustling, distant thunder rumble, storm fade-in",
+      "ambience": "silent library background → storm sounds → wind howl, creaking wood",
+      "music": "dark orchestral tension build"
+    },
+
+    "timeline": [
+      {
+        "time": "0-2s",
+        "action": "Extreme close-up glides across the book's yellowed pages, revealing an illustration of {ship_description} on rough seas. Silence fills the library.",
+        "camera": "macro glide shot across ink lines of the illustration",
+        "audio": "quiet book rustling + faint distant thunder"
+      },
+      {
+        "time": "2-5s",
+        "action": "The illustration swells upward, transforming into a three-dimensional stormy ocean. The paper darkens as waves rise, spraying mist.",
+        "camera": "slow pullback as ocean forms inside book",
+        "audio": "waves crash + storm intensifies"
+      },
+      {
+        "time": "5-7s",
+        "action": "The {ship_description} becomes a real {ship_material} model with tiny {crew_type} {crew_action} as it rides up and down the waves, bow cutting through water. Lightning flashes. Shadows cut across the desk.",
+        "camera": "wide reveal of full diorama with cinematic storm lighting",
+        "audio": "wind howl + thunder strike + creaking wood"
+      },
+      {
+        "time": "7-8s",
+        "action": "As the storm gradually calms, the words '{cta_text}' slowly materialize in elegant serif letters, glowing softly like ancient magic inscriptions floating above the misty book.",
+        "camera": "gentle zoom focusing on the glowing text above the diorama",
+        "audio": "storm fading to gentle mystical chime"
+      }
+    ],
+
+    "cta": {
+      "motion": "Final freeze frame of the storm contained within the book, mist drifting upward.",
+      "text": "{cta_text}",
+      "style": "dramatic serif typography emerging from mist"
+    },
+
+    "keywords": [
+      "hyper-realistic",
+      "cinematic fantasy",
+      "book transforms",
+      "storm diorama",
+      "lightning",
+      "miniature {crew_type}",
+      "magical realism",
+      "{ship_material}",
+      "glowing text",
+      "floating typography"
+    ]
+  },
+  
+  "params": {
+    "ship_type": {
+      "type": "select",
+      "label": "Ship Type",
+      "required": true,
+      "default": "viking_longship",
+      "options": [
+        {
+          "value": "viking_longship",
+          "label": "⚔️ Viking Longship",
+          "metadata": {
+            "ship_description": "Viking longship with fierce dragon head prow",
+            "ship_material": "dark oak wooden",
+            "crew_type": "Viking warriors",
+            "crew_action": "rowing rhythmically while chanting war songs"
+          }
+        },
+        {
+          "value": "pirate_frigate",
+          "label": "🏴‍☠️ Pirate Frigate",
+          "metadata": {
+            "ship_description": "three-masted pirate frigate with skull flag",
+            "ship_material": "weathered wooden",
+            "crew_type": "pirates",
+            "crew_action": "swinging from rigging and manning cannons"
+          }
+        },
+        {
+          "value": "spanish_galleon",
+          "label": "🇪🇸 Spanish Galleon",
+          "metadata": {
+            "ship_description": "Spanish galleon with golden ornaments",
+            "ship_material": "ornate wooden",
+            "crew_type": "conquistadors",
+            "crew_action": "adjusting sails and firing cannons"
+          }
+        },
+        {
+          "value": "chinese_treasure_ship",
+          "label": "🏮 Chinese Treasure Ship",
+          "metadata": {
+            "ship_description": "Chinese treasure ship with red sails",
+            "ship_material": "lacquered wooden",
+            "crew_type": "Ming dynasty sailors",
+            "crew_action": "operating complex sail systems"
+          }
+        },
+        {
+          "value": "british_man_of_war",
+          "label": "🇬🇧 British Man-of-War",
+          "metadata": {
+            "ship_description": "HMS Victory-style ship of the line",
+            "ship_material": "mighty oak wooden",
+            "crew_type": "Royal Navy sailors",
+            "crew_action": "firing broadsides through gun ports"
+          }
+        },
+        {
+          "value": "missile_destroyer",
+          "label": "🚀 Modern Destroyer",
+          "metadata": {
+            "ship_description": "modern destroyer with radar arrays",
+            "ship_material": "grey steel",
+            "crew_type": "naval officers",
+            "crew_action": "monitoring radar and missile systems"
+          }
+        },
+        {
+          "value": "aircraft_carrier",
+          "label": "✈️ Aircraft Carrier",
+          "metadata": {
+            "ship_description": "nuclear aircraft carrier with jets",
+            "ship_material": "massive steel",
+            "crew_type": "carrier crew",
+            "crew_action": "launching fighter jets"
+          }
+        },
+        {
+          "value": "attack_submarine",
+          "label": "🔱 Submarine",
+          "metadata": {
+            "ship_description": "submarine breaking through waves",
+            "ship_material": "black steel",
+            "crew_type": "submarine crew",
+            "crew_action": "securing the conning tower"
+          }
+        },
+        {
+          "value": "guided_missile_cruiser",
+          "label": "⚡ Missile Cruiser",
+          "metadata": {
+            "ship_description": "guided missile cruiser",
+            "ship_material": "composite steel",
+            "crew_type": "naval personnel",
+            "crew_action": "tracking targets"
+          }
+        },
+        {
+          "value": "stealth_frigate",
+          "label": "🌊 Stealth Frigate",
+          "metadata": {
+            "ship_description": "angular stealth frigate",
+            "ship_material": "radar-absorbing composite",
+            "crew_type": "modern naval crew",
+            "crew_action": "operating weapon systems"
+          }
+        }
+      ]
+    },
+    
+    "cta_text": {
+      "type": "text",
+      "label": "Ending Text",
+      "placeholder": "Enter your custom text",
+      "required": true,
+      "default": "veo3video.me"
+    },
+    
+    "ship_description": {
+      "type": "hidden",
+      "linkedTo": "ship_type",
+      "linkType": "metadata"
+    },
+    
+    "ship_material": {
+      "type": "hidden",
+      "linkedTo": "ship_type",
+      "linkType": "metadata"
+    },
+    
+    "crew_type": {
+      "type": "hidden",
+      "linkedTo": "ship_type",
+      "linkType": "metadata"
+    },
+    
+    "crew_action": {
+      "type": "hidden",
+      "linkedTo": "ship_type",
+      "linkType": "metadata"
+    },
+    
+    "makePublic": {
+      "type": "toggle",
+      "label": "Make video public",
+      "default": false
+    }
+  }
+}

@@ -125,7 +125,6 @@ export function useTemplateLikes({
 
     // 防抖：1秒内不重复刷新
     if (!force && timeSinceLastRefresh < 1000) {
-      console.log('[useTemplateLikes] Skipping refresh due to debounce')
       return
     }
 

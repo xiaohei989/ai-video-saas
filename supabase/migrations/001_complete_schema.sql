@@ -13,7 +13,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- ============================================
 -- 创建枚举类型
 -- ============================================
-CREATE TYPE subscription_tier AS ENUM ('free', 'basic', 'pro', 'premium');
+CREATE TYPE subscription_tier AS ENUM ('free', 'basic', 'pro', 'enterprise');
 CREATE TYPE subscription_status AS ENUM ('active', 'cancelled', 'expired', 'pending');
 CREATE TYPE video_status AS ENUM ('pending', 'processing', 'completed', 'failed');
 CREATE TYPE transaction_type AS ENUM ('purchase', 'reward', 'consume', 'refund');

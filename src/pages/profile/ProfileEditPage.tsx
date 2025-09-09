@@ -21,6 +21,7 @@ import {
   X
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 
 interface SocialLinks {
   twitter?: string
@@ -93,36 +94,39 @@ export default function ProfileEditPage() {
       
       // 检查网络连接
       if (!navigator.onLine) {
-        throw new Error(t('profile.networkOffline') || 'Network is offline')
+        throw new Error(t('profile.networkOffline') || '网络连接异常，请检查网络后重试')
       }
       
-      console.log('Starting avatar upload:', fileName)
       
       await uploadFile('avatars', fileName, avatarFile, {
         cacheControl: '3600',
         upsert: true,
-        maxRetries: 3  // 最多重试3次
+        maxRetries: 3
+        // 不设置contentType，让浏览器自动处理
       })
 
       const { data } = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName)
 
-      console.log('Avatar uploaded successfully:', data.publicUrl)
       return data.publicUrl
     } catch (error: any) {
-      console.error('Avatar upload error:', error)
       
-      // 提供更友好的错误信息
-      if (error.message?.includes('network') || error.message?.includes('fetch')) {
-        throw new Error(t('profile.networkError') || 'Network error, please check your connection and try again')
-      } else if (error.message?.includes('policy') || error.message?.includes('unauthorized')) {
-        throw new Error(t('profile.permissionError') || 'Permission denied, please contact support')
-      } else if (error.message?.includes('size')) {
-        throw new Error(t('profile.fileTooLarge') || 'File is too large')
+      // 提供更详细的错误信息
+      if (error.message?.includes('未登录') || error.message?.includes('session已过期')) {
+        throw new Error(t('profile.loginStatusError'))
+      } else if (error.message?.includes('网络') || error.message?.includes('fetch') || error.message?.includes('network')) {
+        throw new Error(t('profile.networkError'))
+      } else if (error.message?.includes('权限') || error.message?.includes('policy') || error.message?.includes('unauthorized')) {
+        throw new Error(t('profile.permissionError'))
+      } else if (error.message?.includes('文件类型') || error.message?.includes('mime type') || error.message?.includes('not supported')) {
+        throw new Error(t('profile.unsupportedFileType'))
+      } else if (error.message?.includes('size') || error.message?.includes('large')) {
+        throw new Error(t('profile.fileTooLarge'))
       }
       
-      throw error
+      // 默认错误信息
+      throw new Error(`${t('profile.uploadFailed')}: ${error.message || t('common.unknownError')}`)
     }
   }
 
@@ -153,6 +157,38 @@ export default function ProfileEditPage() {
     return Object.keys(newErrors).length === 0
   }
 
+  // 保存除头像外的其他字段
+  const saveOtherFields = async () => {
+    try {
+      setIsSaving(true)
+      
+      // 更新资料（不包含头像）
+      await updateProfile({
+        username,
+        full_name: fullName,
+        bio,
+        website,
+        social_links: socialLinks
+      })
+
+      await refreshProfile()
+      toast.success(t('profile.profileUpdatedExceptAvatar'))
+      
+    } catch (error: any) {
+      console.error('Profile update error (saveOtherFields):', error)
+      if (error.message?.includes('duplicate key')) {
+        setErrors({ username: t('profile.usernameExists') })
+        toast.error(t('profile.usernameAlreadyTaken'))
+      } else if (error.message?.includes('network')) {
+        toast.error(t('profile.networkError'))
+      } else {
+        toast.error(`${t('profile.updateError')}: ${error.message}`)
+      }
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
   // 保存资料
   const handleSave = async () => {
     if (!validateForm()) return
@@ -172,16 +208,20 @@ export default function ProfileEditPage() {
           console.error('Avatar upload failed:', uploadError)
           setErrors({ avatar: uploadError.message })
           
-          // 询问用户是否继续保存其他信息
-          const continueWithoutAvatar = confirm(
-            t('profile.avatarUploadFailed') || 
-            'Avatar upload failed. Do you want to save other changes without updating the avatar?'
-          )
+          // 使用toast提示错误，并询问是否继续保存其他信息
+          toast.error(uploadError.message, {
+            duration: 5000,
+            action: {
+              label: t('profile.continueWithoutAvatar'),
+              onClick: () => {
+                // 继续执行保存流程
+                saveOtherFields()
+              }
+            }
+          })
           
-          if (!continueWithoutAvatar) {
-            setIsSaving(false)
-            return
-          }
+          setIsSaving(false)
+          return
         }
       }
 
@@ -196,21 +236,20 @@ export default function ProfileEditPage() {
       })
 
       await refreshProfile()
-      setSuccessMessage(t('profile.updateSuccess'))
+      toast.success(t('profile.updateSuccess'))
       
       // 清除头像文件
       setAvatarFile(null)
       
-      // 2秒后清除成功消息
-      setTimeout(() => setSuccessMessage(''), 2000)
     } catch (error: any) {
-      console.error('Profile update error:', error)
+      console.error('Profile update error (handleSave):', error)
       if (error.message?.includes('duplicate key')) {
         setErrors({ username: t('profile.usernameExists') })
+        toast.error(t('profile.usernameAlreadyTaken'))
       } else if (error.message?.includes('network')) {
-        alert(t('profile.networkError') || 'Network error, please try again')
+        toast.error(t('profile.networkError'))
       } else {
-        alert(t('profile.updateError') + ': ' + error.message)
+        toast.error(`${t('profile.updateError')}: ${error.message}`)
       }
     } finally {
       setIsSaving(false)

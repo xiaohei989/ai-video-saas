@@ -1,0 +1,49 @@
+# Cloudflare Workers/Pages 配置文件
+# AI Video SaaS 项目配置
+
+name = "ai-video-saas"
+compatibility_date = "2024-01-15"
+compatibility_flags = ["nodejs_compat"]
+
+# Pages 项目配置
+pages_build_output_dir = "build"
+
+# 环境变量配置
+[env.production.vars]
+NODE_ENV = "production"
+VITE_APP_ENV = "production"
+
+[env.preview.vars]
+NODE_ENV = "development"
+VITE_APP_ENV = "preview"
+
+# KV存储绑定（如果需要）
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "your-kv-namespace-id"
+# preview_id = "your-preview-kv-namespace-id"
+
+# Durable Objects（如果需要实时功能）
+# [[durable_objects.bindings]]
+# name = "VIDEO_SESSIONS"
+# class_name = "VideoSession"
+
+# R2存储绑定（如果需要文件存储）
+# [[r2_buckets]]
+# binding = "VIDEOS"
+# bucket_name = "ai-video-storage"
+
+# 函数配置（如果使用Pages Functions）
+[build]
+command = "npm run build"
+cwd = "./"
+
+# 安全配置
+[placement]
+mode = "smart"
+
+# 路由配置
+[[routes]]
+pattern = "api/*"
+zone_name = "your-domain.com"
+custom_domain = true

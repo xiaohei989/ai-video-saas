@@ -1,0 +1,67 @@
+/* 关键CSS - 内联到HTML头部 */
+/* 基础变量 */
+:root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --border: oklch(0.922 0 0);
+}
+
+.dark {
+    --background: oklch(0.14 0 0);
+    --foreground: oklch(0.97 0 0);
+    --card: oklch(0.14 0 0);
+    --card-foreground: oklch(0.97 0 0);
+    --primary: oklch(0.97 0 0);
+    --primary-foreground: oklch(0.14 0 0);
+    --muted: oklch(0.22 0 0);
+    --muted-foreground: oklch(0.67 0 0);
+    --border: oklch(0.22 0 0);
+}
+
+/* 基础样式 */
+* {
+  border: 0 solid #e5e7eb;
+  box-sizing: border-box;
+}
+
+html {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+body {
+  margin: 0;
+  line-height: inherit;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* 防止FOUC的隐藏类 */
+.loading-hidden {
+  visibility: hidden;
+}
+
+/* 加载骨架屏样式 */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.bg-gray-200 {
+  background-color: #e5e7eb;
+}
+
+.dark .bg-gray-200 {
+  background-color: #374151;
+}

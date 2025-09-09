@@ -24,7 +24,7 @@ interface TestResult {
 
 export default function TestApicoreApi() {
   const [apiKey, setApiKey] = useState(process.env.VITE_APICORE_API_KEY || '')
-  const [endpoint, setEndpoint] = useState(process.env.VITE_APICORE_ENDPOINT || 'https://api.apicore.ai')
+  const [endpoint, setEndpoint] = useState(import.meta.env.VITE_APICORE_ENDPOINT || 'https://api.apicore.ai')
   const [prompt, setPrompt] = useState('Generate a video of a monk playing basketball with a tomahawk dunk')
   const [quality, setQuality] = useState<'fast' | 'pro'>('fast')
   const [aspectRatio, setAspectRatio] = useState<'16:9' | '9:16'>('16:9')

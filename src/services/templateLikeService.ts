@@ -299,7 +299,6 @@ class TemplateLikeService {
 
       // 如果所有数据都在缓存中
       if (uncachedIds.length === 0) {
-        console.log(`[TemplateLikeService] All ${templateIds.length} templates found in individual cache`)
         return cachedResults
       }
 

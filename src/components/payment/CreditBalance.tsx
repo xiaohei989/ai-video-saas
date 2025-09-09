@@ -1,6 +1,6 @@
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Coins, TrendingUp, TrendingDown, Activity } from 'lucide-react'
+import { Gem, TrendingUp, TrendingDown, Activity } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useAuthContext } from '@/contexts/AuthContext'
@@ -74,10 +74,10 @@ export function CreditBalance({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-              isLowBalance ? 'bg-red-100' : 'bg-blue-100'
+              isLowBalance ? 'bg-red-100' : 'bg-purple-100'
             }`}>
-              <Coins className={`w-5 h-5 ${
-                isLowBalance ? 'text-red-600' : 'text-blue-600'
+              <Gem className={`w-5 h-5 ${
+                isLowBalance ? 'text-red-600' : 'text-purple-600'
               }`} />
             </div>
             <div>

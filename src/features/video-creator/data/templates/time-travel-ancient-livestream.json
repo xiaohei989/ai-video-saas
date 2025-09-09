@@ -1,0 +1,168 @@
+{
+  "id": "f3e6b9c2-5d8a-4f7e-9c1b-8a2f5e3d6c1b",
+  "slug": "time-travel-ancient-livestream",
+  "name": "Time Travel Ancient Livestream",
+  "icon": "⏰",
+  "credits": 10,
+  "description": "Time-traveling streamers broadcasting live from ancient historical scenes with modern equipment",
+  "previewUrl": "/templates/videos/time-travel-ancient-livestream.mp4",
+
+  "tags": ["comedy", "time-travel", "history", "livestream", "first-person", "ancient", "streamer", "realistic"],
+  "createdAt": "2025-01-30T10:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-30T10:00:00Z",
+  "promptTemplate": "A first-person perspective selfie: {character_description}, moving through {ancient_scene_description}. With focused expression, {pronoun_subject} explains the unfolding scene. {pronoun_subject} reacts with {voice_tone}, exclaiming '{scene_dialogue}' The camera, at a dynamic low angle, vibrates with the action, creating a jittery first-person view as the streamer navigates through the historical chaos. Cinema-quality realistic visuals with dramatic lighting and immersive atmosphere, emphasizing the striking contrast between modern streaming technology and the ancient world.",
+
+  "params": {
+    "character_description": {
+      "type": "select",
+      "label": "Streamer Character",
+      "required": true,
+      "default": "a modern female live streamer, 25 years old, with colorful hair and wireless earbuds, wearing ripped jeans and sneakers, holding a selfie stick",
+      "options": [
+        {
+          "value": "a modern female live streamer, 25 years old, with colorful hair and wireless earbuds, wearing ripped jeans and sneakers, holding a selfie stick",
+          "label": "Modern Female Streamer 👩‍💻",
+          "metadata": {
+            "voice_tone": "high-pitched excited voice with slight trembling",
+            "pronoun_subject": "she",
+            "pronoun_possessive": "her",
+            "pronoun_object": "her"
+          }
+        },
+        {
+          "value": "a tech-savvy male content creator, 28 years old, with glasses and smartwatch, wearing a hoodie and cargo pants, holding camera equipment",
+          "label": "Tech Male Blogger 👨‍💻",
+          "metadata": {
+            "voice_tone": "analytical tone mixed with genuine shock",
+            "pronoun_subject": "he",
+            "pronoun_possessive": "his",
+            "pronoun_object": "him"
+          }
+        },
+        {
+          "value": "a massive wild polar bear with thick white fur and dark eyes, naturally holding a selfie stick with powerful paws, wearing a wireless headset, displaying surprising intelligence",
+          "label": "Polar Bear Streamer 🐻‍❄️",
+          "metadata": {
+            "voice_tone": "cute fluffy voice with adorable amazement",
+            "pronoun_subject": "he",
+            "pronoun_possessive": "his",
+            "pronoun_object": "him"
+          }
+        },
+        {
+          "value": "a legendary wild yeti with shaggy white-gray fur, piercing ice-blue eyes, and prominent fangs, naturally holding streaming equipment with enormous hands, wearing a clip-on microphone",
+          "label": "Yeti Influencer 🏔️",
+          "metadata": {
+            "voice_tone": "deep gentle voice with mystical wonder",
+            "pronoun_subject": "he",
+            "pronoun_possessive": "his",
+            "pronoun_object": "him"
+          }
+        },
+        {
+          "value": "a massive wild bigfoot with dark matted fur and intelligent amber eyes, naturally holding streaming equipment with large hands, wearing a wireless microphone",
+          "label": "Bigfoot Streamer 👣",
+          "metadata": {
+            "voice_tone": "rough hearty voice with wild enthusiasm",
+            "pronoun_subject": "he",
+            "pronoun_possessive": "his",
+            "pronoun_object": "him"
+          }
+        }
+      ]
+    },
+    "ancient_scene_description": {
+      "type": "select",
+      "label": "Ancient Scene",
+      "required": true,
+      "default": "a primitive hunting scene in icy tundra, where cavemen with spears chase a mammoth, with smoke rising from campfires and ancient rock paintings glowing on cave walls, featuring earthy color tones and vibration effects",
+      "options": [
+        {
+          "value": "a primitive hunting scene in icy tundra, where cavemen with spears chase a mammoth, with smoke rising from campfires and ancient rock paintings glowing on cave walls, featuring earthy color tones and vibration effects",
+          "label": "Primitive Mammoth Hunt 🏹",
+          "metadata": {
+            "scene_dialogue": "OMG! Real mammoths! This is insane!"
+          }
+        },
+        {
+          "value": "the active pyramid construction worksite in ancient Egypt, dodging massive stone blocks being dragged across sand by teams of straining workers, walking past sweating laborers hauling ropes and positioning limestone with wooden levers, dust and sand swirling around as foremen shout commands, the towering pyramid structure rising stone by stone overhead, featuring the intense desert heat and constant motion of the bustling construction zone",
+          "label": "Egyptian Pyramid Construction 🏜️",
+          "metadata": {
+            "scene_dialogue": "Holy crap! Actual pyramid building!"
+          }
+        },
+        {
+          "value": "the Roman Colosseum arena where gladiators are fighting wild lions and tigers with swords and shields, sand flying as warriors dodge and strike, crowds roaring with excitement, featuring intense combat action with swirling dust and dramatic arena lighting",
+          "label": "Roman Gladiator Arena ⚔️",
+          "metadata": {
+            "scene_dialogue": "No way! Real gladiators fighting!"
+          }
+        },
+        {
+          "value": "aboard a Viking longship during a fierce coastal raid, with the massive dragon-headed vessel cutting through stormy seas as fierce Norse warriors row in synchronized rhythm, shields and rune-engraved axes at the ready, sea spray crashing over the deck, coastal villages visible in the distance with smoke rising from targeted settlements, featuring the ship's wooden deck perspective with dramatic ocean swells and storm effects",
+          "label": "Viking Coastal Raid ⚓",
+          "metadata": {
+            "scene_dialogue": "Vikings! They're actually coming!"
+          }
+        },
+        {
+          "value": "prehistoric Jurassic jungle with massive ferns and ancient trees, where a thunderous T-Rex roars nearby while pterodactyls soar overhead, the ground shaking with dinosaur footsteps, glowing predator eyes piercing through the misty primordial forest, featuring vibrant green tones and prehistoric atmosphere with dangerous wildlife sounds",
+          "label": "Jurassic Dinosaur Encounter 🦕",
+          "metadata": {
+            "scene_dialogue": "Holy crap! Real dinosaurs everywhere!"
+          }
+        },
+        {
+          "value": "D-Day Normandy beach landing during WWII, where soldiers advance through heavy artillery fire and exploding shells, with ruined tanks scattered across the sand, warplanes streaking overhead through thick smoke, distant gunfire echoing as Allied forces storm the fortified coastline, featuring desaturated war-torn colors and intense battlefield vibration effects",
+          "label": "D-Day Normandy Landing 🪖",
+          "metadata": {
+            "scene_dialogue": "This is D-Day! History happening!"
+          }
+        },
+        {
+          "value": "walking along the ancient Chinese Great Wall during a fierce siege battle, where Chinese soldiers fight desperately against nomadic invaders climbing the fortifications, arrows flying in both directions as defenders and attackers clash with swords and spears, war drums pounding from watchtowers while beacon fires send urgent smoke signals across the mountain peaks, featuring the stone battlements perspective with dramatic mountain warfare and sunset lighting",
+          "label": "Great Wall Defense Battle 🏯",
+          "metadata": {
+            "scene_dialogue": "The Great Wall! Epic battle!"
+          }
+        }
+      ]
+    },
+    "scene_dialogue": {
+      "type": "hidden",
+      "default": "OMG! Real mammoths! This is insane!",
+      "linkedTo": "ancient_scene_description",
+      "linkType": "metadata"
+    },
+    "voice_tone": {
+      "type": "hidden",
+      "default": "high-pitched excited voice with slight trembling",
+      "linkedTo": "character_description",
+      "linkType": "metadata"
+    },
+    "pronoun_subject": {
+      "type": "hidden",
+      "default": "she",
+      "linkedTo": "character_description",
+      "linkType": "metadata"
+    },
+    "pronoun_possessive": {
+      "type": "hidden",
+      "default": "her",
+      "linkedTo": "character_description",
+      "linkType": "metadata"
+    },
+    "pronoun_object": {
+      "type": "hidden", 
+      "default": "her",
+      "linkedTo": "character_description",
+      "linkType": "metadata"
+    },
+    "makePublic": {
+      "type": "toggle",
+      "label": "Make video public",
+      "default": false
+    }
+  }
+}

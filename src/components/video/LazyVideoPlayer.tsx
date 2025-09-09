@@ -177,23 +177,41 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
 
     // 默认占位符渲染
     if (lazyState.hasError) {
+      const isLoadCancelled = lazyState.error === 'Load cancelled'
+      
       return (
-        <div className="w-full h-full flex items-center justify-center bg-red-50 dark:bg-red-900/20">
+        <div className={`w-full h-full flex items-center justify-center ${
+          isLoadCancelled ? 'bg-gray-50 dark:bg-gray-800' : 'bg-red-50 dark:bg-red-900/20'
+        }`}>
           <div className="text-center p-4">
-            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-3" />
-            <p className="text-sm font-medium text-red-700 dark:text-red-300 mb-2">
-              视频加载失败
+            <AlertCircle className={`h-12 w-12 mx-auto mb-3 ${
+              isLoadCancelled ? 'text-gray-500' : 'text-red-500'
+            }`} />
+            <p className={`text-sm font-medium mb-2 ${
+              isLoadCancelled 
+                ? 'text-gray-700 dark:text-gray-300' 
+                : 'text-red-700 dark:text-red-300'
+            }`}>
+              {isLoadCancelled ? t('video.previewPaused') : t('video.loadFailed')}
             </p>
-            <p className="text-xs text-red-600 dark:text-red-400 mb-3">
-              {lazyState.error}
+            <p className={`text-xs mb-3 ${
+              isLoadCancelled 
+                ? 'text-gray-600 dark:text-gray-400' 
+                : 'text-red-600 dark:text-red-400'
+            }`}>
+              {isLoadCancelled ? '点击重试加载预览视频' : lazyState.error}
             </p>
             <Button
               variant="outline"
               size="sm"
               onClick={() => lazyActions.retry()}
-              className="text-red-600 border-red-300 hover:bg-red-50"
+              className={
+                isLoadCancelled
+                  ? "text-gray-600 border-gray-300 hover:bg-gray-50"
+                  : "text-red-600 border-red-300 hover:bg-red-50"
+              }
             >
-              重试
+              {t('common.retry')}
             </Button>
           </div>
         </div>
@@ -215,7 +233,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
           <div className="w-full h-full bg-muted flex items-center justify-center">
             <div className="text-center text-muted-foreground">
               <Play className="h-12 w-12 mx-auto mb-2" />
-              <p className="text-sm font-medium">视频预览</p>
+              <p className="text-sm font-medium">{t('video.preview')}</p>
             </div>
           </div>
         )}
@@ -272,7 +290,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
                   {progress.speed.toFixed(1)} KB/s
                   {progress.remainingTime > 0 && (
                     <span className="ml-2">
-                      剩余 {Math.round(progress.remainingTime)}s
+                      {t('common.remaining')} {Math.round(progress.remainingTime)}s
                     </span>
                   )}
                 </div>
@@ -369,7 +387,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
         <div className="absolute top-2 left-2 z-10">
           <div className="bg-black/50 text-white px-2 py-1 rounded-md text-xs flex items-center gap-1">
             <Loader2 className="h-3 w-3 animate-spin" />
-            生成预览
+            {t('video.thumbnail')}
           </div>
         </div>
       )}

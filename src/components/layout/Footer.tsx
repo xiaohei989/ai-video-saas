@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { FaXTwitter, FaFacebook, FaDiscord, FaTiktok } from 'react-icons/fa6'
+import { FaXTwitter, FaFacebook, FaDiscord, FaTiktok, FaInstagram } from 'react-icons/fa6'
 
 export function Footer() {
   const { t } = useTranslation()
@@ -60,32 +60,49 @@ export function Footer() {
             <h3 className="font-semibold mb-3">{t('footer.connect')}</h3>
             <div className="flex gap-4">
               <a
-                href="#"
+                href="https://x.com/veo3video_me"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
                 aria-label="X (Twitter)"
               >
                 <FaXTwitter className="h-5 w-5" />
               </a>
               <a
-                href="#"
+                href="https://discord.com/invite/UxFhMG7fyY"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
                 aria-label="Discord"
               >
                 <FaDiscord className="h-5 w-5" />
               </a>
               <a
-                href="#"
+                href="https://www.facebook.com/profile.php?id=61579879903619"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
                 aria-label="Facebook"
               >
                 <FaFacebook className="h-5 w-5" />
               </a>
               <a
-                href="#"
+                href="https://www.tiktok.com/@veo3video.me"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
                 aria-label="TikTok"
               >
                 <FaTiktok className="h-5 w-5" />
+              </a>
+              <a
+                href="https://www.instagram.com/veo3video.me"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Instagram"
+              >
+                <FaInstagram className="h-5 w-5" />
               </a>
             </div>
           </div>

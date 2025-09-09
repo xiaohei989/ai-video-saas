@@ -1,13 +1,28 @@
 import React, { useMemo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Play, Loader2, Clock, Zap, Monitor, Smartphone } from 'lucide-react'
+import { Play, Loader2, Clock, Zap, Monitor, Smartphone, Lock } from 'lucide-react'
 import { Template } from '../data/templates'
 import { Progress } from '@/components/ui/progress'
 import { CustomSelect } from '@/components/ui/custom-select'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import LazyVideoPlayer from '@/components/video/LazyVideoPlayer'
 import LikeCounterButton from '@/components/templates/LikeCounterButton'
 import { useTemplateLikes } from '@/hooks/useTemplateLikes'
+import { useAuthContext } from '@/contexts/AuthContext'
+import { useQuery } from '@tanstack/react-query'
+import stripeService from '@/services/stripeService'
+import { useNavigate } from 'react-router-dom'
 
 interface PreviewPanelProps {
   template: Template
@@ -35,8 +50,23 @@ export default function PreviewPanel({
   onAspectRatioChange
 }: PreviewPanelProps) {
   const { t } = useTranslation()
+  const { user } = useAuthContext()
+  const navigate = useNavigate()
   // Force re-render every second to update time
   const [, setTick] = useState(0)
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false)
+  
+  // 查询用户订阅状态
+  const { data: subscription } = useQuery({
+    queryKey: ['user-subscription', user?.id],
+    queryFn: () => user?.id ? stripeService.getUserSubscription(user.id) : null,
+    enabled: !!user?.id
+  })
+  
+  // 检查用户是否为付费用户
+  const isPaidUser = useMemo(() => {
+    return subscription && subscription.plan && subscription.status === 'active'
+  }, [subscription])
   
   // 使用批量点赞管理（和TemplatesPage相同的模式）
   const templateIds = useMemo(() => [template.id], [template.id])
@@ -105,18 +135,37 @@ export default function PreviewPanel({
           {/* 宽高比选择器 */}
           <div className="flex flex-col items-start sm:items-center gap-2 w-full sm:w-auto">
             <label className="text-sm font-medium whitespace-nowrap">{t('videoCreator.aspectRatio')}</label>
-            <Tabs value={aspectRatio} onValueChange={(value) => onAspectRatioChange(value as '16:9' | '9:16')}>
+            <Tabs value={aspectRatio} onValueChange={(value) => {
+              // 检查9:16格式的权限
+              if (value === '9:16' && !isPaidUser) {
+                setShowUpgradeDialog(true)
+                return
+              }
+              onAspectRatioChange(value as '16:9' | '9:16')
+            }}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="16:9" className="flex items-center space-x-2">
                   <Monitor className="w-4 h-4" />
                   <span>16:9</span>
                 </TabsTrigger>
-                <TabsTrigger value="9:16" className="flex items-center space-x-2">
+                <TabsTrigger 
+                  value="9:16" 
+                  className="flex items-center space-x-2 relative"
+                  disabled={!isPaidUser}
+                >
                   <Smartphone className="w-4 h-4" />
                   <span>9:16</span>
+                  {!isPaidUser && (
+                    <Lock className="w-3 h-3 text-yellow-600" />
+                  )}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
+            {!isPaidUser && (
+              <p className="text-xs text-yellow-600 text-center">
+                {t('upgradeDialog.aspectRatioRestriction')}
+              </p>
+            )}
           </div>
 
         </div>
@@ -146,18 +195,21 @@ export default function PreviewPanel({
                 })()}
               </div>
               {isGenerating ? (
-                <div className="flex flex-col items-center gap-4 text-muted-foreground p-8">
-                  <div className="relative">
-                    <Loader2 className="h-12 w-12 animate-spin" />
+                <div className="flowing-background flex flex-col items-center gap-4 text-white p-8">
+                  {/* 流体气泡效果层 */}
+                  <div className="fluid-bubbles"></div>
+                  
+                  <div className="relative z-10">
+                    <Loader2 className="h-12 w-12 animate-spin text-white/90" />
                     {progress > 0 && (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-xs font-semibold">{Math.round(progress)}%</span>
+                        <span className="text-xs font-semibold text-white">{Math.round(progress)}%</span>
                       </div>
                     )}
                   </div>
                   
-                  <div className="text-center space-y-2">
-                    <p className="text-sm font-medium">
+                  <div className="text-center space-y-2 z-10 relative">
+                    <p className="text-sm font-medium text-white">
                       {status || t('videoCreator.generatingVideo')}
                     </p>
                     
@@ -165,12 +217,12 @@ export default function PreviewPanel({
                     <div className="w-48 mx-auto">
                       <Progress 
                         value={progress} 
-                        className="h-2 bg-white/20 [&>div]:bg-white" 
+                        className="h-2 bg-white/30 [&>div]:bg-white/90" 
                       />
                     </div>
                     
                     {/* Time Information */}
-                    <div className="flex items-center justify-center gap-4 text-xs">
+                    <div className="flex items-center justify-center gap-4 text-xs text-white/90">
                       {elapsedTime && (
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
@@ -186,7 +238,7 @@ export default function PreviewPanel({
                     </div>
                   </div>
                   
-                  <p className="text-xs opacity-70">
+                  <p className="text-xs opacity-70 text-white/80 z-10 relative">
                     {t('videoCreator.pleaseWait')}
                   </p>
                 </div>
@@ -236,6 +288,33 @@ export default function PreviewPanel({
           </div>
         )}
       </div>
+      
+      {/* 升级提示对话框 */}
+      <AlertDialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Lock className="w-5 h-5 text-yellow-600" />
+              {t('upgradeDialog.title')}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('upgradeDialog.description')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('upgradeDialog.cancel')}</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                setShowUpgradeDialog(false)
+                navigate('/pricing')
+              }}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {t('upgradeDialog.upgrade')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

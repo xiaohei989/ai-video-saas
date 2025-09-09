@@ -1,0 +1,86 @@
+# Cloudflare Pages Headers Configuration
+# AI Video SaaS 安全头和CORS配置
+
+/*
+  # 基础安全头
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  
+  # Content Security Policy - 适配AI视频应用需求
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; media-src 'self' blob: https: http:; connect-src 'self' https://*.supabase.co https://api.stripe.com https://api.qingyuntop.top https://api.apicore.ai https://www.google-analytics.com https://flagcdn.com https://flagpedia.net; frame-src https://js.stripe.com; worker-src 'self' blob:
+  
+  # 缓存控制 - 静态资源长期缓存
+  Cache-Control: public, max-age=31536000, immutable
+
+# 静态资源优化缓存
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+  
+/public/*
+  Cache-Control: public, max-age=604800
+
+# JavaScript和CSS文件缓存
+*.js
+  Cache-Control: public, max-age=31536000, immutable
+*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+# Service Worker - 禁用缓存
+/sw.js
+  Cache-Control: no-cache
+/service-worker.js
+  Cache-Control: no-cache
+
+# 视频和媒体文件 - 1周缓存
+*.mp4
+  Cache-Control: public, max-age=604800
+  Accept-Ranges: bytes
+*.webm
+  Cache-Control: public, max-age=604800
+  Accept-Ranges: bytes
+*.mov
+  Cache-Control: public, max-age=604800
+  Accept-Ranges: bytes
+
+# 图片文件 - 1周缓存
+*.jpg
+  Cache-Control: public, max-age=604800
+*.jpeg
+  Cache-Control: public, max-age=604800
+*.png
+  Cache-Control: public, max-age=604800
+*.webp
+  Cache-Control: public, max-age=604800
+*.gif
+  Cache-Control: public, max-age=604800
+
+# 字体文件 - 1年缓存
+*.woff
+  Cache-Control: public, max-age=31536000, immutable
+*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+*.ttf
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML文件 - 短缓存
+*.html
+  Cache-Control: public, max-age=300
+  
+# 根目录HTML - 无缓存
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# API相关路径CORS配置
+/api/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+  Access-Control-Allow-Headers: Content-Type, Authorization, x-client-info, apikey
+
+# Manifest和图标文件
+/manifest.json
+  Cache-Control: public, max-age=86400
+/favicon.*
+  Cache-Control: public, max-age=86400

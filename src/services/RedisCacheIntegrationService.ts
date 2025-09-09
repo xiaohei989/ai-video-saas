@@ -75,6 +75,90 @@ class RedisCacheIntegrationService {
   }
 
   /**
+   * 清理用户订阅缓存
+   */
+  async clearUserSubscriptionCache(userId: string): Promise<boolean> {
+    if (!this.isCacheEnabled()) {
+      console.log('[REDIS CACHE INTEGRATION] 缓存未启用，跳过清理')
+      return true
+    }
+
+    try {
+      const cacheKey = `user:${userId}:subscription`
+      
+      // 使用Edge Function删除缓存
+      const deleted = await edgeCacheClient.delete(cacheKey)
+      
+      if (deleted) {
+        console.log(`[REDIS CACHE INTEGRATION] ✅ 已清理用户订阅缓存: ${userId}`)
+      } else {
+        console.warn(`[REDIS CACHE INTEGRATION] ⚠️ 用户订阅缓存清理失败: ${userId}`)
+      }
+      
+      return deleted
+    } catch (error) {
+      console.error(`[REDIS CACHE INTEGRATION] ❌ 清理用户订阅缓存异常: ${userId}`, error)
+      return false
+    }
+  }
+
+  /**
+   * 强制刷新用户订阅缓存
+   */
+  async refreshUserSubscriptionCache(userId: string): Promise<SubscriptionTier> {
+    console.log(`[REDIS CACHE INTEGRATION] 🔄 强制刷新用户订阅缓存: ${userId}`)
+    
+    try {
+      // 先清理缓存
+      await this.clearUserSubscriptionCache(userId)
+      
+      // 然后重新获取（这会触发缓存更新）
+      const tier = await this.getUserSubscription(userId)
+      
+      console.log(`[REDIS CACHE INTEGRATION] ✅ 用户订阅缓存刷新完成: ${userId} -> ${tier}`)
+      return tier
+    } catch (error) {
+      console.error(`[REDIS CACHE INTEGRATION] ❌ 刷新用户订阅缓存失败: ${userId}`, error)
+      return 'free'
+    }
+  }
+
+  /**
+   * 批量清理多个用户的订阅缓存
+   */
+  async clearMultipleUserSubscriptionCaches(userIds: string[]): Promise<{
+    success: number
+    failed: number
+    errors: string[]
+  }> {
+    console.log(`[REDIS CACHE INTEGRATION] 🧹 批量清理 ${userIds.length} 个用户的订阅缓存`)
+    
+    const result = {
+      success: 0,
+      failed: 0,
+      errors: [] as string[]
+    }
+    
+    for (const userId of userIds) {
+      try {
+        const cleared = await this.clearUserSubscriptionCache(userId)
+        if (cleared) {
+          result.success++
+        } else {
+          result.failed++
+          result.errors.push(`用户 ${userId} 缓存清理失败`)
+        }
+      } catch (error) {
+        result.failed++
+        result.errors.push(`用户 ${userId} 缓存清理异常: ${error instanceof Error ? error.message : String(error)}`)
+      }
+    }
+    
+    console.log(`[REDIS CACHE INTEGRATION] 批量清理完成: 成功 ${result.success}, 失败 ${result.failed}`)
+    return result
+  }
+
+  /**
    * 从数据库获取用户订阅信息
    */
   private async getUserSubscriptionFromDB(userId: string): Promise<SubscriptionTier> {
@@ -84,13 +168,16 @@ class RedisCacheIntegrationService {
         .select('tier, status, current_period_end')
         .eq('user_id', userId)
         .eq('status', 'active')
-        .single()
+        .maybeSingle()
 
       if (error) {
-        if (error.code === 'PGRST116') { // 没有找到记录
-          return 'free'
-        }
-        throw error
+        console.error('Error fetching subscription from DB:', error)
+        return 'free'
+      }
+
+      // maybeSingle() 返回 null 当没有记录时，这是正常情况（免费用户）
+      if (!subscription) {
+        return 'free'
       }
 
       return (subscription?.tier as SubscriptionTier) || 'free'

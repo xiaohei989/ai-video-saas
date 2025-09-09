@@ -69,9 +69,5 @@ export function createCorsVideo(url: string): HTMLVideoElement {
   applyVideoCorsFix(video, proxyUrl);
   video.src = proxyUrl;
   
-  console.log(`[VIDEO CORS] 原始URL: ${url}`);
-  console.log(`[VIDEO CORS] 代理URL: ${proxyUrl}`);
-  console.log(`[VIDEO CORS] 需要代理: ${needsCorsProxy(url)}`);
-  
   return video;
 }

@@ -22,7 +22,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   global: {
     headers: {
       'Accept': 'application/json, application/vnd.pgrst.object+json',
-      'Content-Type': 'application/json',
     },
   },
 })
@@ -177,27 +176,53 @@ export const uploadFile = async (
   const maxRetries = options?.maxRetries || 3
   let lastError: any = null
   
+  
+  // 验证用户认证状态
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+  if (sessionError || !session) {
+    console.error('[Storage] 用户未认证:', sessionError)
+    throw new Error('用户未登录或session已过期，请重新登录')
+  }
+  
   // 重试逻辑
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
+      // 构建上传选项，让浏览器自动设置正确的Content-Type
+      const uploadOptions: any = {
+        cacheControl: options?.cacheControl || '3600',
+        upsert: options?.upsert || false,
+      }
+      
+      // 只有在明确指定时才设置contentType，否则让浏览器自动处理
+      if (options?.contentType) {
+        uploadOptions.contentType = options.contentType
+      }
+      
       const { data, error } = await supabase.storage
         .from(bucket)
-        .upload(path, file, {
-          cacheControl: options?.cacheControl || '3600',
-          contentType: options?.contentType || file.type,
-          upsert: options?.upsert || false,
-        })
+        .upload(path, file, uploadOptions)
 
       if (error) {
+        console.error(`[Storage] 上传失败 (第${attempt}次):`, {
+          error: error.message,
+          statusCode: (error as any).statusCode,
+          details: error
+        })
+        
         // 如果是权限错误，不重试
-        if (error.message?.includes('policy') || error.message?.includes('unauthorized')) {
-          throw error
+        if (error.message?.includes('policy') || error.message?.includes('unauthorized') || error.message?.includes('Unauthorized')) {
+          throw new Error('没有权限上传文件，请检查Storage权限配置')
         }
+        
+        // 如果是MIME类型错误，不重试
+        if (error.message?.includes('mime type') || error.message?.includes('not supported')) {
+          throw new Error(`不支持的文件类型: ${file.type}。请使用JPG、PNG、GIF或WebP格式的图片`)
+        }
+        
         lastError = error
         
         // 如果不是最后一次尝试，等待后重试
         if (attempt < maxRetries) {
-          console.log(`Upload attempt ${attempt} failed, retrying in ${attempt * 1000}ms...`)
           await new Promise(resolve => setTimeout(resolve, attempt * 1000))
           continue
         }
@@ -206,12 +231,12 @@ export const uploadFile = async (
         return data
       }
     } catch (err: any) {
+      console.error(`[Storage] 上传异常 (第${attempt}次):`, err)
       lastError = err
       
       // 网络错误，可能需要重试
       if (err.message?.includes('fetch') || err.message?.includes('network')) {
         if (attempt < maxRetries) {
-          console.log(`Network error on attempt ${attempt}, retrying in ${attempt * 1000}ms...`)
           await new Promise(resolve => setTimeout(resolve, attempt * 1000))
           continue
         }

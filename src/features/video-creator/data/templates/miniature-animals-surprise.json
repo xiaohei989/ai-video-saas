@@ -1,12 +1,12 @@
 {
   "id": "5a46006a-7da2-47a1-909a-9d4cda1c096d",
   "slug": "miniature-animals-surprise",
-  "name": "迷你动物惊喜盒子",
+  "name": "Miniature Animals Surprise Box",
   "icon": "🦒",
-  "description": "超现实的微型动物藏在意想不到的容器中，开门瞬间的惊喜揭露",
+  "description": "Hyper-realistic miniature animals hidden in unexpected containers, revealing surprise moments when doors open",
   "previewUrl": "/templates/videos/miniature-animals-surprise.mp4",
 
-  "category": "动物/惊喜",
+  "category": "Animals/Surprise",
   "tags": ["miniature", "animals", "surprise", "realistic", "cute", "unexpected", "macro", "fantasy"],
   "createdAt": "2025-01-24T10:00:00Z",
   "version": "1.0.0",
@@ -15,87 +15,87 @@
   "params": {
     "animal_type": {
       "type": "select",
-      "label": "动物类型",
+      "label": "Animal Type",
       "required": true,
       "default": "baby giraffes",
       "options": [
-        {"value": "baby giraffes", "label": "小长颈鹿 🦒"},
-        {"value": "baby elephants", "label": "小象 🐘"},
-        {"value": "baby pandas", "label": "熊猫宝宝 🐼"},
-        {"value": "baby lions", "label": "小狮子 🦁"},
-        {"value": "baby dragons", "label": "小龙 🐉"},
-        {"value": "baby phoenixes", "label": "小凤凰 🔥"},
-        {"value": "baby unicorns", "label": "独角兽宝宝 🦄"},
-        {"value": "baby griffins", "label": "小狮鹫 🦅"},
-        {"value": "baby pegasus", "label": "小飞马 ✨"},
-        {"value": "baby nine-tailed foxes", "label": "九尾狐幼崽 🦊"},
-        {"value": "baby zebras", "label": "小斑马 🦓"},
-        {"value": "baby koalas", "label": "考拉宝宝 🐨"},
-        {"value": "baby penguins", "label": "小企鹅 🐧"},
-        {"value": "baby owls", "label": "猫头鹰宝宝 🦉"},
-        {"value": "baby cerberus puppies", "label": "地狱犬幼崽 🐺"},
-        {"value": "baby hippogriffs", "label": "鹰马兽宝宝 🦋"},
-        {"value": "baby qilins", "label": "小麒麟 🦌"},
-        {"value": "baby white tigers", "label": "白虎幼崽 🐅"}
+        {"value": "baby giraffes", "label": "Baby Giraffes 🦒"},
+        {"value": "baby elephants", "label": "Baby Elephants 🐘"},
+        {"value": "baby pandas", "label": "Baby Pandas 🐼"},
+        {"value": "baby lions", "label": "Baby Lions 🦁"},
+        {"value": "baby dragons", "label": "Baby Dragons 🐉"},
+        {"value": "baby phoenixes", "label": "Baby Phoenixes 🔥"},
+        {"value": "baby unicorns", "label": "Baby Unicorns 🦄"},
+        {"value": "baby griffins", "label": "Baby Griffins 🦅"},
+        {"value": "baby pegasus", "label": "Baby Pegasus ✨"},
+        {"value": "baby nine-tailed foxes", "label": "Baby Nine-tailed Foxes 🦊"},
+        {"value": "baby zebras", "label": "Baby Zebras 🦓"},
+        {"value": "baby koalas", "label": "Baby Koalas 🐨"},
+        {"value": "baby penguins", "label": "Baby Penguins 🐧"},
+        {"value": "baby owls", "label": "Baby Owls 🦉"},
+        {"value": "baby cerberus puppies", "label": "Baby Cerberus Puppies 🐺"},
+        {"value": "baby hippogriffs", "label": "Baby Hippogriffs 🦋"},
+        {"value": "baby qilins", "label": "Baby Qilins 🦌"},
+        {"value": "baby white tigers", "label": "Baby White Tigers 🐅"}
       ]
     },
     "animal_count": {
       "type": "select",
-      "label": "动物数量",
+      "label": "Animal Count",
       "default": "two",
       "options": [
-        {"value": "one", "label": "一只"},
-        {"value": "two", "label": "两只"},
-        {"value": "three", "label": "三只"},
-        {"value": "a family of four", "label": "一家四口"}
+        {"value": "one", "label": "One"},
+        {"value": "two", "label": "Two"},
+        {"value": "three", "label": "Three"},
+        {"value": "a family of four", "label": "A Family of Four"}
       ]
     },
     "container_type": {
       "type": "select",
-      "label": "容器类型",
+      "label": "Container Type",
       "required": true,
       "default": "birdhouse",
       "options": [
-        {"value": "birdhouse", "label": "鸟屋 🏠"},
-        {"value": "vintage mailbox", "label": "复古邮箱 📮"},
-        {"value": "large flower pot", "label": "大花盆 🪴"},
-        {"value": "antique teacup", "label": "古董茶杯 ☕"},
-        {"value": "old shoebox", "label": "旧鞋盒 📦"},
-        {"value": "tree hollow", "label": "树洞 🌳"},
-        {"value": "miniature castle", "label": "迷你城堡 🏰"},
-        {"value": "glass terrarium", "label": "玻璃生态箱 🔮"},
-        {"value": "ancient treasure chest", "label": "古老宝箱 💎"},
-        {"value": "mushroom house", "label": "蘑菇房 🍄"}
+        {"value": "birdhouse", "label": "Birdhouse 🏠"},
+        {"value": "vintage mailbox", "label": "Vintage Mailbox 📮"},
+        {"value": "large flower pot", "label": "Large Flower Pot 🪴"},
+        {"value": "antique teacup", "label": "Antique Teacup ☕"},
+        {"value": "old shoebox", "label": "Old Shoebox 📦"},
+        {"value": "tree hollow", "label": "Tree Hollow 🌳"},
+        {"value": "miniature castle", "label": "Miniature Castle 🏰"},
+        {"value": "glass terrarium", "label": "Glass Terrarium 🔮"},
+        {"value": "ancient treasure chest", "label": "Ancient Treasure Chest 💎"},
+        {"value": "mushroom house", "label": "Mushroom House 🍄"}
       ]
     },
     "animal_action": {
       "type": "select",
-      "label": "动物动作",
+      "label": "Animal Action",
       "required": true,
       "default": "are alert and waiting; one gently yawns, both subtly move their ears and blink",
       "options": [
-        {"value": "are alert and waiting; one gently yawns, both subtly move their ears and blink", "label": "警觉等待，打哈欠"},
-        {"value": "are sleeping peacefully, then slowly wake up", "label": "安静睡觉，慢慢醒来"},
-        {"value": "curiously look at the camera with big eyes", "label": "好奇地看镜头"},
-        {"value": "playfully interact with each other", "label": "互相玩耍"},
-        {"value": "are eating from tiny bowls", "label": "从小碗里进食"},
-        {"value": "stand up excitedly when door opens", "label": "开门时兴奋站起"},
-        {"value": "are practicing their tiny roars or chirps", "label": "练习小吼叫或啁啾声"},
-        {"value": "are reading tiny magical books", "label": "阅读迷你魔法书"}
+        {"value": "are alert and waiting; one gently yawns, both subtly move their ears and blink", "label": "Alert and Waiting, Yawning"},
+        {"value": "are sleeping peacefully, then slowly wake up", "label": "Sleeping Peacefully, Waking Up"},
+        {"value": "curiously look at the camera with big eyes", "label": "Looking Curiously at Camera"},
+        {"value": "playfully interact with each other", "label": "Playing with Each Other"},
+        {"value": "are eating from tiny bowls", "label": "Eating from Tiny Bowls"},
+        {"value": "stand up excitedly when door opens", "label": "Standing Up Excitedly When Door Opens"},
+        {"value": "are practicing their tiny roars or chirps", "label": "Practicing Tiny Roars or Chirps"},
+        {"value": "are reading tiny magical books", "label": "Reading Tiny Magical Books"}
       ]
     },
     "environment": {
       "type": "select",
-      "label": "环境场景",
+      "label": "Environment Scene",
       "default": "Open field with lush green grass and blue sky",
       "options": [
-        {"value": "Open field with lush green grass and blue sky", "label": "绿草蓝天的开阔田野"},
-        {"value": "Blooming garden with colorful flowers", "label": "鲜花盛开的花园"},
-        {"value": "Peaceful forest clearing with dappled sunlight", "label": "斑驳阳光的森林空地"},
-        {"value": "Cozy backyard with wooden fence", "label": "带木栅栏的温馨后院"},
-        {"value": "Magical garden with floating lights and mystical fog", "label": "有浮光和神秘雾气的魔法花园"},
-        {"value": "Enchanted forest with glowing mushrooms", "label": "有发光蘑菇的魔法森林"},
-        {"value": "Cloud kingdom floating in the sky", "label": "天空中的云朵王国"}
+        {"value": "Open field with lush green grass and blue sky", "label": "Open Field with Green Grass and Blue Sky"},
+        {"value": "Blooming garden with colorful flowers", "label": "Blooming Garden with Colorful Flowers"},
+        {"value": "Peaceful forest clearing with dappled sunlight", "label": "Peaceful Forest Clearing with Dappled Sunlight"},
+        {"value": "Cozy backyard with wooden fence", "label": "Cozy Backyard with Wooden Fence"},
+        {"value": "Magical garden with floating lights and mystical fog", "label": "Magical Garden with Floating Lights and Mystical Fog"},
+        {"value": "Enchanted forest with glowing mushrooms", "label": "Enchanted Forest with Glowing Mushrooms"},
+        {"value": "Cloud kingdom floating in the sky", "label": "Cloud Kingdom Floating in the Sky"}
       ]
     }
   }

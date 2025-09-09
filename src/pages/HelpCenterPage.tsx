@@ -26,6 +26,9 @@ import { toast } from 'sonner'
 import { AuthContext } from '@/contexts/AuthContext'
 import supportService, { SupportTicket, TicketDetails } from '@/services/supportService'
 import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import stripeService from '@/services/stripeService'
+import { useSEO } from '@/hooks/useSEO'
 
 interface FAQ {
   id: string
@@ -45,6 +48,9 @@ export default function HelpCenterPage() {
   const { t } = useTranslation()
   const { user } = useContext(AuthContext)
   const [searchQuery, setSearchQuery] = useState('')
+
+  // SEO优化
+  useSEO('help')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null)
   
@@ -65,6 +71,16 @@ export default function HelpCenterPage() {
   const [loadingDetails, setLoadingDetails] = useState(false)
   const [replyContent, setReplyContent] = useState('')
   const [isReplying, setIsReplying] = useState(false)
+  
+  // 查询用户订阅状态
+  const { data: subscription } = useQuery({
+    queryKey: ['user-subscription', user?.id],
+    queryFn: () => user?.id ? stripeService.getUserSubscription(user.id) : null,
+    enabled: !!user?.id
+  })
+  
+  // 检查用户是否为付费用户
+  const isPaidUser = subscription && subscription.plan && subscription.status === 'active'
 
   // 获取FAQ数据并过滤
   const faqData = getFAQData(t)
@@ -307,6 +323,58 @@ export default function HelpCenterPage() {
               <CardDescription>{t('helpCenter.support.subtitle')}</CardDescription>
             </CardHeader>
             <CardContent>
+              {!user ? (
+                // 未登录提示
+                <div className="text-center py-12">
+                  <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
+                    <User className="h-12 w-12 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{t('helpCenter.common.loginRequired')}</h3>
+                  <p className="text-muted-foreground mb-4">{t('helpCenter.support.freeUserSupport.loginPromptSupport')}</p>
+                  <Link to="/signin">
+                    <Button>
+                      <User className="mr-2 h-4 w-4" />
+                      {t('helpCenter.common.login')}
+                    </Button>
+                  </Link>
+                </div>
+              ) : !isPaidUser ? (
+                // 免费用户显示邮箱联系方式
+                <div className="text-center py-12">
+                  <div className="mx-auto w-24 h-24 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-6">
+                    <MessageCircle className="h-12 w-12 text-blue-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3">{t('helpCenter.support.freeUserSupport.emailSupportTitle')}</h3>
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    {t('helpCenter.support.freeUserSupport.emailSupportDescription')}
+                  </p>
+                  <div className="bg-muted/50 rounded-lg p-6 max-w-md mx-auto">
+                    <div className="flex items-center justify-center gap-2 mb-4">
+                      <MessageCircle className="h-5 w-5 text-blue-600" />
+                      <span className="font-medium">{t('helpCenter.support.freeUserSupport.contactEmail')}</span>
+                    </div>
+                    <div className="text-lg font-mono bg-white dark:bg-gray-800 rounded-md p-3 border">
+                      support@veo3video.me
+                    </div>
+                    <Button 
+                      className="w-full mt-4"
+                      onClick={() => {
+                        window.open('mailto:support@veo3video.me?subject=技术支持咨询&body=请详细描述您遇到的问题...')
+                      }}
+                    >
+                      <Send className="mr-2 h-4 w-4" />
+                      {t('helpCenter.support.freeUserSupport.sendEmail')}
+                    </Button>
+                  </div>
+                  <div className="mt-6 text-sm text-muted-foreground">
+                    {t('helpCenter.support.freeUserSupport.upgradePrompt')}
+                    <Link to="/pricing" className="text-blue-600 hover:underline ml-1">
+                      {t('helpCenter.support.freeUserSupport.upgradeLink')}
+                    </Link>
+                    {t('helpCenter.support.freeUserSupport.upgradeDescription')}
+                  </div>
+                </div>
+              ) : (
               <form onSubmit={handleSubmitTicket} className="space-y-6">
                 {/* 标题 */}
                 <div className="space-y-2">
@@ -397,6 +465,7 @@ export default function HelpCenterPage() {
                   )}
                 </Button>
               </form>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -421,6 +490,40 @@ export default function HelpCenterPage() {
                     <Button>
                       <User className="mr-2 h-4 w-4" />
                       {t('helpCenter.common.login')}
+                    </Button>
+                  </Link>
+                </div>
+              ) : !isPaidUser ? (
+                // 免费用户提示
+                <div className="text-center py-12">
+                  <div className="mx-auto w-24 h-24 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center mb-6">
+                    <MessageCircle className="h-12 w-12 text-yellow-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3">{t('helpCenter.support.freeUserSupport.ticketSystemTitle')}</h3>
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    {t('helpCenter.support.freeUserSupport.ticketSystemDescription')}
+                  </p>
+                  <div className="bg-muted/50 rounded-lg p-6 max-w-md mx-auto mb-6">
+                    <div className="flex items-center justify-center gap-2 mb-4">
+                      <MessageCircle className="h-5 w-5 text-blue-600" />
+                      <span className="font-medium">{t('helpCenter.support.freeUserSupport.freeUserContactPrompt')}</span>
+                    </div>
+                    <div className="text-lg font-mono bg-white dark:bg-gray-800 rounded-md p-3 border">
+                      support@veo3video.me
+                    </div>
+                    <Button 
+                      className="w-full mt-4"
+                      onClick={() => {
+                        window.open('mailto:support@veo3video.me?subject=技术支持咨询&body=请详细描述您遇到的问题...')
+                      }}
+                    >
+                      <Send className="mr-2 h-4 w-4" />
+                      {t('helpCenter.support.freeUserSupport.sendEmail')}
+                    </Button>
+                  </div>
+                  <Link to="/pricing">
+                    <Button variant="outline">
+                      {t('helpCenter.support.freeUserSupport.upgradeToPaid')}
                     </Button>
                   </Link>
                 </div>

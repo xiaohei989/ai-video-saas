@@ -9,10 +9,18 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 import { Toaster } from '@/components/ui/sonner'
 import EnvironmentIndicator from './components/stripe/EnvironmentIndicator'
 import TemplateSync from './components/system/TemplateSync'
+import CookieConsentBanner from './components/common/CookieConsentBanner'
+import analyticsService from './services/analyticsService'
 
 // 调试工具（开发环境）
 if (process.env.NODE_ENV === 'development') {
   import('./utils/debugSupabase')
+  import('./utils/templateHotReload').then(({ templateHotReload }) => {
+    // 延迟启动热重载，确保应用完全初始化
+    setTimeout(() => {
+      templateHotReload.start()
+    }, 3000)
+  })
 }
 import HomePage from './pages/HomePage'
 import VideoCreator from './features/video-creator/components/VideoCreator'
@@ -50,6 +58,7 @@ import HelpCenterPage from './pages/HelpCenterPage'
 
 // Test pages
 import TestApicoreApi from './pages/TestApicoreApi'
+import TestAnalytics from './pages/TestAnalytics'
 
 // Admin pages
 import AdminRoute from './components/admin/AdminRoute'
@@ -65,6 +74,14 @@ const queryClient = new QueryClient({
 })
 
 function App() {
+  // 初始化Google Analytics
+  React.useEffect(() => {
+    const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID
+    if (measurementId) {
+      analyticsService.initialize(measurementId)
+    }
+  }, [])
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -97,6 +114,7 @@ function App() {
               
               {/* Test pages (development only) */}
               <Route path="/test/apicore" element={<Layout><TestApicoreApi /></Layout>} />
+              <Route path="/test/analytics" element={<Layout><TestAnalytics /></Layout>} />
               
               {/* Protected routes */}
               <Route element={<ProtectedRoute />}>
@@ -125,6 +143,7 @@ function App() {
             </Routes>
             <Toaster />
             <EnvironmentIndicator />
+            <CookieConsentBanner />
           </AuthProvider>
         </Router>
       </ThemeProvider>

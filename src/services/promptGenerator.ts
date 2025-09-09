@@ -66,7 +66,15 @@ export class PromptGenerator {
     // 时间轴
     if (jsonPrompt.timeline && jsonPrompt.timeline.length > 0) {
       const timelineText = jsonPrompt.timeline
-        .map(segment => `[${segment.time}] ${segment.action} Camera: ${segment.camera || 'N/A'}`)
+        .map(segment => {
+          let segmentText = `[${segment.time}] ${segment.action}`;
+          // 如果有对话内容，加入到action中
+          if (segment.dialogue && segment.dialogue.text) {
+            segmentText += ` Dialogue: "${segment.dialogue.text}"`;
+          }
+          segmentText += ` Camera: ${segment.camera || 'N/A'}`;
+          return segmentText;
+        })
         .join(' ');
       parts.push(`Timeline: ${timelineText}`);
     }
@@ -158,18 +166,50 @@ export class PromptGenerator {
             opt.value === values[typedParam.linkedTo]
           );
           
-          if (selectedOption && (selectedOption as any).metadata && (selectedOption as any).metadata[paramKey]) {
-            resolvedValues[paramKey] = (selectedOption as any).metadata[paramKey];
-          } else if (typedParam.default) {
-            // 使用默认值作为fallback
-            resolvedValues[paramKey] = typedParam.default;
+          if (selectedOption && (selectedOption as any).metadata) {
+            const metadata = (selectedOption as any).metadata;
+            
+            if (metadata[paramKey]) {
+              resolvedValues[paramKey] = metadata[paramKey];
+            } else if (typedParam.default) {
+              // 使用默认值作为fallback
+              resolvedValues[paramKey] = typedParam.default;
+            }
           }
         }
       }
     });
     
+    
     return resolvedValues;
   }
+
+  /**
+   * 根据职业选择获取默认对话内容
+   */
+  static getDefaultDialogueForProfession(
+    template: LocalTemplate,
+    professionValue: string
+  ): { reporter_question?: string; baby_response?: string } {
+    if (!professionValue) {
+      return {};
+    }
+
+    const professionParam = template.params.baby_profession;
+    if (professionParam && professionParam.type === 'select' && professionParam.options) {
+      const selectedOption = professionParam.options.find(opt => opt.value === professionValue);
+      if (selectedOption && (selectedOption as any).metadata) {
+        const metadata = (selectedOption as any).metadata;
+        return {
+          reporter_question: metadata.default_reporter_question,
+          baby_response: metadata.default_baby_response
+        };
+      }
+    }
+    
+    return {};
+  }
+
 
   /**
    * 替换模板中的占位符为实际值 - 支持 LocalTemplate 结构，兼容字符串和JSON格式

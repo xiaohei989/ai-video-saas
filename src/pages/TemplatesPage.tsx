@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Play, Clock, Coins, Hash, RefreshCw, TrendingUp, Sparkles, Heart, ArrowUp } from 'lucide-react'
+import { Play, Clock, Gem, Hash, RefreshCw, TrendingUp, Sparkles, Heart, ArrowUp } from 'lucide-react'
 import { templateList as initialTemplates } from '@/features/video-creator/data/templates/index'
 import LazyVideoPlayer from '@/components/video/LazyVideoPlayer'
 import LikeCounterButton from '@/components/templates/LikeCounterButton'
+import Pagination from '@/components/ui/pagination'
 import { useTemplateLikes } from '@/hooks/useTemplateLikes'
 import { useAuthState } from '@/hooks/useAuthState'
+import { useAnalytics } from '@/hooks/useAnalytics'
+import { useSEO } from '@/hooks/useSEO'
 
 type SortOption = 'popular' | 'latest'
 
@@ -17,10 +20,68 @@ export default function TemplatesPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { user } = useAuthState()
+  const { trackTemplateView, trackEvent, trackFilter } = useAnalytics()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [templates, setTemplates] = useState(initialTemplates)
   const [loading, setLoading] = useState(false)
-  const [sortBy, setSortBy] = useState<SortOption>('popular')
+  
+  // 从URL参数中获取状态，或使用默认值
+  const [currentPage, setCurrentPage] = useState(() => {
+    const page = searchParams.get('page')
+    return page ? Math.max(1, parseInt(page, 10)) : 1
+  })
+  const [pageSize, setPageSize] = useState(() => {
+    const size = searchParams.get('size')
+    return size ? Math.max(9, parseInt(size, 10)) : 12
+  })
+  const [sortBy, setSortBy] = useState<SortOption>(() => {
+    const sort = searchParams.get('sort') as SortOption
+    return sort && ['popular', 'latest'].includes(sort) ? sort : 'popular'
+  })
   const [showBackToTop, setShowBackToTop] = useState(false)
+
+  // SEO优化
+  useSEO('templates')
+
+  // 同步URL参数
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (currentPage > 1) params.set('page', currentPage.toString())
+    if (pageSize !== 12) params.set('size', pageSize.toString())
+    if (sortBy !== 'popular') params.set('sort', sortBy)
+    
+    const newSearch = params.toString()
+    const currentSearch = searchParams.toString()
+    
+    if (newSearch !== currentSearch) {
+      setSearchParams(params, { replace: true })
+    }
+  }, [currentPage, pageSize, sortBy, searchParams, setSearchParams])
+
+  // 监听URL参数变化
+  useEffect(() => {
+    const page = searchParams.get('page')
+    const size = searchParams.get('size')
+    const sort = searchParams.get('sort') as SortOption
+    
+    if (page) {
+      const pageNum = Math.max(1, parseInt(page, 10))
+      if (pageNum !== currentPage) {
+        setCurrentPage(pageNum)
+      }
+    }
+    
+    if (size) {
+      const sizeNum = Math.max(9, parseInt(size, 10))
+      if (sizeNum !== pageSize) {
+        setPageSize(sizeNum)
+      }
+    }
+    
+    if (sort && ['popular', 'latest'].includes(sort) && sort !== sortBy) {
+      setSortBy(sort)
+    }
+  }, [searchParams])
 
   // 获取所有模板ID用于批量查询点赞状态
   const templateIds = useMemo(() => templates.map(t => t.id), [templates])
@@ -113,13 +174,72 @@ export default function TemplatesPage() {
     }
   }, [templates, sortBy, likeStatuses, getLikeStatus])
 
+  // 分页计算
+  const totalItems = sortedTemplates.length
+  const totalPages = Math.ceil(totalItems / pageSize)
+  const startIndex = (currentPage - 1) * pageSize
+  const endIndex = startIndex + pageSize
+  const paginatedTemplates = sortedTemplates.slice(startIndex, endIndex)
+
+  // 当切换排序或页面大小时，重置到第一页
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1)
+    }
+  }, [totalPages, currentPage])
+
+  // 分页处理函数
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    // 滚动到页面顶部
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    
+    // 跟踪分页使用
+    trackEvent({
+      action: 'pagination_click',
+      category: 'user_navigation',
+      label: `page_${page}`,
+      custom_parameters: {
+        total_pages: totalPages,
+        page_size: pageSize,
+        sort_by: sortBy
+      }
+    })
+  }
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize)
+    // 计算新页码，保持当前查看的大致位置
+    const currentFirstIndex = (currentPage - 1) * pageSize
+    const newPage = Math.floor(currentFirstIndex / newPageSize) + 1
+    setCurrentPage(newPage)
+    
+    // 跟踪页面大小切换
+    trackEvent({
+      action: 'page_size_change',
+      category: 'user_preference',
+      label: `size_${newPageSize}`,
+      custom_parameters: {
+        old_page_size: pageSize,
+        new_page_size: newPageSize,
+        total_items: totalItems
+      }
+    })
+  }
+
+  const handleSortChange = (newSort: SortOption) => {
+    setSortBy(newSort)
+    setCurrentPage(1) // 切换排序时回到第一页
+    trackFilter('sort', newSort)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">{t('template.title')}</h1>
         
         {/* 排序选择器 */}
-        <Select value={sortBy} onValueChange={(value: SortOption) => setSortBy(value)}>
+        <Select value={sortBy} onValueChange={handleSortChange}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder={t('template.sortBy.placeholder')} />
           </SelectTrigger>
@@ -141,7 +261,7 @@ export default function TemplatesPage() {
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sortedTemplates.map((template: any) => {
+        {paginatedTemplates.map((template: any) => {
           return (
           <Card key={template.id} className="overflow-hidden shadow-md flex flex-col">
             <div className="aspect-video bg-muted relative group">
@@ -238,7 +358,21 @@ export default function TemplatesPage() {
               {/* 生成按钮 */}
               <Button 
                 className="w-full mt-4"
-                onClick={() => navigate(`/create?template=${template.slug}`)}
+                onClick={() => {
+                  // 跟踪模板使用事件
+                  trackTemplateView(template.id, template.category)
+                  trackEvent({
+                    action: 'template_use_click',
+                    category: 'product_usage',
+                    label: template.id,
+                    custom_parameters: {
+                      template_name: template.name,
+                      template_category: template.category,
+                      credit_cost: template.credits
+                    }
+                  })
+                  navigate(`/create?template=${template.slug}`)
+                }}
               >
                 <Sparkles className="h-4 w-4 mr-2" />
                 {t('template.generate')}
@@ -248,6 +382,22 @@ export default function TemplatesPage() {
           )
         })}
       </div>
+
+      {/* 分页组件 */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-8">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            totalItems={totalItems}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+            showPageSizeSelector={true}
+            pageSizeOptions={[9, 12, 18, 24]}
+          />
+        </div>
+      )}
 
       {/* 返回顶部按钮 */}
       {showBackToTop && (

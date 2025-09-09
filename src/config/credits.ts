@@ -6,8 +6,16 @@
 export const CREDIT_COSTS = {
   // 视频生成积分消耗
   VIDEO_GENERATION: {
-    STANDARD: 20,    // 标准质量视频
-    HIGH_QUALITY: 100, // 高质量视频
+    // 16:9 横屏视频
+    '16:9': {
+      STANDARD: 20,    // 标准质量视频
+      HIGH_QUALITY: 100, // 高质量视频
+    },
+    // 9:16 竖屏视频
+    '9:16': {
+      STANDARD: 100,    // 标准质量视频
+      HIGH_QUALITY: 160, // 高质量视频
+    }
   },
 
   // 其他功能积分消耗（未来扩展）
@@ -23,12 +31,14 @@ export const SUBSCRIPTION_CREDITS = {
 } as const
 
 /**
- * 根据视频质量获取积分消耗
+ * 根据视频质量和宽高比获取积分消耗
  */
-export function getVideoCreditCost(quality: 'standard' | 'high'): number {
-  return quality === 'high' 
-    ? CREDIT_COSTS.VIDEO_GENERATION.HIGH_QUALITY
-    : CREDIT_COSTS.VIDEO_GENERATION.STANDARD
+export function getVideoCreditCost(
+  quality: 'standard' | 'high',
+  aspectRatio: '16:9' | '9:16' = '16:9'
+): number {
+  const costs = CREDIT_COSTS.VIDEO_GENERATION[aspectRatio]
+  return quality === 'high' ? costs.HIGH_QUALITY : costs.STANDARD
 }
 
 /**

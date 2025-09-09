@@ -156,9 +156,19 @@
     "bioTooLong": "Bio must be less than 500 characters",
     "invalidWebsite": "Please enter a valid URL",
     "invalidUrl": "Please enter a valid URL",
-    "updateSuccess": "Profile updated successfully",
+    "updateSuccess": "Profile updated successfully", 
     "usernameExists": "Username already taken",
     "updateError": "Failed to update profile",
+    "avatarUploadFailed": "Avatar upload failed",
+    "continueWithoutAvatar": "Continue saving other info",
+    "profileUpdatedExceptAvatar": "Profile updated (except avatar)",
+    "usernameAlreadyTaken": "Username already taken, please choose another",
+    "networkError": "Network error, please try again",
+    "loginStatusError": "Login status error, please login again",
+    "permissionError": "No permission to upload avatar, please contact support", 
+    "unsupportedFileType": "Unsupported file format, please use JPG, PNG, GIF or WebP",
+    "fileTooLarge": "File too large, please compress (5MB limit)",
+    "uploadFailed": "Avatar upload failed",
     "userNotFound": "User Not Found",
     "userNotFoundDescription": "The user you're looking for doesn't exist",
     "loginToFollow": "Please login to follow users",
@@ -316,6 +326,16 @@
       "placeholder": "Sort by"
     }
   },
+  "pagination": {
+    "showing": "Showing {{start}}-{{end}} of {{total}} items",
+    "itemsPerPage": "Items per page",
+    "items": "items",
+    "navigation": "Pagination navigation",
+    "firstPage": "First page",
+    "prevPage": "Previous",
+    "nextPage": "Next",
+    "lastPage": "Last page"
+  },
   "video": {
     "myVideos": "My Videos",
     "loading": "Loading video...",
@@ -381,6 +401,13 @@
     "history": "Transaction History",
     "insufficient": "Insufficient credits"
   },
+  "upgradeDialog": {
+    "title": "Premium Subscription Required",
+    "description": "9:16 portrait format is an exclusive feature for premium users. Upgrade to any paid plan to unlock this feature and enjoy more creative possibilities.",
+    "cancel": "Cancel",
+    "upgrade": "Upgrade",
+    "aspectRatioRestriction": "9:16 format requires premium subscription"
+  },
   "videoCreator": {
     "outputQuality": "Output Quality",
     "fastGeneration": "⚡ Fast Generation (1-2 minutes · For Preview)",
@@ -435,6 +462,9 @@
     "untitledVideo": "Untitled Video",
     "regenerateTitle": "Regenerate with same settings",
     "download": "Download video",
+    "downloading": "Downloading...",
+    "downloadHD": "Download HD",
+    "upgradeToDownload": "Upgrade to Download",
     "share": "Share video",
     "previousPage": "Previous",
     "nextPage": "Next",
@@ -456,7 +486,16 @@
     "videoUrlNotExists": "Video URL does not exist, cannot download",
     "downloadStarting": "Starting download, if it doesn't start automatically, please right-click and save the video in the new window",
     "downloadStarted": "Download started, please check your browser's download list",
-    "downloadFailed": "Download failed, please try again. If the problem persists, try right-clicking to save in a new window"
+    "downloadFailed": "Download failed, please try again. If the problem persists, try right-clicking to save in a new window",
+    "upgradePrompt": {
+      "title": "Upgrade for unlimited HD downloads!",
+      "description": "Unlock professional features now",
+      "bannerTitle": "Upgrade to unlock download feature",
+      "bannerDescription": "Premium users can download unlimited HD videos and save their creations permanently",
+      "upgradeNow": "Upgrade Now",
+      "checkingSubscription": "Checking subscription...",
+      "subscriptionStatusLoading": "Loading subscription status..."
+    }
   },
   "pricing": {
     "popular": "Popular",
@@ -566,7 +605,7 @@
     "planDetails": {
       "mostPopular": "Most Popular",
       "monthly": "month",
-      "yearly": "year",
+      "yearly": "/year",
       "monthlyCredits": "{{credits}} credits per month",
       "yearlyCredits": "{{credits}} credits per year",
       "nextRenewal": "Next renewal: {{date}}",
@@ -576,25 +615,25 @@
       "title": "Features",
       "basic": [
         "200 credits per month",
-        "Standard video quality (20 credits/video)",
-        "Basic template library",
+        "Unlimited HD video downloads",
+        "Concurrent generation: 3 videos",
+        "9:16 Portrait format (Premium exclusive)",
         "Email support"
       ],
       "pro": [
         "1,500 credits per month",
-        "High quality videos (100 credits/video)",
-        "Standard videos (20 credits/video)",
-        "Complete template library",
+        "Unlimited HD video downloads",
+        "Concurrent generation: 5 videos",
+        "9:16 Portrait format (Premium exclusive)",
         "Priority support"
       ],
       "enterprise": [
         "6,000 credits per month",
-        "High quality videos (100 credits/video)",
-        "Standard videos (20 credits/video)",
-        "Unlimited template usage",
+        "Unlimited HD video downloads",
+        "Concurrent generation: 10 videos",
+        "9:16 Portrait format (Premium exclusive)",
         "Dedicated customer service",
-        "API access",
-        "Team collaboration"
+        "API access"
       ]
     },
     "status": {
@@ -656,9 +695,25 @@
     "view": "View",
     "viewAll": "View All",
     "share": "Share",
-    "signOut": "Sign Out",
+    "signOut": "Sign Out", 
     "backToHome": "Back to Home",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "unknownError": "Unknown error"
+  },
+  "shareModal": {
+    "title": "Share Video & Earn Credits",
+    "description": "Showcase your work, invite friends to join, and both earn credit rewards!",
+    "shareRewards": "Share Rewards",
+    "showCreation": "Show your $0.60 creation",
+    "inviteFriends": "Invite friends: +20 credits",
+    "rewardNote": "💡 When friends register, you both get 20 credits!",
+    "copyShareContent": "Copy Share Content",
+    "copied": "Copied!",
+    "copiedToClipboard": "Copied to clipboard!",
+    "shareContentText": "🤯 I just made this VIRAL VIDEO for only $0.60!\n\n📺 Watch directly: {{videoUrl}}\n\nProfessional quality that used to cost $500+ per video! No skills needed - AI does EVERYTHING!\n\n💰 Want to create your own?\nJoin with my invite code and get 20 FREE credits:\n👉 {{inviteUrl}}\n\n#60CentVideos #AIVideo #BudgetCreator #FreeCredits #ViralHack",
+    "instagramCopied": "Instagram content copied! Please paste in Instagram",
+    "platformOpened": "{{platform}} share page opened!",
+    "getReferralCodeFailed": "Failed to get referral code"
   },
   "theme": {
     "theme": "Theme",
@@ -773,6 +828,20 @@
         "descriptionTooLong": "Description cannot exceed 2000 characters",
         "fileTooLarge": "File size cannot exceed 10MB",
         "fileTypeNotSupported": "File type not supported"
+      },
+      "freeUserSupport": {
+        "emailSupportTitle": "Email Support",
+        "emailSupportDescription": "As a free user, you can contact us via email. We will respond to your inquiries within 24-48 hours.",
+        "contactEmail": "Contact Email",
+        "sendEmail": "Send Email",
+        "upgradePrompt": "Want faster response?",
+        "upgradeLink": "Upgrade to paid plan",
+        "upgradeDescription": "for priority support",
+        "ticketSystemTitle": "Ticket System for Paid Users Only",
+        "ticketSystemDescription": "Upgrade to any paid plan to access the ticket system and enjoy faster technical support response.",
+        "freeUserContactPrompt": "Free users please contact via email",
+        "upgradeToPaid": "Upgrade to Paid Plan",
+        "loginPromptSupport": "Please login first to contact customer support"
       }
     },
     "tickets": {
@@ -885,6 +954,189 @@
       "legalDocument": "Legal Document",
       "printPdf": "Print / PDF",
       "backToTop": "Back to Top"
+    }
+  },
+  "privacy": {
+    "cookieConsent": {
+      "title": "We use cookies to improve your experience",
+      "description": "We use Google Analytics to understand how you use our website so we can improve our services. This data is anonymous and not used for advertising.",
+      "accept": "Accept All",
+      "decline": "Essential Only", 
+      "showDetails": "Learn More",
+      "hideDetails": "Hide Details",
+      "essential": "Essential Cookies",
+      "essentialDesc": "Used for basic website functionality, including login status and theme settings.",
+      "analytics": "Analytics Cookies",
+      "analyticsDesc": "Google Analytics is used to understand website usage and help us improve our products.",
+      "dataInfo": "Data is completely anonymized and contains no personally identifiable information. You can change this choice anytime in privacy settings.",
+      "policyLink": "View our",
+      "privacyPolicy": "Privacy Policy",
+      "and": "and",
+      "cookiePolicy": "Cookie Policy"
+    }
+  },
+  "analytics": {
+    "testPage": {
+      "title": "Google Analytics Test Panel",
+      "subtitle": "Test and verify Analytics event tracking functionality",
+      "status": {
+        "title": "Analytics Status",
+        "description": "Current Analytics service status and configuration",
+        "enabled": "Enabled",
+        "waitingConsent": "Waiting for user consent",
+        "measurementId": "Measurement ID",
+        "debugMode": "Debug Mode",
+        "userConsent": "User Consent",
+        "environment": "Environment",
+        "printDebugInfo": "Print Debug Info",
+        "notConfigured": "Not Configured"
+      },
+      "presetEvents": {
+        "title": "Preset Event Tests",
+        "description": "Click buttons to send preset Analytics events",
+        "templateView": "Template View",
+        "templateViewDesc": "Track user template view events",
+        "templateLike": "Template Like",
+        "templateLikeDesc": "Track user template like events",
+        "videoGenerationStart": "Video Generation Start",
+        "videoGenerationStartDesc": "Track video generation start events",
+        "videoGenerationComplete": "Video Generation Complete",
+        "videoGenerationCompleteDesc": "Track video generation complete events",
+        "videoDownload": "Video Download",
+        "videoDownloadDesc": "Track video download events",
+        "videoShare": "Video Share",
+        "videoShareDesc": "Track video share events",
+        "subscriptionStart": "Subscription Start",
+        "subscriptionStartDesc": "Track user subscription flow start",
+        "creditsPurchase": "Credits Purchase",
+        "creditsPurchaseDesc": "Track credits purchase events",
+        "themeChange": "Theme Change",
+        "themeChangeDesc": "Track theme change events",
+        "errorTracking": "Error Tracking",
+        "errorTrackingDesc": "Track error events",
+        "sendEvent": "Send Event"
+      },
+      "customEvents": {
+        "title": "Custom Event Tests",
+        "description": "Create and send custom Analytics events",
+        "actionLabel": "Event Name (action)",
+        "actionPlaceholder": "e.g., button_click",
+        "categoryLabel": "Event Category (category)",
+        "categoryPlaceholder": "e.g., user_interaction",
+        "labelLabel": "Event Label (label)",
+        "labelPlaceholder": "e.g., header_button",
+        "valueLabel": "Event Value (value)",
+        "valuePlaceholder": "e.g., 1",
+        "sendCustomEvent": "Send Custom Event",
+        "fillRequired": "Please fill in event name and category"
+      },
+      "instructions": {
+        "title": "Usage Instructions",
+        "step1": {
+          "title": "1. Configure GA Measurement ID:",
+          "description": "Set VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX in .env file"
+        },
+        "step2": {
+          "title": "2. User Consent:",
+          "description": "Users need to consent to Analytics tracking in the Cookie banner to send events"
+        },
+        "step3": {
+          "title": "3. View Data:",
+          "description": "After sending events, view data in Google Analytics real-time reports (usually 1-5 minutes delay)"
+        },
+        "step4": {
+          "title": "4. Debug:",
+          "description": "In development, events are only printed to console and not sent to GA. Production will send normally."
+        }
+      }
+    }
+  },
+  "common": {
+    "retry": "Retry",
+    "remaining": "Remaining",
+    "loading": "Loading...",
+    "error": "Error",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "video": {
+    "preview": "Video Preview",
+    "previewPaused": "Video preview paused",
+    "previewFailed": "Video preview failed",
+    "loading": "Loading video...",
+    "loadFailed": "Video load failed",
+    "player": "Video Player",
+    "thumbnail": "Video Thumbnail",
+    "cache": {
+      "confirmClear": "Are you sure you want to clear all video-related cache? This will clear video previews, thumbnails and other cached data.",
+      "clearing": "Clearing cache...",
+      "cleared": "Cache cleared successfully"
+    }
+  },
+  "admin": {
+    "clearVideoCache": "Clear Video Cache",
+    "clearCacheConfirm": "Are you sure you want to clear all video-related cache? This will clear video previews, thumbnail cache and other data.",
+    "cacheCleared": "Video cache cleared successfully",
+    "debugInfo": "Admin System Debug Information",
+    "checking": "Checking...",
+    "recheck": "Recheck",
+    "refreshAuth": "Refresh Admin Authentication",
+    "refreshCacheStats": "Refresh Cache Statistics",
+    "sessionStatus": "Session Status",
+    "userPermissions": "User Permissions",
+    "localStorage": "Local Storage",
+    "apiTest": "API Test",
+    "authRefreshed": "Admin authentication refreshed",
+    "noPermission": "Current user has no admin permissions",
+    "refreshFailed": "Refresh failed"
+  },
+  "seo": {
+    "pages": {
+      "home": {
+        "title": "ASMR Video AI Generator | Create Relaxing Videos Instantly | Free Trial",
+        "description": "Professional ASMR video AI generation platform. Create healing and relaxing short videos in 30 seconds. Rich template library, personalized customization, perfect for TikTok, Instagram. Try for free now!",
+        "keywords": "ASMR videos,AI video generator,healing videos,relaxing videos,short video maker,AI video creation,video templates,one-click generation,TikTok videos,YouTube ASMR"
+      },
+      "templates": {
+        "title": "Trending ASMR Video Templates | AI-Generated Healing Content | Pro Templates",
+        "description": "Curated trending ASMR video templates for AI-generated professional healing content. Creative, visually stunning, and relaxing styles for all content creation needs.",
+        "keywords": "ASMR templates,video template library,AI generation templates,healing video templates,relaxing video assets,short video templates,creative video templates"
+      },
+      "create": {
+        "title": "AI ASMR Video Maker | Create Professional Videos in 30 Seconds",
+        "description": "Powerful AI ASMR video generation tool. Choose templates, set parameters, create professional healing videos in 30 seconds. Personalized customization, one-click HD export.",
+        "keywords": "ASMR video creation,AI video generator,healing video maker,relaxing video generation,video creation tools,AI video editor"
+      },
+      "videos": {
+        "title": "My ASMR Video Collection | AI Video Management Hub",
+        "description": "Manage your ASMR video works. View generation history, download HD videos, share to social platforms. One-stop management for AI-generated healing videos.",
+        "keywords": "my videos,ASMR collection,video management,video download,video sharing,healing video library"
+      },
+      "pricing": {
+        "title": "ASMR Video Creator Pricing | AI Video Generator Plans | Credit Purchase",
+        "description": "Affordable ASMR video AI generator pricing plans starting from $9.99/month. Credit purchase, referral rewards, cost-effective video creation solutions.",
+        "keywords": "ASMR video pricing,AI video generator pricing,video creation plans,video maker subscription,AI video tools cost"
+      },
+      "profile": {
+        "title": "User Center | ASMR Video Creator Dashboard",
+        "description": "Manage your profile, view video works, configure account settings. Personal management center designed for ASMR video creators.",
+        "keywords": "user center,profile dashboard,ASMR creator,video creator,account management"
+      },
+      "signin": {
+        "title": "Sign In | ASMR Video AI Generator",
+        "description": "Sign in to your ASMR video AI generator account and continue your creative journey. Supports Google quick login, secure and convenient.",
+        "keywords": "sign in,user login,ASMR video login,AI video generator login"
+      },
+      "signup": {
+        "title": "Sign Up | Start Your ASMR Video Creation Journey for Free",
+        "description": "Free registration for ASMR video AI generator. Start your healing video creation journey instantly. New users get free credits upon registration.",
+        "keywords": "sign up,free registration,ASMR video signup,AI video generator registration,free trial"
+      },
+      "help": {
+        "title": "Help Center | ASMR Video Creation Tutorials & FAQ",
+        "description": "ASMR video AI generator help center. Detailed creation tutorials, FAQ, technical support. Quick start guide for video creation.",
+        "keywords": "help center,video creation tutorials,ASMR creation guide,FAQ,technical support,user guide"
+      }
     }
   }
 }

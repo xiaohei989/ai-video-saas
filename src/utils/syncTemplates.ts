@@ -6,6 +6,17 @@
 import { supabase } from '@/lib/supabase'
 import { templateList } from '@/features/video-creator/data/templates/index'
 
+/**
+ * 生成UUID v4
+ */
+function generateUUID(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0
+    const v = c === 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
+}
+
 export interface SyncResult {
   success: boolean
   synced: number
@@ -51,21 +62,31 @@ export async function syncTemplatesToDatabase(): Promise<SyncResult> {
       .select('id, slug, like_count, comment_count, view_count, version, updated_at')
 
     const existingMap = new Map()
+    const slugMap = new Map() // 用于通过slug查找现有模板
     existingTemplates?.forEach(t => {
       existingMap.set(t.id, t)
+      if ((t as any).slug) {
+        slugMap.set((t as any).slug, t)
+      }
     })
 
     for (const template of templateList) {
       try {
-        const existingTemplate = existingMap.get(template.id)
+        // 先通过ID查找，如果没找到再通过slug查找
+        let existingTemplate = existingMap.get(template.id)
+        if (!existingTemplate && (template as any).slug) {
+          existingTemplate = slugMap.get((template as any).slug)
+        }
+        
         const currentVersion = getTemplateVersion(template)
 
         if (!existingTemplate) {
-          // 新模板：插入
+          // 新模板：生成UUID并插入
+          const newUuid = generateUUID()
           const { error: insertError } = await supabase
             .from('templates')
             .insert({
-              id: template.id,
+              id: newUuid, // 使用生成的UUID
               name: template.name,
               slug: (template as any).slug,
               description: template.description,
@@ -93,7 +114,7 @@ export async function syncTemplatesToDatabase(): Promise<SyncResult> {
             continue
           }
 
-          console.log(`✅ 新增模板: ${template.id}`)
+          console.log(`✅ 新增模板: ${template.id} (UUID: ${newUuid})`)
           result.synced++
           result.details!.newTemplates.push(template.id)
 
@@ -118,7 +139,7 @@ export async function syncTemplatesToDatabase(): Promise<SyncResult> {
                 updated_at: new Date().toISOString()
                 // 注意：不更新 like_count, comment_count 等用户数据
               })
-              .eq('id', template.id)
+              .eq('id', existingTemplate.id) // 使用数据库中的真实ID
 
             if (updateError) {
               console.error(`更新模板 ${template.id} 失败:`, updateError)
@@ -173,20 +194,24 @@ export async function checkTemplateSync(): Promise<{
     // 获取数据库中所有模板
     const { data: dbTemplates } = await supabase
       .from('templates')
-      .select('id, version')
+      .select('id, slug, version')
 
-    const dbMap = new Map()
+    const dbSlugMap = new Map() // 使用slug作为关键字
     dbTemplates?.forEach(t => {
-      dbMap.set(t.id, t.version || '1.0.0')
+      if ((t as any).slug) {
+        dbSlugMap.set((t as any).slug, t.version || '1.0.0')
+      }
     })
 
-    const frontendIds = templateList.map(t => t.id)
     const missingTemplates: string[] = []
     const outdatedTemplates: string[] = []
 
     // 检查每个前端模板
     for (const template of templateList) {
-      const dbVersion = dbMap.get(template.id)
+      const templateSlug = (template as any).slug
+      if (!templateSlug) continue // 跳过没有slug的模板
+      
+      const dbVersion = dbSlugMap.get(templateSlug)
       const frontendVersion = getTemplateVersion(template)
 
       if (!dbVersion) {
@@ -244,7 +269,7 @@ export async function updateExistingTemplates(): Promise<SyncResult> {
             preview_url: template.previewUrl,
             updated_at: new Date().toISOString()
           })
-          .eq('id', template.id)
+          .eq('slug', (template as any).slug) // 使用slug作为标识符
 
         if (updateError) {
           result.errors.push(`${template.id}: ${updateError.message}`)

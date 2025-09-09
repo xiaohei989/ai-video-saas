@@ -4,8 +4,15 @@
 @import './hero-title-effects.css';
 @import './flowing-button-effects.css';
 
-/* 手写体字体 */
-@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Caveat:wght@400;500;600;700&display=swap');
+/* 流光动画 */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(300%) skewX(-12deg);
+  }
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -341,6 +348,215 @@ html.dark {
   visibility: visible;
 }
 
+/* 流体流动背景动画 - 视频生成时使用 */
+
+/* 主要流体流动动画 */
+@keyframes fluidWave1 {
+  0% {
+    transform: translateX(-100%) translateY(0%) rotate(0deg) scale(1);
+    opacity: 0.8;
+  }
+  25% {
+    transform: translateX(-50%) translateY(-20%) rotate(45deg) scale(1.1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateX(0%) translateY(0%) rotate(90deg) scale(1);
+    opacity: 1;
+  }
+  75% {
+    transform: translateX(50%) translateY(20%) rotate(135deg) scale(0.9);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(100%) translateY(0%) rotate(180deg) scale(1);
+    opacity: 0.7;
+  }
+}
+
+@keyframes fluidWave2 {
+  0% {
+    transform: translateX(100%) translateY(0%) rotate(180deg) scale(0.8);
+    opacity: 0.6;
+  }
+  33% {
+    transform: translateX(33%) translateY(30%) rotate(240deg) scale(1.2);
+    opacity: 0.8;
+  }
+  66% {
+    transform: translateX(-33%) translateY(-10%) rotate(300deg) scale(0.9);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(-100%) translateY(0%) rotate(360deg) scale(1);
+    opacity: 0.7;
+  }
+}
+
+@keyframes fluidBubbles {
+  0% {
+    transform: translateY(100%) scale(0);
+    opacity: 0;
+  }
+  10% {
+    transform: translateY(80%) scale(0.3);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(40%) scale(1);
+    opacity: 1;
+  }
+  90% {
+    transform: translateY(10%) scale(0.8);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-10%) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes fluidFlow {
+  0% { 
+    background-position: 0% 50%, 100% 0%, 50% 100%;
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  33% { 
+    background-position: 50% 100%, 0% 50%, 100% 0%;
+    filter: hue-rotate(60deg) brightness(1.1);
+  }
+  66% { 
+    background-position: 100% 0%, 50% 100%, 0% 50%;
+    filter: hue-rotate(120deg) brightness(0.9);
+  }
+  100% { 
+    background-position: 0% 50%, 100% 0%, 50% 100%;
+    filter: hue-rotate(180deg) brightness(1);
+  }
+}
+
+/* 流体背景主体样式 */
+.flowing-background {
+  background: 
+    radial-gradient(circle at 20% 80%, #667eea 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, #764ba2 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, #f093fb 0%, transparent 50%),
+    linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+  background-size: 300% 300%, 250% 250%, 200% 200%, 400% 400%;
+  animation: fluidFlow 10s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 深色主题下的流体背景 */
+.dark .flowing-background {
+  background: 
+    radial-gradient(circle at 20% 80%, #1a1a2e 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, #16213e 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, #0f3460 0%, transparent 50%),
+    linear-gradient(135deg, #0c0c1a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
+  background-size: 300% 300%, 250% 250%, 200% 200%, 400% 400%;
+}
+
+/* 流体波纹层1 */
+.flowing-background::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(ellipse 80% 50% at 20% 30%, rgba(102, 126, 234, 0.3) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 70% 70%, rgba(244, 147, 251, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 80% at 50% 20%, rgba(79, 172, 254, 0.2) 0%, transparent 40%);
+  animation: fluidWave1 15s ease-in-out infinite;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* 流体波纹层2 */
+.flowing-background::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(ellipse 70% 60% at 80% 40%, rgba(118, 75, 162, 0.25) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 70% at 30% 80%, rgba(245, 87, 108, 0.2) 0%, transparent 45%),
+    radial-gradient(ellipse 90% 30% at 60% 10%, rgba(102, 126, 234, 0.15) 0%, transparent 35%);
+  animation: fluidWave2 18s ease-in-out infinite reverse;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+}
+
+/* 深色主题波纹效果调整 */
+.dark .flowing-background::before {
+  background: 
+    radial-gradient(ellipse 80% 50% at 20% 30%, rgba(102, 126, 234, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 70% 70%, rgba(244, 147, 251, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 80% at 50% 20%, rgba(79, 172, 254, 0.08) 0%, transparent 40%);
+}
+
+.dark .flowing-background::after {
+  background: 
+    radial-gradient(ellipse 70% 60% at 80% 40%, rgba(118, 75, 162, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 70% at 30% 80%, rgba(245, 87, 108, 0.08) 0%, transparent 45%),
+    radial-gradient(ellipse 90% 30% at 60% 10%, rgba(102, 126, 234, 0.06) 0%, transparent 35%);
+}
+
+/* 流体气泡效果 - 作为独立元素 */
+.fluid-bubbles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.fluid-bubbles::before,
+.fluid-bubbles::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: fluidBubbles ease-in-out infinite;
+}
+
+.fluid-bubbles::before {
+  width: 20px;
+  height: 20px;
+  left: 20%;
+  animation-duration: 8s;
+  animation-delay: 0s;
+}
+
+.fluid-bubbles::after {
+  width: 15px;
+  height: 15px;
+  left: 80%;
+  animation-duration: 6s;
+  animation-delay: 2s;
+}
+
+/* 优化GPU性能 */
+.flowing-background,
+.flowing-background::before,
+.flowing-background::after,
+.fluid-bubbles,
+.fluid-bubbles::before,
+.fluid-bubbles::after {
+  will-change: transform, background-position, opacity, filter;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .like-button {
@@ -349,5 +565,45 @@ html.dark {
   
   .like-counter {
     scale: 0.95;
+  }
+  
+  /* 移动端优化流体背景 */
+  .flowing-background {
+    animation-duration: 8s; /* 稍微加快动画 */
+    background-size: 200% 200%, 150% 150%, 120% 120%, 300% 300%; /* 降低复杂度 */
+  }
+  
+  .flowing-background::before {
+    animation-duration: 12s; /* 减少波纹复杂度 */
+    opacity: 0.8;
+  }
+  
+  .flowing-background::after {
+    animation-duration: 14s;
+    opacity: 0.6;
+  }
+  
+  .fluid-bubbles::before,
+  .fluid-bubbles::after {
+    display: none; /* 移动端隐藏气泡以提升性能 */
+  }
+}
+
+/* 减少动画的设备优化 */
+@media (prefers-reduced-motion: reduce) {
+  .flowing-background,
+  .flowing-background::before,
+  .flowing-background::after,
+  .fluid-bubbles::before,
+  .fluid-bubbles::after {
+    animation: none;
+  }
+  
+  .flowing-background {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  }
+  
+  .dark .flowing-background {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   }
 }

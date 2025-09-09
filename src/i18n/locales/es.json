@@ -315,6 +315,16 @@
       "placeholder": "Ordenar por"
     }
   },
+  "pagination": {
+    "showing": "Mostrando {{start}}-{{end}} de {{total}} elementos",
+    "itemsPerPage": "Elementos por página",
+    "items": "elementos",
+    "navigation": "Navegación de páginas",
+    "firstPage": "Primera página",
+    "prevPage": "Anterior",
+    "nextPage": "Siguiente",
+    "lastPage": "Última página"
+  },
   "video": {
     "myVideos": "Mis Videos",
     "loading": "Cargando video...",
@@ -382,6 +392,28 @@
     "signOut": "Cerrar sesión",
     "backToHome": "Volver al inicio",
     "loadMore": "Cargar más"
+  },
+  "shareModal": {
+    "title": "Comparte Video y Gana Créditos",
+    "description": "¡Muestra tu trabajo, invita amigos a unirse y ambos ganen recompensas de créditos!",
+    "shareRewards": "Recompensas por Compartir",
+    "showCreation": "Muestra tu creación de $0.60",
+    "inviteFriends": "Invita amigos: +20 créditos",
+    "rewardNote": "💡 ¡Cuando los amigos se registren, ambos obtienen 20 créditos!",
+    "copyShareContent": "Copiar Contenido para Compartir",
+    "copied": "¡Copiado!",
+    "copiedToClipboard": "¡Copiado al portapapeles!",
+    "shareContentText": "🤯 ¡Acabo de hacer este VIDEO VIRAL por solo $0.60!\n\n📺 Ver directamente: {{videoUrl}}\n\n¡Calidad profesional que antes costaba $500+ por video! No se necesitan habilidades - ¡la IA hace TODO!\n\n💰 ¿Quieres crear el tuyo?\n¡Únete con mi código de invitación y obtén 20 créditos GRATIS:\n👉 {{inviteUrl}}\n\n#Videos60Centavos #VideoIA #CreadorBudget #CréditosGratis #HackViral",
+    "instagramCopied": "¡Contenido de Instagram copiado! Por favor pégalo en Instagram",
+    "platformOpened": "¡Página de compartir de {{platform}} abierta!",
+    "getReferralCodeFailed": "Error al obtener código de referencia"
+  },
+  "upgradeDialog": {
+    "title": "Se requiere suscripción premium",
+    "description": "El formato vertical 9:16 es una característica exclusiva para usuarios premium. Actualiza a cualquier plan de pago para desbloquear esta función y disfrutar de más posibilidades creativas.",
+    "cancel": "Cancelar",
+    "upgrade": "Actualizar ahora",
+    "aspectRatioRestriction": "El formato 9:16 requiere suscripción premium"
   },
   "videoCreator": {
     "outputQuality": "Calidad de salida",
@@ -458,7 +490,19 @@
     "videoUrlNotExists": "La URL del video no existe, no se puede descargar",
     "downloadStarting": "Iniciando descarga, si no inicia automáticamente, haz clic derecho y guarda el video en la nueva ventana",
     "downloadStarted": "Descarga iniciada, por favor revisa la lista de descargas de tu navegador",
-    "downloadFailed": "Error en la descarga, por favor inténtalo de nuevo. Si el problema persiste, intenta hacer clic derecho para guardar en una nueva ventana"
+    "downloadFailed": "Error en la descarga, por favor inténtalo de nuevo. Si el problema persiste, intenta hacer clic derecho para guardar en una nueva ventana",
+    "downloading": "Descargando...",
+    "downloadHD": "Descargar versión HD",
+    "upgradeToDownload": "Mejora para descargar",
+    "upgradePrompt": {
+      "title": "¡Mejora para descargas HD ilimitadas!",
+      "description": "Desbloquea funciones profesionales ahora",
+      "bannerTitle": "Mejora para desbloquear la función de descarga",
+      "bannerDescription": "Los usuarios premium pueden descargar videos HD ilimitados y guardar sus creaciones permanentemente",
+      "upgradeNow": "Mejorar Ahora",
+      "checkingSubscription": "Verificando estado de suscripción...",
+      "subscriptionStatusLoading": "Cargando estado de suscripción..."
+    }
   },
   "pricing": {
     "popular": "Popular",
@@ -525,7 +569,7 @@
     "planDetails": {
       "mostPopular": "Más Popular",
       "monthly": "mes",
-      "yearly": "año",
+      "yearly": "/año",
       "monthlyCredits": "{{credits}} créditos por mes",
       "yearlyCredits": "{{credits}} créditos por año",
       "nextRenewal": "Próxima renovación: {{date}}",
@@ -535,25 +579,25 @@
       "title": "Características",
       "basic": [
         "200 créditos por mes",
-        "Calidad de video estándar (20 créditos/video)",
-        "Biblioteca de plantillas básica",
+        "Descargas ilimitadas de videos HD",
+        "Generación simultánea: 3 videos",
+        "Formato vertical 9:16 (exclusivo premium)",
         "Soporte por email"
       ],
       "pro": [
         "1,500 créditos por mes",
-        "Videos de alta calidad (100 créditos/video)",
-        "Videos estándar (20 créditos/video)",
-        "Biblioteca completa de plantillas",
+        "Descargas ilimitadas de videos HD",
+        "Generación simultánea: 5 videos",
+        "Formato vertical 9:16 (exclusivo premium)",
         "Soporte prioritario"
       ],
       "enterprise": [
         "6,000 créditos por mes",
-        "Videos de alta calidad (100 créditos/video)",
-        "Videos estándar (20 créditos/video)",
-        "Uso ilimitado de plantillas",
+        "Descargas ilimitadas de videos HD",
+        "Generación simultánea: 10 videos",
+        "Formato vertical 9:16 (exclusivo premium)",
         "Servicio al cliente dedicado",
-        "Acceso API",
-        "Colaboración en equipo"
+        "Acceso API"
       ]
     },
     "status": {
@@ -759,6 +803,20 @@
         "descriptionTooLong": "La descripción no puede exceder 2000 caracteres",
         "fileTooLarge": "El tamaño del archivo no puede exceder 10MB",
         "fileTypeNotSupported": "Tipo de archivo no soportado"
+      },
+      "freeUserSupport": {
+        "emailSupportTitle": "Soporte por email",
+        "emailSupportDescription": "Como usuario gratuito, puedes contactarnos por email. Responderemos a tus consultas en 24-48 horas.",
+        "contactEmail": "Email de contacto",
+        "sendEmail": "Enviar email",
+        "upgradePrompt": "¿Quieres respuesta más rápida?",
+        "upgradeLink": "Actualizar a plan de pago",
+        "upgradeDescription": "para soporte prioritario",
+        "ticketSystemTitle": "Sistema de tickets solo para usuarios de pago",
+        "ticketSystemDescription": "Actualiza a cualquier plan de pago para acceder al sistema de tickets y disfrutar de respuesta de soporte técnico más rápida.",
+        "freeUserContactPrompt": "Usuarios gratuitos contacten por email",
+        "upgradeToPaid": "Actualizar a plan de pago",
+        "loginPromptSupport": "Por favor inicia sesión primero para contactar soporte al cliente"
       }
     },
     "tickets": {
@@ -872,5 +930,127 @@
       "printPdf": "Imprimir / PDF",
       "backToTop": "Volver Arriba"
     }
+  },
+  "privacy": {
+    "cookieConsent": {
+      "title": "Usamos cookies para mejorar tu experiencia",
+      "description": "Utilizamos Google Analytics para entender cómo usas nuestro sitio web y así poder mejorar nuestros servicios. Estos datos son anónimos y no se utilizan para publicidad.",
+      "accept": "Aceptar Todo",
+      "decline": "Solo Esenciales", 
+      "showDetails": "Más Información",
+      "hideDetails": "Ocultar Detalles",
+      "essential": "Cookies Esenciales",
+      "essentialDesc": "Utilizadas para la funcionalidad básica del sitio web, incluido el estado de inicio de sesión y configuración de tema.",
+      "analytics": "Cookies de Análisis",
+      "analyticsDesc": "Google Analytics se utiliza para entender el uso del sitio web y ayudarnos a mejorar nuestros productos.",
+      "dataInfo": "Los datos están completamente anonimizados y no contienen información de identificación personal. Puedes cambiar esta elección en cualquier momento en la configuración de privacidad.",
+      "policyLink": "Ver nuestra",
+      "privacyPolicy": "Política de Privacidad",
+      "and": "y",
+      "cookiePolicy": "Política de Cookies"
+    }
+  },
+  "analytics": {
+    "testPage": {
+      "title": "Panel de Prueba de Google Analytics",
+      "subtitle": "Probar y verificar la funcionalidad de seguimiento de eventos de Analytics",
+      "status": {
+        "title": "Estado de Analytics",
+        "description": "Estado actual del servicio de Analytics y información de configuración",
+        "enabled": "Habilitado",
+        "waitingConsent": "Esperando consentimiento del usuario",
+        "measurementId": "ID de Medición",
+        "debugMode": "Modo Debug",
+        "userConsent": "Consentimiento del Usuario",
+        "environment": "Entorno",
+        "printDebugInfo": "Imprimir Info de Debug",
+        "notConfigured": "No Configurado"
+      },
+      "presetEvents": {
+        "title": "Pruebas de Eventos Preestablecidos",
+        "description": "Haz clic en los botones para enviar eventos de Analytics preestablecidos",
+        "templateView": "Vista de Plantilla",
+        "templateViewDesc": "Rastrear eventos de vista de plantilla del usuario",
+        "templateLike": "Me Gusta de Plantilla",
+        "templateLikeDesc": "Rastrear eventos de me gusta de plantilla del usuario",
+        "videoGenerationStart": "Inicio de Generación de Video",
+        "videoGenerationStartDesc": "Rastrear eventos de inicio de generación de video",
+        "videoGenerationComplete": "Generación de Video Completa",
+        "videoGenerationCompleteDesc": "Rastrear eventos de generación de video completa",
+        "videoDownload": "Descarga de Video",
+        "videoDownloadDesc": "Rastrear eventos de descarga de video",
+        "videoShare": "Compartir Video",
+        "videoShareDesc": "Rastrear eventos de compartir video",
+        "subscriptionStart": "Inicio de Suscripción",
+        "subscriptionStartDesc": "Rastrear inicio de flujo de suscripción del usuario",
+        "creditsPurchase": "Compra de Créditos",
+        "creditsPurchaseDesc": "Rastrear eventos de compra de créditos",
+        "themeChange": "Cambio de Tema",
+        "themeChangeDesc": "Rastrear eventos de cambio de tema",
+        "errorTracking": "Seguimiento de Errores",
+        "errorTrackingDesc": "Rastrear eventos de error",
+        "sendEvent": "Enviar Evento"
+      },
+      "customEvents": {
+        "title": "Pruebas de Eventos Personalizados",
+        "description": "Crear y enviar eventos de Analytics personalizados",
+        "actionLabel": "Nombre del Evento (action)",
+        "actionPlaceholder": "ej., button_click",
+        "categoryLabel": "Categoría del Evento (category)",
+        "categoryPlaceholder": "ej., user_interaction",
+        "labelLabel": "Etiqueta del Evento (label)",
+        "labelPlaceholder": "ej., header_button",
+        "valueLabel": "Valor del Evento (value)",
+        "valuePlaceholder": "ej., 1",
+        "sendCustomEvent": "Enviar Evento Personalizado",
+        "fillRequired": "Por favor completa el nombre y la categoría del evento"
+      },
+      "instructions": {
+        "title": "Instrucciones de Uso",
+        "step1": {
+          "title": "1. Configurar GA Measurement ID:",
+          "description": "Establece VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX en el archivo .env"
+        },
+        "step2": {
+          "title": "2. Consentimiento del Usuario:",
+          "description": "Los usuarios necesitan dar su consentimiento al seguimiento de Analytics en el banner de cookies para enviar eventos"
+        },
+        "step3": {
+          "title": "3. Ver Datos:",
+          "description": "Después de enviar eventos, ve los datos en los informes en tiempo real de Google Analytics (usualmente con 1-5 minutos de retraso)"
+        },
+        "step4": {
+          "title": "4. Debug:",
+          "description": "En desarrollo, los eventos solo se imprimen en la consola y no se envían a GA. En producción se envían normalmente."
+        }
+      }
+    }
+  },
+  "common": {
+    "retry": "Reintentar",
+    "remaining": "Restante",
+    "loading": "Cargando...",
+    "error": "Error",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar"
+  },
+  "video": {
+    "preview": "Vista Previa de Vídeo",
+    "previewPaused": "Vista previa de vídeo pausada",
+    "previewFailed": "Error en vista previa de vídeo",
+    "loading": "Cargando vídeo...",
+    "loadFailed": "Error al cargar el vídeo",
+    "player": "Reproductor de Vídeo",
+    "thumbnail": "Miniatura de Vídeo",
+    "cache": {
+      "confirmClear": "¿Estás seguro de que quieres borrar toda la caché relacionada con vídeos? Esto borrará las vistas previas de vídeos, caché de miniaturas y otros datos.",
+      "clearing": "Borrando caché...",
+      "cleared": "Caché borrada exitosamente"
+    }
+  },
+  "admin": {
+    "clearVideoCache": "Borrar Caché de Vídeos",
+    "clearCacheConfirm": "¿Estás seguro de que quieres borrar toda la caché relacionada con vídeos? Esto borrará las vistas previas de vídeos, caché de miniaturas y otros datos.",
+    "cacheCleared": "Caché de vídeos borrada exitosamente"
   }
 }

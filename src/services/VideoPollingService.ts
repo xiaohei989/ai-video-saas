@@ -21,6 +21,7 @@ class VideoPollingService {
   private isPolling = false
   private lastCheckTime = 0
   private completedTasks = new Set<string>() // 防止重复完成处理
+  private lastActiveTasksCount = 0 // 追踪活跃任务数量变化
 
   /**
    * 启动轮询
@@ -52,6 +53,7 @@ class VideoPollingService {
     this.isPolling = false
     this.config = null
     this.completedTasks.clear() // 清理已完成任务记录
+    this.lastActiveTasksCount = 0
   }
 
   /**
@@ -76,7 +78,11 @@ class VideoPollingService {
       return
     }
 
-    console.log(`[POLLING] 检查 ${activeTasks.length} 个活跃任务`)
+    // 只在任务数量变化时输出日志
+    if (this.lastActiveTasksCount !== activeTasks.length) {
+      console.log(`[POLLING] 活跃任务: ${activeTasks.length}`);
+      this.lastActiveTasksCount = activeTasks.length;
+    }
 
     try {
       // 批量检查任务状态
@@ -184,7 +190,10 @@ class VideoPollingService {
 
       // 检查状态变化
       if (!currentTask || currentTask.status !== latestTask.status) {
-        console.log(`[POLLING] 任务状态变化: ${taskId} ${currentTask?.status || 'none'} -> ${latestTask.status}`)
+        // 只在重要状态变化时输出日志
+        if (latestTask.status === 'completed' || latestTask.status === 'failed') {
+          console.log(`[POLLING] 任务${latestTask.status}: ${taskId}`);
+        }
 
         if (latestTask.status === 'completed') {
           // 使用统一的完成处理方法
@@ -342,7 +351,6 @@ class VideoPollingService {
     const apiProvider = detectApiProvider(video.veo3_job_id);
     const apiDisplayName = getApiProviderDisplayName(apiProvider);
     try {
-      console.log(`[POLLING] 🔍 检查${apiDisplayName}连接状态: ${video.id} (job: ${video.veo3_job_id})`)
       
       // 动态导入veo3Service以避免循环依赖
       const { veo3Service } = await import('./veo3Service')
@@ -405,7 +413,6 @@ class VideoPollingService {
         }
       } else {
         // 连接正常，更新最后检查时间
-        console.log(`[POLLING] ✅ ${apiDisplayName}连接正常: ${video.id}`)
         
         const { progressManager } = await import('./progressManager')
         const normalUpdate: any = {

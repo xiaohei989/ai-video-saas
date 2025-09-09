@@ -1,0 +1,560 @@
+{
+  "id": "c1d2e3f4-a5b6-7890-1234-567890abcdef",
+  "slug": "city-landmarks-book",
+  "name": "City Landmarks from Book",
+  "icon": "🏙️",
+  "description": "A book page transforms into famous city landmarks rising in miniature",
+  "previewUrl": "/templates/videos/city-landmarks-book.mp4",
+  "credits": 10,
+
+  "tags": ["city", "landmarks", "architecture", "book", "miniature", "travel", "urban"],
+  "createdAt": "2025-01-30T16:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-30T16:00:00Z",
+
+  "promptTemplate": {
+    "model": "veo3",
+    "duration": "8s",
+    "aspect_ratio": "16:9",
+    
+    "product": {
+      "name": "City Landmarks from Book",
+      "type": "Architectural Miniature Effect",
+      "brand_style": "cinematic, detailed miniature, urban diorama"
+    },
+    
+    "visual_core": {
+      "description": "A book page turns, revealing {opening_sketch} that grows into {landmarks_description} contained entirely within the pages",
+      "style": "{architectural_style}, cinematic diorama, detailed miniature",
+      "camera": "macro page close-up → orbit across rising landmarks → wide top-down shot of city inside book",
+      "lighting": "{lighting_style}",
+      "environment": "dark library table, the book as a glowing {city_atmosphere} diorama"
+    },
+    
+    "elements": [
+      "sketch transforming into miniature landmarks",
+      "{city_elements}",
+      "pages reflecting city atmosphere",
+      "tiny details bringing the city to life"
+    ],
+    
+    "audio": {
+      "sfx": "page flip + {transformation_sounds}",
+      "ambience": "{ambient_sounds}",
+      "music": "{music_style}"
+    },
+    
+    "timeline": [
+      {
+        "time": "0-2s",
+        "action": "{opening_action}",
+        "camera": "macro glide across the page sketch",
+        "audio": "page flip + {opening_audio}"
+      },
+      {
+        "time": "2-5s",
+        "action": "{transformation_action}",
+        "camera": "orbit close-up across miniature landmarks rising",
+        "audio": "{transformation_audio}"
+      },
+      {
+        "time": "5-7s",
+        "action": "{finale_action}",
+        "camera": "top-down cinematic shot, showing the entire cityscape constrained by the book's edges",
+        "audio": "{finale_audio}"
+      },
+      {
+        "time": "7-8s",
+        "action": "As the miniature city glows, the words '{city_name}' slowly materialize in elegant letters, floating magically above the book like a golden title.",
+        "camera": "gentle zoom focusing on the glowing city name above the diorama",
+        "audio": "mystical chime with city ambience fading"
+      }
+    ],
+    
+    "cta": {
+      "motion": "{final_effect}",
+      "text": "{cta_text}",
+      "style": "{text_style}"
+    },
+    
+    "keywords": [
+      "cinematic",
+      "miniature architecture",
+      "book magic",
+      "{city}",
+      "urban diorama",
+      "detailed craftsmanship",
+      "{style_keyword}"
+    ]
+  },
+
+  "params": {
+    "city": {
+      "type": "select",
+      "label": "City",
+      "required": true,
+      "default": "paris",
+      "options": [
+        {
+          "value": "paris",
+          "label": "🗼 Paris",
+          "metadata": {
+            "opening_sketch": "a simple Parisian skyline sketch in elegant ink lines",
+            "landmarks_description": "the iconic Eiffel Tower rising majestically, Arc de Triomphe forming at the book's edge",
+            "architectural_style": "romantic French classical architecture",
+            "lighting_style": "golden warm evening lights, romantic Parisian glow",
+            "city_atmosphere": "Parisian evening",
+            "city_elements": "tiny cafes with glowing windows, street lamps, Seine river flowing between pages, miniature boulevards",
+            "transformation_sounds": "gentle romantic melody + construction sounds",
+            "ambient_sounds": "soft Parisian cafe ambience echoing softly",
+            "music_style": "romantic French accordion with orchestral backing",
+            "opening_action": "Book page turns naturally, revealing an elegant Parisian skyline sketch with Eiffel Tower outline",
+            "opening_audio": "faint accordion melody beginning",
+            "transformation_action": "Sketch lines glow golden and rise into the iconic Eiffel Tower and Parisian rooftops, all contained within the open book",
+            "transformation_audio": "romantic melody building + gentle construction sounds",
+            "finale_action": "Wide reveal: a fully-formed miniature Paris glows inside the book, with the Eiffel Tower as centerpiece and tiny lights in cafe windows",
+            "finale_audio": "full French orchestra + soft city ambience",
+            "final_effect": "Eiffel Tower's lights pulse and create glowing text across the book's pages",
+            "text_style": "elegant French script glowing in golden light",
+            "style_keyword": "romantic architecture",
+            "city_name": "PARIS"
+          }
+        },
+        {
+          "value": "newyork",
+          "label": "🗽 New York",
+          "metadata": {
+            "opening_sketch": "a bold Manhattan skyline sketch with strong ink strokes",
+            "landmarks_description": "the Statue of Liberty emerging proudly, Empire State Building towering above",
+            "architectural_style": "metropolitan Art Deco skyscrapers",
+            "lighting_style": "bright white lights, Times Square neon glow",
+            "city_atmosphere": "New York nightlife",
+            "city_elements": "yellow taxi cabs moving, steam rising from manholes, Brooklyn Bridge spanning, neon billboards",
+            "transformation_sounds": "urban energy + construction sounds",
+            "ambient_sounds": "contained NYC traffic rumble echoing softly",
+            "music_style": "urban jazz with brass section and city rhythm",
+            "opening_action": "Book page turns with energy, revealing a dynamic Manhattan skyline sketch with geometric buildings",
+            "opening_audio": "distant jazz trumpet + city ambience",
+            "transformation_action": "Sketch lines glow white and rise into towering skyscrapers, Statue of Liberty emerging from one corner, all within the book",
+            "transformation_audio": "jazz building + urban construction sounds",
+            "finale_action": "Wide reveal: a complete miniature Manhattan glows inside the book, with yellow taxis moving and neon signs flickering",
+            "finale_audio": "full jazz orchestra + NYC ambience",
+            "final_effect": "Empire State Building's peak lights pulse and form glowing text",
+            "text_style": "bold metropolitan font glowing in white neon",
+            "style_keyword": "urban energy",
+            "city_name": "NEW YORK"
+          }
+        },
+        {
+          "value": "tokyo",
+          "label": "🗾 Tokyo",
+          "metadata": {
+            "opening_sketch": "a delicate Tokyo skyline sketch with cherry blossom motifs",
+            "landmarks_description": "Tokyo Tower rising in red and white, Shibuya crossing forming with tiny pedestrians",
+            "architectural_style": "modern Japanese with traditional elements",
+            "lighting_style": "vibrant neon signs mixed with soft pink sakura glow",
+            "city_atmosphere": "Tokyo nighttime",
+            "city_elements": "bullet trains gliding, cherry blossoms floating, neon kanji signs, tiny pedestrians crossing",
+            "transformation_sounds": "electronic pop melody + high-tech sounds",
+            "ambient_sounds": "contained Tokyo tech city buzz",
+            "music_style": "modern J-pop with electronic beats and traditional instruments",
+            "opening_action": "Book page turns gracefully, revealing a Tokyo skyline sketch decorated with cherry blossom petals",
+            "opening_audio": "soft koto strings + electronic hum",
+            "transformation_action": "Sketch lines glow in neon colors and rise into Tokyo Tower and modern buildings, sakura petals floating upward, all within the book",
+            "transformation_audio": "J-pop melody building + tech sounds",
+            "finale_action": "Wide reveal: a vibrant miniature Tokyo glows inside the book, with neon signs, crossing pedestrians, and floating cherry blossoms",
+            "finale_audio": "full J-pop arrangement + city tech ambience",
+            "final_effect": "Tokyo Tower's lights pulse in rainbow colors forming holographic text",
+            "text_style": "futuristic Japanese characters glowing in neon colors",
+            "style_keyword": "tech tradition fusion",
+            "city_name": "TOKYO"
+          }
+        },
+        {
+          "value": "london",
+          "label": "🏛️ London",
+          "metadata": {
+            "opening_sketch": "a classic London skyline sketch with Victorian details",
+            "landmarks_description": "Big Ben tower rising with its iconic clock, Tower Bridge spanning across the pages",
+            "architectural_style": "Victorian Gothic with historic British charm",
+            "lighting_style": "foggy street lamps, Victorian amber glow through mist",
+            "city_atmosphere": "foggy London evening",
+            "city_elements": "red double-decker buses moving, black cabs, Thames river flowing, telephone boxes, fog swirling",
+            "transformation_sounds": "Big Ben chimes + Victorian ambience",
+            "ambient_sounds": "contained London fog atmosphere with distant chimes",
+            "music_style": "classical British orchestra with church bells",
+            "opening_action": "Book page turns with dignity, revealing a stately London skyline sketch with Big Ben prominence",
+            "opening_audio": "distant Big Ben chimes + fog ambience",
+            "transformation_action": "Sketch lines glow amber and rise into Big Ben and Tower Bridge, fog swirling around Victorian architecture, all within the book",
+            "transformation_audio": "church bells building + Victorian construction sounds",
+            "finale_action": "Wide reveal: a complete miniature London glows inside the book, with red buses crossing Tower Bridge and fog adding atmosphere",
+            "finale_audio": "full orchestral anthem + London ambience",
+            "final_effect": "Big Ben's clock face glows and projects time-based text formation",
+            "text_style": "classic Victorian font glowing in warm amber",
+            "style_keyword": "historical elegance",
+            "city_name": "LONDON"
+          }
+        },
+        {
+          "value": "sanfrancisco",
+          "label": "🌉 San Francisco",
+          "metadata": {
+            "opening_sketch": "a scenic San Francisco bay sketch with rolling hills",
+            "landmarks_description": "the Golden Gate Bridge arcing majestically across the bay area",
+            "architectural_style": "modern American with bay area charm",
+            "lighting_style": "sunset orange glow reflecting off bay waters",
+            "city_atmosphere": "golden hour bay area",
+            "city_elements": "cable cars climbing hills, Alcatraz island, steep streets, bay fog rolling, Victorian houses",
+            "transformation_sounds": "cable car bells + ocean breeze",
+            "ambient_sounds": "contained bay area atmosphere with seagulls",
+            "music_style": "California rock with acoustic elements and ocean sounds",
+            "opening_action": "Book page turns with ocean breeze, revealing San Francisco bay sketch with Golden Gate outline",
+            "opening_audio": "cable car bells + distant ocean waves",
+            "transformation_action": "Sketch lines glow orange and rise into the Golden Gate Bridge spanning the book, hills and bay forming around it",
+            "transformation_audio": "California rock building + construction sounds",
+            "finale_action": "Wide reveal: a complete miniature San Francisco glows inside the book, with the Golden Gate as centerpiece and cable cars climbing hills",
+            "finale_audio": "full rock arrangement + bay area ambience",
+            "final_effect": "Golden Gate Bridge cables vibrate and form geometric text patterns",
+            "text_style": "modern tech font glowing in sunset orange",
+            "style_keyword": "coastal innovation",
+            "city_name": "SAN FRANCISCO"
+          }
+        },
+        {
+          "value": "dubai",
+          "label": "🕌 Dubai",
+          "metadata": {
+            "opening_sketch": "a futuristic Dubai skyline sketch with geometric patterns",
+            "landmarks_description": "Burj Khalifa piercing upward majestically, Palm Jumeirah spreading like a palm tree",
+            "architectural_style": "ultra-modern futuristic with Middle Eastern elegance",
+            "lighting_style": "desert golden hour mixed with LED facade lighting",
+            "city_atmosphere": "luxurious desert metropolis",
+            "city_elements": "luxury supercars moving, fountain shows, desert sand dunes, modern trams, golden architecture",
+            "transformation_sounds": "Middle Eastern melody + modern construction",
+            "ambient_sounds": "contained luxury city atmosphere with desert wind",
+            "music_style": "epic orchestral with Middle Eastern instruments and modern beats",
+            "opening_action": "Book page turns with luxury, revealing a geometric Dubai skyline sketch with Islamic patterns",
+            "opening_audio": "oud melody + desert wind",
+            "transformation_action": "Sketch lines glow golden and rise into the towering Burj Khalifa and modern architecture, all within the book's boundaries",
+            "transformation_audio": "epic Middle Eastern music building + construction",
+            "finale_action": "Wide reveal: a complete miniature Dubai glows inside the book, with Burj Khalifa dominating and LED lights creating patterns",
+            "finale_audio": "full orchestral Middle Eastern fusion + luxury ambience",
+            "final_effect": "Burj Khalifa's LED facade pulses and creates geometric text formation",
+            "text_style": "modern Arabic-inspired font glowing in gold and white",
+            "style_keyword": "luxury futurism",
+            "city_name": "DUBAI"
+          }
+        },
+        {
+          "value": "shanghai",
+          "label": "🐉 Shanghai",
+          "metadata": {
+            "opening_sketch": "a dynamic Shanghai Bund skyline sketch with traditional and modern elements",
+            "landmarks_description": "Oriental Pearl Tower rising with its distinctive spheres, the Bund's historic buildings lining the waterfront",
+            "architectural_style": "blend of traditional Chinese architecture and ultra-modern skyscrapers",
+            "lighting_style": "LED rainbow colors reflecting on Huangpu River waters",
+            "city_atmosphere": "modern Chinese megacity",
+            "city_elements": "maglev trains gliding, traditional gardens, neon Chinese characters, river boats, modern towers with LED displays",
+            "transformation_sounds": "traditional Chinese instruments + high-tech sounds",
+            "ambient_sounds": "contained megacity buzz with traditional music elements",
+            "music_style": "modern Chinese fusion with traditional erhu and contemporary beats",
+            "opening_action": "Book page turns with energy, revealing Shanghai's Bund sketch blending old and new architecture",
+            "opening_audio": "erhu melody + modern city hum",
+            "transformation_action": "Sketch lines glow in rainbow colors and rise into Oriental Pearl Tower and Bund buildings, all within the book",
+            "transformation_audio": "Chinese fusion building + high-tech construction",
+            "finale_action": "Wide reveal: a complete miniature Shanghai glows inside the book, with LED displays on towers and traditional elements integrated",
+            "finale_audio": "full Chinese orchestra fusion + megacity ambience",
+            "final_effect": "Oriental Pearl Tower's spheres pulse with LED colors forming Chinese character text",
+            "text_style": "modern Chinese characters glowing in rainbow LED colors",
+            "style_keyword": "East meets West",
+            "city_name": "SHANGHAI"
+          }
+        },
+        {
+          "value": "cyberpunk",
+          "label": "🌃 Cyberpunk City",
+          "metadata": {
+            "opening_sketch": "a futuristic cyberpunk skyline sketch with neon circuit patterns",
+            "landmarks_description": "towering neon-lit skyscrapers with holographic advertisements floating above",
+            "architectural_style": "cyberpunk futuristic, neon-soaked dystopian",
+            "lighting_style": "blue, magenta, cyan neon glow with electric energy",
+            "city_atmosphere": "cyberpunk dystopia",
+            "city_elements": "flying drones weaving, holographic billboards, neon street lights, cyber advertisements, electric sparks",
+            "transformation_sounds": "electronic synth + cyber tech sounds",
+            "ambient_sounds": "contained cyberpunk city buzz with electronic hum",
+            "music_style": "dark synthwave with cyberpunk electronic beats",
+            "opening_action": "Book page turns with electric energy, revealing a cyberpunk skyline sketch with circuit-like patterns",
+            "opening_audio": "synthwave intro + electronic hum",
+            "transformation_action": "Sketch lines glow neon and rise into cyber skyscrapers with holographic elements, all contained within the book",
+            "transformation_audio": "synthwave building + cyber construction sounds",
+            "finale_action": "Wide reveal: a complete miniature cyberpunk city glows inside the book, with drones flying and neon advertisements pulsing",
+            "finale_audio": "full synthwave + cyberpunk city ambience",
+            "final_effect": "neon lights pulse and merge into holographic text floating above the city",
+            "text_style": "cyberpunk holographic font glowing in electric blue",
+            "style_keyword": "neon dystopia",
+            "city_name": "CYBERPUNK"
+          }
+        },
+        {
+          "value": "beijing",
+          "label": "🏯 Beijing",
+          "metadata": {
+            "opening_sketch": "a traditional Chinese ink painting style Beijing skyline sketch with dragon motifs",
+            "landmarks_description": "the majestic Forbidden City with golden rooftops, Tiananmen Gate rising ceremonially, Bird's Nest stadium gleaming in the distance",
+            "architectural_style": "Imperial Chinese architecture blending with modern Olympic landmarks",
+            "lighting_style": "golden imperial glow from palace lanterns mixed with modern LED lights",
+            "city_atmosphere": "imperial capital at night",
+            "city_elements": "red walls and yellow tiles of palaces, modern CBD towers, hutong alleyways, Great Wall silhouette, red lanterns glowing",
+            "transformation_sounds": "guzheng melody + modern urban sounds",
+            "ambient_sounds": "Beijing opera echoes mixing with city bustling",
+            "music_style": "traditional Chinese instruments blending with modern symphony",
+            "opening_action": "Book page turns gracefully, revealing an ink painting style Beijing skyline with Tiananmen Gate outline emerging",
+            "opening_audio": "guzheng strings + distant temple bells",
+            "transformation_action": "Sketch lines glow golden and rise into the Forbidden City's palatial complex, Tiananmen Gate forming majestically, Bird's Nest taking shape",
+            "transformation_audio": "Chinese traditional music building + construction sounds",
+            "finale_action": "Wide reveal: a complete miniature Beijing glows inside the book, with golden palaces and modern landmarks creating a harmonious blend",
+            "finale_audio": "full Chinese orchestral fusion + imperial city ambience",
+            "final_effect": "Forbidden City's golden rooftops pulse and create flowing calligraphy text",
+            "text_style": "Chinese calligraphy style golden glowing characters",
+            "style_keyword": "imperial modern fusion",
+            "city_name": "BEIJING"
+          }
+        },
+        {
+          "value": "rome",
+          "label": "🏛️ Rome",
+          "metadata": {
+            "opening_sketch": "a classical Roman architectural sketch with marble columns and arches",
+            "landmarks_description": "the mighty Colosseum rising from ancient stones, St. Peter's Basilica dome gleaming, Trevi Fountain sparkling",
+            "architectural_style": "Ancient Roman ruins blending with Renaissance grandeur",
+            "lighting_style": "warm golden sunset glow reflecting off marble and ancient stones",
+            "city_atmosphere": "eternal city bathed in history",
+            "city_elements": "marble columns, ancient aqueducts, Vatican spires, Roman forums, cypress trees, flowing fountains",
+            "transformation_sounds": "classical Roman fanfare + flowing water",
+            "ambient_sounds": "echoes of ancient Rome with distant church bells",
+            "music_style": "epic orchestral with Roman brass and Renaissance choir",
+            "opening_action": "Book page turns with gravitas, revealing classical Roman architectural sketches with Colosseum arches emerging",
+            "opening_audio": "Roman brass fanfare + distant fountain sounds",
+            "transformation_action": "Sketch lines glow golden and rise into the mighty Colosseum, St. Peter's dome forming majestically, ancient forums spreading",
+            "transformation_audio": "epic Roman music building + marble construction sounds",
+            "finale_action": "Wide reveal: a complete miniature Rome glows inside the book, with ancient monuments and Renaissance architecture creating timeless majesty",
+            "finale_audio": "full orchestral Roman anthem + eternal city ambience",
+            "final_effect": "Colosseum's arches glow and form classical Roman inscription text",
+            "text_style": "carved Roman inscription style golden letters",
+            "style_keyword": "eternal classical",
+            "city_name": "ROME"
+          }
+        },
+        {
+          "value": "sydney",
+          "label": "🌴 Sydney",
+          "metadata": {
+            "opening_sketch": "a harbor city sketch with distinctive sail-like shapes and bridge arcs",
+            "landmarks_description": "the iconic Sydney Opera House with its sail shells rising, Harbour Bridge spanning majestically across the water",
+            "architectural_style": "Modern waterfront architecture with distinctive Australian design",
+            "lighting_style": "bright Pacific sunlight reflecting off harbor waters and white Opera House shells",
+            "city_atmosphere": "sunny harbor paradise",
+            "city_elements": "white Opera House shells, steel bridge arcs, harbor ferries, sailing boats, eucalyptus trees, beach coastline",
+            "transformation_sounds": "ocean waves + modern harbor sounds",
+            "ambient_sounds": "seagulls calling with harbor activity",
+            "music_style": "uplifting Australian folk mixed with ocean symphony",
+            "opening_action": "Book page turns with ocean breeze, revealing harbor sketches with Opera House shell outlines emerging",
+            "opening_audio": "didgeridoo melody + gentle wave sounds",
+            "transformation_action": "Sketch lines glow bright white and rise into Opera House shells and Harbour Bridge, harbor waters forming around them",
+            "transformation_audio": "Australian music building + harbor construction sounds",
+            "finale_action": "Wide reveal: a complete miniature Sydney glows inside the book, with Opera House shells gleaming and bridge spanning the miniature harbor",
+            "finale_audio": "full orchestral Australian anthem + harbor ambience",
+            "final_effect": "Opera House shells pulse with light creating wave-like text formations",
+            "text_style": "modern Australian font glowing in harbor blue",
+            "style_keyword": "harbor modernism",
+            "city_name": "SYDNEY"
+          }
+        },
+        {
+          "value": "rio",
+          "label": "🏖️ Rio de Janeiro",
+          "metadata": {
+            "opening_sketch": "a tropical coastal sketch with mountain silhouettes and beach curves",
+            "landmarks_description": "Christ the Redeemer statue arms spread wide atop Corcovado, Sugarloaf Mountain rising from Guanabara Bay, Copacabana beach curving",
+            "architectural_style": "Tropical coastal architecture with Portuguese colonial influences",
+            "lighting_style": "vibrant carnival colors with golden beach sunlight and statue illumination",
+            "city_atmosphere": "carnival beach paradise",
+            "city_elements": "Christ statue on mountain peak, cable cars, beach volleyball courts, samba dancers, palm trees, colorful favela houses",
+            "transformation_sounds": "samba rhythms + ocean waves",
+            "ambient_sounds": "carnival music mixing with beach sounds",
+            "music_style": "energetic samba with Brazilian percussion and beach vibes",
+            "opening_action": "Book page turns with carnival energy, revealing Rio sketches with Christ statue and Sugarloaf emerging",
+            "opening_audio": "samba drums + distant ocean waves",
+            "transformation_action": "Sketch lines glow in carnival colors and rise into Christ statue and Sugarloaf Mountain, beach forming with palm trees",
+            "transformation_audio": "samba music building + tropical construction sounds",
+            "finale_action": "Wide reveal: a complete miniature Rio glows inside the book, with Christ statue blessing the scene and beaches sparkling",
+            "finale_audio": "full samba orchestra + carnival beach ambience",
+            "final_effect": "Christ statue's arms spread light creating Portuguese text in the sky",
+            "text_style": "carnival style colorful glowing letters",
+            "style_keyword": "tropical carnival",
+            "city_name": "RIO DE JANEIRO"
+          }
+        },
+        {
+          "value": "istanbul",
+          "label": "🕌 Istanbul",
+          "metadata": {
+            "opening_sketch": "a Byzantine sketch showing domes and minarets across two continents",
+            "landmarks_description": "the Blue Mosque with six minarets rising, Hagia Sophia's massive dome gleaming, Bosphorus Bridge connecting continents",
+            "architectural_style": "Byzantine and Ottoman architecture fusion spanning Europe and Asia",
+            "lighting_style": "golden minaret lights mixed with Bosphorus reflections at sunset",
+            "city_atmosphere": "crossroads of civilizations",
+            "city_elements": "mosque minarets, Byzantine domes, bridge spanning waters, Turkish carpets, spice markets, seagulls over Bosphorus",
+            "transformation_sounds": "call to prayer + Bosphorus waves",
+            "ambient_sounds": "Turkish music echoing across waters",
+            "music_style": "Ottoman classical mixed with Byzantine chants",
+            "opening_action": "Book page turns mystically, revealing Istanbul sketches with mosque domes and minarets emerging",
+            "opening_audio": "oud strings + distant call to prayer",
+            "transformation_action": "Sketch lines glow golden and rise into Blue Mosque and Hagia Sophia, Bosphorus Bridge spanning between continents",
+            "transformation_audio": "Turkish music building + construction across waters",
+            "finale_action": "Wide reveal: a complete miniature Istanbul glows inside the book, with minarets reaching skyward and bridge connecting two shores",
+            "finale_audio": "full Ottoman orchestra + Bosphorus ambience",
+            "final_effect": "Mosque minarets pulse with light creating Arabic calligraphy in golden script",
+            "text_style": "Ottoman calligraphy style golden flowing letters",
+            "style_keyword": "east meets west",
+            "city_name": "ISTANBUL"
+          }
+        },
+        {
+          "value": "moscow",
+          "label": "🏰 Moscow",
+          "metadata": {
+            "opening_sketch": "a Russian winter sketch with onion domes and fortress walls",
+            "landmarks_description": "the colorful St. Basil's Cathedral with its distinctive onion domes, Red Square's fortress walls, Kremlin towers rising majestically",
+            "architectural_style": "Russian Orthodox architecture with Soviet grandeur and colorful onion domes",
+            "lighting_style": "winter snow glow with warm lights from colorful cathedral domes",
+            "city_atmosphere": "winter wonderland capital",
+            "city_elements": "colorful onion domes, red fortress walls, snow-covered squares, Orthodox crosses, ice crystals, warm golden windows",
+            "transformation_sounds": "Russian folk melody + winter wind",
+            "ambient_sounds": "church bells echoing across snowy squares",
+            "music_style": "Russian Orthodox choirs mixed with classical Russian symphony",
+            "opening_action": "Book page turns with winter magic, revealing Moscow sketches with St. Basil's colorful domes emerging",
+            "opening_audio": "balalaika melody + distant church bells",
+            "transformation_action": "Sketch lines glow with rainbow colors and rise into St. Basil's Cathedral and Kremlin walls, snow falling around them",
+            "transformation_audio": "Russian music building + winter construction sounds",
+            "finale_action": "Wide reveal: a complete miniature Moscow glows inside the book, with colorful domes and snow-covered Red Square creating magical atmosphere",
+            "finale_audio": "full Russian orchestra + winter wind ambience",
+            "final_effect": "St. Basil's domes pulse in rainbow colors forming Cyrillic text in the snowy air",
+            "text_style": "Russian Cyrillic font glowing in warm golden light",
+            "style_keyword": "orthodox grandeur",
+            "city_name": "MOSCOW"
+          }
+        },
+        {
+          "value": "cairo",
+          "label": "🗿 Cairo",
+          "metadata": {
+            "opening_sketch": "an ancient Egyptian sketch with pyramid silhouettes and hieroglyphic borders",
+            "landmarks_description": "the Great Pyramids of Giza rising from desert sands, the Sphinx gazing eternally, ancient temples gleaming",
+            "architectural_style": "Ancient Egyptian monuments with Islamic Cairo architecture",
+            "lighting_style": "desert sunset golden glow with mysterious pyramid shadows",
+            "city_atmosphere": "ancient desert metropolis",
+            "city_elements": "limestone pyramids, sphinx statue, palm trees, Nile river, ancient temples, desert dunes, camel silhouettes",
+            "transformation_sounds": "ancient Egyptian melody + desert wind",
+            "ambient_sounds": "mystical desert ambience with distant chanting",
+            "music_style": "epic orchestral with Middle Eastern instruments and ancient mystique",
+            "opening_action": "Book page turns with ancient mystery, revealing Cairo sketches with pyramid outlines and hieroglyphics emerging",
+            "opening_audio": "oud and flute melody + desert wind whispers",
+            "transformation_action": "Sketch lines glow golden like desert sunset and rise into Great Pyramids and Sphinx, sand dunes forming around them",
+            "transformation_audio": "Egyptian music building + ancient construction sounds",
+            "finale_action": "Wide reveal: a complete miniature Cairo glows inside the book, with pyramids towering and Sphinx watching over the ancient scene",
+            "finale_audio": "full orchestral Egyptian anthem + desert mystique ambience",
+            "final_effect": "Pyramid peaks pulse with golden light creating hieroglyphic text in the desert sky",
+            "text_style": "ancient Egyptian hieroglyphic style golden glowing symbols",
+            "style_keyword": "ancient mystique",
+            "city_name": "CAIRO"
+          }
+        },
+        {
+          "value": "kyoto",
+          "label": "⛩️ Kyoto",
+          "metadata": {
+            "opening_sketch": "a traditional Japanese ink painting with temple silhouettes and cherry blossom petals",
+            "landmarks_description": "the golden Kinkaku-ji Temple reflecting in pond waters, thousands of vermillion torii gates climbing the mountain, bamboo groves swaying",
+            "architectural_style": "Traditional Japanese temples and gardens with zen tranquility",
+            "lighting_style": "soft temple lantern glow mixed with golden autumn maple light",
+            "city_atmosphere": "zen temple gardens",
+            "city_elements": "golden temple pavilion, vermillion torii gates, bamboo forests, koi ponds, stone lanterns, autumn maple leaves, zen gardens",
+            "transformation_sounds": "traditional koto strings + bamboo rustling",
+            "ambient_sounds": "temple bells with peaceful nature sounds",
+            "music_style": "traditional Japanese instruments with meditative orchestral backing",
+            "opening_action": "Book page turns with zen grace, revealing Kyoto sketches with temple and torii gate outlines in ink painting style",
+            "opening_audio": "koto melody + distant temple bells",
+            "transformation_action": "Sketch lines glow with warm golden light and rise into Kinkaku-ji Temple and torii gates, bamboo and maple leaves floating",
+            "transformation_audio": "Japanese music building + peaceful construction sounds",
+            "finale_action": "Wide reveal: a complete miniature Kyoto glows inside the book, with golden temple and red torii creating serene Japanese atmosphere",
+            "finale_audio": "full traditional orchestra + zen garden ambience",
+            "final_effect": "Temple's golden reflection creates flowing Japanese calligraphy in the misty air",
+            "text_style": "Japanese calligraphy style golden flowing characters",
+            "style_keyword": "zen tranquility",
+            "city_name": "KYOTO"
+          }
+        },
+        {
+          "value": "barcelona",
+          "label": "🏔️ Barcelona",
+          "metadata": {
+            "opening_sketch": "a Gaudí-inspired architectural sketch with organic curves and mosaic patterns",
+            "landmarks_description": "the towering Sagrada Familia with its intricate spires, colorful Park Güell with mosaic dragons, Gothic Quarter arcades",
+            "architectural_style": "Gaudí's modernist architecture blending with Gothic Mediterranean design",
+            "lighting_style": "warm Mediterranean sunlight highlighting colorful Gaudí mosaics and Gothic stones",
+            "city_atmosphere": "artistic Mediterranean paradise",
+            "city_elements": "Sagrada Familia spires, mosaic dragons, Gothic arches, Mediterranean beaches, flamenco dancers, colorful tiles, palm trees",
+            "transformation_sounds": "Spanish guitar + Mediterranean waves",
+            "ambient_sounds": "flamenco music mixing with seaside atmosphere",
+            "music_style": "passionate Spanish flamenco with Mediterranean orchestral elements",
+            "opening_action": "Book page turns with artistic flair, revealing Barcelona sketches with Sagrada Familia spires and Gaudí curves emerging",
+            "opening_audio": "Spanish guitar melody + distant Mediterranean waves",
+            "transformation_action": "Sketch lines glow with colorful mosaic patterns and rise into Sagrada Familia and Park Güell, Mediterranean atmosphere forming",
+            "transformation_audio": "flamenco music building + artistic construction sounds",
+            "finale_action": "Wide reveal: a complete miniature Barcelona glows inside the book, with Gaudí's masterpieces and Gothic charm creating artistic splendor",
+            "finale_audio": "full Spanish orchestra + Mediterranean coastal ambience",
+            "final_effect": "Sagrada Familia spires pulse with colorful light creating artistic text patterns in the air",
+            "text_style": "Gaudí-inspired artistic font with mosaic-like colorful glowing letters",
+            "style_keyword": "artistic modernisme",
+            "city_name": "BARCELONA"
+          }
+        }
+      ]
+    },
+
+    "cta_text": {
+      "type": "text",
+      "label": "Ending Text",
+      "placeholder": "Enter your custom text",
+      "required": true,
+      "default": "Explore the World"
+    },
+
+    "opening_sketch": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "landmarks_description": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "architectural_style": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "lighting_style": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "city_atmosphere": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "city_elements": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "transformation_sounds": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "ambient_sounds": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "music_style": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "opening_action": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "opening_audio": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "transformation_action": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "transformation_audio": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "finale_action": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "finale_audio": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "final_effect": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "text_style": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "style_keyword": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+    "city_name": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
+
+    "makePublic": {
+      "type": "toggle",
+      "label": "Make video public",
+      "default": false
+    }
+  }
+}

@@ -9,6 +9,7 @@
 
 import { openDB, IDBPDatabase } from 'idb'
 import { extractVideoThumbnail } from '@/utils/videoThumbnail'
+import { serverThumbnailService } from './serverThumbnailService'
 
 interface ThumbnailCacheItem {
   url: string
@@ -35,9 +36,12 @@ class ThumbnailCacheService {
   private readonly CACHE_EXPIRY = 30 * 24 * 60 * 60 * 1000 // 30天
   private readonly MAX_MEMORY_CACHE_SIZE = 50 // 最大内存缓存数量
   private readonly MAX_DB_CACHE_SIZE = 500 // 最大数据库缓存数量
+  private readonly ERROR_CACHE_EXPIRY = 5 * 60 * 1000 // 错误缓存5分钟
   
   // 正在处理的缩略图请求（避免重复请求）
   private pendingRequests = new Map<string, Promise<string>>()
+  // 失败URL的短期缓存（避免重复尝试失败的URL）
+  private errorCache = new Map<string, { timestamp: number; errorType: string }>()
 
   /**
    * 初始化数据库
@@ -100,6 +104,15 @@ class ThumbnailCacheService {
     const { quality = 'medium', frameTime = 0.33, forceRefresh = false } = options
     const cacheKey = this.generateCacheKey(videoUrl, quality)
 
+    // 检查错误缓存，避免重复尝试失败的URL
+    if (!forceRefresh) {
+      const errorInfo = this.errorCache.get(videoUrl)
+      if (errorInfo && Date.now() - errorInfo.timestamp < this.ERROR_CACHE_EXPIRY) {
+        console.log(`[ThumbnailCache] 跳过错误缓存的URL (${errorInfo.errorType}): ${videoUrl}`)
+        return Promise.resolve(this.getDefaultThumbnailByErrorType(errorInfo.errorType))
+      }
+    }
+
     // 如果正在请求相同的缩略图，返回现有的Promise
     if (this.pendingRequests.has(cacheKey)) {
       return this.pendingRequests.get(cacheKey)!
@@ -147,7 +160,6 @@ class ThumbnailCacheService {
     }
 
     // 3. 实时生成缩略图
-    console.log('[ThumbnailCache] Generating thumbnail for:', videoUrl)
     const thumbnail = await this.generateThumbnail(videoUrl, frameTime, quality)
 
     // 存储到缓存中
@@ -219,9 +231,27 @@ class ThumbnailCacheService {
       const settings = qualitySettings[quality]
       return await extractVideoThumbnail(videoUrl, settings.frameTime)
     } catch (error) {
-      console.error('[ThumbnailCache] Failed to generate thumbnail:', error)
-      // 返回默认占位图
-      return this.getDefaultThumbnail()
+      console.error('[ThumbnailCache] 客户端缩略图生成失败:', error)
+      
+      // 尝试使用服务端生成作为fallback
+      try {
+        console.log('[ThumbnailCache] 尝试服务端缩略图生成...')
+        const serverThumbnail = await serverThumbnailService.generateThumbnail(videoUrl, { frameTime, quality })
+        console.log('[ThumbnailCache] 服务端缩略图生成成功')
+        return serverThumbnail
+      } catch (serverError) {
+        console.error('[ThumbnailCache] 服务端缩略图生成也失败:', serverError)
+      }
+      
+      // 记录错误到错误缓存
+      const errorType = this.categorizeError(error, videoUrl)
+      this.errorCache.set(videoUrl, {
+        timestamp: Date.now(),
+        errorType
+      })
+      
+      // 返回对应错误类型的默认图
+      return this.getDefaultThumbnailByErrorType(errorType)
     }
   }
 
@@ -342,6 +372,9 @@ class ThumbnailCacheService {
       }
     }
 
+    // 清理错误缓存
+    this.cleanupErrorCache()
+
     // 清理数据库中的过期项
     try {
       if (!this.db) return
@@ -437,6 +470,121 @@ class ThumbnailCacheService {
     }
 
     return { memoryCount, dbCount, totalSize }
+  }
+
+  /**
+   * 分类错误类型
+   */
+  private categorizeError(error: any, videoUrl: string): string {
+    const errorMessage = error?.message || ''
+    
+    if (videoUrl.startsWith('/api/filesystem/') || videoUrl.startsWith('/api/heyoo/')) {
+      return 'proxy-error'
+    }
+    
+    if (errorMessage.includes('CORS') || errorMessage.includes('cross-origin')) {
+      return 'cors-error'
+    }
+    
+    if (errorMessage.includes('network') || errorMessage.includes('Failed to fetch')) {
+      return 'network-error'
+    }
+    
+    if (errorMessage.includes('decode') || errorMessage.includes('format')) {
+      return 'format-error'
+    }
+    
+    return 'unknown-error'
+  }
+
+  /**
+   * 根据错误类型返回对应的默认缩略图
+   */
+  private getDefaultThumbnailByErrorType(errorType: string): string {
+    switch (errorType) {
+      case 'proxy-error':
+        return this.getProxyErrorThumbnail()
+      case 'cors-error':
+        return this.getCorsErrorThumbnail()
+      case 'network-error':
+        return this.getNetworkErrorThumbnail()
+      case 'format-error':
+        return this.getFormatErrorThumbnail()
+      default:
+        return this.getDefaultThumbnail()
+    }
+  }
+
+  /**
+   * 代理错误缩略图
+   */
+  private getProxyErrorThumbnail(): string {
+    const svg = `
+      <svg width="320" height="180" xmlns="http://www.w3.org/2000/svg">
+        <rect width="320" height="180" fill="#fef3f2"/>
+        <circle cx="160" cy="90" r="30" fill="#f87171"/>
+        <text x="160" y="90" font-family="Arial, sans-serif" font-size="20" fill="white" text-anchor="middle" dy=".3em">!</text>
+        <text x="160" y="130" font-family="Arial, sans-serif" font-size="11" fill="#dc2626" text-anchor="middle">代理服务器错误</text>
+      </svg>
+    `
+    return `data:image/svg+xml;base64,${btoa(svg)}`
+  }
+
+  /**
+   * CORS错误缩略图
+   */
+  private getCorsErrorThumbnail(): string {
+    const svg = `
+      <svg width="320" height="180" xmlns="http://www.w3.org/2000/svg">
+        <rect width="320" height="180" fill="#fefce8"/>
+        <circle cx="160" cy="90" r="30" fill="#eab308"/>
+        <text x="160" y="90" font-family="Arial, sans-serif" font-size="20" fill="white" text-anchor="middle" dy=".3em">⚠</text>
+        <text x="160" y="130" font-family="Arial, sans-serif" font-size="11" fill="#ca8a04" text-anchor="middle">CORS访问限制</text>
+      </svg>
+    `
+    return `data:image/svg+xml;base64,${btoa(svg)}`
+  }
+
+  /**
+   * 网络错误缩略图
+   */
+  private getNetworkErrorThumbnail(): string {
+    const svg = `
+      <svg width="320" height="180" xmlns="http://www.w3.org/2000/svg">
+        <rect width="320" height="180" fill="#f0f9ff"/>
+        <circle cx="160" cy="90" r="30" fill="#3b82f6"/>
+        <text x="160" y="90" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle" dy=".3em">📶</text>
+        <text x="160" y="130" font-family="Arial, sans-serif" font-size="11" fill="#2563eb" text-anchor="middle">网络连接问题</text>
+      </svg>
+    `
+    return `data:image/svg+xml;base64,${btoa(svg)}`
+  }
+
+  /**
+   * 格式错误缩略图
+   */
+  private getFormatErrorThumbnail(): string {
+    const svg = `
+      <svg width="320" height="180" xmlns="http://www.w3.org/2000/svg">
+        <rect width="320" height="180" fill="#f5f3ff"/>
+        <circle cx="160" cy="90" r="30" fill="#8b5cf6"/>
+        <text x="160" y="90" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle" dy=".3em">📹</text>
+        <text x="160" y="130" font-family="Arial, sans-serif" font-size="11" fill="#7c3aed" text-anchor="middle">格式不支持</text>
+      </svg>
+    `
+    return `data:image/svg+xml;base64,${btoa(svg)}`
+  }
+
+  /**
+   * 清理错误缓存
+   */
+  private cleanupErrorCache(): void {
+    const now = Date.now()
+    for (const [url, errorInfo] of this.errorCache.entries()) {
+      if (now - errorInfo.timestamp > this.ERROR_CACHE_EXPIRY) {
+        this.errorCache.delete(url)
+      }
+    }
   }
 }
 

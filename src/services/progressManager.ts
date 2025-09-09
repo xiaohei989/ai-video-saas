@@ -15,6 +15,10 @@ export interface VideoProgress {
   startedAt?: Date
   elapsedTime?: number // 秒
   estimatedRemainingTime?: number // 秒
+  isRealProgress?: boolean // 标识是否为真实API进度
+  isProgressStagnant?: boolean // 标识API进度是否停滞
+  lastProgressValue?: number // 上次进度值
+  lastProgressChangeTime?: Date // 上次进度变化时间
   // API提供商信息
   apiProvider?: 'qingyun' | 'apicore' // 使用的API提供商
   qingyunTaskId?: string // 青云API任务ID
@@ -28,9 +32,81 @@ class ProgressManager {
   private subscribers = new Map<string, Set<(progress: VideoProgress) => void>>()
   private debounceTimers = new Map<string, NodeJS.Timeout>() // 防抖定时器
   private pendingSyncTasks = new Set<string>() // 待同步到数据库的任务
+  private progressUpdateTimer: NodeJS.Timeout | null = null // 进度更新定时器
   
   constructor() {
     this.loadFromLocalStorage()
+    this.startProgressUpdateTimer()
+  }
+
+  /**
+   * 启动进度更新定时器，每2秒更新一次模拟进度
+   */
+  private startProgressUpdateTimer() {
+    if (this.progressUpdateTimer) {
+      clearInterval(this.progressUpdateTimer)
+    }
+    
+    this.progressUpdateTimer = setInterval(async () => {
+      const now = new Date()
+      
+      // 遍历所有处理中的任务，仅为需要模拟的任务更新进度
+      for (const [videoId, progress] of this.progressMap.entries()) {
+        if ((progress.status === 'processing' || progress.status === 'pending') && 
+            progress.startedAt && 
+            progress.progress < 99) {
+          
+          // 检查是否应该跳过模拟更新
+          const hasRecentRealUpdate = progress.isRealProgress && 
+            (now.getTime() - progress.updatedAt.getTime() < 10000)
+          
+          // 如果有真实API更新但未停滞，跳过模拟
+          if (hasRecentRealUpdate && !progress.isProgressStagnant) {
+            continue
+          }
+          
+          // 如果API进度停滞，使用时间模拟继续增长
+          if (progress.isProgressStagnant) {
+            console.log(`[PROGRESS MANAGER] ⏰ API停滞，启用时间模拟：${videoId} 从${progress.progress}%继续`)
+          }
+          
+          const elapsedTime = Math.floor((now.getTime() - progress.startedAt.getTime()) / 1000)
+          
+          // 获取视频质量信息
+          let quality: 'fast' | 'pro' = 'fast'
+          try {
+            const { default: supabaseVideoService } = await import('./supabaseVideoService')
+            const video = await supabaseVideoService.getVideo(videoId)
+            quality = video?.metadata?.quality || video?.parameters?.quality || 'fast'
+          } catch {
+            // 使用默认值
+          }
+          
+          let newProgress = this.calculateSmoothedProgress(elapsedTime, progress.status, quality)
+          
+          // 如果API停滞，确保进度不低于当前值
+          if (progress.isProgressStagnant && newProgress < progress.progress) {
+            newProgress = Math.min(progress.progress + 1, 99) // 至少增长1%
+            console.log(`[PROGRESS MANAGER] 🚀 停滞模拟增长：${videoId} ${progress.progress}% → ${newProgress}%`)
+          }
+          
+          if (Math.abs(newProgress - progress.progress) >= 1) {
+            const updatedProgress: VideoProgress = {
+              ...progress,
+              progress: newProgress,
+              elapsedTime,
+              estimatedRemainingTime: this.calculateRemainingTime(elapsedTime, newProgress, quality),
+              statusText: this.getProgressStatusText(newProgress, progress.status),
+              updatedAt: now
+            }
+            
+            this.progressMap.set(videoId, updatedProgress)
+            this.saveToLocalStorage()
+            this.notifySubscribers(videoId, updatedProgress)
+          }
+        }
+      }
+    }, 2000) // 每2秒更新一次
   }
 
   /**
@@ -67,6 +143,47 @@ class ProgressManager {
       estimatedRemainingTime
     }
 
+    // 严格的进度非回退保护 - 适用于所有进度更新
+    if (data.progress !== undefined && data.progress < existing.progress && existing.progress > 5) {
+      console.log(`[PROGRESS MANAGER] 🚫 拒绝进度回退: ${videoId} 保持${existing.progress}%，拒绝${data.progress}%`)
+      updated.progress = existing.progress // 强制保持现有进度
+      
+      // 保持其他字段的更新，只是不回退进度值
+      updated.lastProgressValue = existing.lastProgressValue
+      updated.lastProgressChangeTime = existing.lastProgressChangeTime
+      updated.isProgressStagnant = existing.isProgressStagnant
+    } else if (data.progress !== undefined) {
+      // 正常的进度更新（增长或相等）
+      if (data.qingyunTaskId || data.apicoreTaskId || data.apiProvider) {
+        updated.isRealProgress = true
+        
+        // 检测API进度是否停滞
+        const progressChanged = data.progress !== existing.lastProgressValue
+        if (progressChanged) {
+          updated.lastProgressValue = data.progress
+          updated.lastProgressChangeTime = now
+          updated.isProgressStagnant = false
+          console.log(`[PROGRESS MANAGER] 真实API进度更新: ${videoId} ${existing.progress}% → ${data.progress}%`)
+        } else {
+          // 相同进度值，检查停滞时间
+          const lastChangeTime = existing.lastProgressChangeTime || existing.updatedAt
+          const stagnantTime = now.getTime() - lastChangeTime.getTime()
+          
+          if (stagnantTime > 30000) { // 30秒停滞
+            if (!existing.isProgressStagnant) {
+              console.log(`[PROGRESS MANAGER] 🚨 检测到API进度停滞: ${videoId} ${data.progress}% 已持续 ${Math.round(stagnantTime/1000)}秒`)
+            }
+            updated.isProgressStagnant = true
+          }
+          
+          updated.lastProgressValue = existing.lastProgressValue || data.progress
+          updated.lastProgressChangeTime = existing.lastProgressChangeTime || now
+        }
+      } else {
+        console.log(`[PROGRESS MANAGER] 模拟进度更新: ${videoId} ${existing.progress}% → ${data.progress}%`)
+      }
+    }
+
     this.progressMap.set(videoId, updated)
     
     // 立即保存到 localStorage
@@ -93,7 +210,6 @@ class ProgressManager {
     // 通知订阅者
     this.notifySubscribers(videoId, updated)
     
-    console.log(`[PROGRESS MANAGER] Updated ${videoId}: ${updated.progress}% (${updated.status}) - Elapsed: ${elapsedTime}s`)
   }
 
   /**
@@ -106,16 +222,52 @@ class ProgressManager {
   /**
    * 智能获取视频进度，为处理中的视频提供合理的默认值
    */
-  getProgressWithFallback(videoId: string, videoStatus?: string): VideoProgress | null {
+  async getProgressWithFallback(videoId: string, videoStatus?: string, videoQuality?: 'fast' | 'pro'): Promise<VideoProgress | null> {
     const existing = this.progressMap.get(videoId)
     
-    // 如果有现有数据且未过期，返回现有数据
+    // 如果有现有数据且未过期，更新进度并返回
     if (existing) {
       const now = new Date()
       const dataAge = now.getTime() - existing.updatedAt.getTime()
       const isExpired = dataAge > 30 * 60 * 1000 // 30分钟，延长以支持长时间任务
       
       if (!isExpired) {
+        // 如果是模拟进度且状态为处理中，继续更新进度
+        if ((existing.status === 'processing' || existing.status === 'pending') && existing.startedAt) {
+          const elapsedTime = Math.floor((now.getTime() - existing.startedAt.getTime()) / 1000)
+          
+          // 获取视频质量信息用于进度计算
+          let quality = videoQuality
+          if (!quality) {
+            try {
+              const { default: supabaseVideoService } = await import('./supabaseVideoService')
+              const video = await supabaseVideoService.getVideo(videoId)
+              quality = video?.metadata?.quality || video?.parameters?.quality || 'fast'
+            } catch {
+              quality = 'fast'
+            }
+          }
+          
+          const simulatedProgress = this.calculateSmoothedProgress(elapsedTime, existing.status, quality)
+          
+          // 只有进度有显著变化时才更新
+          if (Math.abs(simulatedProgress - existing.progress) >= 1) {
+            const updatedProgress: VideoProgress = {
+              ...existing,
+              progress: simulatedProgress,
+              elapsedTime,
+              estimatedRemainingTime: this.calculateRemainingTime(elapsedTime, simulatedProgress, quality),
+              statusText: this.getProgressStatusText(simulatedProgress, existing.status),
+              updatedAt: now
+            }
+            
+            this.progressMap.set(videoId, updatedProgress)
+            this.notifySubscribers(videoId, updatedProgress)
+            
+            return updatedProgress
+          }
+        }
+        
         return existing
       } else {
         // 清理过期数据
@@ -125,8 +277,20 @@ class ProgressManager {
     
     // 为处理中的视频提供合理的初始进度
     if (videoStatus === 'processing' || videoStatus === 'pending') {
+      // 获取视频质量信息
+      let quality = videoQuality
+      if (!quality) {
+        try {
+          const { default: supabaseVideoService } = await import('./supabaseVideoService')
+          const video = await supabaseVideoService.getVideo(videoId)
+          quality = video?.metadata?.quality || video?.parameters?.quality || 'fast'
+        } catch {
+          quality = 'fast'
+        }
+      }
+      
       const fallbackProgress: VideoProgress = {
-        progress: videoStatus === 'processing' ? 15 : 5, // processing: 15%, pending: 5%
+        progress: videoStatus === 'processing' ? 15 : 5,
         status: videoStatus as 'processing' | 'pending',
         statusText: videoStatus === 'processing' ? i18n.t('videoCreator.processing') : i18n.t('videoCreator.preparing'),
         updatedAt: new Date(),
@@ -135,12 +299,80 @@ class ProgressManager {
       
       // 将fallback进度存储到内存中
       this.progressMap.set(videoId, fallbackProgress)
-      console.log(`[PROGRESS MANAGER] Created fallback progress for ${videoId}: ${fallbackProgress.progress}%`)
+      console.log(`[PROGRESS MANAGER] Created fallback progress for ${videoId}: ${fallbackProgress.progress}% (${quality} quality)`)
       
       return fallbackProgress
     }
     
     return null
+  }
+
+  /**
+   * 基于时间和质量模式计算平滑进度
+   */
+  private calculateSmoothedProgress(elapsedSeconds: number, status: 'processing' | 'pending', quality: 'fast' | 'pro'): number {
+    if (status === 'pending') {
+      // pending状态：前30秒内从5%增长到15%
+      const pendingDuration = 30
+      const pendingProgress = Math.min(5 + (elapsedSeconds / pendingDuration) * 10, 15)
+      return Math.floor(pendingProgress)
+    }
+    
+    // processing状态：根据质量模式使用不同的时间曲线
+    const timePoints = quality === 'fast' 
+      ? { total: 180, stages: [[30, 20], [90, 60], [150, 90], [180, 99]] }  // 快速模式：3分钟
+      : { total: 300, stages: [[60, 15], [180, 50], [240, 80], [300, 99]] } // 高质量模式：5分钟
+    
+    // 使用分段线性插值计算进度
+    let progress = 15 // 起始进度
+    
+    for (let i = 0; i < timePoints.stages.length; i++) {
+      const [time, targetProgress] = timePoints.stages[i]
+      const prevTime = i === 0 ? 0 : timePoints.stages[i - 1][0]
+      const prevProgress = i === 0 ? 15 : timePoints.stages[i - 1][1]
+      
+      if (elapsedSeconds <= time) {
+        // 在当前时间段内，使用线性插值
+        const timeRatio = (elapsedSeconds - prevTime) / (time - prevTime)
+        progress = prevProgress + (targetProgress - prevProgress) * timeRatio
+        break
+      }
+    }
+    
+    // 添加小幅随机波动，模拟真实API响应
+    const randomVariation = (Math.random() - 0.5) * 2 // ±1%的随机变化
+    progress = Math.max(5, Math.min(99, progress + randomVariation))
+    
+    return Math.floor(progress)
+  }
+
+  /**
+   * 计算剩余时间
+   */
+  private calculateRemainingTime(elapsedSeconds: number, currentProgress: number, quality: 'fast' | 'pro'): number {
+    const expectedTotalTime = quality === 'fast' ? 180 : 300 // 秒
+    
+    if (currentProgress <= 5) return expectedTotalTime
+    if (currentProgress >= 95) return Math.max(10, expectedTotalTime - elapsedSeconds)
+    
+    // 基于当前进度估算剩余时间
+    const estimatedTotal = (elapsedSeconds / currentProgress) * 100
+    const remaining = Math.max(0, estimatedTotal - elapsedSeconds)
+    
+    // 限制剩余时间不超过预期总时间
+    return Math.min(remaining, expectedTotalTime - elapsedSeconds)
+  }
+
+  /**
+   * 根据进度获取状态文本
+   */
+  private getProgressStatusText(progress: number, status: 'processing' | 'pending'): string {
+    if (status === 'pending') return i18n.t('videoCreator.preparing')
+    
+    if (progress < 30) return i18n.t('videoCreator.generating')
+    if (progress < 70) return i18n.t('videoCreator.processing') 
+    if (progress < 95) return i18n.t('videoCreator.almostComplete')
+    return i18n.t('videoCreator.finalizing')
   }
 
   /**
@@ -208,6 +440,17 @@ class ProgressManager {
   }
 
   /**
+   * 停止进度更新定时器
+   */
+  stopProgressUpdateTimer() {
+    if (this.progressUpdateTimer) {
+      clearInterval(this.progressUpdateTimer)
+      this.progressUpdateTimer = null
+      console.log(`[PROGRESS MANAGER] Progress update timer stopped`)
+    }
+  }
+
+  /**
    * 批量设置视频为完成状态
    */
   markAsCompleted(videoId: string, videoUrl?: string) {
@@ -221,7 +464,6 @@ class ProgressManager {
     // 不要立即清理进度数据，让UI有时间更新
     // 延迟清理，给UI更多时间来响应状态变化
     setTimeout(() => {
-      console.log(`[PROGRESS MANAGER] Delayed cleanup for completed video: ${videoId}`)
       this.clearProgress(videoId)
     }, 5000) // 减少到5秒，但确保UI先更新
   }
@@ -399,7 +641,6 @@ class ProgressManager {
 
         // 更新数据库
         await supabaseVideoService.updateVideo(videoId, { metadata: updatedMetadata })
-        console.log(`[PROGRESS MANAGER] Saved to database: ${videoId} (${progress.progress}%)`)
         
         this.pendingSyncTasks.delete(videoId)
       }

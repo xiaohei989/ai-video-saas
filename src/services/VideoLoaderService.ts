@@ -369,7 +369,6 @@ class VideoLoaderService {
       const acceptRanges = testResponse.headers.get('accept-ranges')
       
       if (totalSize === 0 || acceptRanges !== 'bytes') {
-        console.log('[VideoLoader] Range requests not supported, falling back to standard loading')
         // 记录此域名不支持Range请求
         const hostname = new URL(videoUrl).hostname
         localStorage.setItem(`range_support_${hostname}`, 'false')
@@ -397,7 +396,7 @@ class VideoLoaderService {
         loadedSize = endByte
 
         // 检查是否需要暂停加载（网络质量降低）
-        if (this.shouldPauseLoading()) {
+        if (this.shouldPauseLoading(videoUrl)) {
           break
         }
       }
@@ -408,7 +407,6 @@ class VideoLoaderService {
       
       return videoUrl
     } catch (error) {
-      console.log('[VideoLoader] Range request loading failed, falling back to standard loading:', error.message)
       // 回退到标准加载
       return this.loadVideoStandard(videoUrl, options, onProgress)
     }
@@ -430,7 +428,6 @@ class VideoLoaderService {
       },
       mode: 'cors'
     }).catch((error) => {
-      console.log(`[VideoLoader] Range request failed for chunk ${startByte}-${endByte}:`, error.message)
       throw error
     })
 
@@ -497,8 +494,13 @@ class VideoLoaderService {
   /**
    * 检查是否应该暂停加载
    */
-  private shouldPauseLoading(): boolean {
+  private shouldPauseLoading(videoUrl?: string): boolean {
     if (!this.networkInfo) return false
+    
+    // 对于本地视频文件，网络条件不是限制因素
+    if (videoUrl && videoUrl.startsWith('/templates/videos/')) {
+      return false
+    }
     
     // 如果网络质量变差，暂停加载
     return this.networkInfo.downlink < this.NETWORK_THRESHOLDS.LOW_QUALITY.downlink ||
@@ -511,21 +513,57 @@ class VideoLoaderService {
    */
   private async waitForQueueProcessing(videoUrl: string): Promise<string> {
     return new Promise((resolve, reject) => {
+      let attempts = 0
+      const maxAttempts = 20 // 最大等待10秒
+      
       const checkQueue = () => {
         const state = this.loadingVideos.get(videoUrl)
+        
+        // 如果已加载完成，直接返回
         if (state?.status === 'loaded') {
           resolve(videoUrl)
-        } else if (state?.status === 'error') {
-          reject(new Error(state.error || 'Video load failed'))
-        } else if (!this.preloadQueue.includes(videoUrl)) {
-          // 已从队列中移除，开始加载
-          this.performLoad(videoUrl, {}, undefined)
+          return
+        }
+        
+        // 如果有错误但不是取消错误，尝试重新加载
+        if (state?.status === 'error') {
+          if (state.error === 'Load cancelled' && attempts < 3) {
+            // 重置状态，重新尝试
+            this.loadingVideos.delete(videoUrl)
+            attempts++
+            setTimeout(checkQueue, 1000) // 延迟1秒重试
+            return
+          } else {
+            reject(new Error(state.error || 'Video load failed'))
+            return
+          }
+        }
+        
+        // 如果不在队列中，立即开始加载
+        if (!this.preloadQueue.includes(videoUrl)) {
+          this.performLoad(videoUrl, { priority: 'high' }, undefined)
             .then(resolve)
             .catch(reject)
-        } else {
-          setTimeout(checkQueue, 500)
+          return
         }
+        
+        // 如果超过最大尝试次数，强制加载
+        if (attempts >= maxAttempts) {
+          // 从队列中移除并立即加载
+          const queueIndex = this.preloadQueue.indexOf(videoUrl)
+          if (queueIndex !== -1) {
+            this.preloadQueue.splice(queueIndex, 1)
+          }
+          this.performLoad(videoUrl, { priority: 'high' }, undefined)
+            .then(resolve)
+            .catch(reject)
+          return
+        }
+        
+        attempts++
+        setTimeout(checkQueue, 500)
       }
+      
       checkQueue()
     })
   }
@@ -582,20 +620,29 @@ class VideoLoaderService {
   /**
    * 取消视频加载
    */
-  cancelLoad(videoUrl: string): void {
+  cancelLoad(videoUrl: string, force: boolean = false): void {
     const state = this.loadingVideos.get(videoUrl)
+    
+    // 只有在强制取消或确实需要时才取消
     if (state?.status === 'loading') {
+      // 对于本地视频文件，不要轻易取消加载
+      const isLocalVideo = videoUrl.startsWith('/templates/videos/')
+      if (isLocalVideo && !force) {
+        return
+      }
+      
       this.loadingVideos.set(videoUrl, {
         ...state,
         status: 'error',
         error: 'Load cancelled'
       })
       
-      // 从预加载队列中移除
-      const queueIndex = this.preloadQueue.indexOf(videoUrl)
-      if (queueIndex !== -1) {
-        this.preloadQueue.splice(queueIndex, 1)
-      }
+    }
+    
+    // 从预加载队列中移除
+    const queueIndex = this.preloadQueue.indexOf(videoUrl)
+    if (queueIndex !== -1) {
+      this.preloadQueue.splice(queueIndex, 1)
     }
   }
 

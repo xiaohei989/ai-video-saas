@@ -315,6 +315,16 @@
       "placeholder": "並び順"
     }
   },
+  "pagination": {
+    "showing": "{{start}}-{{end}} 件を表示（全{{total}}件）",
+    "itemsPerPage": "1ページあたり",
+    "items": "件",
+    "navigation": "ページナビゲーション",
+    "firstPage": "最初のページ",
+    "prevPage": "前へ",
+    "nextPage": "次へ",
+    "lastPage": "最後のページ"
+  },
   "video": {
     "myVideos": "マイビデオ",
     "loading": "動画を読み込み中...",
@@ -376,6 +386,28 @@
     "signOut": "サインアウト",
     "backToHome": "ホームに戻る",
     "loadMore": "もっと読み込む"
+  },
+  "shareModal": {
+    "title": "動画をシェアしてクレジットを獲得",
+    "description": "あなたの作品を披露し、友達を招待して、両方がクレジット報酬を獲得しましょう！",
+    "shareRewards": "シェア報酬",
+    "showCreation": "60円の作品を紹介",
+    "inviteFriends": "友達を招待: +20クレジット",
+    "rewardNote": "💡 友達が登録すると、両方が20クレジットを獲得！",
+    "copyShareContent": "シェア内容をコピー",
+    "copied": "コピー完了！",
+    "copiedToClipboard": "クリップボードにコピーしました！",
+    "shareContentText": "🤯 たった60円でこのバイラル動画を作りました！\n\n📺 直接視聴：{{videoUrl}}\n\n以前は500ドル以上かかったプロ品質！スキル不要 - AIがすべてやります！\n\n💰 自分でも作ってみませんか？\n私の招待コードで登録して、20の無料クレジットを手に入れよう：\n👉 {{inviteUrl}}\n\n#60円動画 #AI動画 #予算クリエイター #無料クレジット #バイラルハック",
+    "instagramCopied": "Instagram用コンテンツをコピーしました！Instagramに貼り付けて投稿してください",
+    "platformOpened": "{{platform}}のシェアページを開きました！",
+    "getReferralCodeFailed": "紹介コードの取得に失敗しました"
+  },
+  "upgradeDialog": {
+    "title": "有料サブスクリプションが必要です",
+    "description": "9:16 縦画面フォーマットは有料ユーザー限定の機能です。任意の有料プランにアップグレードすることで、この機能がアンロックされ、より多くのクリエイティブな可能性をお楽しみいただけます。",
+    "cancel": "キャンセル",
+    "upgrade": "今すぐアップグレード",
+    "aspectRatioRestriction": "9:16フォーマットには有料サブスクリプションが必要です"
   },
   "videoCreator": {
     "outputQuality": "出力品質",
@@ -452,7 +484,19 @@
     "videoUrlNotExists": "動画URLが存在しないため、ダウンロードできません",
     "downloadStarting": "ダウンロードを開始します。自動的に開始されない場合は、新しいウィンドウで右クリックして動画を保存してください",
     "downloadStarted": "ダウンロードが開始されました。ブラウザのダウンロードリストをご確認ください",
-    "downloadFailed": "ダウンロードに失敗しました、もう一度お試しください。問題が続く場合は、新しいウィンドウで右クリックして保存してみてください"
+    "downloadFailed": "ダウンロードに失敗しました、もう一度お試しください。問題が続く場合は、新しいウィンドウで右クリックして保存してみてください",
+    "downloading": "ダウンロード中...",
+    "downloadHD": "HD版をダウンロード",
+    "upgradeToDownload": "アップグレードしてダウンロード",
+    "upgradePrompt": {
+      "title": "アップグレードで無制限HD動画ダウンロード！",
+      "description": "今すぐプロ機能をアンロック",
+      "bannerTitle": "ダウンロード機能をアンロックするためにアップグレード",
+      "bannerDescription": "プレミアムユーザーは無制限でHD動画をダウンロードし、作品を永久保存できます",
+      "upgradeNow": "今すぐアップグレード",
+      "checkingSubscription": "サブスクリプション状態を確認中...",
+      "subscriptionStatusLoading": "サブスクリプション状態を読み込み中..."
+    }
   },
   "pricing": {
     "popular": "人気",
@@ -519,7 +563,7 @@
     "planDetails": {
       "mostPopular": "最も人気",
       "monthly": "月",
-      "yearly": "年",
+      "yearly": "/年",
       "monthlyCredits": "月額{{credits}}クレジット",
       "yearlyCredits": "年間{{credits}}クレジット",
       "nextRenewal": "次回更新: {{date}}",
@@ -529,25 +573,25 @@
       "title": "機能",
       "basic": [
         "月額200クレジット",
-        "標準ビデオ品質 (20クレジット/ビデオ)",
-        "基本テンプレートライブラリ",
+        "無制限HDビデオダウンロード",
+        "同時生成：3本",
+        "9:16 縦画面フォーマット（プレミアム限定）",
         "メールサポート"
       ],
       "pro": [
         "月額1,500クレジット",
-        "高品質ビデオ (100クレジット/ビデオ)",
-        "標準ビデオ (20クレジット/ビデオ)",
-        "全テンプレートライブラリ",
+        "無制限HDビデオダウンロード",
+        "同時生成：5本",
+        "9:16 縦画面フォーマット（プレミアム限定）",
         "優先サポート"
       ],
       "enterprise": [
         "月額6,000クレジット",
-        "高品質ビデオ (100クレジット/ビデオ)",
-        "標準ビデオ (20クレジット/ビデオ)",
-        "無制限テンプレート使用",
+        "無制限HDビデオダウンロード",
+        "同時生成：10本",
+        "9:16 縦画面フォーマット（プレミアム限定）",
         "専用顧客サービス",
-        "APIアクセス",
-        "チームコラボレーション"
+        "APIアクセス"
       ]
     },
     "status": {
@@ -753,6 +797,20 @@
         "descriptionTooLong": "詳細説明は2000文字以内である必要があります",
         "fileTooLarge": "ファイルサイズは10MBを超えることはできません",
         "fileTypeNotSupported": "サポートされていないファイルタイプです"
+      },
+      "freeUserSupport": {
+        "emailSupportTitle": "メールサポート",
+        "emailSupportDescription": "無料ユーザーとして、メールでお問い合わせいただけます。24-48時間以内にご返信いたします。",
+        "contactEmail": "お問い合わせメール",
+        "sendEmail": "メール送信",
+        "upgradePrompt": "より早い対応をご希望ですか？",
+        "upgradeLink": "有料プランにアップグレード",
+        "upgradeDescription": "して優先サポートをお楽しみください",
+        "ticketSystemTitle": "チケットシステムは有料ユーザー限定です",
+        "ticketSystemDescription": "有料プランにアップグレードすることで、チケットシステムをご利用いただき、より迅速な技術サポートをお受けいただけます。",
+        "freeUserContactPrompt": "無料ユーザーはメールでお問い合わせください",
+        "upgradeToPaid": "有料プランにアップグレード",
+        "loginPromptSupport": "カスタマーサポートにお問い合わせするには、まずログインしてください"
       }
     },
     "tickets": {
@@ -866,5 +924,127 @@
       "printPdf": "印刷 / PDF",
       "backToTop": "トップに戻る"
     }
+  },
+  "privacy": {
+    "cookieConsent": {
+      "title": "ユーザー体験向上のためCookieを使用しています",
+      "description": "ウェブサイトの利用状況を理解し、サービス改善のためにGoogle Analyticsを使用しています。これらのデータは匿名化されており、広告には使用されません。",
+      "accept": "すべて受け入れる",
+      "decline": "必須のみ", 
+      "showDetails": "詳細を見る",
+      "hideDetails": "詳細を隠す",
+      "essential": "必須Cookie",
+      "essentialDesc": "ログイン状態やテーマ設定など、ウェブサイトの基本機能に使用されます。",
+      "analytics": "分析Cookie",
+      "analyticsDesc": "Google Analyticsはウェブサイトの使用状況を理解し、製品改善に役立てるために使用されます。",
+      "dataInfo": "データは完全に匿名化されており、個人を特定する情報は含まれていません。プライバシー設定でいつでもこの選択を変更できます。",
+      "policyLink": "当社の",
+      "privacyPolicy": "プライバシーポリシー",
+      "and": "および",
+      "cookiePolicy": "Cookieポリシー"
+    }
+  },
+  "analytics": {
+    "testPage": {
+      "title": "Google Analytics テストパネル",
+      "subtitle": "Analytics イベント追跡機能のテストと検証",
+      "status": {
+        "title": "Analytics ステータス",
+        "description": "現在のAnalyticsサービスのステータスと設定情報",
+        "enabled": "有効",
+        "waitingConsent": "ユーザー同意待ち",
+        "measurementId": "測定ID",
+        "debugMode": "デバッグモード",
+        "userConsent": "ユーザー同意",
+        "environment": "環境",
+        "printDebugInfo": "デバッグ情報を出力",
+        "notConfigured": "未設定"
+      },
+      "presetEvents": {
+        "title": "プリセットイベントテスト",
+        "description": "ボタンをクリックしてプリセットのAnalyticsイベントを送信",
+        "templateView": "テンプレート表示",
+        "templateViewDesc": "ユーザーのテンプレート表示イベントを追跡",
+        "templateLike": "テンプレートいいね",
+        "templateLikeDesc": "ユーザーのテンプレートいいねイベントを追跡",
+        "videoGenerationStart": "動画生成開始",
+        "videoGenerationStartDesc": "動画生成開始イベントを追跡",
+        "videoGenerationComplete": "動画生成完了",
+        "videoGenerationCompleteDesc": "動画生成完了イベントを追跡",
+        "videoDownload": "動画ダウンロード",
+        "videoDownloadDesc": "動画ダウンロードイベントを追跡",
+        "videoShare": "動画シェア",
+        "videoShareDesc": "動画シェアイベントを追跡",
+        "subscriptionStart": "サブスクリプション開始",
+        "subscriptionStartDesc": "ユーザーのサブスクリプション開始フローを追跡",
+        "creditsPurchase": "クレジット購入",
+        "creditsPurchaseDesc": "クレジット購入イベントを追跡",
+        "themeChange": "テーマ変更",
+        "themeChangeDesc": "テーマ変更イベントを追跡",
+        "errorTracking": "エラー追跡",
+        "errorTrackingDesc": "エラーイベントを追跡",
+        "sendEvent": "イベント送信"
+      },
+      "customEvents": {
+        "title": "カスタムイベントテスト",
+        "description": "カスタムAnalyticsイベントの作成と送信",
+        "actionLabel": "イベント名 (action)",
+        "actionPlaceholder": "例：button_click",
+        "categoryLabel": "イベントカテゴリ (category)",
+        "categoryPlaceholder": "例：user_interaction",
+        "labelLabel": "イベントラベル (label)",
+        "labelPlaceholder": "例：header_button",
+        "valueLabel": "イベント値 (value)",
+        "valuePlaceholder": "例：1",
+        "sendCustomEvent": "カスタムイベント送信",
+        "fillRequired": "イベント名とカテゴリを入力してください"
+      },
+      "instructions": {
+        "title": "使用説明",
+        "step1": {
+          "title": "1. GA測定IDの設定:",
+          "description": ".envファイルでVITE_GA_MEASUREMENT_ID=G-XXXXXXXXXXを設定"
+        },
+        "step2": {
+          "title": "2. ユーザー同意:",
+          "description": "ユーザーはCookieバナーでAnalytics追跡に同意する必要があります"
+        },
+        "step3": {
+          "title": "3. データの表示:",
+          "description": "イベント送信後、Google Analyticsのリアルタイムレポートでデータを確認できます（通常1-5分の遅延）"
+        },
+        "step4": {
+          "title": "4. デバッグ:",
+          "description": "開発環境ではイベントはコンソールに出力されるだけで、GAには送信されません。本番環境では正常に送信されます。"
+        }
+      }
+    }
+  },
+  "common": {
+    "retry": "再試行",
+    "remaining": "残り",
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "cancel": "キャンセル",
+    "confirm": "確認"
+  },
+  "video": {
+    "preview": "動画プレビュー",
+    "previewPaused": "動画プレビューが一時停止されました",
+    "previewFailed": "動画プレビューに失敗しました",
+    "loading": "動画を読み込み中...",
+    "loadFailed": "動画の読み込みに失敗しました",
+    "player": "動画プレーヤー",
+    "thumbnail": "動画サムネイル",
+    "cache": {
+      "confirmClear": "動画関連のキャッシュをすべて削除してもよろしいですか？動画プレビュー、サムネイルキャッシュなどのデータが削除されます。",
+      "clearing": "キャッシュを削除中...",
+      "cleared": "キャッシュが正常に削除されました"
+    }
+  },
+  "admin": {
+    "clearVideoCache": "動画キャッシュを削除",
+    "clearCacheConfirm": "動画関連のキャッシュをすべて削除してもよろしいですか？動画プレビュー、サムネイルキャッシュなどのデータが削除されます。",
+    "cacheCleared": "動画キャッシュが正常に削除されました"
   }
 }

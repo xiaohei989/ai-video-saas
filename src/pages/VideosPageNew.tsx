@@ -22,7 +22,8 @@ import {
   Plus,
   ArrowRight,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Lock
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -37,8 +38,11 @@ import {
 import LazyVideoPlayer from '@/components/video/LazyVideoPlayer'
 import supabaseVideoService from '@/services/supabaseVideoService'
 import videoShareService from '@/services/videoShareService'
+import referralService from '@/services/referralService'
+import VideoShareModal from '@/components/share/VideoShareModal'
 import { videoTaskManager, type VideoTask } from '@/services/VideoTaskManager'
 import { videoPollingService } from '@/services/VideoPollingService'
+import { progressManager, type VideoProgress } from '@/services/progressManager'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { AuthContext } from '@/contexts/AuthContext'
 import type { Database } from '@/lib/supabase'
@@ -46,20 +50,23 @@ import { templates } from '@/features/video-creator/data/templates'
 import { formatRelativeTime, formatDuration } from '@/utils/timeFormat'
 import { toast } from 'sonner'
 import { SubscriptionService } from '@/services/subscriptionService'
-import WatermarkService from '@/services/watermarkService'
-import ProtectedDownloadService from '@/services/protectedDownloadService'
+import { useSEO } from '@/hooks/useSEO'
 
 type Video = Database['public']['Tables']['videos']['Row']
 
 export default function VideosPageNew() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { user } = useContext(AuthContext)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
+  // SEO优化
+  useSEO('videos')
+
   // 状态管理
   const [videos, setVideos] = useState<Video[]>([])
   const [activeTasks, setActiveTasks] = useState<Map<string, VideoTask>>(new Map())
+  const [videoProgress, setVideoProgress] = useState<Map<string, VideoProgress>>(new Map())
   // 🚀 关键优化：初始loading设为false，避免显示loading界面
   const [loading, setLoading] = useState(false)
   // 🚀 添加初始数据加载状态跟踪
@@ -68,6 +75,10 @@ export default function VideosPageNew() {
   const [searchTerm, setSearchTerm] = useState('')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [page, setPage] = useState(1)
+  
+  // 订阅状态管理
+  const [isPaidUser, setIsPaidUser] = useState<boolean>(false)
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   
   // 实时更新状态 - 用于触发耗时显示的重新渲染
   const [currentTime, setCurrentTime] = useState(Date.now())
@@ -83,8 +94,8 @@ export default function VideosPageNew() {
     video: Video | null
   }>({ open: false, video: null })
 
-  // 分享对话框
-  const [shareModalOpen, setShareModalOpen] = useState(false)
+  // 分享状态
+  const [videoShareModalOpen, setVideoShareModalOpen] = useState(false)
   const [selectedShareVideo, setSelectedShareVideo] = useState<Video | null>(null)
 
   /**
@@ -97,12 +108,16 @@ export default function VideosPageNew() {
       // 🚀 关键优化：不设置loading=true，避免显示loading界面
 
       try {
-        // 1. 并行加载视频列表和初始化任务管理器，提升速度
-        const [, tasks] = await Promise.all([
+        // 1. 并行加载视频列表、初始化任务管理器和检测订阅状态，提升速度
+        const [, tasks, subscription] = await Promise.all([
           loadVideos(),
-          videoTaskManager.initialize(user.id)
+          videoTaskManager.initialize(user.id),
+          SubscriptionService.getCurrentSubscription(user.id)
         ])
         
+        // 设置订阅状态
+        setIsPaidUser(subscription?.status === 'active' || false)
+        setSubscriptionLoading(false)
         
         const taskMap = new Map(tasks.map(task => [task.id, task]))
         setActiveTasks(taskMap)
@@ -116,6 +131,30 @@ export default function VideosPageNew() {
             onTaskFailed: handleTaskFailed
           })
           console.log(`[VideosPage] 🔄 轮询服务已启动，监控 ${tasks.length} 个任务`)
+          
+          // 4. 订阅 ProgressManager 获取实时进度更新
+          tasks.forEach(task => {
+            progressManager.getProgressWithFallback(task.id, 'processing').then(initialProgress => {
+              if (initialProgress) {
+                setVideoProgress(prev => {
+                  const newMap = new Map(prev)
+                  newMap.set(task.id, initialProgress)
+                  return newMap
+                })
+              }
+            })
+            
+            // 订阅实时进度更新
+            const unsubscribe = progressManager.subscribe(task.id, (progress) => {
+              setVideoProgress(prev => {
+                const newMap = new Map(prev)
+                newMap.set(task.id, progress)
+                return newMap
+              })
+            })
+            
+            // 保存清理函数（简化版本，在组件卸载时清理）
+          })
         }
 
       } catch (error) {
@@ -148,6 +187,40 @@ export default function VideosPageNew() {
     }
   }, [activeTasks.size])
 
+  // 订阅处理中视频的 ProgressManager 进度更新
+  useEffect(() => {
+    if (!user) return
+
+    const subscriptions: (() => void)[] = []
+    
+    // 为所有处理中的视频订阅进度更新
+    videos.forEach(video => {
+      if (video.status === 'processing' || video.status === 'pending') {
+        const unsubscribe = progressManager.subscribe(video.id, (progress) => {
+          // 同时更新 activeTasks 中的进度
+          setActiveTasks(prev => {
+            const newMap = new Map(prev)
+            const existingTask = newMap.get(video.id)
+            if (existingTask) {
+              newMap.set(video.id, {
+                ...existingTask,
+                progress: progress.progress,
+                statusText: progress.statusText || existingTask.statusText
+              })
+            }
+            return newMap
+          })
+        })
+        
+        subscriptions.push(unsubscribe)
+      }
+    })
+
+    return () => {
+      subscriptions.forEach(unsub => unsub())
+    }
+  }, [videos, user])
+
   /**
    * 加载视频列表
    */
@@ -174,9 +247,17 @@ export default function VideosPageNew() {
   const handleTaskUpdate = (task: VideoTask) => {
     console.log(`[VideosPage] 任务进度更新: ${task.id} - ${task.progress}%`)
     
+    // 获取 ProgressManager 的最新进度，优先使用智能模拟进度
+    const smartProgress = progressManager.getProgress(task.id)
+    const finalTask = smartProgress ? {
+      ...task,
+      progress: smartProgress.progress,
+      statusText: smartProgress.statusText || task.statusText
+    } : task
+    
     setActiveTasks(prev => {
       const newMap = new Map(prev)
-      newMap.set(task.id, task)
+      newMap.set(task.id, finalTask)
       return newMap
     })
   }
@@ -189,6 +270,13 @@ export default function VideosPageNew() {
     
     // 1. 移除活跃任务
     setActiveTasks(prev => {
+      const newMap = new Map(prev)
+      newMap.delete(task.id)
+      return newMap
+    })
+    
+    // 2. 清理进度数据
+    setVideoProgress(prev => {
       const newMap = new Map(prev)
       newMap.delete(task.id)
       return newMap
@@ -325,7 +413,6 @@ export default function VideosPageNew() {
       }
       
       await supabaseVideoService.incrementInteraction(video.id, 'share_count')
-      setShareModalOpen(false)
     } catch (error) {
       console.error('[VideosPage] 分享失败:', error)
       toast.error(t('videos.shareFailed'))
@@ -333,55 +420,62 @@ export default function VideosPageNew() {
   }
 
   /**
-   * 下载视频 - 使用统一的受保护下载服务
+   * 处理下载按钮点击
    */
-  const handleDownload = async (video: Video) => {
-    console.log('[VideosPage] handleDownload 被调用:', {
-      videoId: video.id,
-      videoUrl: video.video_url,
-      title: video.title,
-      status: video.status
-    })
-    
+  const handleDownloadClick = async (video: Video) => {
+    if (!user) {
+      toast.error(t('videos.loginRequired'))
+      return
+    }
+
+    if (!isPaidUser) {
+      // 免费用户 - 显示升级提示并跳转到定价页面
+      toast.info(t('videos.upgradePrompt.title'), {
+        description: t('videos.upgradePrompt.description'),
+        duration: 4000,
+        action: {
+          label: t('videos.upgradePrompt.upgradeNow'),
+          onClick: () => navigate('/pricing')
+        }
+      })
+      
+      // 延迟跳转，让用户看到提示
+      setTimeout(() => {
+        navigate('/pricing')
+      }, 1500)
+      return
+    }
+
+    // 付费用户 - 直接下载
     if (!video.video_url) {
-      console.warn('[VideosPage] 视频URL为空，无法下载')
       toast.error(t('videos.videoUrlNotExists'))
       return
     }
 
-    if (!user) {
-      toast.error('请先登录')
-      return
-    }
-
     try {
-      // 使用统一的受保护下载服务
-      await ProtectedDownloadService.downloadVideo(
-        user.id,
-        video.id,
-        video.video_url,
-        video.title || 'video',
-        {
-          onComplete: () => {
-            console.log('[VideosPage] 下载完成')
-            // 更新下载计数
-            supabaseVideoService.incrementInteraction(video.id, 'download_count')
-            // 重新加载视频列表以更新下载计数
-            loadVideos()
-          },
-          onError: (error) => {
-            console.error('[VideosPage] 下载失败:', error)
-            toast.error(`下载失败: ${error}`, {
-              duration: 5000
-            })
-          }
-        }
-      )
+      // 直接使用浏览器下载
+      const link = document.createElement('a')
+      link.href = video.video_url
+      link.download = `${video.title || 'video'}-${video.id}.mp4`
+      link.target = '_blank'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      // 更新下载计数
+      await supabaseVideoService.incrementInteraction(video.id, 'download_count')
+      
+      // 重新加载视频列表以更新计数
+      loadVideos()
+      
+      toast.success(t('videos.downloadStarted'), {
+        duration: 3000
+      })
       
     } catch (error) {
-      console.error('[VideosPage] 下载服务调用失败:', error)
-      toast.error(t('videos.downloadFailed'), { 
-        duration: 5000
+      console.error('[VideosPage] 下载失败:', error)
+      toast.error(t('videos.downloadFailed'), {
+        duration: 3000
       })
     }
   }
@@ -573,23 +667,26 @@ export default function VideosPageNew() {
                       enableProgressiveLoading={true}
                     />
                   ) : task && (task.status === 'processing' || task.status === 'pending') ? (
-                    // 正在处理 - 显示进度
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-                      <div className="text-center px-4">
-                        <Loader2 className="h-10 w-10 animate-spin text-blue-500 mx-auto mb-2" strokeWidth={1.5} />
-                        <div className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-1">
+                    // 正在处理 - 显示进度（流体背景）
+                    <div className="w-full h-full flowing-background flex items-center justify-center">
+                      {/* 流体气泡效果层 */}
+                      <div className="fluid-bubbles"></div>
+                      
+                      <div className="text-center px-4 z-10 relative">
+                        <Loader2 className="h-10 w-10 animate-spin text-white/90 mx-auto mb-2" strokeWidth={1.5} />
+                        <div className="text-xl font-bold text-white mb-1">
                           {Math.round(task.progress)}%
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">
+                        <div className="text-xs text-white/80 mb-0.5">
                           {task.statusText}
                         </div>
                         {/* 耗时显示 */}
-                        <div className="text-xs text-gray-400 dark:text-gray-500 mb-2">
+                        <div className="text-xs text-white/70 mb-2">
                           {t('videos.elapsedTime')}: {formatDuration(getTaskElapsedTime(task))}
                         </div>
-                        <div className="w-32 bg-gray-300 dark:bg-gray-600 rounded-full h-1 overflow-hidden mx-auto">
+                        <div className="w-32 bg-white/30 rounded-full h-1 overflow-hidden mx-auto">
                           <div 
-                            className="bg-gradient-to-r from-blue-500 to-blue-600 h-1 rounded-full transition-all duration-1000 ease-out"
+                            className="bg-gradient-to-r from-white to-white/80 h-1 rounded-full transition-all duration-1000 ease-out"
                             style={{ width: `${Math.max(task.progress, 2)}%` }}
                           />
                         </div>
@@ -677,13 +774,27 @@ export default function VideosPageNew() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => handleDownload(video)}
+                                    onClick={() => handleDownloadClick(video)}
+                                    disabled={subscriptionLoading}
                                   >
-                                    <Download className="w-4 h-4" strokeWidth={1.5} />
+                                    {subscriptionLoading ? (
+                                      <Loader2 className="w-4 h-4 animate-spin" strokeWidth={1.5} />
+                                    ) : isPaidUser ? (
+                                      <Download className="w-4 h-4" strokeWidth={1.5} />
+                                    ) : (
+                                      <Lock className="w-4 h-4 text-amber-500" strokeWidth={1.5} />
+                                    )}
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  <p>{t('videos.download')}</p>
+                                  <p>
+                                    {subscriptionLoading 
+                                      ? t('videos.upgradePrompt.checkingSubscription')
+                                      : isPaidUser 
+                                        ? t('videos.downloadHD') 
+                                        : t('videos.upgradeToDownload')
+                                    }
+                                  </p>
                                 </TooltipContent>
                               </Tooltip>
                               <Tooltip>
@@ -693,7 +804,7 @@ export default function VideosPageNew() {
                                     size="sm"
                                     onClick={() => {
                                       setSelectedShareVideo(video)
-                                      setShareModalOpen(true)
+                                      setVideoShareModalOpen(true)
                                     }}
                                   >
                                     <Share2 className="w-4 h-4" strokeWidth={1.5} />
@@ -784,6 +895,14 @@ export default function VideosPageNew() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* 视频分享模态框 */}
+      <VideoShareModal
+        open={videoShareModalOpen}
+        onOpenChange={setVideoShareModalOpen}
+        video={selectedShareVideo || { id: '', title: '', description: '', video_url: '', template_id: '', metadata: {}, thumbnail_url: '' }}
+      />
+
     </div>
   )
 }

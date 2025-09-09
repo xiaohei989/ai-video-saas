@@ -1,0 +1,54 @@
+/* 优化的字体加载策略 */
+
+/* System font fallbacks - 优先使用系统字体 */
+.font-sans {
+  font-family: 
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
+}
+
+/* 手写体字体 - 异步加载 */
+.font-handwriting {
+  font-family: 
+    "Kalam",
+    "Caveat",
+    cursive,
+    ui-sans-serif,
+    system-ui;
+  font-display: swap;
+}
+
+/* 字体加载优化 */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Inter Regular'), local('Inter-Regular');
+}
+
+/* 异步加载Google字体的类 */
+.fonts-loaded .font-handwriting {
+  font-family: "Kalam", "Caveat", cursive;
+}
+
+/* 字体加载前的占位样式 */
+.fonts-loading {
+  visibility: hidden;
+}
+
+.fonts-loaded {
+  visibility: visible;
+}

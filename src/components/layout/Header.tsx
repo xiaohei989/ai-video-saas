@@ -26,7 +26,10 @@ const FlagImage = ({ country, className }: { country: string; className?: string
     CN: 'cn', 
     JP: 'jp',
     KR: 'kr',
-    ES: 'es'
+    ES: 'es',
+    DE: 'de',
+    FR: 'fr',
+    SA: 'sa'
   }
   
   const code = countryCodeMap[country]?.toLowerCase() || 'un'
@@ -44,6 +47,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import MembershipBadge from '@/components/subscription/MembershipBadge'
 import { useTheme } from '@/hooks/useTheme'
 import { Moon, Sun, Monitor } from 'lucide-react'
+import { CreditDisplay } from './CreditDisplay'
 
 interface HeaderProps {
   className?: string
@@ -179,6 +183,9 @@ export function Header({ className = "" }: HeaderProps = {}) {
     { code: 'ja', name: '日本語', shortName: '日本語', country: 'JP' },
     { code: 'ko', name: '한국어', shortName: '한국어', country: 'KR' },
     { code: 'es', name: 'Español', shortName: 'ES', country: 'ES' },
+    { code: 'de', name: 'Deutsch', shortName: 'DE', country: 'DE' },
+    { code: 'fr', name: 'Français', shortName: 'FR', country: 'FR' },
+    { code: 'ar', name: 'العربية', shortName: 'العربية', country: 'SA' },
   ]
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0]
@@ -346,6 +353,8 @@ export function Header({ className = "" }: HeaderProps = {}) {
               )}
             </div>
 
+            {/* 积分显示和升级按钮 */}
+            <CreditDisplay className="hidden md:flex" />
 
             {/* User Menu / Auth Buttons */}
             {user ? (

@@ -10,6 +10,8 @@ import { Loader2, Mail, Lock, User, Tag, Shield, AlertTriangle } from 'lucide-re
 import { validateEmailAsync } from '@/services/emailValidator'
 import { collectDeviceEnvironment, type DeviceFingerprint } from '@/utils/deviceFingerprint'
 import { supabase } from '@/lib/supabase'
+import { useAnalytics } from '@/hooks/useAnalytics'
+import { useSEO } from '@/hooks/useSEO'
 
 // Google 图标组件
 const GoogleIcon = ({ className }: { className?: string }) => (
@@ -25,6 +27,10 @@ export default function SignUpForm() {
   const { t } = useTranslation()
   const { signUp, signInWithGoogle, loading } = useAuth()
   const [searchParams] = useSearchParams()
+  const { trackSignUp, trackEvent } = useAnalytics()
+
+  // SEO优化
+  useSEO('signup')
   
   // 表单状态
   const [email, setEmail] = useState('')
@@ -222,6 +228,9 @@ export default function SignUpForm() {
         console.warn('Failed to record successful registration:', recordError)
       }
       
+      // 跟踪注册成功事件
+      trackSignUp('email')
+      
       alert(t('auth.signUpSuccess'))
     } catch (err: any) {
       console.error('Sign up error:', err)
@@ -254,9 +263,23 @@ export default function SignUpForm() {
     try {
       setIsSubmitting(true)
       await signInWithGoogle()
+      
+      // 跟踪Google注册成功事件
+      trackSignUp('google')
     } catch (err: any) {
       console.error('Google sign up error:', err)
       alert(t('auth.googleSignUpError') + ': ' + err.message)
+      
+      // 跟踪注册失败事件
+      trackEvent({
+        action: 'sign_up_failed',
+        category: 'user_engagement',
+        label: 'google',
+        custom_parameters: {
+          error_type: 'google_auth_error',
+          method: 'google'
+        }
+      })
     } finally {
       setIsSubmitting(false)
     }

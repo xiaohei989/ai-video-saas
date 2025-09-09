@@ -1,0 +1,181 @@
+{
+  "id": "4f8d6e2a-9b3c-4e7a-8f2d-1a5b6c7d8e9f",
+  "slug": "baby-profession-interview",
+  "name": "Baby Professional Interview",
+  "icon": "👶",
+  "description": "Cynical reporter interviews an optimistic baby about their tough late-night job",
+  "previewUrl": "/templates/videos/baby-profession-interview.mp4",
+  "credits": 10,
+  
+  "tags": ["comedy", "baby", "interview", "profession", "night", "neon", "city"],
+  "createdAt": "2025-02-01T10:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-02-01T10:00:00Z",
+  
+  "promptTemplate": {
+    "model": "veo3",
+    "duration": "8s",
+    "aspect_ratio": "16:9",
+    "visual_core": {
+      "description": "{interview_location}, a cynical female reporter interviews a happy-go-lucky baby in a {uniform}, {scene_detail}. {background_atmosphere}. No subtitles.",
+      "style": "cinematic, professional journalism aesthetic, with realistic urban environment",
+      "camera": "handheld-style medium shot on the reporter, then a stable close-up on the baby",
+      "lighting": "{lighting_style}"
+    },
+    "timeline": [
+      {
+        "time": "0-4s",
+        "action": "The female reporter, looking unimpressed by the city bustle, asks her question with a jaded tone.",
+        "dialogue": {
+          "language": "en-US",
+          "text": "{reporter_question}"
+        }
+      },
+      {
+        "time": "4-8s",
+        "action": "The baby, full of energy, bounces slightly and answers with genuine excitement.",
+        "dialogue": {
+          "language": "en-US",
+          "text": "{baby_response}"
+        }
+      }
+    ],
+    "audio": {
+      "voiceover": [
+        {
+          "role": "Female Reporter",
+          "language": "en-US",
+          "style": "A world-weary, slightly jaded female reporter's voice.",
+          "text": "{reporter_question}"
+        },
+        {
+          "role": "Baby",
+          "language": "en-US",
+          "style": "An excited, carefree, and energetic baby's voice.",
+          "text": "{baby_response}"
+        }
+      ]
+    }
+  },
+
+  "params": {
+    "baby_profession": {
+      "type": "select",
+      "label": "Baby's Profession",
+      "required": true,
+      "default": "food_delivery",
+      "options": [
+        {
+          "value": "food_delivery",
+          "label": "🛵 Food Delivery",
+          "metadata": {
+            "uniform": "tiny food delivery uniform",
+            "scene_detail": "sitting on a tricycle",
+            "interview_location": "Outside a bustling restaurant district at night, with delivery bikes parked nearby",
+            "background_atmosphere": "busy food delivery hub with warm restaurant lights glowing in windows",
+            "lighting_style": "warm restaurant lighting mixed with street lamps, creating a cozy urban food scene",
+            "default_reporter_question": "Still delivering food this late, this job must be really tough, huh?",
+            "default_baby_response": "Not tough at all! I love riding around the city, it's super cool!"
+          }
+        },
+        {
+          "value": "uber_driver",
+          "label": "🚗 Uber Driver",
+          "metadata": {
+            "uniform": "tiny taxi driver uniform with cap",
+            "scene_detail": "sitting in a toy car",
+            "interview_location": "At a busy transportation hub at night, with taxis and ride-share vehicles waiting",
+            "background_atmosphere": "urban pickup zone with passengers coming and going, city traffic flowing",
+            "lighting_style": "bright street lighting and taxi headlights creating dynamic urban travel atmosphere",
+            "default_reporter_question": "Driving strangers around all day, isn't it exhausting?",
+            "default_baby_response": "No way! I meet so many interesting people and explore new places!"
+          }
+        },
+        {
+          "value": "programmer",
+          "label": "💻 Programmer",
+          "metadata": {
+            "uniform": "tiny hoodie with tech company logo",
+            "scene_detail": "sitting on a wheeled office chair with a tiny laptop",
+            "interview_location": "Outside a modern tech campus at night, with glass office buildings and coding bootcamp signs",
+            "background_atmosphere": "silicon valley tech hub with startup offices still lit up, coffee shops with wifi signs",
+            "lighting_style": "cool blue LED lighting from office buildings mixed with warm coffee shop lights",
+            "default_reporter_question": "Coding all night with those deadlines, must be stressful, right?",
+            "default_baby_response": "It's like playing with digital LEGOs! I love building cool stuff!"
+          }
+        },
+        {
+          "value": "stock_trader",
+          "label": "📈 Stock Trader",
+          "metadata": {
+            "uniform": "tiny business suit with loose tie",
+            "scene_detail": "standing on a skateboard holding a toy phone",
+            "interview_location": "In front of the stock exchange at night, with financial district skyscrapers and trading screens visible",
+            "background_atmosphere": "wall street financial district with LED stock tickers, suited professionals with phones",
+            "lighting_style": "dramatic financial district lighting with green and red LED screens reflecting market data",
+            "default_reporter_question": "The market's been brutal lately, how do you handle the pressure?",
+            "default_baby_response": "It's just like playing a video game! Red and green numbers are fun!"
+          }
+        },
+        {
+          "value": "influencer",
+          "label": "📱 Social Media Influencer",
+          "metadata": {
+            "uniform": "trendy outfit with tiny sunglasses",
+            "scene_detail": "posing on a scooter with a ring light",
+            "interview_location": "At a trendy Instagram-worthy location at night, with colorful murals and people taking selfies",
+            "background_atmosphere": "hip social media hotspot with influencers posing, neon art installations, and ring lights everywhere",
+            "lighting_style": "vibrant social media lighting with ring lights, colorful neon installations, and phone camera flashes",
+            "default_reporter_question": "Creating content 24/7, doesn't it feel like you never have privacy?",
+            "default_baby_response": "Every day is an adventure! I love sharing my fun moments with everyone!"
+          }
+        },
+        {
+          "value": "doctor",
+          "label": "👨‍⚕️ Night Shift Doctor",
+          "metadata": {
+            "uniform": "tiny white coat with stethoscope",
+            "scene_detail": "pulling a toy medical wagon",
+            "interview_location": "Outside the hospital emergency entrance at night, with ambulance lights and medical staff rushing around",
+            "background_atmosphere": "busy hospital emergency area with ambulances, medical personnel, and urgent care activity",
+            "lighting_style": "sterile hospital lighting mixed with red ambulance emergency lights creating a heroic medical atmosphere",
+            "default_reporter_question": "Working the ER night shift, dealing with emergencies, how do you cope?",
+            "default_baby_response": "I get to be a superhero! Helping people feel better is the best feeling ever!"
+          }
+        }
+      ]
+    },
+    
+    "reporter_question": {
+      "type": "textarea",
+      "label": "Reporter's Question",
+      "required": true,
+      "placeholder": "Enter the cynical reporter's question...",
+      "maxLength": 150,
+      "rows": 3,
+      "default": "Still delivering food this late, this job must be really tough, huh?"
+    },
+    
+    "baby_response": {
+      "type": "textarea",
+      "label": "Baby's Response", 
+      "required": true,
+      "placeholder": "Enter the baby's enthusiastic response...",
+      "maxLength": 150,
+      "rows": 3,
+      "default": "Not tough at all! I love riding around the city, it's super cool!"
+    },
+    
+    "uniform": {"type": "hidden", "linkedTo": "baby_profession", "linkType": "metadata"},
+    "scene_detail": {"type": "hidden", "linkedTo": "baby_profession", "linkType": "metadata"},
+    "interview_location": {"type": "hidden", "linkedTo": "baby_profession", "linkType": "metadata"},
+    "background_atmosphere": {"type": "hidden", "linkedTo": "baby_profession", "linkType": "metadata"},
+    "lighting_style": {"type": "hidden", "linkedTo": "baby_profession", "linkType": "metadata"},
+    
+    "makePublic": {
+      "type": "toggle",
+      "label": "Make video public",
+      "default": false
+    }
+  }
+}

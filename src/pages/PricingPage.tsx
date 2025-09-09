@@ -12,6 +12,8 @@ import CreditBalance from '@/components/payment/CreditBalance'
 import CompactUserInfo from '@/components/subscription/CompactUserInfo'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
+import { useAnalytics } from '@/hooks/useAnalytics'
+import { useSEO } from '@/hooks/useSEO'
 
 // 计费周期类型
 type BillingInterval = 'month' | 'year'
@@ -19,9 +21,13 @@ type BillingInterval = 'month' | 'year'
 export default function PricingPage() {
   const { t } = useTranslation()
   const { user } = useAuthContext()
+  const { trackEvent } = useAnalytics()
   const [searchParams, setSearchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState('subscription')
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('month')
+
+  // SEO优化
+  useSEO('pricing')
 
   // 处理URL参数和支付结果
   useEffect(() => {

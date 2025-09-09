@@ -10,13 +10,13 @@ import redisCacheIntegrationService from './RedisCacheIntegrationService'
 import type { Database } from '@/lib/supabase'
 
 type Video = Database['public']['Tables']['videos']['Row']
-type SubscriptionTier = 'free' | 'basic' | 'pro' | 'premium' | 'basic-annual' | 'pro-annual' | 'enterprise-annual'
+type SubscriptionTier = 'free' | 'basic' | 'pro' | 'enterprise' | 'basic-annual' | 'pro-annual' | 'enterprise-annual'
 
 // 将年度计划映射到对应的基础计划以获取并发限制
 const mapAnnualToBaseTier = (tier: SubscriptionTier): SubscriptionTier => {
   if (tier === 'basic-annual') return 'basic'
   if (tier === 'pro-annual') return 'pro'  
-  if (tier === 'enterprise-annual') return 'premium'
+  if (tier === 'enterprise-annual') return 'enterprise'
   return tier
 }
 
@@ -65,13 +65,17 @@ class VideoQueueService {
   private systemMaxConcurrent: number
   private queueCheckInterval: number
   private intervalId?: NodeJS.Timeout
+  private cleanupIntervalId?: NodeJS.Timeout
   
-  // 用户并发限制配置
+  // 用户并发限制配置（基础配置，年度订阅映射到对应基础版本）
   private userConcurrentLimits: Record<SubscriptionTier, number> = {
     free: 1,
     basic: 3,
     pro: 5,
-    premium: 10
+    enterprise: 10,
+    'basic-annual': 3,      // 基础年度 = 基础月度
+    'pro-annual': 5,        // 专业年度 = 专业月度  
+    'enterprise-annual': 10 // 企业年度 = 企业月度
   }
 
   // 内存队列状态（启动时从数据库恢复）
@@ -87,7 +91,7 @@ class VideoQueueService {
     this.userConcurrentLimits.free = parseInt(process.env.VITE_USER_CONCURRENT_FREE || '1')
     this.userConcurrentLimits.basic = parseInt(process.env.VITE_USER_CONCURRENT_BASIC || '3')
     this.userConcurrentLimits.pro = parseInt(process.env.VITE_USER_CONCURRENT_PRO || '5')
-    this.userConcurrentLimits.premium = parseInt(process.env.VITE_USER_CONCURRENT_PREMIUM || '10')
+    this.userConcurrentLimits.enterprise = parseInt(process.env.VITE_USER_CONCURRENT_ENTERPRISE || '10')
 
   }
 
@@ -161,7 +165,7 @@ class VideoQueueService {
     try {
       const { data: activeVideos, error } = await supabase
         .from('videos')
-        .select('id, user_id')
+        .select('id, user_id, processing_started_at, veo3_job_id')
         .eq('status', 'processing')
         .eq('is_deleted', false)
 
@@ -171,12 +175,152 @@ class VideoQueueService {
       }
 
       if (activeVideos) {
+        const now = Date.now()
+        const TASK_TIMEOUT_MS = 30 * 60 * 1000 // 30分钟超时
+
         for (const video of activeVideos) {
-          this.activeJobs.set(video.id, video.user_id)
+          const startedAt = video.processing_started_at ? new Date(video.processing_started_at).getTime() : now
+          const isTimeout = (now - startedAt) > TASK_TIMEOUT_MS
+
+          if (isTimeout) {
+            // 僵尸任务：处理超时，直接标记为失败
+            console.warn(`[QUEUE SERVICE] 🧟 检测到僵尸任务: ${video.id}, 已处理 ${Math.round((now - startedAt) / 60000)} 分钟`)
+            
+            try {
+              await this.cleanupZombieTask(video.id, video.user_id, video.veo3_job_id)
+            } catch (cleanupError) {
+              console.error(`[QUEUE SERVICE] 清理僵尸任务失败 ${video.id}:`, cleanupError)
+            }
+          } else {
+            // 正常任务：添加到activeJobs并尝试恢复
+            this.activeJobs.set(video.id, video.user_id)
+            console.log(`[QUEUE SERVICE] ✅ 恢复活跃任务: ${video.id}, 已处理 ${Math.round((now - startedAt) / 60000)} 分钟`)
+            
+            // 如果有veo3_job_id，尝试恢复任务状态跟踪
+            if (video.veo3_job_id) {
+              this.restoreTaskStatusTracking(video.id, video.user_id, video.veo3_job_id).catch(error => {
+                console.error(`[QUEUE SERVICE] 恢复任务状态跟踪失败 ${video.id}:`, error)
+              })
+            }
+          }
         }
+        
+        console.log(`[QUEUE SERVICE] 任务恢复完成: ${this.activeJobs.size} 个活跃任务`)
       }
     } catch (error) {
       console.error('[QUEUE SERVICE] Error restoring active jobs:', error)
+    }
+  }
+
+  /**
+   * 恢复任务状态跟踪
+   */
+  private async restoreTaskStatusTracking(videoId: string, userId: string, veo3JobId: string): Promise<void> {
+    console.log(`[QUEUE SERVICE] 🔄 开始恢复任务状态跟踪: ${videoId} -> ${veo3JobId}`)
+    
+    try {
+      const veo3Service = (await import('./veo3Service')).default
+      
+      // 尝试通过veo3Service恢复任务
+      const restored = await veo3Service.restoreJob(veo3JobId, videoId)
+      
+      if (restored) {
+        console.log(`[QUEUE SERVICE] ✅ veo3任务状态跟踪恢复成功: ${veo3JobId}`)
+      } else {
+        console.warn(`[QUEUE SERVICE] ⚠️ veo3任务恢复返回false，可能任务已完成或失败: ${veo3JobId}`)
+        
+        // 如果veo3Service返回false，可能任务已经完成但数据库未更新
+        // 给veo3Service一些时间来更新状态，然后检查
+        setTimeout(async () => {
+          try {
+            const currentVideo = await supabaseVideoService.getVideo(videoId)
+            if (currentVideo && currentVideo.status === 'processing') {
+              console.warn(`[QUEUE SERVICE] ⚠️ 任务 ${videoId} 在veo3恢复后仍为processing状态，可能需要人工干预`)
+              
+              // 等待更长时间后如果还是processing，将其标记为失败
+              setTimeout(async () => {
+                const laterVideo = await supabaseVideoService.getVideo(videoId)
+                if (laterVideo && laterVideo.status === 'processing') {
+                  console.error(`[QUEUE SERVICE] ❌ 任务 ${videoId} 恢复失败，标记为失败`)
+                  await this.jobFailed(videoId)
+                }
+              }, 60000) // 等待1分钟
+            }
+          } catch (error) {
+            console.error(`[QUEUE SERVICE] ❌ 检查恢复后任务状态时出错 ${videoId}:`, error)
+          }
+        }, 10000) // 等待10秒
+      }
+    } catch (error) {
+      console.error(`[QUEUE SERVICE] ❌ 恢复任务状态跟踪异常 ${videoId}:`, error)
+      
+      // 如果恢复失败，可能任务已经不存在或有问题，设定超时后清理
+      setTimeout(async () => {
+        try {
+          const video = await supabaseVideoService.getVideo(videoId)
+          if (video && video.status === 'processing') {
+            console.warn(`[QUEUE SERVICE] ⚠️ 任务 ${videoId} 恢复失败且仍为processing，将清理`)
+            await this.cleanupZombieTask(videoId, userId, veo3JobId)
+          }
+        } catch (cleanupError) {
+          console.error(`[QUEUE SERVICE] ❌ 延迟清理失败恢复任务时出错 ${videoId}:`, cleanupError)
+        }
+      }, 300000) // 5分钟后清理
+    }
+  }
+
+  /**
+   * 清理僵尸任务
+   */
+  private async cleanupZombieTask(videoId: string, userId: string, veo3JobId?: string): Promise<void> {
+    console.log(`[QUEUE SERVICE] 🧹 开始清理僵尸任务: ${videoId}`)
+    
+    try {
+      // 1. 退还积分
+      const video = await supabaseVideoService.getVideo(videoId)
+      if (video && video.credits_used && video.credits_used > 0) {
+        console.log(`[QUEUE SERVICE] 💰 退还僵尸任务积分: ${video.credits_used}`)
+        
+        const refundResult = await creditService.addCredits(
+          userId,
+          video.credits_used,
+          'refund',
+          `僵尸任务超时，退还积分: ${video.title || videoId}`,
+          videoId,
+          'zombie_task_timeout'
+        )
+        
+        if (refundResult.success) {
+          console.log(`[QUEUE SERVICE] ✅ 僵尸任务积分退还成功: ${refundResult.newBalance}`)
+        } else {
+          console.error(`[QUEUE SERVICE] ❌ 僵尸任务积分退还失败: ${refundResult.error}`)
+        }
+      }
+      
+      // 2. 更新数据库状态为失败
+      await supabaseVideoService.updateVideo(videoId, {
+        status: 'failed',
+        error_message: '任务处理超时，已自动清理',
+        processing_completed_at: new Date().toISOString()
+      })
+      
+      // 3. 确保从activeJobs中移除
+      this.activeJobs.delete(videoId)
+      
+      // 4. 清理用户订阅缓存，确保下次检查获取最新状态
+      try {
+        const redisCacheIntegrationService = (await import('./RedisCacheIntegrationService')).default
+        await redisCacheIntegrationService.clearUserSubscriptionCache(userId)
+      } catch (cacheError) {
+        console.warn(`[QUEUE SERVICE] 清理缓存时出错:`, cacheError)
+      }
+      
+      console.log(`[QUEUE SERVICE] ✅ 僵尸任务清理完成: ${videoId}`)
+      
+    } catch (error) {
+      console.error(`[QUEUE SERVICE] ❌ 清理僵尸任务时出错 ${videoId}:`, error)
+      // 即使清理失败，也要从activeJobs中移除，避免永久阻塞
+      this.activeJobs.delete(videoId)
     }
   }
 
@@ -269,9 +413,12 @@ class VideoQueueService {
   }
 
   /**
-   * 获取用户当前活跃的任务数
+   * 获取用户当前活跃的任务数（改进版：先清理无效任务）
    */
-  private getUserActiveCount(userId: string): number {
+  private async getUserActiveCount(userId: string): Promise<number> {
+    // 先清理可能的无效任务
+    await this.cleanupInvalidActiveTasks(userId)
+    
     let count = 0
     for (const activeUserId of this.activeJobs.values()) {
       if (activeUserId === userId) {
@@ -282,10 +429,62 @@ class VideoQueueService {
   }
 
   /**
+   * 清理无效的活跃任务（数据库已完成但内存未清理的任务）
+   */
+  private async cleanupInvalidActiveTasks(userId: string): Promise<void> {
+    try {
+      // 获取该用户在activeJobs中的所有任务ID
+      const userActiveJobIds = []
+      for (const [jobId, activeUserId] of this.activeJobs.entries()) {
+        if (activeUserId === userId) {
+          userActiveJobIds.push(jobId)
+        }
+      }
+
+      if (userActiveJobIds.length === 0) {
+        return
+      }
+
+      // 查询这些任务在数据库中的实际状态
+      const { data: actualVideos, error } = await supabase
+        .from('videos')
+        .select('id, status')
+        .in('id', userActiveJobIds)
+
+      if (error) {
+        console.warn('[QUEUE SERVICE] Failed to query video status for cleanup:', error)
+        return
+      }
+
+      // 清理已完成或失败的任务
+      if (actualVideos) {
+        for (const video of actualVideos) {
+          if (video.status === 'completed' || video.status === 'failed') {
+            console.log(`[QUEUE SERVICE] 🧹 清理无效活跃任务: ${video.id} (状态: ${video.status})`)
+            this.activeJobs.delete(video.id)
+          }
+        }
+      }
+
+      // 清理数据库中不存在的任务
+      const existingVideoIds = new Set(actualVideos?.map(v => v.id) || [])
+      for (const jobId of userActiveJobIds) {
+        if (!existingVideoIds.has(jobId)) {
+          console.log(`[QUEUE SERVICE] 🧹 清理数据库中不存在的任务: ${jobId}`)
+          this.activeJobs.delete(jobId)
+        }
+      }
+
+    } catch (error) {
+      console.error('[QUEUE SERVICE] Error during cleanup:', error)
+    }
+  }
+
+  /**
    * 检查用户是否可以提交新任务
    */
   async canUserSubmit(userId: string): Promise<UserSubmitStatus> {
-    const userActiveCount = this.getUserActiveCount(userId)
+    const userActiveCount = await this.getUserActiveCount(userId)
     const userMaxAllowed = await this.getUserConcurrentLimit(userId)
     const tier = await this.getUserSubscriptionTier(userId)
 
@@ -293,14 +492,34 @@ class VideoQueueService {
       let reason = ''
       const baseTier = mapAnnualToBaseTier(tier)
       
+      // 添加调试信息
+      console.warn(`[QUEUE SERVICE] 🚫 并发限制检查失败:`, {
+        userId,
+        tier: tier,
+        baseTier: baseTier,
+        activeCount: userActiveCount,
+        maxAllowed: userMaxAllowed,
+        activeJobsSize: this.activeJobs.size,
+        timestamp: new Date().toISOString()
+      })
+      
+      // 记录当前用户的活跃任务ID（用于调试）
+      const userTaskIds = []
+      for (const [taskId, taskUserId] of this.activeJobs.entries()) {
+        if (taskUserId === userId) {
+          userTaskIds.push(taskId)
+        }
+      }
+      console.warn(`[QUEUE SERVICE] 🔍 用户活跃任务ID:`, userTaskIds)
+      
       if (baseTier === 'free') {
-        reason = `您已达到免费用户限制（${userMaxAllowed}个并发视频）。升级订阅可同时生成更多视频！`
+        reason = `您已达到免费用户限制（${userActiveCount}/${userMaxAllowed}个并发视频）。升级订阅可同时生成更多视频！`
       } else if (baseTier === 'basic') {
-        reason = `您已达到基础订阅限制（${userMaxAllowed}个并发视频）。升级到专业版可同时生成5个视频！`
+        reason = `您已达到基础订阅限制（${userActiveCount}/${userMaxAllowed}个并发视频）。升级到专业版可同时生成5个视频！`
       } else if (baseTier === 'pro') {
-        reason = `您已达到专业订阅限制（${userMaxAllowed}个并发视频）。升级到高级版可同时生成10个视频！`
+        reason = `您已达到专业订阅限制（${userActiveCount}/${userMaxAllowed}个并发视频）。升级到高级版可同时生成10个视频！`
       } else {
-        reason = `您已达到并发限制（${userMaxAllowed}个视频），请等待当前视频完成`
+        reason = `您已达到并发限制（${userActiveCount}/${userMaxAllowed}个视频），请等待当前视频完成`
       }
 
       return {
@@ -563,6 +782,53 @@ class VideoQueueService {
       this.processQueue()
     }, this.queueCheckInterval)
 
+    // 同时启动定期清理机制
+    this.startPeriodicCleanup()
+  }
+
+  /**
+   * 启动定期清理机制
+   */
+  private startPeriodicCleanup(): void {
+    if (this.cleanupIntervalId) {
+      clearInterval(this.cleanupIntervalId)
+    }
+
+    // 每5分钟执行一次全局清理
+    this.cleanupIntervalId = setInterval(() => {
+      this.performGlobalCleanup()
+    }, 5 * 60 * 1000) // 5分钟
+
+    console.log('[QUEUE SERVICE] ✅ 启动定期清理机制，每5分钟清理一次无效任务')
+  }
+
+  /**
+   * 执行全局清理
+   */
+  private async performGlobalCleanup(): Promise<void> {
+    try {
+      const beforeCount = this.activeJobs.size
+      console.log(`[QUEUE SERVICE] 🧹 开始全局清理，当前活跃任务数: ${beforeCount}`)
+
+      // 获取所有活跃任务的用户ID
+      const userIds = new Set(this.activeJobs.values())
+      
+      // 为每个用户清理无效任务
+      for (const userId of userIds) {
+        await this.cleanupInvalidActiveTasks(userId)
+      }
+
+      const afterCount = this.activeJobs.size
+      const cleanedCount = beforeCount - afterCount
+
+      if (cleanedCount > 0) {
+        console.log(`[QUEUE SERVICE] ✅ 全局清理完成，清理了 ${cleanedCount} 个无效任务，剩余 ${afterCount} 个活跃任务`)
+      } else {
+        console.log(`[QUEUE SERVICE] ✅ 全局清理完成，无需清理任务，维持 ${afterCount} 个活跃任务`)
+      }
+    } catch (error) {
+      console.error('[QUEUE SERVICE] ❌ 全局清理过程中出错:', error)
+    }
   }
 
   /**
@@ -593,7 +859,7 @@ class VideoQueueService {
         }
 
         // 检查用户并发限制
-        const userActiveCount = this.getUserActiveCount(job.userId)
+        const userActiveCount = await this.getUserActiveCount(job.userId)
         const userLimit = await this.getUserConcurrentLimit(job.userId)
 
         if (userActiveCount < userLimit) {
@@ -669,8 +935,46 @@ class VideoQueueService {
   async jobCompleted(videoId: string): Promise<void> {
     console.log(`[QUEUE SERVICE] Job completed: ${videoId}`)
     
+    try {
+      // 验证数据库状态是否已正确更新为completed
+      const video = await supabaseVideoService.getVideo(videoId)
+      if (video) {
+        if (video.status !== 'completed') {
+          console.warn(`[QUEUE SERVICE] ⚠️ 任务 ${videoId} 完成但数据库状态不正确: ${video.status}`)
+          
+          // 尝试修正数据库状态
+          if (video.video_url) {
+            console.log(`[QUEUE SERVICE] 🔄 修正数据库状态为completed: ${videoId}`)
+            await supabaseVideoService.updateVideo(videoId, {
+              status: 'completed',
+              processing_completed_at: new Date().toISOString()
+            })
+          } else {
+            console.warn(`[QUEUE SERVICE] ⚠️ 任务 ${videoId} 没有video_url，可能未真正完成`)
+          }
+        } else {
+          console.log(`[QUEUE SERVICE] ✅ 任务 ${videoId} 数据库状态正确`)
+        }
+      } else {
+        console.error(`[QUEUE SERVICE] ❌ 无法获取任务 ${videoId} 的数据库记录`)
+      }
+    } catch (error) {
+      console.error(`[QUEUE SERVICE] ❌ 验证任务完成状态时出错 ${videoId}:`, error)
+    }
+    
     // 从活跃任务中移除
     this.activeJobs.delete(videoId)
+    
+    // 清理相关用户的缓存，确保并发计数准确
+    try {
+      const video = await supabaseVideoService.getVideo(videoId)
+      if (video) {
+        const redisCacheIntegrationService = (await import('./RedisCacheIntegrationService')).default
+        await redisCacheIntegrationService.clearUserSubscriptionCache(video.user_id)
+      }
+    } catch (cacheError) {
+      console.warn(`[QUEUE SERVICE] 任务完成后清理缓存时出错:`, cacheError)
+    }
     
     // 触发队列处理
     setTimeout(() => {
@@ -684,32 +988,59 @@ class VideoQueueService {
   async jobFailed(videoId: string): Promise<void> {
     console.log(`[QUEUE SERVICE] Job failed: ${videoId}`)
     
+    try {
+      // 验证并更新数据库状态为失败
+      const video = await supabaseVideoService.getVideo(videoId)
+      if (video) {
+        if (video.status !== 'failed') {
+          console.log(`[QUEUE SERVICE] 🔄 更新数据库状态为failed: ${videoId}`)
+          await supabaseVideoService.updateVideo(videoId, {
+            status: 'failed',
+            error_message: '视频生成失败',
+            processing_completed_at: new Date().toISOString()
+          })
+        } else {
+          console.log(`[QUEUE SERVICE] ✅ 任务 ${videoId} 数据库状态已为failed`)
+        }
+        
+        // 退还积分
+        if (video.credits_used && video.credits_used > 0) {
+          console.log(`[QUEUE SERVICE] 💰 退还失败任务积分: ${video.credits_used} credits`)
+          
+          const refundResult = await creditService.addCredits(
+            video.user_id,
+            video.credits_used,
+            'refund',
+            `视频生成失败，退还积分: ${video.title || videoId}`,
+            videoId,
+            'video_generation_failed'
+          )
+          
+          if (refundResult.success) {
+            console.log(`[QUEUE SERVICE] ✅ 积分退还成功. New balance: ${refundResult.newBalance}`)
+          } else {
+            console.error(`[QUEUE SERVICE] ❌ 积分退还失败: ${refundResult.error}`)
+          }
+        }
+      } else {
+        console.error(`[QUEUE SERVICE] ❌ 无法获取失败任务 ${videoId} 的数据库记录`)
+      }
+    } catch (error) {
+      console.error(`[QUEUE SERVICE] ❌ 处理失败任务时出错 ${videoId}:`, error)
+    }
+    
     // 从活跃任务中移除
     this.activeJobs.delete(videoId)
     
-    // 获取视频信息以便退还积分
+    // 清理相关用户的缓存，确保并发计数准确
     try {
       const video = await supabaseVideoService.getVideo(videoId)
-      if (video && video.credits_used && video.credits_used > 0) {
-        console.log(`[QUEUE SERVICE] Refunding credits for failed job: ${video.credits_used} credits`)
-        
-        const refundResult = await creditService.addCredits(
-          video.user_id,
-          video.credits_used,
-          'refund',
-          `视频生成失败，退还积分: ${video.title || videoId}`,
-          videoId,
-          'video_generation_failed'
-        )
-        
-        if (refundResult.success) {
-          console.log(`[QUEUE SERVICE] Credits refunded successfully. New balance: ${refundResult.newBalance}`)
-        } else {
-          console.error(`[QUEUE SERVICE] Failed to refund credits: ${refundResult.error}`)
-        }
+      if (video) {
+        const redisCacheIntegrationService = (await import('./RedisCacheIntegrationService')).default
+        await redisCacheIntegrationService.clearUserSubscriptionCache(video.user_id)
       }
-    } catch (error) {
-      console.error(`[QUEUE SERVICE] Error while processing failed job refund:`, error)
+    } catch (cacheError) {
+      console.warn(`[QUEUE SERVICE] 任务失败后清理缓存时出错:`, cacheError)
     }
     
     // 触发队列处理
@@ -730,7 +1061,7 @@ class VideoQueueService {
       estimatedWaitMinutes: number
     }>
   }> {
-    const activeCount = this.getUserActiveCount(userId)
+    const activeCount = await this.getUserActiveCount(userId)
     const maxAllowed = await this.getUserConcurrentLimit(userId)
     
     const userQueuedJobs = Array.from(this.queuedJobs.values())
@@ -749,6 +1080,164 @@ class VideoQueueService {
   }
 
   /**
+   * 手动清理用户的僵尸任务
+   */
+  async cleanupUserZombieTasks(userId: string): Promise<{
+    cleaned: number
+    errors: string[]
+  }> {
+    console.log(`[QUEUE SERVICE] 🔧 开始手动清理用户僵尸任务: ${userId}`)
+    
+    const result = {
+      cleaned: 0,
+      errors: [] as string[]
+    }
+    
+    try {
+      // 查找该用户所有处理中的任务
+      const { data: processingVideos, error } = await supabase
+        .from('videos')
+        .select('id, user_id, processing_started_at, veo3_job_id, title')
+        .eq('user_id', userId)
+        .eq('status', 'processing')
+        .eq('is_deleted', false)
+        
+      if (error) {
+        result.errors.push(`查询用户任务失败: ${error.message}`)
+        return result
+      }
+      
+      if (!processingVideos || processingVideos.length === 0) {
+        console.log(`[QUEUE SERVICE] 用户 ${userId} 没有处理中的任务`)
+        return result
+      }
+      
+      const now = Date.now()
+      const TASK_TIMEOUT_MS = 30 * 60 * 1000 // 30分钟
+      
+      for (const video of processingVideos) {
+        const startedAt = video.processing_started_at ? new Date(video.processing_started_at).getTime() : now
+        const runningTime = now - startedAt
+        const isTimeout = runningTime > TASK_TIMEOUT_MS
+        
+        console.log(`[QUEUE SERVICE] 检查任务 ${video.id}: 运行时间 ${Math.round(runningTime / 60000)} 分钟`)
+        
+        if (isTimeout) {
+          try {
+            await this.cleanupZombieTask(video.id, userId, video.veo3_job_id)
+            result.cleaned++
+            console.log(`[QUEUE SERVICE] ✅ 已清理僵尸任务: ${video.title || video.id}`)
+          } catch (error) {
+            const errorMsg = `清理任务 ${video.id} 失败: ${error instanceof Error ? error.message : String(error)}`
+            result.errors.push(errorMsg)
+            console.error(`[QUEUE SERVICE] ❌ ${errorMsg}`)
+          }
+        } else {
+          console.log(`[QUEUE SERVICE] ⏳ 任务 ${video.id} 仍在正常处理中，跳过`)
+        }
+      }
+      
+      console.log(`[QUEUE SERVICE] 🎉 用户 ${userId} 僵尸任务清理完成: 清理 ${result.cleaned} 个任务, ${result.errors.length} 个错误`)
+      return result
+      
+    } catch (error) {
+      const errorMsg = `手动清理僵尸任务异常: ${error instanceof Error ? error.message : String(error)}`
+      result.errors.push(errorMsg)
+      console.error(`[QUEUE SERVICE] ❌ ${errorMsg}`)
+      return result
+    }
+  }
+
+  /**
+   * 获取用户当前的僵尸任务信息
+   */
+  async getUserZombieTasksInfo(userId: string): Promise<{
+    zombieTasks: Array<{
+      id: string
+      title?: string
+      startedAt: string
+      runningMinutes: number
+      veo3JobId?: string
+    }>
+    totalZombies: number
+  }> {
+    try {
+      const { data: processingVideos, error } = await supabase
+        .from('videos')
+        .select('id, title, processing_started_at, veo3_job_id')
+        .eq('user_id', userId)
+        .eq('status', 'processing')
+        .eq('is_deleted', false)
+        
+      if (error) {
+        console.error(`[QUEUE SERVICE] 查询用户任务失败:`, error)
+        return { zombieTasks: [], totalZombies: 0 }
+      }
+      
+      if (!processingVideos) {
+        return { zombieTasks: [], totalZombies: 0 }
+      }
+      
+      const now = Date.now()
+      const TASK_TIMEOUT_MS = 30 * 60 * 1000
+      
+      const zombieTasks = processingVideos
+        .filter(video => {
+          const startedAt = video.processing_started_at ? new Date(video.processing_started_at).getTime() : now
+          return (now - startedAt) > TASK_TIMEOUT_MS
+        })
+        .map(video => ({
+          id: video.id,
+          title: video.title,
+          startedAt: video.processing_started_at || new Date().toISOString(),
+          runningMinutes: Math.round((now - (video.processing_started_at ? new Date(video.processing_started_at).getTime() : now)) / 60000),
+          veo3JobId: video.veo3_job_id
+        }))
+      
+      return {
+        zombieTasks,
+        totalZombies: zombieTasks.length
+      }
+    } catch (error) {
+      console.error(`[QUEUE SERVICE] 获取僵尸任务信息失败:`, error)
+      return { zombieTasks: [], totalZombies: 0 }
+    }
+  }
+
+  /**
+   * 手动触发全局清理（用于调试和紧急情况）
+   */
+  async manualCleanup(): Promise<{ 
+    beforeCount: number; 
+    afterCount: number; 
+    cleanedCount: number; 
+  }> {
+    const beforeCount = this.activeJobs.size
+    console.log(`[QUEUE SERVICE] 🛠️ 手动触发全局清理，清理前活跃任务数: ${beforeCount}`)
+    
+    await this.performGlobalCleanup()
+    
+    const afterCount = this.activeJobs.size
+    const cleanedCount = beforeCount - afterCount
+    
+    return {
+      beforeCount,
+      afterCount,
+      cleanedCount
+    }
+  }
+
+  /**
+   * 获取当前活跃任务的详细信息（用于调试）
+   */
+  getActiveJobsDebugInfo(): Array<{ taskId: string; userId: string }> {
+    return Array.from(this.activeJobs.entries()).map(([taskId, userId]) => ({
+      taskId,
+      userId
+    }))
+  }
+
+  /**
    * 停止队列处理器
    */
   stop(): void {
@@ -756,6 +1245,12 @@ class VideoQueueService {
       clearInterval(this.intervalId)
       this.intervalId = undefined
       console.log('[QUEUE SERVICE] Queue processor stopped')
+    }
+    
+    if (this.cleanupIntervalId) {
+      clearInterval(this.cleanupIntervalId)
+      this.cleanupIntervalId = undefined
+      console.log('[QUEUE SERVICE] Periodic cleanup stopped')
     }
   }
 }

@@ -47,3 +47,11 @@ lerna-debug.log*
 
 # Vite
 vite.config.ts.timestamp-*
+
+# Cloudflare
+/.wrangler/
+wrangler.toml.bak
+.env.cloudflare
+
+# Supabase
+.supabase/

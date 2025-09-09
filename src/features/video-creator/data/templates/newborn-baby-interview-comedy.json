@@ -1,0 +1,40 @@
+{
+  "id": "d9a3f6e8-4c7b-5e9d-1a4f-8b2e6d9a3c5f",
+  "slug": "newborn-baby-interview-comedy",
+  "name": "Newborn Baby Interview Comedy",
+  "icon": "👶",
+  "description": "Creative and funny interview simulation with a newborn baby giving unexpected comedic responses",
+  "previewUrl": "/templates/videos/newborn-baby-interview-comedy.mp4",
+
+  "tags": ["comedy", "baby", "interview", "newborn", "hospital", "funny", "realistic", "family"],
+  "createdAt": "2025-01-29T21:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-29T21:00:00Z",
+  "promptTemplate": "A creative and funny short video, simulating the contrasting comedic scene of a newborn baby being interviewed and 'talking.' Hospital ward setting with white bed and pillows, large windows letting in natural light, creating a bright and warm medical environment. A newborn, wrapped in a white towel, sitting on the bed, looking confused. An adult woman interviewer, wearing a blue suit, holding a microphone with 'BABYME' printed on it, leaning in with a smile and asking: 'Welcome to the new world, you're the new member of our family. What do you want to say?' The baby responds: '{baby_response}' Camera work includes slice switching (close-up of baby and microphone → mid-shot interactive panorama → close-up of baby), with natural camera movement, reminiscent of a news interview. Realistic, textured look with bright colors, natural lighting, natural movement, and a lighthearted comedic atmosphere. No subtitles.",
+
+  "params": {
+    "baby_response": {
+      "type": "select",
+      "label": "Baby's Response",
+      "required": true,
+      "default": "Put me back in. I heard my parents are poor.",
+      "options": [
+        { "value": "Put me back in. I heard my parents are poor.", "label": "Poor Parents 💸" },
+        { "value": "Do I get a refund? This place looks expensive.", "label": "Refund Request 💰" },
+        { "value": "I want to speak to the manager about my accommodations.", "label": "Manager Complaint 👔" },
+        { "value": "The Wi-Fi password please. I need to update my resume.", "label": "Wi-Fi Request 📶" },
+        { "value": "Where's the food delivery? I've been waiting 9 months.", "label": "Food Delivery 🍕" },
+        { "value": "This airbnb has terrible reviews. One star.", "label": "Bad Reviews ⭐" },
+        { "value": "I've made a terrible mistake. Can I get a do-over?", "label": "Mistake Regret 😅" },
+        { "value": "The previews were misleading. This is nothing like the brochure.", "label": "False Advertising 📋" },
+        { "value": "Someone forgot to enable dark mode. It's too bright here.", "label": "Dark Mode 🌙" },
+        { "value": "Is there a tutorial? I don't know how any of this works.", "label": "Tutorial Request 📖" }
+      ]
+    },
+    "makePublic": {
+      "type": "toggle",
+      "label": "Make video public",
+      "default": false
+    }
+  }
+}

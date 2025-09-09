@@ -6,7 +6,7 @@
 
 import { supabase } from '@/lib/supabase'
 
-export type SubscriptionTier = 'free' | 'basic' | 'pro' | 'premium'
+export type SubscriptionTier = 'free' | 'basic' | 'pro' | 'enterprise'
 export type SubscriptionStatus = 'active' | 'cancelled' | 'expired' | 'pending'
 
 export interface CacheRequest {
@@ -45,6 +45,29 @@ export interface UserCreditsCache {
   balance: number
   total_earned: number
   total_spent: number
+  last_updated: string
+}
+
+export interface UserProfileCache {
+  id: string
+  email: string
+  username: string | null
+  full_name: string | null
+  avatar_url: string | null
+  bio: string | null
+  website: string | null
+  social_links: Record<string, any>
+  language: string
+  credits: number
+  total_credits_earned: number
+  total_credits_spent: number
+  referral_code: string | null
+  follower_count: number
+  following_count: number
+  template_count: number
+  is_verified: boolean
+  created_at: string
+  updated_at: string
   last_updated: string
 }
 
@@ -108,7 +131,6 @@ class EdgeFunctionCacheClient {
       if (result.success && result.data) {
         // 缓存到本地
         this.setLocalCache(key, result.data, this.DEFAULT_TTL)
-        console.log(`[EDGE CACHE CLIENT] Redis缓存命中: ${key}`)
         return result.data as T
       }
 
@@ -270,12 +292,17 @@ class EdgeFunctionCacheClient {
       }
 
       // 缓存未命中，从数据库获取并缓存
-      const { data: subscription } = await supabase
+      const { data: subscription, error } = await supabase
         .from('subscriptions')
         .select('tier, status, current_period_end, stripe_subscription_id')
         .eq('user_id', userId)
         .eq('status', 'active')
-        .single()
+        .maybeSingle()
+
+      if (error) {
+        console.error('Error fetching subscription for cache:', error)
+        // 如果查询出错，返回默认的免费用户状态
+      }
 
       const tier = (subscription?.tier as SubscriptionTier) || 'free'
       
@@ -332,6 +359,85 @@ class EdgeFunctionCacheClient {
     } catch (error) {
       console.error('[EDGE CACHE CLIENT] 获取用户积分失败:', error)
       return 0
+    }
+  }
+
+  /**
+   * 获取用户完整Profile（带缓存）
+   */
+  async getUserProfile(userId: string): Promise<UserProfileCache | null> {
+    const cacheKey = `user:${userId}:profile`
+    
+    try {
+      // 先检查本地缓存
+      const localCached = this.getLocalCache<UserProfileCache>(cacheKey)
+      if (localCached) {
+        return localCached
+      }
+
+      // 检查Redis缓存
+      const cached = await this.get<UserProfileCache>(cacheKey)
+      if (cached) {
+        return cached
+      }
+
+      // 缓存未命中，从数据库获取并缓存
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single()
+
+      if (error) {
+        console.error('[EDGE CACHE CLIENT] 数据库查询profile失败:', error)
+        return null
+      }
+
+      if (!profile) {
+        return null
+      }
+      
+      // 构建缓存数据
+      const cacheData: UserProfileCache = {
+        ...profile,
+        last_updated: new Date().toISOString()
+      }
+      
+      // 缓存到Redis（较长TTL，15分钟）
+      await this.set(cacheKey, cacheData, 900)
+      
+      return cacheData
+    } catch (error) {
+      console.error('[EDGE CACHE CLIENT] 获取用户Profile失败:', error)
+      return null
+    }
+  }
+
+  /**
+   * 更新用户Profile缓存
+   */
+  async updateUserProfileCache(userId: string, updates: Partial<UserProfileCache>): Promise<boolean> {
+    const cacheKey = `user:${userId}:profile`
+    
+    try {
+      // 获取当前缓存的profile
+      const currentProfile = await this.get<UserProfileCache>(cacheKey)
+      
+      if (currentProfile) {
+        // 合并更新
+        const updatedProfile = {
+          ...currentProfile,
+          ...updates,
+          last_updated: new Date().toISOString()
+        }
+        
+        return await this.set(cacheKey, updatedProfile, 900) // 15分钟TTL
+      }
+      
+      return false
+    } catch (error) {
+      console.error('[EDGE CACHE CLIENT] 更新Profile缓存失败:', error)
+      return false
     }
   }
 
@@ -514,6 +620,7 @@ class EdgeFunctionCacheClient {
     const keys = [
       `user:${userId}:subscription`,
       `user:${userId}:credits`,
+      `user:${userId}:profile`,
       `user:${userId}:stats`
     ]
 

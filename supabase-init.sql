@@ -24,7 +24,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- 创建枚举类型（如果不存在）
 -- ============================================
 DO $$ BEGIN
-  CREATE TYPE subscription_tier AS ENUM ('free', 'basic', 'pro', 'premium');
+  CREATE TYPE subscription_tier AS ENUM ('free', 'basic', 'pro', 'enterprise');
 EXCEPTION WHEN duplicate_object THEN null; END $$;
 
 DO $$ BEGIN

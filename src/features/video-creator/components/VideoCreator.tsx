@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button'
 import { Clock, Users, Info } from 'lucide-react'
 import { toast } from 'sonner'
 import { getVideoCreditCost } from '@/config/credits'
+import { useAnalytics } from '@/hooks/useAnalytics'
+import { useSEO } from '@/hooks/useSEO'
 
 export default function VideoCreator() {
   const { t } = useTranslation()
@@ -22,6 +24,10 @@ export default function VideoCreator() {
   const paramsFromUrl = searchParams.get('params')
   const navigate = useNavigate()
   const { user } = useContext(AuthContext)
+  const { trackVideoGeneration, trackTemplateView, trackTemplateUse, trackEvent } = useAnalytics()
+
+  // SEO优化
+  useSEO('create')
   
   // Find template from URL parameter or default to first template
   const foundTemplate = templateIdFromUrl ? templates.find(t => t.id === templateIdFromUrl || t.slug === templateIdFromUrl) : null
@@ -40,11 +46,7 @@ export default function VideoCreator() {
     }
     
     // 如果没有URL参数或解析失败，使用随机参数
-    console.log('=== 使用随机参数 ===')
     const randomParams = generateRandomParams(initialTemplate)
-    console.log('Template:', initialTemplate.name)
-    console.log('随机参数:', getParamsDescription(randomParams, initialTemplate))
-    console.log('==================')
     return randomParams
   })
   const [quality, setQuality] = useState<'fast' | 'high'>('fast')
@@ -81,17 +83,6 @@ export default function VideoCreator() {
           const randomParams = generateRandomParams(templateFromUrl)
           setParams(randomParams)
           
-          console.log('=== Template Selected from URL ===') 
-          console.log('Template ID:', templateIdFromUrl)
-          console.log('Template Name:', templateFromUrl.name)
-          console.log('Random Params:', getParamsDescription(randomParams, templateFromUrl))
-          console.log('===================================')
-        } else {
-          console.log('=== Template Selected from URL (保持恢复的参数) ===') 
-          console.log('Template ID:', templateIdFromUrl)
-          console.log('Template Name:', templateFromUrl.name)
-          console.log('参数已从URL恢复，保持不变')
-          console.log('=======================================')
         }
       }
     }
@@ -136,6 +127,10 @@ export default function VideoCreator() {
     const template = templates.find(t => t.id === templateId)
     if (template) {
       setSelectedTemplate(template)
+      
+      // 跟踪模板查看事件
+      trackTemplateView(template.id, template.category)
+      
       // Generate random params for the new template
       const randomParams = generateRandomParams(template)
       setParams(randomParams)
@@ -153,11 +148,6 @@ export default function VideoCreator() {
       newSearchParams.set('template', template.slug)
       navigate({ search: newSearchParams.toString() }, { replace: true })
       
-      // Log the random combination for debugging
-      console.log('=== Random Template Parameters Generated ===')
-      console.log('Template:', template.name)
-      console.log('Random Params:', getParamsDescription(randomParams, template))
-      console.log('============================================')
     }
   }
 
@@ -165,7 +155,7 @@ export default function VideoCreator() {
     setParams(prev => ({ ...prev, [key]: value }))
   }
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (promptData?: { prompt: string; jsonPrompt: any }) => {
     // Check if user is authenticated
     if (!user) {
       toast.error(t('videoCreator.loginRequired'))
@@ -178,7 +168,7 @@ export default function VideoCreator() {
       
       if (!submitStatus.canSubmit) {
         toast.error(submitStatus.reason || t('videoCreator.cannotSubmit'), {
-          action: submitStatus.tier !== 'premium' ? {
+          action: submitStatus.tier !== 'enterprise' ? {
             label: t('videoCreator.upgradePlan'),
             onClick: () => navigate('/pricing')
           } : undefined
@@ -191,52 +181,53 @@ export default function VideoCreator() {
       return
     }
 
-    // Generate the prompt with current parameters
-    let prompt = selectedTemplate.promptTemplate
+    // 使用传入的提示词数据，如果没有传入则生成
+    let prompt: string
+    let jsonPrompt: any
     
-    // Replace placeholders
-    Object.entries(selectedTemplate.params).forEach(([key, param]) => {
-      const value = params[key]
-      const placeholder = `{${key}}`
+    if (promptData) {
+      // 使用传入的提示词数据
+      prompt = promptData.prompt
+      jsonPrompt = promptData.jsonPrompt
+      console.log('Using provided prompt data:', { prompt, jsonPrompt })
+    } else {
+      // 兼容旧的调用方式，生成提示词
+      prompt = selectedTemplate.promptTemplate as string
       
-      if (prompt.includes(placeholder)) {
-        let replacementValue = ''
+      // Replace placeholders (保留原有逻辑作为备用)
+      Object.entries(selectedTemplate.params).forEach(([key, param]) => {
+        const value = params[key]
+        const placeholder = `{${key}}`
         
-        switch (param.type) {
-          case 'text':
-          case 'select':
-            replacementValue = String(value || param.default || '')
-            break
-          case 'slider':
-            replacementValue = String(value ?? param.default ?? '')
-            break
-          case 'toggle':
-            replacementValue = value ? 'enabled' : 'disabled'
-            break
-          case 'image':
-            replacementValue = value ? '[uploaded image]' : ''
-            break
-          default:
-            replacementValue = String(value || '')
+        if (prompt.includes(placeholder)) {
+          let replacementValue = ''
+          
+          switch (param.type) {
+            case 'text':
+            case 'select':
+              replacementValue = String(value || param.default || '')
+              break
+            case 'slider':
+              replacementValue = String(value ?? param.default ?? '')
+              break
+            case 'toggle':
+              replacementValue = value ? 'enabled' : 'disabled'
+              break
+            case 'image':
+              replacementValue = value ? '[uploaded image]' : ''
+              break
+            default:
+              replacementValue = String(value || '')
+          }
+          
+          prompt = prompt.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), replacementValue)
         }
-        
-        prompt = prompt.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), replacementValue)
-      }
-    })
+      })
+    }
 
-    // Calculate credits based on quality using global config only
-    const requiredCredits = getVideoCreditCost(quality === 'fast' ? 'standard' : 'high')
+    // Calculate credits based on quality and aspect ratio
+    const requiredCredits = getVideoCreditCost(quality === 'fast' ? 'standard' : 'high', aspectRatio)
 
-    console.log('=== Video Generation Request ===')
-    console.log('User ID:', user.id)
-    console.log('Template:', selectedTemplate.name)
-    console.log('Quality Mode:', quality)
-    console.log('Aspect Ratio:', aspectRatio)
-    console.log('Credits Required:', requiredCredits)
-    console.log('Parameters:', params)
-    console.log('Generated Prompt:', prompt)
-    console.log('Model:', quality === 'fast' ? 'veo-3.0-fast' : 'veo-3.0')
-    console.log('================================')
 
     // Extract image data from parameters if present
     let imageData = null
@@ -247,18 +238,24 @@ export default function VideoCreator() {
       }
     })
     
-    // Special handling for art-coffee-machine template
-    if (selectedTemplate.id === 'art-coffee-machine' && 
-        params.artwork === 'a custom artwork image' && 
-        params.custom_artwork) {
-      imageData = params.custom_artwork
-      console.log('Using custom artwork for art-coffee-machine template')
-    }
+    // Removed special handling for art-coffee-machine custom images
 
     setIsGenerating(true)
     setGenerationProgress(0)
     setGenerationStatus(t('videoCreator.submittingTask'))
     setStartTime(Date.now())
+    
+    // 跟踪模板使用和视频生成开始事件
+    trackTemplateUse(selectedTemplate.id, selectedTemplate.category)
+    trackVideoGeneration({
+      template_id: selectedTemplate.id,
+      template_category: selectedTemplate.category || 'uncategorized',
+      video_quality: quality,
+      aspect_ratio: aspectRatio,
+      api_provider: (import.meta.env.VITE_PRIMARY_VIDEO_API as 'qingyun' | 'apicore') || 'qingyun',
+      credits_used: requiredCredits,
+      success: false // 先标记为开始，完成时再更新
+    })
     
     try {
       // 使用队列服务提交任务
@@ -269,6 +266,7 @@ export default function VideoCreator() {
           title: selectedTemplate.name,
           description: selectedTemplate.description,
           prompt: prompt,
+          jsonPrompt: jsonPrompt, // 添加JSON格式的提示词
           parameters: params,
           creditsUsed: requiredCredits,
           isPublic: false,
@@ -327,6 +325,7 @@ export default function VideoCreator() {
           templates={templates}
           params={params}
           quality={quality}
+          aspectRatio={aspectRatio}
           onTemplateChange={handleTemplateChange}
           onParamChange={handleParamChange}
           onGenerate={handleGenerate}

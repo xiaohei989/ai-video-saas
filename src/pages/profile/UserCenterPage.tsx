@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { useTranslation } from 'react-i18next'
 import MembershipBadge from '@/components/subscription/MembershipBadge'
+import { useSEO } from '@/hooks/useSEO'
 import { 
   User,
   Settings,
@@ -20,6 +21,9 @@ export default function UserCenterPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { user, profile, signOut } = useAuth()
+
+  // SEO优化
+  useSEO('profile')
 
   const handleSignOut = async () => {
     try {

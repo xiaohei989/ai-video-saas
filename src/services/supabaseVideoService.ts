@@ -151,7 +151,6 @@ class SupabaseVideoService {
       
       const result = await this.updateViaEdgeFunction(id, updates)
       
-      console.log('[SYSTEM UPDATE] ========== 系统级更新完成 ==========')
       return result
       
     } catch (error) {
@@ -236,8 +235,6 @@ class SupabaseVideoService {
       videoUrlPreview: result.data?.video_url ? result.data.video_url.substring(0, 100) + '...' : 'N/A'
     })
     console.log('[EDGE FUNCTION] 🔗 返回的完整video_url:', result.data?.video_url || 'N/A')
-    console.log('[EDGE FUNCTION] ========== Edge Function 调用完成 ==========')
-
     return result.data
   }
 

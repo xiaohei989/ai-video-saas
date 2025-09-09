@@ -9,8 +9,151 @@
     <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Video SaaS - Generate AI Videos with Templates</title>
-    <meta name="description" content="Generate stunning AI videos using customizable templates powered by Google Veo3" />
+    <title>ASMR视频AI生成器 | 治愈放松视频轻松制作 | 免费试用</title>
+    <meta name="description" content="专业ASMR视频AI生成平台，30秒制作治愈放松短视频。提供丰富模板库，支持个性化定制，适合抖音、小红书等平台。立即免费试用！" />
+    <meta name="keywords" content="ASMR视频,AI视频生成,治愈视频,放松视频,短视频制作,AI视频生成器,视频模板,一键生成,抖音视频,小红书视频" />
+    <meta property="og:title" content="ASMR视频AI生成器 | 治愈放松视频轻松制作" />
+    <meta property="og:description" content="专业ASMR视频AI生成平台，30秒制作治愈放松短视频。提供丰富模板库，支持个性化定制，适合抖音、小红书等平台。" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ASMR视频AI生成器 | 治愈放松视频轻松制作" />
+    <meta name="twitter:description" content="专业ASMR视频AI生成平台，30秒制作治愈放松短视频。提供丰富模板库，支持个性化定制。" />
+    
+    <!-- 内联关键CSS避免预加载警告 -->
+    <style>
+      /* 关键CSS - 内联到HTML头部 */
+      :root {
+          --background: oklch(1 0 0);
+          --foreground: oklch(0.145 0 0);
+          --card: oklch(1 0 0);
+          --card-foreground: oklch(0.145 0 0);
+          --primary: oklch(0.205 0 0);
+          --primary-foreground: oklch(0.985 0 0);
+          --muted: oklch(0.97 0 0);
+          --muted-foreground: oklch(0.556 0 0);
+          --border: oklch(0.922 0 0);
+      }
+
+      .dark {
+          --background: oklch(0.14 0 0);
+          --foreground: oklch(0.97 0 0);
+          --card: oklch(0.14 0 0);
+          --card-foreground: oklch(0.97 0 0);
+          --primary: oklch(0.97 0 0);
+          --primary-foreground: oklch(0.14 0 0);
+          --muted: oklch(0.22 0 0);
+          --muted-foreground: oklch(0.67 0 0);
+          --border: oklch(0.22 0 0);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        line-height: 1.5;
+        -webkit-text-size-adjust: 100%;
+        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+
+      body {
+        margin: 0;
+        line-height: inherit;
+        background: var(--background);
+        color: var(--foreground);
+      }
+
+      /* 防止FOUC的隐藏类 */
+      .loading-hidden {
+        visibility: hidden;
+      }
+
+      /* 加载骨架屏样式 */
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .5; }
+      }
+
+      .animate-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+
+      .bg-gray-200 {
+        background-color: #e5e7eb;
+      }
+
+      .dark .bg-gray-200 {
+        background-color: #374151;
+      }
+
+      /* 字体加载优化 */
+      .fonts-loading {
+        visibility: hidden;
+      }
+
+      .fonts-loaded {
+        visibility: visible;
+      }
+    </style>
+    
+    <!-- 立即执行的预加载清理脚本 -->
+    <script>
+      // 立即清理预加载链接，防止警告
+      (function() {
+        function removeProblematicPreloads() {
+          const preloadLinks = document.querySelectorAll('link[rel="preload"]');
+          let removed = 0;
+          
+          preloadLinks.forEach(function(link) {
+            const href = link.getAttribute('href');
+            if (href && (href.includes('vendor.js') || 
+                        href.includes('index.css') || 
+                        href.includes('fonts.gstatic.com') ||
+                        href.includes('UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2'))) {
+              link.remove();
+              removed++;
+              console.log('[EARLY CLEANUP] Removed preload:', href);
+            }
+          });
+          
+          if (removed > 0) {
+            console.log('[EARLY CLEANUP] Removed', removed, 'preload links');
+          }
+        }
+        
+        // 立即执行
+        removeProblematicPreloads();
+        
+        // DOM ready时再执行一次
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', removeProblematicPreloads);
+        }
+        
+        // 使用MutationObserver监控新添加的预加载
+        if (window.MutationObserver) {
+          const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+              if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach(function(node) {
+                  if (node.nodeType === 1 && node.tagName === 'LINK' && 
+                      node.getAttribute('rel') === 'preload') {
+                    const href = node.getAttribute('href');
+                    if (href && (href.includes('vendor.js') || 
+                                href.includes('index.css') || 
+                                href.includes('fonts.gstatic.com'))) {
+                      console.log('[OBSERVER CLEANUP] Removing:', href);
+                      node.remove();
+                    }
+                  }
+                });
+              }
+            });
+          });
+          
+          observer.observe(document.head, { childList: true, subtree: true });
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

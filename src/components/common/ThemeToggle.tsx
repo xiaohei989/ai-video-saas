@@ -2,15 +2,22 @@ import React from 'react'
 import { Moon, Sun, Monitor } from 'lucide-react'
 import { useTheme } from '@/hooks/useTheme'
 import { Button } from '@/components/ui/button'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 export function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme()
+  const { trackThemeChange } = useAnalytics()
 
   const toggleTheme = () => {
     const themeOrder: Array<'light' | 'dark' | 'system'> = ['light', 'dark', 'system']
     const currentIndex = themeOrder.indexOf(theme)
     const nextIndex = (currentIndex + 1) % themeOrder.length
-    setTheme(themeOrder[nextIndex])
+    const newTheme = themeOrder[nextIndex]
+    
+    setTheme(newTheme)
+    
+    // 跟踪主题切换事件
+    trackThemeChange(newTheme === 'system' ? resolvedTheme : newTheme)
   }
 
   const getIcon = () => {

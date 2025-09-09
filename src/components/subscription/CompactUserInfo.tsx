@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CreditCard, Coins, CalendarDays } from 'lucide-react'
+import { CreditCard, Gem, CalendarDays } from 'lucide-react'
 import { SubscriptionService } from '@/services/subscriptionService'
 import { creditService } from '@/services/creditService'
 import type { Subscription } from '@/types'
@@ -162,8 +162,8 @@ export default function CompactUserInfo({
           <div className="flex items-center justify-between">
             {/* 左侧：订阅等级和徽章 */}
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
-                <Coins className="h-5 w-5 text-white" />
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
+                <Gem className="h-5 w-5 text-white" />
               </div>
               
               <div className="space-y-1">

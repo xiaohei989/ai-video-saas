@@ -54,7 +54,7 @@ BEGIN
         DO $enum$
         BEGIN
             IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'subscription_tier') THEN
-                CREATE TYPE subscription_tier AS ENUM ('free', 'basic', 'pro', 'premium');
+                CREATE TYPE subscription_tier AS ENUM ('free', 'basic', 'pro', 'enterprise');
                 RAISE NOTICE 'Created subscription_tier enum';
             END IF;
             

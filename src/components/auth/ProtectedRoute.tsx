@@ -34,7 +34,6 @@ export default function ProtectedRoute({
     // 添加强制重定向超时机制（3秒后强制重定向）
     const forceRedirectId = setTimeout(() => {
       if (!user && requireAuth) {
-        console.log('[PROTECTED ROUTE] ⏰ 超时强制重定向到登录页面')
         setForceRedirect(true)
       }
     }, 3000)
@@ -57,7 +56,6 @@ export default function ProtectedRoute({
       
       // 如果有任何本地认证信息，说明可能很快就会完成，不显示loading
       if (hasLocalToken || hasLocalUser) {
-        console.log('[PROTECTED ROUTE] 🚀 检测到本地认证缓存，跳过loading显示')
         return false
       }
     } catch (error) {
@@ -65,7 +63,6 @@ export default function ProtectedRoute({
     }
     
     // 只有真正没有任何缓存的情况才显示loading
-    console.log('[PROTECTED ROUTE] 💫 显示loading界面（首次访问用户）')
     return true
   }, [loading])
 
@@ -107,7 +104,6 @@ export default function ProtectedRoute({
     
     // 强制重定向标志优先级最高
     if (forceRedirect) {
-      console.log('[PROTECTED ROUTE] 🚪 强制重定向标志已设置')
       return true
     }
     
@@ -116,7 +112,6 @@ export default function ProtectedRoute({
     
     // 🚀 关键修复：如果还在认证缓冲期，不要重定向
     if (authBuffer) {
-      console.log('[PROTECTED ROUTE] ⏰ 认证缓冲期中，暂不检查重定向')
       return false
     }
     
@@ -127,7 +122,6 @@ export default function ProtectedRoute({
                            localStorage.getItem('__auth_last_success')
       
       if (hasLocalAuth) {
-        console.log('[PROTECTED ROUTE] 🔄 检测到本地认证缓存但user未设置，继续等待...')
         // 有缓存但user未设置，再给一点时间（但不会超过3秒强制超时）
         return false
       }
@@ -136,7 +130,6 @@ export default function ProtectedRoute({
     }
     
     // 没有user，没有loading，没有缓存，且缓冲期已结束，才重定向
-    console.log('[PROTECTED ROUTE] 🚪 确认需要重定向到登录页')
     return true
   }, [requireAuth, user, loading, authBuffer, forceRedirect])
   

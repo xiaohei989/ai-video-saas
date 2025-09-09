@@ -1,0 +1,84 @@
+{
+  "id": "a7b8c9d0-e1f2-3456-7890-abcdef123456",
+  "slug": "magical-creature-summon",
+  "name": "Magical Creature Summoning",
+  "icon": "🐉",
+  "description": "An ancient spellbook summons legendary creatures through elemental magic",
+  "previewUrl": "/templates/videos/magical-creature-summon.mp4",
+  "credits": 12,
+  
+  "tags": ["magic", "fantasy", "creature", "book", "summoning", "epic", "elemental"],
+  "createdAt": "2025-01-30T14:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-30T14:00:00Z",
+  
+  "promptTemplate": {
+    "model": "veo3",
+    "duration": "8s",
+    "aspect_ratio": "16:9",
+    
+    "product": {
+      "name": "Magical Creature Summoning",
+      "type": "Fantasy Elemental Effect",
+      "brand_style": "hyper-realistic, cinematic, magical realism"
+    },
+    
+    "visual_core": {
+      "description": "An ancient book {book_transformation}, from which a {creature_adjective} {creature_type} {creature_emergence}",
+      "style": "epic fantasy, cinematic magic, photorealistic",
+      "camera": "macro close-up → orbit as {element} expands → wide shot of {creature_type} {creature_finale}",
+      "lighting": "{lighting_description}",
+      "environment": "{environment_setting}"
+    },
+    
+    "elements": [
+      "ancient book with yellowed pages",
+      "{element_particles} floating upward",
+      "{creature_adjective} {creature_type} materializing from {element}",
+      "{environment_effects}"
+    ],
+    
+    "audio": {
+      "sfx": "{primary_sfx}, {secondary_sfx}, {creature_sound}",
+      "ambience": "{ambient_start} breaking into {ambient_peak}",
+      "music": "rising orchestral score with {music_accent}"
+    },
+    
+    "timeline": [
+      {
+        "time": "0-2s",
+        "action": "{opening_action}",
+        "camera": "macro {opening_camera}",
+        "audio": "{opening_audio}"
+      },
+      {
+        "time": "2-5s",
+        "action": "{transformation_action}",
+        "camera": "{transformation_camera}",
+        "audio": "{transformation_audio}"
+      },
+      {
+        "time": "5-8s",
+        "action": "{finale_action}",
+        "camera": "{finale_camera}",
+        "audio": "{finale_audio}"
+      }
+    ],
+    
+    "cta": {
+      "motion": "{final_freeze}",
+      "text": "{cta_text}",
+      "style": "{text_style}"
+    },
+    
+    "keywords": [
+      "hyper-realistic",
+      "cinematic fantasy",
+      "book magic",
+      "{creature_type}",
+      "{element}",
+      "elemental summoning",
+      "magical realism"
+    ]
+  }
+}

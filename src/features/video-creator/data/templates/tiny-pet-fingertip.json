@@ -1,13 +1,13 @@
 {
   "id": "c9605a16-353e-4c6a-ac7a-d5b327dab9fd",
   "slug": "tiny-pet-fingertip",
-  "name": "指尖上的迷你萌宠",
+  "name": "Tiny Pet on Fingertip",
   "icon": "🐾",
-  "description": "拍摄一只站在指尖上的超迷你可爱动物，展现温馨治愈的画面",
+  "description": "Capture an ultra-miniature adorable animal standing on fingertip, creating a heartwarming and healing scene",
   "previewUrl": "/templates/videos/tiny-pet-fingertip.mp4",
 
-  "tags": ["萌宠", "迷你", "治愈", "可爱", "指尖", "动物", "温馨", "微型"],
-  "category": "动物/宠物",
+  "tags": ["cute pets", "miniature", "healing", "adorable", "fingertip", "animals", "heartwarming", "tiny"],
+  "category": "Animals/Pets",
   "createdAt": "2024-02-01T14:30:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-29T04:30:00Z",
@@ -15,100 +15,100 @@
   "params": {
     "animal_type": {
       "type": "select",
-      "label": "萌宠类型",
+      "label": "Pet Type",
       "required": true,
       "default": "kitten",
       "options": [
-        { "value": "kitten", "label": "小猫咪 🐱" },
-        { "value": "puppy", "label": "小狗狗 🐶" },
-        { "value": "bunny", "label": "小兔子 🐰" },
-        { "value": "hamster", "label": "仓鼠 🐹" },
-        { "value": "baby panda", "label": "熊猫宝宝 🐼" },
-        { "value": "baby tiger", "label": "小老虎 🐅" },
-        { "value": "baby lion", "label": "小狮子 🦁" },
-        { "value": "baby wolf", "label": "小狼崽 🐺" },
-        { "value": "baby bear", "label": "小熊 🐻" },
-        { "value": "baby leopard", "label": "小豹子 🐆" },
-        { "value": "baby dragon", "label": "小龙 🐉" },
-        { "value": "baby phoenix", "label": "小凤凰 🔥" },
-        { "value": "baby unicorn", "label": "独角兽宝宝 🦄" },
-        { "value": "baby griffin", "label": "小狮鹫 🦅" },
-        { "value": "fairy dragon", "label": "精灵龙 ✨" },
-        { "value": "baby pegasus", "label": "小飞马 🦋" },
-        { "value": "baby nine-tailed fox", "label": "九尾狐幼崽 🦊" },
-        { "value": "baby owl", "label": "猫头鹰宝宝 🦉" },
-        { "value": "hedgehog", "label": "刺猬 🦔" },
-        { "value": "sugar glider", "label": "蜜袋鼯 🐿️" },
-        { "value": "baby fox", "label": "小狐狸 🦊" },
-        { "value": "baby raccoon", "label": "小浣熊 🦝" },
-        { "value": "chinchilla", "label": "龙猫 🐭" },
-        { "value": "baby koala", "label": "考拉宝宝 🐨" },
-        { "value": "baby elephant", "label": "小象 🐘" }
+        { "value": "kitten", "label": "Kitten 🐱" },
+        { "value": "puppy", "label": "Puppy 🐶" },
+        { "value": "bunny", "label": "Bunny 🐰" },
+        { "value": "hamster", "label": "Hamster 🐹" },
+        { "value": "baby panda", "label": "Baby Panda 🐼" },
+        { "value": "baby tiger", "label": "Baby Tiger 🐅" },
+        { "value": "baby lion", "label": "Baby Lion 🦁" },
+        { "value": "baby wolf", "label": "Baby Wolf 🐺" },
+        { "value": "baby bear", "label": "Baby Bear 🐻" },
+        { "value": "baby leopard", "label": "Baby Leopard 🐆" },
+        { "value": "baby dragon", "label": "Baby Dragon 🐉" },
+        { "value": "baby phoenix", "label": "Baby Phoenix 🔥" },
+        { "value": "baby unicorn", "label": "Baby Unicorn 🦄" },
+        { "value": "baby griffin", "label": "Baby Griffin 🦅" },
+        { "value": "fairy dragon", "label": "Fairy Dragon ✨" },
+        { "value": "baby pegasus", "label": "Baby Pegasus 🦋" },
+        { "value": "baby nine-tailed fox", "label": "Baby Nine-tailed Fox 🦊" },
+        { "value": "baby owl", "label": "Baby Owl 🦉" },
+        { "value": "hedgehog", "label": "Hedgehog 🦔" },
+        { "value": "sugar glider", "label": "Sugar Glider 🐿️" },
+        { "value": "baby fox", "label": "Baby Fox 🦊" },
+        { "value": "baby raccoon", "label": "Baby Raccoon 🦝" },
+        { "value": "chinchilla", "label": "Chinchilla 🐭" },
+        { "value": "baby koala", "label": "Baby Koala 🐨" },
+        { "value": "baby elephant", "label": "Baby Elephant 🐘" }
       ]
     },
     "animal_color": {
       "type": "select",
-      "label": "毛色/羽色",
+      "label": "Fur/Feather Color",
       "required": true,
       "default": "natural",
       "options": [
-        { "value": "natural", "label": "自然色" },
-        { "value": "pure white", "label": "纯白色" },
-        { "value": "golden", "label": "金色" },
-        { "value": "grey", "label": "灰色" },
-        { "value": "brown", "label": "棕色" },
-        { "value": "black and white", "label": "黑白相间" },
-        { "value": "multicolored", "label": "多彩斑斓" }
+        { "value": "natural", "label": "Natural" },
+        { "value": "pure white", "label": "Pure White" },
+        { "value": "golden", "label": "Golden" },
+        { "value": "grey", "label": "Grey" },
+        { "value": "brown", "label": "Brown" },
+        { "value": "black and white", "label": "Black and White" },
+        { "value": "multicolored", "label": "Multicolored" }
       ]
     },
     "size_adjective": {
       "type": "select",
-      "label": "大小描述",
+      "label": "Size Description",
       "required": true,
       "default": "impossibly tiny",
       "options": [
-        { "value": "impossibly tiny", "label": "不可思议的迷你" },
-        { "value": "adorably small", "label": "超级可爱的小" },
-        { "value": "pocket-sized", "label": "口袋大小的" },
-        { "value": "miniature", "label": "微型的" }
+        { "value": "impossibly tiny", "label": "Impossibly Tiny" },
+        { "value": "adorably small", "label": "Adorably Small" },
+        { "value": "pocket-sized", "label": "Pocket-sized" },
+        { "value": "miniature", "label": "Miniature" }
       ]
     },
     "special_feature": {
       "type": "select",
-      "label": "特征描述",
+      "label": "Feature Description",
       "required": true,
       "default": "bright round eyes",
       "options": [
-        { "value": "bright round eyes", "label": "明亮大眼睛" },
-        { "value": "fluffy soft fur", "label": "蓬松毛发" },
-        { "value": "tiny delicate paws", "label": "小巧爪子" },
-        { "value": "cute button nose", "label": "可爱鼻子" },
-        { "value": "round chubby body", "label": "圆滚滚身体" }
+        { "value": "bright round eyes", "label": "Bright Round Eyes" },
+        { "value": "fluffy soft fur", "label": "Fluffy Soft Fur" },
+        { "value": "tiny delicate paws", "label": "Tiny Delicate Paws" },
+        { "value": "cute button nose", "label": "Cute Button Nose" },
+        { "value": "round chubby body", "label": "Round Chubby Body" }
       ]
     },
     "animal_action": {
       "type": "select",
-      "label": "动物动作",
+      "label": "Animal Action",
       "required": true,
       "default": "looks curiously at the camera",
       "options": [
-        { "value": "looks curiously at the camera", "label": "好奇地看着镜头" },
-        { "value": "yawns adorably", "label": "可爱地打哈欠" },
-        { "value": "tilts its tiny head playfully", "label": "调皮地歪着头" },
-        { "value": "blinks sleepily", "label": "困倦地眨眼" },
-        { "value": "wiggles happily", "label": "开心地摇摆" }
+        { "value": "looks curiously at the camera", "label": "Looks Curiously at Camera" },
+        { "value": "yawns adorably", "label": "Yawns Adorably" },
+        { "value": "tilts its tiny head playfully", "label": "Tilts Head Playfully" },
+        { "value": "blinks sleepily", "label": "Blinks Sleepily" },
+        { "value": "wiggles happily", "label": "Wiggles Happily" }
       ]
     },
     "scene_setting": {
       "type": "select",
-      "label": "场景环境",
+      "label": "Scene Setting",
       "required": true,
       "default": "cozy indoor setting by a sunlit window",
       "options": [
-        { "value": "cozy indoor setting by a sunlit window", "label": "温馨室内窗边" },
-        { "value": "sunny garden with soft flowers", "label": "阳光花园" },
-        { "value": "soft bedroom with warm blankets", "label": "柔和卧室" },
-        { "value": "natural outdoor setting", "label": "自然户外" }
+        { "value": "cozy indoor setting by a sunlit window", "label": "Cozy Indoor by Window" },
+        { "value": "sunny garden with soft flowers", "label": "Sunny Garden" },
+        { "value": "soft bedroom with warm blankets", "label": "Soft Bedroom" },
+        { "value": "natural outdoor setting", "label": "Natural Outdoor" }
       ]
     }
   }

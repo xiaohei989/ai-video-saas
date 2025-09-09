@@ -7,14 +7,15 @@ import {
   Share2, 
   Eye, 
   Clock, 
-  Coins,
+  Gem,
   CheckCircle,
   XCircle,
   Loader2
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { VideoRecord } from '@/services/videoHistoryService'
-import { extractVideoThumbnail } from '@/utils/videoThumbnail'
+import thumbnailCacheService from '@/services/ThumbnailCacheService'
+import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 
 interface VideoCardProps {
   video: VideoRecord
@@ -35,21 +36,33 @@ export default function VideoCard({
 }: VideoCardProps) {
   const [isHovering, setIsHovering] = useState(false)
   const [extractedThumbnail, setExtractedThumbnail] = useState<string | null>(null)
+  const [thumbnailError, setThumbnailError] = useState<string | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [videoLoaded, setVideoLoaded] = useState(false)
 
-  // Extract thumbnail if not provided
+  // Extract thumbnail if not provided using cache service and proxy
   useEffect(() => {
     if (video.videoUrl && !video.thumbnailUrl && video.status === 'completed') {
-      extractVideoThumbnail(video.videoUrl)
+      const proxyUrl = getProxyVideoUrl(video.videoUrl)
+      console.log(`[VideoCard] 开始提取缩略图: ${video.videoUrl} -> ${proxyUrl}`)
+      
+      thumbnailCacheService.getThumbnail(proxyUrl, {
+        quality: 'medium',
+        frameTime: 0.33,
+        forceRefresh: false
+      })
         .then(thumbnail => {
+          console.log(`[VideoCard] 缩略图提取成功: ${video.id}`)
           setExtractedThumbnail(thumbnail)
         })
         .catch(error => {
-          console.error('Failed to extract thumbnail:', error)
+          console.error(`[VideoCard] 缩略图提取失败 ${video.id}:`, error)
+          setThumbnailError(error.message)
+          // 即使失败也设置为null，触发重新渲染显示占位图
+          setExtractedThumbnail(null)
         })
     }
-  }, [video.videoUrl, video.thumbnailUrl, video.status])
+  }, [video.videoUrl, video.thumbnailUrl, video.status, video.id])
 
   // Removed hover video preview - now only plays on click
 
@@ -126,8 +139,17 @@ export default function VideoCard({
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Play className="h-12 w-12 text-muted-foreground" />
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
+            {thumbnailError ? (
+              <div className="text-center p-4">
+                <Play className="h-8 w-8 text-red-400 mx-auto mb-2" />
+                <div className="text-xs text-red-500 break-words max-w-[200px]">
+                  缩略图加载失败
+                </div>
+              </div>
+            ) : (
+              <Play className="h-12 w-12 text-muted-foreground" />
+            )}
           </div>
         )}
         
@@ -182,7 +204,7 @@ export default function VideoCard({
             {formatDate(video.createdAt)}
           </span>
           <span className="flex items-center gap-1">
-            <Coins className="h-3 w-3" />
+            <Gem className="h-3 w-3 text-purple-600" />
             {video.credits}
           </span>
         </div>

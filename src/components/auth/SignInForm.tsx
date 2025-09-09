@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTranslation } from 'react-i18next'
 import { Loader2, Mail, Lock } from 'lucide-react'
+import { useAnalytics } from '@/hooks/useAnalytics'
+import { useSEO } from '@/hooks/useSEO'
 
 // Google 图标组件
 const GoogleIcon = ({ className }: { className?: string }) => (
@@ -21,9 +23,13 @@ const GoogleIcon = ({ className }: { className?: string }) => (
 export default function SignInForm() {
   const { t } = useTranslation()
   const { signIn, signInWithGoogle, loading, error } = useAuth()
+  const { trackLogin, trackEvent } = useAnalytics()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // SEO优化
+  useSEO('signin')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,6 +42,9 @@ export default function SignInForm() {
     try {
       setIsSubmitting(true)
       await signIn(email, password)
+      
+      // 跟踪邮箱登录成功事件
+      trackLogin('email')
     } catch (err: any) {
       console.error('Sign in error:', err)
       if (err.message?.includes('Invalid login credentials')) {
@@ -54,6 +63,9 @@ export default function SignInForm() {
     try {
       setIsSubmitting(true)
       await signInWithGoogle()
+      
+      // 跟踪Google登录成功事件
+      trackLogin('google')
     } catch (err: any) {
       console.error('Google sign in error:', err)
       alert(t('auth.googleSignInError') + ': ' + err.message)

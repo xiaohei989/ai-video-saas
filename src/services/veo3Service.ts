@@ -266,7 +266,10 @@ class Veo3Service {
             this.activeJobs.set(trackingId, job)
           }
           
-          console.log(`[VEO3 SERVICE] Progress: ${progress}%`)
+          // 只在关键进度点输出日志
+          if (progress % 25 === 0 || progress >= 95) {
+            console.log(`[VEO3 SERVICE] Progress: ${progress}%`);
+          }
           
           if (request.videoRecordId && progress > 0) {
             progressManager.updateProgress(request.videoRecordId, {
@@ -456,6 +459,7 @@ class Veo3Service {
       }
 
       // 初始化APICore服务
+      console.log(`[VEO3 SERVICE] APICore初始化配置: endpoint=${endpoint}`)
       const apicoreService = getApicoreApiService({
         apiKey,
         endpoint
@@ -543,7 +547,10 @@ class Veo3Service {
             this.activeJobs.set(trackingId, job)
           }
           
-          console.log(`[VEO3 SERVICE] Progress: ${progress}%`)
+          // 只在关键进度点输出日志
+          if (progress % 25 === 0 || progress >= 95) {
+            console.log(`[VEO3 SERVICE] Progress: ${progress}%`);
+          }
           
           if (request.videoRecordId && progress > 0) {
             progressManager.updateProgress(request.videoRecordId, {
@@ -670,15 +677,66 @@ class Veo3Service {
    * 处理图片为APICore格式（URL数组）
    */
   private async processImagesForApicore(image: string | File): Promise<string[]> {
-    // APICore接受URL格式
+    // 如果已经是URL，直接使用
     if (typeof image === 'string' && 
         (image.startsWith('http://') || image.startsWith('https://'))) {
-      console.log('[VEO3 SERVICE] Image URL for APICore:', image)
+      console.log('[VEO3 SERVICE] Using existing image URL for APICore:', image)
       return [image]
     }
     
-    // 如果不是URL，抛出错误提示用户
-    throw new Error('APICore只支持URL格式的图片。请提供图片的URL地址。')
+    // 如果是base64格式，上传到Supabase Storage获取URL
+    if (typeof image === 'string' && image.startsWith('data:image/')) {
+      console.log('[VEO3 SERVICE] Uploading base64 image to Supabase Storage for APICore')
+      
+      // 动态导入图片上传服务，避免循环依赖
+      const { imageUploadService } = await import('./imageUploadService')
+      
+      try {
+        const url = await imageUploadService.uploadBase64Image(image)
+        console.log('[VEO3 SERVICE] Successfully uploaded image to Supabase, URL:', url)
+        return [url]
+      } catch (error) {
+        console.error('[VEO3 SERVICE] Failed to upload image to Supabase:', error)
+        throw new Error(`Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      }
+    }
+    
+    // 如果是File对象，需要转换为base64后上传
+    if (image instanceof File) {
+      console.log('[VEO3 SERVICE] Converting File to base64 and uploading for APICore')
+      
+      const base64 = await this.fileToBase64(image)
+      const { imageUploadService } = await import('./imageUploadService')
+      
+      try {
+        const url = await imageUploadService.uploadBase64Image(base64)
+        console.log('[VEO3 SERVICE] Successfully uploaded File to Supabase, URL:', url)
+        return [url]
+      } catch (error) {
+        console.error('[VEO3 SERVICE] Failed to upload File to Supabase:', error)
+        throw new Error(`Failed to upload file: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      }
+    }
+    
+    throw new Error('Unsupported image format. APICore requires URL, base64, or File format.')
+  }
+
+  /**
+   * 将File对象转换为base64字符串
+   */
+  private fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          resolve(reader.result)
+        } else {
+          reject(new Error('Failed to convert file to base64'))
+        }
+      }
+      reader.onerror = () => reject(new Error('FileReader error'))
+      reader.readAsDataURL(file)
+    })
   }
 
   /**
@@ -1020,6 +1078,7 @@ class Veo3Service {
       }
 
       // 初始化APICore服务
+      console.log(`[VEO3 SERVICE] APICore恢复任务配置: endpoint=${endpoint}`)
       const { getApicoreApiService } = await import('./veo/ApicoreApiService')
       const apicoreService = getApicoreApiService({
         apiKey,
@@ -1085,12 +1144,11 @@ class Veo3Service {
       if (status === 'IN_PROGRESS' || status === 'PROCESSING' || status === 'NOT_START') {
         console.log(`[VEO3 SERVICE] 🔄 APICore任务仍在处理中，恢复轮询...`)
 
-        // 创建任务对象并添加到 activeJobs
-        const initialProgress = status === 'NOT_START' ? 5 : status === 'IN_PROGRESS' ? 30 : 50
+        // 创建任务对象并添加到 activeJobs，不设置固定进度
         const job: VideoGenerationResponse = {
           id: apicoreTaskId,
           status: 'processing',
-          progress: initialProgress,
+          progress: 0, // 让ProgressManager统一管理进度
           createdAt: new Date()
         }
         
@@ -1145,7 +1203,7 @@ class Veo3Service {
       // 检查任务是否已经在 activeJobs 中
       console.log(`[VEO3 SERVICE] 🔍 步骤2：检查任务是否已在activeJobs中...`)
       if (this.activeJobs.has(qingyunTaskId)) {
-        console.log(`[VEO3 SERVICE] ✅ 任务 ${qingyunTaskId} 已存在于 activeJobs，恢复成功`)
+        // 静默返回，减少日志噪音
         return true
       } else {
         console.log(`[VEO3 SERVICE] 📝 任务 ${qingyunTaskId} 不在 activeJobs 中，需要恢复`)
@@ -1351,7 +1409,6 @@ class Veo3Service {
         video_url: result.video_url,
         processing_completed_at: new Date().toISOString()
       })
-      console.log(`[VEO3 SERVICE] ✅ 数据库状态更新完成`)
 
       // 清理任务
       setTimeout(() => {

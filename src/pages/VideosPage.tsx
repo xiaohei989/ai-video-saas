@@ -695,15 +695,18 @@ export default function VideosPage() {
       if (shouldSubscribeProgress) {
         
         // 首先尝试从 progressManager 获取带 fallback 的进度数据
-        const initialProgress = progressManager.getProgressWithFallback(video.id, video.status)
-        if (initialProgress) {
-          setVideoProgress(prev => {
-            const newMap = new Map(prev)
-            newMap.set(video.id, initialProgress)
-            return newMap
-          })
-          console.log(`[VideosPage] Initialized progress for ${video.id}: ${initialProgress.progress}%`)
-        }
+        progressManager.getProgressWithFallback(video.id, video.status).then(initialProgress => {
+          if (initialProgress) {
+            setVideoProgress(prev => {
+              const newMap = new Map(prev)
+              newMap.set(video.id, initialProgress)
+              return newMap
+            })
+            console.log(`[VideosPage] Initialized progress for ${video.id}: ${initialProgress.progress}%`)
+          }
+        }).catch(error => {
+          console.error(`[VideosPage] Failed to get initial progress for ${video.id}:`, error)
+        })
         
         const unsubscribeProgress = progressManager.subscribe(
           video.id,

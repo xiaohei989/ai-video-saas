@@ -1,0 +1,62 @@
+{
+  "id": "e1a2c6f5-9d7a-8b0e-3f4c-7e2a5b9d8c1f",
+  "slug": "olympic-animal-diving-broadcast",
+  "name": "Olympic Animal Diving Broadcast",
+  "icon": "🏊‍♀️",
+  "description": "Television broadcast style footage of various animals performing Olympic diving with audience reactions and commentary",
+  "previewUrl": "/templates/videos/olympic-animal-diving-broadcast.mp4",
+
+  "tags": ["olympic", "diving", "animals", "broadcast", "sports", "swimming", "commentary", "large-animals"],
+  "createdAt": "2025-01-29T18:30:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-01-29T18:30:00Z",
+  "promptTemplate": "Olympic diving pool in television broadcast style, showing a {animal} diving from a {platform_height} platform into the swimming pool, performing graceful flips in mid-air with limbs spread like wings, at normal speed, not slow motion. The crowd bursts into laughter at this adorable scene, while the commentator can't help but exclaim \"So cute!\" Audio: gentle water splash sounds, audience laughter and \"aww\" sounds, commentator's warm and humorous commentary.",
+
+  "params": {
+    "animal": {
+      "type": "select",
+      "label": "Animal Diver",
+      "required": true,
+      "default": "fluffy white dog",
+      "options": [
+        { "value": "fluffy white dog", "label": "Fluffy White Dog 🐶" },
+        { "value": "elegant cat", "label": "Elegant Cat 🐱" },
+        { "value": "bouncy rabbit", "label": "Bouncy Rabbit 🐰" },
+        { "value": "clever raccoon", "label": "Clever Raccoon 🦝" },
+        { "value": "professional penguin", "label": "Professional Penguin 🐧" },
+        { "value": "natural duck", "label": "Natural Duck 🦆" },
+        { "value": "majestic elephant", "label": "Majestic Elephant 🐘" },
+        { "value": "powerful rhino", "label": "Powerful Rhino 🦏" },
+        { "value": "swimming hippo", "label": "Swimming Hippo 🦛" },
+        { "value": "gentle cow", "label": "Gentle Cow 🐄" },
+        { "value": "graceful horse", "label": "Graceful Horse 🐎" },
+        { "value": "elegant deer", "label": "Elegant Deer 🦌" },
+        { "value": "mighty brown bear", "label": "Mighty Brown Bear 🐻" },
+        { "value": "polar bear", "label": "Polar Bear 🐻‍❄️" },
+        { "value": "adorable panda", "label": "Adorable Panda 🐼" },
+        { "value": "ocean whale", "label": "Ocean Whale 🐳" },
+        { "value": "humpback whale", "label": "Humpback Whale 🐋" },
+        { "value": "athletic kangaroo", "label": "Athletic Kangaroo 🦘" },
+        { "value": "fluffy llama", "label": "Fluffy Llama 🦙" }
+      ]
+    },
+    "platform_height": {
+      "type": "select",
+      "label": "Platform Height",
+      "required": true,
+      "default": "8-meter",
+      "options": [
+        { "value": "1-meter", "label": "1-Meter Platform (Beginner)" },
+        { "value": "3-meter", "label": "3-Meter Springboard (Standard)" },
+        { "value": "5-meter", "label": "5-Meter Platform (Advanced)" },
+        { "value": "8-meter", "label": "8-Meter Platform (Expert)" },
+        { "value": "10-meter", "label": "10-Meter Platform (Olympic)" }
+      ]
+    },
+    "makePublic": {
+      "type": "toggle",
+      "label": "Make video public",
+      "default": false
+    }
+  }
+}

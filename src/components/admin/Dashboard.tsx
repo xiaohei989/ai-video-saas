@@ -148,7 +148,7 @@ export const Dashboard: React.FC = () => {
       free: '免费用户',
       basic: '基础版',
       pro: '专业版',
-      premium: '高级版'
+      enterprise: '企业版'
     }
 
     return Object.entries(data).map(([tier, count], index) => ({
