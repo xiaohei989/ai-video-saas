@@ -1,0 +1,250 @@
+{
+  "id": "8c9d7e6f-2a3b-4c5d-6e7f-8a9b0c1d2e3f",
+  "slug": "ocean-selfie-surprise",
+  "name": "Ocean Selfie Predator Surprise",
+  "icon": "🦈",
+  "description": "POV selfie video on a speedboat with a surprise marine predator appearance",
+  "previewUrl": "/templates/videos/ocean-selfie-surprise.mp4",
+  "credits": 10,
+  
+  "tags": ["selfie", "ocean", "predator", "surprise", "vlog", "comedy", "pov", "marine", "bigfoot", "yeti"],
+  "createdAt": "2025-02-01T12:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-02-01T12:00:00Z",
+  
+  "promptTemplate": {
+    "model": "veo3",
+    "duration": "8s",
+    "aspect_ratio": "9:16",
+    "visual_core": {
+      "description": "POV selfie shot of {character_description} on a speedboat, smiling into {pronoun_possessive} phone: \"{dialogue_content}\" Clear blue ocean, bright sun. Suddenly, a {animal_type} {animal_action} dramatically behind {pronoun_object}, {animal_detail}.",
+      "style": "vlog realism, high tension, {emotion_style}. no subtitles",
+      "camera": "POV handheld selfie angle, slight shake from boat movement",
+      "lighting": "bright natural sunlight, ocean reflections"
+    },
+    "timeline": [
+      {
+        "time": "0-3s",
+        "action": "{character} starts recording selfie, speaking enthusiastically",
+        "dialogue": {
+          "language": "{language}",
+          "text": "{dialogue_content}"
+        }
+      },
+      {
+        "time": "3-6s",
+        "action": "{animal_type} {animal_action} in background, {character} still unaware",
+        "audio": "ocean sounds intensifying, {animal_sound_build}"
+      },
+      {
+        "time": "6-8s",
+        "action": "{animal_type} {animal_climax}, {character_reaction}",
+        "audio": "{animal_sound_peak}, {reaction_sound}"
+      }
+    ],
+    "audio": {
+      "sfx": "wind, engine, {speaking_tone}, splash, {animal_sound}",
+      "ambience": "ocean waves, speedboat engine"
+    }
+  },
+
+  "params": {
+    "marine_animal": {
+      "type": "select",
+      "label": "Marine Predator",
+      "required": true,
+      "default": "megalodon",
+      "options": [
+        {
+          "value": "megalodon",
+          "label": "🦈 Megalodon",
+          "metadata": {
+            "animal_type": "massive prehistoric megalodon",
+            "animal_action": "rises from the depths",
+            "animal_detail": "60-foot body with teeth the size of hands, jaws that could swallow the boat whole",
+            "animal_sound": "primordial deep roar",
+            "animal_sound_build": "ancient rumbling from the abyss",
+            "animal_sound_peak": "earth-shaking prehistoric roar",
+            "animal_climax": "opens jaws revealing rows of massive teeth",
+            "character_reaction": "freezes in primal terror, phone shaking",
+            "reaction_sound": "silent scream of pure terror",
+            "emotion_style": "prehistoric horror"
+          }
+        },
+        {
+          "value": "great_white",
+          "label": "🦈 Great White Shark",
+          "metadata": {
+            "animal_type": "massive great white shark",
+            "animal_action": "breaches attacking",
+            "animal_detail": "25-foot apex predator with rows of serrated teeth, water streaming off its body",
+            "animal_sound": "deep predatory growl",
+            "animal_sound_build": "ominous fin cutting water",
+            "animal_sound_peak": "explosive breach and splash",
+            "animal_climax": "airborne with jaws wide open",
+            "character_reaction": "ducks and covers in terror",
+            "reaction_sound": "terrified scream",
+            "emotion_style": "classic shark terror"
+          }
+        },
+        {
+          "value": "shark",
+          "label": "🦈 Shark",
+          "metadata": {
+            "animal_type": "large shark",
+            "animal_action": "circles then breaches",
+            "animal_detail": "15-foot predator with razor-sharp teeth, fins cutting through water",
+            "animal_sound": "menacing growl",
+            "animal_sound_build": "water churning",
+            "animal_sound_peak": "splash and growl",
+            "animal_climax": "leaps beside the boat",
+            "character_reaction": "jumps back in surprise",
+            "reaction_sound": "shocked yelp",
+            "emotion_style": "sudden shark scare"
+          }
+        },
+        {
+          "value": "giant_crocodile",
+          "label": "🐊 Giant Crocodile",
+          "metadata": {
+            "animal_type": "gigantic saltwater crocodile",
+            "animal_action": "explodes from water",
+            "animal_detail": "30-foot prehistoric-sized crocodile with jaws snapping, scales glistening",
+            "animal_sound": "guttural reptilian roar",
+            "animal_sound_build": "bubbles and ripples",
+            "animal_sound_peak": "thunderous snap and roar",
+            "animal_climax": "snaps jaws shut inches from boat",
+            "character_reaction": "falls backward in boat",
+            "reaction_sound": "panicked scream",
+            "emotion_style": "reptilian terror"
+          }
+        },
+        {
+          "value": "giant_squid",
+          "label": "🦑 Giant Squid",
+          "metadata": {
+            "animal_type": "colossal giant squid",
+            "animal_action": "tentacles rise from depths",
+            "animal_detail": "40-foot tentacles with dinner-plate sized suckers wrapping around boat",
+            "animal_sound": "alien underwater sounds",
+            "animal_sound_build": "suction cups popping",
+            "animal_sound_peak": "boat creaking under grip",
+            "animal_climax": "massive eye surfaces beside boat",
+            "character_reaction": "paralyzed with cosmic horror",
+            "reaction_sound": "whimpering in fear",
+            "emotion_style": "lovecraftian horror"
+          }
+        }
+      ]
+    },
+    
+    "character_style": {
+      "type": "select",
+      "label": "Character Style",
+      "required": true,
+      "default": "kpop_girl",
+      "options": [
+        {
+          "value": "female_influencer",
+          "label": "💃 Female Influencer",
+          "metadata": {
+            "character": "female influencer",
+            "character_description": "trendy female influencer with stylish outfit",
+            "pronoun_possessive": "her",
+            "pronoun_object": "her",
+            "speaking_tone": "bubbly excited voice",
+            "language": "en-US",
+            "default_dialogue": "Hey gorgeous! Just living my best life on this amazing yacht! The vibes are incredible today!"
+          }
+        },
+        {
+          "value": "male_influencer",
+          "label": "🕺 Male Influencer",
+          "metadata": {
+            "character": "male influencer",
+            "character_description": "confident male influencer with trendy style",
+            "pronoun_possessive": "his",
+            "pronoun_object": "him",
+            "speaking_tone": "energetic bro voice",
+            "language": "en-US",
+            "default_dialogue": "What's up squad! Check out this epic boat adventure! The ocean is absolutely insane today!"
+          }
+        },
+        {
+          "value": "bigfoot",
+          "label": "🦶 Bigfoot",
+          "metadata": {
+            "character": "Bigfoot",
+            "character_description": "Bigfoot holding a smartphone awkwardly with massive hairy hands",
+            "pronoun_possessive": "his",
+            "pronoun_object": "him",
+            "speaking_tone": "deep grumbling voice trying to sound modern",
+            "language": "en-US",
+            "default_dialogue": "Uh... hello internet people. Bigfoot here. Finally got vacation from forest. Ocean is... very wet. Much different from woods."
+          }
+        },
+        {
+          "value": "yeti",
+          "label": "❄️ Yeti",
+          "metadata": {
+            "character": "Yeti",
+            "character_description": "white-furred Yeti wearing sunglasses on vacation",
+            "pronoun_possessive": "his",
+            "pronoun_object": "him",
+            "speaking_tone": "cheerful mountain creature voice with slight echo",
+            "language": "en-US",
+            "default_dialogue": "Greetings from the tropics! Who says a Yeti can't enjoy a beach vacation? This is way better than the Himalayas!"
+          }
+        },
+        {
+          "value": "tourist",
+          "label": "📸 Tourist",
+          "metadata": {
+            "character": "excited tourist",
+            "character_description": "enthusiastic tourist with sunhat",
+            "pronoun_possessive": "their",
+            "pronoun_object": "them",
+            "speaking_tone": "amazed tourist voice",
+            "language": "en-US",
+            "default_dialogue": "Oh my gosh, this is incredible! First time on a speedboat and I'm absolutely loving it! Wait till everyone back home sees this!"
+          }
+        }
+      ]
+    },
+    
+    "dialogue_content": {
+      "type": "textarea",
+      "label": "Dialogue Content",
+      "required": true,
+      "placeholder": "Enter what the character says to the camera...",
+      "maxLength": 200,
+      "rows": 3,
+      "default": "Hey gorgeous! Just living my best life on this amazing yacht! The vibes are incredible today!"
+    },
+    
+    "animal_type": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
+    "animal_action": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
+    "animal_detail": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
+    "animal_sound": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
+    "animal_sound_build": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
+    "animal_sound_peak": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
+    "animal_climax": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
+    "character_reaction": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
+    "reaction_sound": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
+    "emotion_style": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
+    
+    "character": {"type": "hidden", "linkedTo": "character_style", "linkType": "metadata"},
+    "character_description": {"type": "hidden", "linkedTo": "character_style", "linkType": "metadata"},
+    "pronoun_possessive": {"type": "hidden", "linkedTo": "character_style", "linkType": "metadata"},
+    "pronoun_object": {"type": "hidden", "linkedTo": "character_style", "linkType": "metadata"},
+    "speaking_tone": {"type": "hidden", "linkedTo": "character_style", "linkType": "metadata"},
+    "language": {"type": "hidden", "linkedTo": "character_style", "linkType": "metadata"},
+    "default_dialogue": {"type": "hidden", "linkedTo": "character_style", "linkType": "metadata"},
+    
+    "makePublic": {
+      "type": "toggle",
+      "label": "Make video public",
+      "default": false
+    }
+  }
+}

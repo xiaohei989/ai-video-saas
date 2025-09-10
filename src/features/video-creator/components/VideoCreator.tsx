@@ -16,6 +16,10 @@ import { toast } from 'sonner'
 import { getVideoCreditCost } from '@/config/credits'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useSEO } from '@/hooks/useSEO'
+import { useVideoGenerationLimiter } from '@/hooks/useRateLimiter'
+import { InputValidator } from '@/utils/inputValidator'
+import { securityMonitor } from '@/services/securityMonitorService'
+import { ThreatType, SecurityLevel } from '@/config/security'
 
 export default function VideoCreator() {
   const { t } = useTranslation()
@@ -25,6 +29,7 @@ export default function VideoCreator() {
   const navigate = useNavigate()
   const { user } = useContext(AuthContext)
   const { trackVideoGeneration, trackTemplateView, trackTemplateUse, trackEvent } = useAnalytics()
+  const { executeWithLimit, isLimited, getRemainingRequests } = useVideoGenerationLimiter()
 
   // SEO优化
   useSEO('create')
@@ -152,6 +157,39 @@ export default function VideoCreator() {
   }
 
   const handleParamChange = (key: string, value: any) => {
+    // 安全验证用户输入
+    if (typeof value === 'string' && value.length > 0) {
+      const validation = InputValidator.validateString(value, {
+        sanitize: true,
+        allowHtml: false,
+        maxLength: 2000
+      })
+      
+      if (!validation.isValid) {
+        toast.error(`输入验证失败: ${validation.errors[0]}`)
+        return
+      }
+      
+      // 记录可疑活动
+      if (validation.threatLevel === SecurityLevel.HIGH || validation.threatLevel === SecurityLevel.CRITICAL) {
+        securityMonitor.logSecurityEvent({
+          type: ThreatType.SUSPICIOUS_PATTERN,
+          level: validation.threatLevel,
+          userId: user?.id,
+          details: {
+            input: value.substring(0, 100), // 只记录前100个字符
+            paramKey: key,
+            templateId: selectedTemplate.id,
+            threats: validation.threats
+          },
+          blocked: false,
+          action: 'param_input'
+        })
+      }
+      
+      value = validation.sanitized || value
+    }
+    
     setParams(prev => ({ ...prev, [key]: value }))
   }
 
@@ -159,6 +197,12 @@ export default function VideoCreator() {
     // Check if user is authenticated
     if (!user) {
       toast.error(t('videoCreator.loginRequired'))
+      return
+    }
+    
+    // 检查是否被限流
+    if (isLimited()) {
+      toast.error(t('videoCreator.generationLimited'))
       return
     }
 
@@ -245,74 +289,122 @@ export default function VideoCreator() {
     setGenerationStatus(t('videoCreator.submittingTask'))
     setStartTime(Date.now())
     
-    // 跟踪模板使用和视频生成开始事件
-    trackTemplateUse(selectedTemplate.id, selectedTemplate.category)
-    trackVideoGeneration({
-      template_id: selectedTemplate.id,
-      template_category: selectedTemplate.category || 'uncategorized',
-      video_quality: quality,
-      aspect_ratio: aspectRatio,
-      api_provider: (import.meta.env.VITE_PRIMARY_VIDEO_API as 'qingyun' | 'apicore') || 'qingyun',
-      credits_used: requiredCredits,
-      success: false // 先标记为开始，完成时再更新
+    // 使用限流保护的视频生成
+    const result = await executeWithLimit(async () => {
+      try {
+        // 跟踪模板使用和视频生成开始事件
+        trackTemplateUse(selectedTemplate.id, selectedTemplate.category)
+        // 验证提示词内容
+        const promptValidation = InputValidator.validateString(prompt, {
+          sanitize: true,
+          allowHtml: false,
+          maxLength: 5000
+        })
+        
+        if (!promptValidation.isValid) {
+          toast.error(`提示词验证失败: ${promptValidation.errors[0]}`)
+          throw new Error('Invalid prompt')
+        }
+        
+        // 记录视频生成尝试
+        await securityMonitor.logSecurityEvent({
+          type: ThreatType.SUSPICIOUS_PATTERN,
+          level: SecurityLevel.LOW,
+          userId: user.id,
+          details: {
+            templateId: selectedTemplate.id,
+            quality,
+            aspectRatio,
+            creditsUsed: requiredCredits
+          },
+          blocked: false,
+          action: 'video_generation_attempt'
+        })
+        
+        trackVideoGeneration({
+          template_id: selectedTemplate.id,
+          template_category: selectedTemplate.category || 'uncategorized',
+          video_quality: quality,
+          aspect_ratio: aspectRatio,
+          api_provider: (import.meta.env.VITE_PRIMARY_VIDEO_API as 'qingyun' | 'apicore') || 'qingyun',
+          credits_used: requiredCredits,
+          success: false // 先标记为开始，完成时再更新
+        })
+        
+        // 使用队列服务提交任务
+        const result = await videoQueueService.submitJob({
+          userId: user.id,
+          videoData: {
+            templateId: selectedTemplate.id,
+            title: selectedTemplate.name,
+            description: selectedTemplate.description,
+            prompt: promptValidation.sanitized || prompt,
+            jsonPrompt: jsonPrompt,
+            parameters: params,
+            creditsUsed: requiredCredits,
+            isPublic: false,
+            aspectRatio: aspectRatio,
+            quality: quality === 'high' ? 'pro' : 'fast',
+            apiProvider: import.meta.env.VITE_PRIMARY_VIDEO_API as 'qingyun' | 'apicore' || 'qingyun'
+          }
+        })
+
+        setCurrentVideoId(result.videoRecordId)
+        console.log('Video job submitted:', result)
+
+        // 根据结果更新UI状态
+        if (result.status === 'queued') {
+          setQueueStatus({
+            isQueued: true,
+            position: result.queuePosition,
+            estimatedWaitMinutes: result.estimatedWaitMinutes,
+            message: result.queuePosition && result.queuePosition > 1 
+              ? t('videoCreator.videosAheadInQueue', { count: result.queuePosition - 1 })
+              : t('videoCreator.videoInQueue')
+          })
+          setGenerationStatus(t('videoCreator.queuedForProcessing'))
+          setIsGenerating(false)
+        } else {
+          setGenerationStatus(t('videoCreator.generationStarted'))
+          setQueueStatus({ isQueued: false })
+        }
+        
+        // 立即跳转到我的视频页面
+        navigate('/videos')
+        
+        console.log('Task submitted successfully, redirecting to videos page')
+        return true
+        
+      } catch (error) {
+        console.error('Failed to submit video generation job:', error)
+        setIsGenerating(false)
+        setGenerationProgress(0)
+        setGenerationStatus('')
+        setStartTime(null)
+        setQueueStatus({ isQueued: false })
+        
+        // 记录失败的生成尝试
+        await securityMonitor.logSecurityEvent({
+          type: ThreatType.SUSPICIOUS_PATTERN,
+          level: SecurityLevel.LOW,
+          userId: user.id,
+          details: {
+            error: error.message,
+            templateId: selectedTemplate.id
+          },
+          blocked: false,
+          action: 'video_generation_failed'
+        })
+        
+        toast.error(t('videoCreator.submitFailed'))
+        throw error
+      }
     })
     
-    try {
-      // 使用队列服务提交任务
-      const result = await videoQueueService.submitJob({
-        userId: user.id,
-        videoData: {
-          templateId: selectedTemplate.id,
-          title: selectedTemplate.name,
-          description: selectedTemplate.description,
-          prompt: prompt,
-          jsonPrompt: jsonPrompt, // 添加JSON格式的提示词
-          parameters: params,
-          creditsUsed: requiredCredits,
-          isPublic: false,
-          // 新增宽高比和质量参数
-          aspectRatio: aspectRatio,
-          quality: quality === 'high' ? 'pro' : 'fast',
-          // 可以根据用户设置或模板需求选择API提供商
-          apiProvider: import.meta.env.VITE_PRIMARY_VIDEO_API as 'qingyun' | 'apicore' || 'qingyun'
-        }
-      })
-
-      setCurrentVideoId(result.videoRecordId)
-      console.log('Video job submitted:', result)
-
-      // 根据结果更新UI状态
-      if (result.status === 'queued') {
-        setQueueStatus({
-          isQueued: true,
-          position: result.queuePosition,
-          estimatedWaitMinutes: result.estimatedWaitMinutes,
-          message: result.queuePosition && result.queuePosition > 1 
-            ? t('videoCreator.videosAheadInQueue', { count: result.queuePosition - 1 })
-            : t('videoCreator.videoInQueue')
-        })
-        setGenerationStatus(t('videoCreator.queuedForProcessing'))
-        setIsGenerating(false) // 队列状态下不显示生成中
-      } else {
-        setGenerationStatus(t('videoCreator.generationStarted'))
-        setQueueStatus({ isQueued: false })
-      }
-      
-      // 立即跳转到我的视频页面
-      navigate('/videos')
-      
-      // 队列系统已经处理了所有视频生成流程
-      console.log('Task submitted successfully, redirecting to videos page')
-      
-    } catch (error) {
-      console.error('Failed to submit video generation job:', error)
+    if (result === null) {
+      // 生成被限流
+      toast.error(`视频生成频率过高，剩余额度: ${getRemainingRequests()}`)
       setIsGenerating(false)
-      setGenerationProgress(0)
-      setGenerationStatus('')
-      setStartTime(null)
-      setQueueStatus({ isQueued: false })
-      
-      toast.error(t('videoCreator.submitFailed'))
     }
   }
 
@@ -330,6 +422,8 @@ export default function VideoCreator() {
           onParamChange={handleParamChange}
           onGenerate={handleGenerate}
           isGenerating={isGenerating}
+          isLimited={isLimited()}
+          remainingRequests={getRemainingRequests()}
         />
       </div>
       

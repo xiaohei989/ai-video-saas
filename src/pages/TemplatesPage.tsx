@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { formatFullDate } from '@/utils/dateFormat'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Play, Clock, Gem, Hash, RefreshCw, TrendingUp, Sparkles, Heart, ArrowUp } from 'lucide-react'
-import { templateList as initialTemplates } from '@/features/video-creator/data/templates/index'
+import { Badge } from '@/components/ui/badge'
+import { Play, Clock, Gem, Hash, RefreshCw, TrendingUp, Sparkles, Heart, ArrowUp, Camera } from 'lucide-react'
+import { templateList as initialTemplates, getPopularTags, getTemplatesByTags } from '@/features/video-creator/data/templates/index'
 import LazyVideoPlayer from '@/components/video/LazyVideoPlayer'
 import LikeCounterButton from '@/components/templates/LikeCounterButton'
 import Pagination from '@/components/ui/pagination'
@@ -38,7 +40,14 @@ export default function TemplatesPage() {
     const sort = searchParams.get('sort') as SortOption
     return sort && ['popular', 'latest'].includes(sort) ? sort : 'popular'
   })
+  const [selectedTags, setSelectedTags] = useState<string[]>(() => {
+    const tags = searchParams.get('tags')
+    return tags ? tags.split(',').filter(Boolean) : []
+  })
   const [showBackToTop, setShowBackToTop] = useState(false)
+  
+  // 获取热门标签
+  const popularTags = getPopularTags(16)
 
   // SEO优化
   useSEO('templates')
@@ -49,6 +58,7 @@ export default function TemplatesPage() {
     if (currentPage > 1) params.set('page', currentPage.toString())
     if (pageSize !== 12) params.set('size', pageSize.toString())
     if (sortBy !== 'popular') params.set('sort', sortBy)
+    if (selectedTags.length > 0) params.set('tags', selectedTags.join(','))
     
     const newSearch = params.toString()
     const currentSearch = searchParams.toString()
@@ -56,13 +66,14 @@ export default function TemplatesPage() {
     if (newSearch !== currentSearch) {
       setSearchParams(params, { replace: true })
     }
-  }, [currentPage, pageSize, sortBy, searchParams, setSearchParams])
+  }, [currentPage, pageSize, sortBy, selectedTags, searchParams, setSearchParams])
 
   // 监听URL参数变化
   useEffect(() => {
     const page = searchParams.get('page')
     const size = searchParams.get('size')
     const sort = searchParams.get('sort') as SortOption
+    const tags = searchParams.get('tags')
     
     if (page) {
       const pageNum = Math.max(1, parseInt(page, 10))
@@ -80,6 +91,11 @@ export default function TemplatesPage() {
     
     if (sort && ['popular', 'latest'].includes(sort) && sort !== sortBy) {
       setSortBy(sort)
+    }
+    
+    const urlTags = tags ? tags.split(',').filter(Boolean) : []
+    if (JSON.stringify(urlTags) !== JSON.stringify(selectedTags)) {
+      setSelectedTags(urlTags)
     }
   }, [searchParams])
 
@@ -146,14 +162,16 @@ export default function TemplatesPage() {
     })
   }
 
-  // 排序后的模板列表
-  const sortedTemplates = useMemo(() => {
-    const sorted = [...templates]
+  // 根据标签筛选和排序的模板列表
+  const filteredAndSortedTemplates = useMemo(() => {
+    // 首先根据选中的标签筛选模板
+    const filteredTemplates = getTemplatesByTags(selectedTags)
     
+    // 然后排序
     switch (sortBy) {
       case 'popular':
         // 按点赞数降序排序（优先使用实时数据，回退到静态数据）
-        return sorted.sort((a, b) => {
+        return filteredTemplates.sort((a, b) => {
           const likeStatusA = getLikeStatus(a.id)
           const likeStatusB = getLikeStatus(b.id)
           const likesA = likeStatusA?.like_count ?? 0
@@ -163,23 +181,23 @@ export default function TemplatesPage() {
       
       case 'latest':
         // 按创建时间降序排序（最新的在前）
-        return sorted.sort((a, b) => {
+        return filteredTemplates.sort((a, b) => {
           const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
           const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
           return dateB - dateA
         })
       
       default:
-        return sorted
+        return filteredTemplates
     }
-  }, [templates, sortBy, likeStatuses, getLikeStatus])
+  }, [selectedTags, sortBy, likeStatuses, getLikeStatus])
 
   // 分页计算
-  const totalItems = sortedTemplates.length
+  const totalItems = filteredAndSortedTemplates.length
   const totalPages = Math.ceil(totalItems / pageSize)
   const startIndex = (currentPage - 1) * pageSize
   const endIndex = startIndex + pageSize
-  const paginatedTemplates = sortedTemplates.slice(startIndex, endIndex)
+  const paginatedTemplates = filteredAndSortedTemplates.slice(startIndex, endIndex)
 
   // 当切换排序或页面大小时，重置到第一页
   useEffect(() => {
@@ -233,35 +251,122 @@ export default function TemplatesPage() {
     trackFilter('sort', newSort)
   }
 
+  const handleTagClick = (tag: string) => {
+    const newSelectedTags = selectedTags.includes(tag)
+      ? selectedTags.filter(t => t !== tag) // 取消选中
+      : [...selectedTags, tag] // 添加选中
+    
+    setSelectedTags(newSelectedTags)
+    setCurrentPage(1) // 切换标签时回到第一页
+    
+    // 跟踪标签筛选事件
+    trackEvent({
+      action: 'tag_filter',
+      category: 'user_navigation',
+      label: tag,
+      custom_parameters: {
+        selected_tags: newSelectedTags,
+        filter_action: selectedTags.includes(tag) ? 'remove' : 'add'
+      }
+    })
+  }
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">{t('template.title')}</h1>
-        
-        {/* 排序选择器 */}
-        <Select value={sortBy} onValueChange={handleSortChange}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder={t('template.sortBy.placeholder')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="popular">
-              <span className="flex items-center gap-2 whitespace-nowrap">
-                <TrendingUp className="h-4 w-4" />
-                {t('template.sortBy.popular')}
+    <div className="space-y-4">
+      {/* 标签筛选区域 */}
+      <div className="space-y-2">
+        {/* 热门标签展示区域 - 2排，右上角是排序选择器 */}
+        <div className="space-y-2">
+          {/* 第一排标签和排序选择器 */}
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-wrap gap-2">
+              {popularTags.slice(0, 6).map((tag) => (
+                <Badge
+                  key={tag}
+                  variant={selectedTags.includes(tag) ? "default" : "secondary"}
+                  className={`cursor-pointer transition-all duration-200 hover:scale-105 ${
+                    selectedTags.includes(tag) 
+                      ? 'bg-primary text-primary-foreground shadow-md' 
+                      : 'hover:bg-primary/10 hover:border-primary/20'
+                  }`}
+                  onClick={() => handleTagClick(tag)}
+                >
+                  <Hash className="h-3 w-3 mr-1" />
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+            
+            {/* 排序选择器 */}
+            <Select value={sortBy} onValueChange={handleSortChange}>
+              <SelectTrigger className="w-[180px] flex-shrink-0">
+                <SelectValue placeholder={t('template.sortBy.placeholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="popular">
+                  <span className="flex items-center gap-2 whitespace-nowrap">
+                    <TrendingUp className="h-4 w-4" />
+                    {t('template.sortBy.popular')}
+                  </span>
+                </SelectItem>
+                <SelectItem value="latest">
+                  <span className="flex items-center gap-2 whitespace-nowrap">
+                    <Sparkles className="h-4 w-4" />
+                    {t('template.sortBy.latest')}
+                  </span>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {/* 第二排标签 */}
+          <div className="flex flex-wrap gap-2">
+            {popularTags.slice(6, 16).map((tag) => (
+              <Badge
+                key={tag}
+                variant={selectedTags.includes(tag) ? "default" : "secondary"}
+                className={`cursor-pointer transition-all duration-200 hover:scale-105 ${
+                  selectedTags.includes(tag) 
+                    ? 'bg-primary text-primary-foreground shadow-md' 
+                    : 'hover:bg-primary/10 hover:border-primary/20'
+                }`}
+                onClick={() => handleTagClick(tag)}
+              >
+                <Hash className="h-3 w-3 mr-1" />
+                {tag}
+              </Badge>
+            ))}
+          </div>
+          
+          {/* 筛选结果提示 */}
+          {selectedTags.length > 0 && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>筛选条件:</span>
+              {selectedTags.map((tag) => (
+                <Badge key={tag} variant="outline" className="text-xs">
+                  {tag}
+                  <button
+                    onClick={() => handleTagClick(tag)}
+                    className="ml-1 hover:text-destructive"
+                    aria-label={`移除 ${tag} 标签`}
+                  >
+                    ×
+                  </button>
+                </Badge>
+              ))}
+              <span className="text-primary font-medium">
+                ({totalItems} 个模板)
               </span>
-            </SelectItem>
-            <SelectItem value="latest">
-              <span className="flex items-center gap-2 whitespace-nowrap">
-                <Sparkles className="h-4 w-4" />
-                {t('template.sortBy.latest')}
-              </span>
-            </SelectItem>
-          </SelectContent>
-        </Select>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {paginatedTemplates.map((template: any) => {
+        {paginatedTemplates.map((template: any, index: number) => {
+          // 智能懒加载策略：首屏模板立即加载，其余保持懒加载
+          const isFirstScreen = index < 6 // 前6个模板为首屏
+          const enableLazy = !isFirstScreen // 只有非首屏才启用懒加载
+          
           return (
           <Card key={template.id} className="overflow-hidden shadow-md flex flex-col">
             <div className="aspect-video bg-muted relative group">
@@ -271,11 +376,11 @@ export default function TemplatesPage() {
                   poster={template.thumbnailUrl}
                   className="w-full h-full"
                   objectFit="cover"
-                  showPlayButton={true}
+                  showPlayButton={false}
                   showVolumeControl={true}
-                  autoPlayOnHover={false}
+                  autoPlayOnHover={true}
                   alt={template.name}
-                  enableLazyLoad={true}
+                  enableLazyLoad={enableLazy}
                   enableThumbnailCache={true}
                   enableNetworkAdaptive={true}
                   enableProgressiveLoading={true}
@@ -295,6 +400,34 @@ export default function TemplatesPage() {
                   </div>
                 </div>
               )}
+              
+              
+              {/* 生成按钮（底部中间，移动端始终显示，桌面端悬停显示） */}
+              <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 z-20">
+                <Button 
+                  variant="outline"
+                  size="xs"
+                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-200 text-xs font-light px-3 py-1.5"
+                  onClick={() => {
+                    // 跟踪模板使用事件
+                    trackTemplateView(template.id, template.category)
+                    trackEvent({
+                      action: 'template_use_click',
+                      category: 'product_usage',
+                      label: template.id,
+                      custom_parameters: {
+                        template_name: template.name,
+                        template_category: template.category,
+                        credit_cost: template.credits
+                      }
+                    })
+                    navigate(`/create?template=${template.slug}`)
+                  }}
+                >
+                  <Camera className="h-3 w-3 mr-1.5" />
+                  {t('template.generate')}
+                </Button>
+              </div>
               
               {/* 可交互的点赞区域（左上角） */}
               <div className="absolute top-2 left-2 z-10">
@@ -323,21 +456,10 @@ export default function TemplatesPage() {
             <CardContent className="flex-1 flex flex-col justify-between p-4">
               <div className="space-y-3">
                 {/* 描述信息 */}
-                <p className="text-sm text-muted-foreground line-clamp-2">
+                <p className="text-xs text-muted-foreground line-clamp-3">
                   {template.description}
                 </p>
                 
-                {/* 创建时间 */}
-                {template.createdAt && (
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Clock className="h-3 w-3" />
-                    {new Date(template.createdAt).toLocaleDateString('zh-CN', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                  </div>
-                )}
                 
                 {/* 标签 */}
                 {template.tags && template.tags.length > 0 && (
@@ -355,28 +477,6 @@ export default function TemplatesPage() {
                 )}
               </div>
               
-              {/* 生成按钮 */}
-              <Button 
-                className="w-full mt-4"
-                onClick={() => {
-                  // 跟踪模板使用事件
-                  trackTemplateView(template.id, template.category)
-                  trackEvent({
-                    action: 'template_use_click',
-                    category: 'product_usage',
-                    label: template.id,
-                    custom_parameters: {
-                      template_name: template.name,
-                      template_category: template.category,
-                      credit_cost: template.credits
-                    }
-                  })
-                  navigate(`/create?template=${template.slug}`)
-                }}
-              >
-                <Sparkles className="h-4 w-4 mr-2" />
-                {t('template.generate')}
-              </Button>
             </CardContent>
           </Card>
           )

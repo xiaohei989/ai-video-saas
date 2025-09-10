@@ -228,12 +228,12 @@ const VirtualVideoList = <T extends VideoItem = VideoItem>({
         </div>
         
         <CardContent className="p-4">
-          <h3 className="font-medium text-sm line-clamp-2 min-h-[2.5rem] mb-2">
+          <h3 className="font-medium text-sm line-clamp-2 min-h-[2.5rem] mb-1">
             {video.title || t('video.untitled')}
           </h3>
           
           {video.description && layout !== 'list' && (
-            <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+            <p className="text-xs text-muted-foreground line-clamp-4 mb-2">
               {video.description}
             </p>
           )}

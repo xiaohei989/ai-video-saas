@@ -317,7 +317,7 @@
     "title": "Trending Templates",
     "selectTemplate": "Create Viral Videos Now",
     "parameters": "Parameters",
-    "generate": "Generate Video",
+    "generate": "Generate",
     "creditCost": "{{cost}} credits",
     "preview": "Preview",
     "sortBy": {
@@ -437,6 +437,8 @@
     "aboutSeconds": "About {{seconds}} sec",
     "completed": "Generation completed!",
     "failed": "Generation failed",
+    "generationLimited": "Generation limit reached, please wait before trying again",
+    "finalizing": "Finalizing...",
     "restoring": "Restoring...",
     "unknownStatus": "Unknown status"
   },
@@ -698,7 +700,25 @@
     "signOut": "Sign Out", 
     "backToHome": "Back to Home",
     "loadMore": "Load more",
-    "unknownError": "Unknown error"
+    "unknownError": "Unknown error",
+    "empty": "No data",
+    "retry": "Retry",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "loginRequired": "Please log in to continue",
+    "contactSupport": "Contact Support",
+    "supportEmail": "support@example.com",
+    "pleaseLoginToViewTickets": "Please log in to view your ticket history",
+    "login": "Login",
+    "customerService": "Support",
+    "sending": "Sending...",
+    "tableOfContents": "Table of Contents",
+    "legalDocument": "Legal Document",
+    "printPdf": "Print / PDF",
+    "backToTop": "Back to Top",
+    "remaining": "Remaining",
+    "confirm": "Confirm"
   },
   "shareModal": {
     "title": "Share Video & Earn Credits",
@@ -736,7 +756,13 @@
     "standard": "Standard",
     "highQuality": "High Quality",
     "generateVideo": "Generate Video",
-    "generating": "Generating..."
+    "generating": "Generating...",
+    "prompt": "Prompt",
+    "viewPrompt": "Show prompt",
+    "hidePrompt": "Hide prompt",
+    "copyPrompt": "Copy prompt to clipboard",
+    "promptAccessRequired": "Only subscribers can view detailed prompts",
+    "upgradeToUnlock": "Upgrade to unlock"
   },
   "helpCenter": {
     "title": "Help Center",
@@ -886,22 +912,6 @@
         "success": "Ticket closed successfully",
         "error": "Failed to close ticket"
       }
-    },
-    "common": {
-      "loading": "Loading...",
-      "error": "Failed to load, please refresh and try again",
-      "empty": "No data",
-      "retry": "Retry",
-      "back": "Back",
-      "next": "Next",
-      "previous": "Previous",
-      "loginRequired": "Please log in to continue",
-      "contactSupport": "Contact Support",
-      "supportEmail": "support@example.com",
-      "pleaseLoginToViewTickets": "Please log in to view your ticket history",
-      "login": "Login",
-      "customerService": "Support",
-      "sending": "Sending..."
     }
   },
   "footer": {
@@ -948,12 +958,6 @@
       "website": "Website",
       "dpo": "Data Protection Officer",
       "responseTime": "We will respond to your inquiries within 30 days in accordance with applicable law."
-    },
-    "common": {
-      "tableOfContents": "Table of Contents",
-      "legalDocument": "Legal Document",
-      "printPdf": "Print / PDF",
-      "backToTop": "Back to Top"
     }
   },
   "privacy": {
@@ -1050,14 +1054,6 @@
         }
       }
     }
-  },
-  "common": {
-    "retry": "Retry",
-    "remaining": "Remaining",
-    "loading": "Loading...",
-    "error": "Error",
-    "cancel": "Cancel",
-    "confirm": "Confirm"
   },
   "video": {
     "preview": "Video Preview",

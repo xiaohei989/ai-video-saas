@@ -644,7 +644,7 @@ export default function VideosPageNew() {
                 key={video.id}
                 className="overflow-hidden hover:shadow-lg transition-all duration-300"
               >
-                <div className="aspect-video relative bg-gray-100 dark:bg-gray-800">
+                <div className="aspect-video relative bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-800 dark:via-slate-700 dark:to-slate-600">
                   {/* 视频渲染逻辑 - 简化且清晰 */}
                   {video.video_url ? (
                     // 有视频URL - 显示视频播放器
@@ -653,15 +653,15 @@ export default function VideosPageNew() {
                       poster={video.thumbnail_url}
                       className="w-full h-full"
                       objectFit="cover"
-                      showPlayButton={true}
+                      showPlayButton={false} // 桌面端隐藏播放按钮，移动端会自动显示
                       showVolumeControl={true}
-                      autoPlayOnHover={false}
+                      autoPlayOnHover={true} // 启用悬浮自动播放
                       userId={user?.id}
                       videoId={video.id}
                       videoTitle={video.title || 'video'}
                       enableDownloadProtection={true}
                       alt={video.title || 'Video preview'}
-                      enableLazyLoad={true}
+                      enableLazyLoad={false}
                       enableThumbnailCache={true}
                       enableNetworkAdaptive={false}
                       enableProgressiveLoading={true}
@@ -713,9 +713,9 @@ export default function VideosPageNew() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    // 默认占位符
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-                      <div className="text-center text-gray-500 dark:text-gray-400">
+                    // 默认占位符 - 使用渐变背景
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="text-center text-gray-600 dark:text-gray-300">
                         <Eye className="h-12 w-12 mx-auto mb-2" strokeWidth={1.5} />
                         <div className="text-sm">{t('videos.waitingForProcessing')}</div>
                       </div>
@@ -724,15 +724,15 @@ export default function VideosPageNew() {
 
                 </div>
 
-                <CardContent className="p-4">
+                <CardContent className="p-3">
                   {/* 视频信息 */}
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <div>
-                      <h3 className="font-medium text-sm line-clamp-2 min-h-[2.5rem]">
+                      <h3 className="font-medium text-sm line-clamp-2 min-h-[2rem]">
                         {video.title || t('videos.untitledVideo')}
                       </h3>
                       {video.description && (
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                        <p className="text-xs text-muted-foreground mt-0 line-clamp-4">
                           {video.description}
                         </p>
                       )}

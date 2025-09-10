@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase'
 import supabaseVideoService from './supabaseVideoService'
 import creditService from './creditService'
 import redisCacheIntegrationService from './RedisCacheIntegrationService'
+import aiContentService from './aiContentService'
 import type { Database } from '@/lib/supabase'
 
 type Video = Database['public']['Tables']['videos']['Row']
@@ -205,7 +206,6 @@ class VideoQueueService {
           }
         }
         
-        console.log(`[QUEUE SERVICE] 任务恢复完成: ${this.activeJobs.size} 个活跃任务`)
       }
     } catch (error) {
       console.error('[QUEUE SERVICE] Error restoring active jobs:', error)
@@ -572,12 +572,16 @@ class VideoQueueService {
 
     console.log(`[QUEUE SERVICE] Credits consumed successfully: ${request.videoData.creditsUsed}, new balance: ${creditResult.newBalance}`)
 
-    // 创建视频记录
+    // 🎯 新增：在创建视频记录前先生成AI标题和简介
+    console.log(`[QUEUE SERVICE] 📝 开始为视频生成AI标题和简介...`)
+    const aiMetadata = await this.generateVideoMetadataSync(request.videoData, request.userId, 8000)
+    
+    // 创建视频记录时使用AI生成的标题和简介
     const videoRecord = await supabaseVideoService.createVideo({
       userId: request.userId,
       templateId: request.videoData.templateId,
-      title: request.videoData.title,
-      description: request.videoData.description,
+      title: aiMetadata.title,  // 使用AI生成的标题
+      description: aiMetadata.description,  // 使用AI生成的简介
       prompt: request.videoData.prompt,
       parameters: request.videoData.parameters,
       creditsUsed: request.videoData.creditsUsed,
@@ -615,6 +619,24 @@ class VideoQueueService {
         .limit(1)
     } catch (error) {
       console.warn('[QUEUE SERVICE] Failed to update credit transaction reference_id:', error)
+    }
+
+    // 检查是否使用了智能默认值（而非AI生成的值）
+    const isUsingSmartDefault = aiMetadata.title.includes('Epic') || 
+                                aiMetadata.title.includes('Amazing') || 
+                                aiMetadata.title.includes('Incredible') ||
+                                aiMetadata.title.includes('Adventure') ||
+                                aiMetadata.title.includes('Showcase') ||
+                                aiMetadata.title.includes('Story')
+    
+    if (isUsingSmartDefault) {
+      console.log(`[QUEUE SERVICE] 🔄 检测到使用了智能默认标题，启动异步AI更新`)
+      // 延迟1秒后开始异步更新，避免立即重试
+      setTimeout(() => {
+        this.generateVideoMetadataAsync(videoRecord.id, request.videoData, request.userId, true)
+      }, 1000)
+    } else {
+      console.log(`[QUEUE SERVICE] ✅ 使用AI生成的标题和简介，无需异步更新`)
     }
 
     // 检查是否可以立即开始处理
@@ -799,7 +821,6 @@ class VideoQueueService {
       this.performGlobalCleanup()
     }, 5 * 60 * 1000) // 5分钟
 
-    console.log('[QUEUE SERVICE] ✅ 启动定期清理机制，每5分钟清理一次无效任务')
   }
 
   /**
@@ -1235,6 +1256,344 @@ class VideoQueueService {
       taskId,
       userId
     }))
+  }
+
+  /**
+   * 获取用户语言设置
+   */
+  private async getUserLanguage(userId: string): Promise<string> {
+    try {
+      // 优先使用界面当前语言
+      const i18n = (await import('@/i18n/config')).default
+      const currentUILanguage = i18n.language || 'zh-CN'
+      
+      console.log(`[QUEUE SERVICE] 界面当前语言: ${currentUILanguage}`)
+      
+      // 尝试获取数据库中的用户语言设置
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('language')
+        .eq('id', userId)
+        .single()
+      
+      // 优先使用界面当前语言，这样用户切换语言后立即生效
+      const dbLanguage = profile?.language
+      const finalLanguage = currentUILanguage
+      
+      console.log(`[QUEUE SERVICE] 数据库语言: ${dbLanguage || 'null'}, 界面语言: ${currentUILanguage}, 最终语言: ${finalLanguage}`)
+      
+      // 如果数据库语言与界面语言不一致，更新数据库以保持同步
+      if (dbLanguage !== currentUILanguage) {
+        try {
+          await supabase
+            .from('profiles')
+            .update({ language: currentUILanguage })
+            .eq('id', userId)
+          console.log(`[QUEUE SERVICE] 已将数据库语言更新为: ${currentUILanguage}`)
+        } catch (updateError) {
+          console.warn(`[QUEUE SERVICE] 更新数据库语言失败: ${updateError}`)
+        }
+      }
+      
+      return finalLanguage
+    } catch (error) {
+      console.warn(`[QUEUE SERVICE] 获取用户语言失败，使用默认中文: ${error}`)
+      return 'zh-CN'
+    }
+  }
+
+  /**
+   * 获取模板名称
+   */
+  private async getTemplateName(templateId?: string): Promise<string> {
+    if (!templateId) return '视频模板'
+    
+    try {
+      const { data: template } = await supabase
+        .from('templates')
+        .select('name')
+        .eq('id', templateId)
+        .single()
+      
+      return template?.name || templateId
+    } catch (error) {
+      console.warn(`[QUEUE SERVICE] 获取模板名称失败: ${error}`)
+      return templateId
+    }
+  }
+
+  /**
+   * 同步生成AI标题和简介（带超时）
+   */
+  private async generateVideoMetadataSync(
+    videoData: SubmitJobRequest['videoData'], 
+    userId: string,
+    timeoutMs: number = 8000
+  ): Promise<{ title: string; description: string }> {
+    try {
+      console.log(`[QUEUE SERVICE] 🚀 开始同步生成AI标题和简介 (超时: ${timeoutMs}ms)`)
+      
+      // 获取用户语言和模板信息
+      const [userLanguage, templateName] = await Promise.all([
+        this.getUserLanguage(userId),
+        this.getTemplateName(videoData.templateId)
+      ])
+      
+      // 使用Promise.race实现超时机制
+      const result = await Promise.race([
+        // AI生成请求
+        aiContentService.generateVideoMetadata({
+          templateName,
+          prompt: videoData.prompt || '',
+          parameters: videoData.parameters || {},
+          userLanguage
+        }),
+        // 超时Promise
+        new Promise<{ title: string; description: string }>((resolve) => 
+          setTimeout(() => {
+            console.log(`[QUEUE SERVICE] ⏰ AI生成超时(${timeoutMs}ms)，使用智能默认值`)
+            
+            // 生成更智能的默认标题
+            const smartTitle = this.generateSmartDefaultTitle(templateName, videoData.parameters || {})
+            const smartDescription = this.generateSmartDefaultDescription(templateName, videoData.prompt || '', videoData.parameters || {})
+            
+            resolve({
+              title: videoData.title || smartTitle,
+              description: videoData.description || smartDescription
+            })
+          }, timeoutMs)
+        )
+      ])
+      
+      console.log(`[QUEUE SERVICE] ✅ AI标题生成成功:`, {
+        title: result.title.substring(0, 30) + '...',
+        descriptionLength: result.description.length
+      })
+      
+      return result
+    } catch (error) {
+      console.error(`[QUEUE SERVICE] AI标题生成失败，使用回退方案: ${error}`)
+      const templateName = await this.getTemplateName(videoData.templateId)
+      
+      return {
+        title: videoData.title || templateName,
+        description: videoData.description || `基于模板"${templateName}"生成的AI视频内容。`
+      }
+    }
+  }
+
+  /**
+   * 异步生成视频标题和简介（不阻塞主流程）
+   */
+  private generateVideoMetadataAsync(
+    videoId: string, 
+    videoData: SubmitJobRequest['videoData'], 
+    userId: string,
+    isRetry: boolean = false,
+    retryCount: number = 0
+  ): void {
+    const maxRetries = 2
+    
+    // 异步执行，不等待结果
+    (async () => {
+      try {
+        const retryText = isRetry ? ` (重试 ${retryCount + 1}/${maxRetries})` : ''
+        console.log(`[QUEUE SERVICE] 🤖 开始为视频 ${videoId} 异步生成AI标题和简介${retryText}`)
+        
+        // 获取用户语言和模板信息
+        const [userLanguage, templateName] = await Promise.all([
+          this.getUserLanguage(userId),
+          this.getTemplateName(videoData.templateId)
+        ])
+        
+        // 生成AI标题和简介 - 给异步更新更多时间
+        const metadata = await Promise.race([
+          aiContentService.generateVideoMetadata({
+            templateName: templateName,
+            prompt: videoData.prompt || '',
+            parameters: videoData.parameters || {},
+            userLanguage: userLanguage
+          }),
+          // 异步更新时使用更长的超时时间（15秒）
+          new Promise<never>((_, reject) => 
+            setTimeout(() => reject(new Error('异步AI生成超时')), 15000)
+          )
+        ])
+        
+        console.log(`[QUEUE SERVICE] ✅ 异步AI生成成功:`, {
+          videoId,
+          title: metadata.title.substring(0, 30) + '...',
+          descriptionLength: metadata.description.length,
+          isRetry
+        })
+        
+        // 更新视频记录
+        const { error: updateError } = await supabase
+          .from('videos')
+          .update({
+            title: metadata.title,
+            description: metadata.description,
+            // 添加标记表示已通过AI更新
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', videoId)
+        
+        if (updateError) {
+          console.error(`[QUEUE SERVICE] 更新视频标题简介失败: ${updateError.message}`)
+          throw updateError
+        } else {
+          console.log(`[QUEUE SERVICE] 🎉 视频 ${videoId} 异步AI标题更新成功`)
+        }
+        
+      } catch (error) {
+        console.error(`[QUEUE SERVICE] 异步AI生成失败 (尝试 ${retryCount + 1}): ${error}`)
+        
+        // 如果还有重试次数，延迟后重试
+        if (retryCount < maxRetries) {
+          const delayMs = (retryCount + 1) * 3000 // 递增延迟：3s, 6s, 9s
+          console.log(`[QUEUE SERVICE] ⏰ ${delayMs/1000}秒后进行第${retryCount + 2}次重试`)
+          
+          setTimeout(() => {
+            this.generateVideoMetadataAsync(videoId, videoData, userId, true, retryCount + 1)
+          }, delayMs)
+          
+          return
+        }
+        
+        // 所有重试都失败，使用最终备用方案
+        try {
+          const templateName = await this.getTemplateName(videoData.templateId)
+          const smartTitle = this.generateSmartDefaultTitle(templateName, videoData.parameters || {})
+          const smartDescription = this.generateSmartDefaultDescription(
+            templateName, 
+            videoData.prompt || '', 
+            videoData.parameters || {}
+          )
+          
+          await supabase
+            .from('videos')
+            .update({
+              title: smartTitle,
+              description: smartDescription
+            })
+            .eq('id', videoId)
+            
+          console.log(`[QUEUE SERVICE] 📝 所有AI重试失败，使用最终智能备用方案: ${smartTitle}`)
+        } catch (fallbackError) {
+          console.error(`[QUEUE SERVICE] 最终备用方案也失败: ${fallbackError}`)
+        }
+      }
+    })().catch(error => {
+      // 静默处理异步错误，避免影响主流程
+      console.error(`[QUEUE SERVICE] AI标题生成异步任务失败: ${error}`)
+    })
+  }
+
+  /**
+   * 生成备用标题（当AI生成失败时使用）
+   */
+  private generateFallbackTitle(videoData: SubmitJobRequest['videoData']): string {
+    const timestamp = new Date().toLocaleDateString('zh-CN')
+    const baseTitle = videoData.title || '创意AI视频'
+    
+    // 如果原标题太短，添加一些描述性内容
+    if (baseTitle.length < 10) {
+      return `${baseTitle} - ${timestamp}`
+    }
+    
+    return baseTitle
+  }
+
+  /**
+   * 生成备用简介（当AI生成失败时使用）
+   */
+  private generateFallbackDescription(videoData: SubmitJobRequest['videoData']): string {
+    const prompt = videoData.prompt || ''
+    const shortPrompt = prompt.length > 100 ? prompt.substring(0, 100) + '...' : prompt
+    
+    return `基于创意提示"${shortPrompt}"生成的AI视频内容，展现独特的视觉效果和创意表达。`
+  }
+
+  /**
+   * 生成智能默认标题（超时时使用，比简单模板名称更有吸引力）
+   */
+  private generateSmartDefaultTitle(templateName: string, parameters: Record<string, any>): string {
+    // 基于模板名称和参数生成更有吸引力的标题
+    const paramValues = Object.values(parameters).filter(v => typeof v === 'string' && v.trim().length > 0)
+    
+    // 如果有参数，尝试结合参数生成标题
+    if (paramValues.length > 0) {
+      const firstParam = paramValues[0] as string
+      const words = firstParam.split(' ').slice(0, 3) // 取前3个词
+      
+      if (words.length > 0) {
+        const capitalizedWords = words.map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        ).join(' ')
+        
+        // 根据模板类型生成不同风格的标题
+        if (templateName.toLowerCase().includes('animal')) {
+          return `${capitalizedWords} Adventure`
+        } else if (templateName.toLowerCase().includes('magic')) {
+          return `Magical ${capitalizedWords}`
+        } else if (templateName.toLowerCase().includes('street') || templateName.toLowerCase().includes('city')) {
+          return `Urban ${capitalizedWords}`
+        } else if (templateName.toLowerCase().includes('product') || templateName.toLowerCase().includes('tech')) {
+          return `${capitalizedWords} Showcase`
+        } else {
+          return `${capitalizedWords} Story`
+        }
+      }
+    }
+    
+    // 如果没有参数，基于模板名称生成吸引人的标题
+    const baseTitle = templateName.replace(/[_-]/g, ' ').trim()
+    
+    // 添加一些吸引人的词语
+    const enhancers = ['Epic', 'Amazing', 'Incredible', 'Stunning', 'Creative', 'Unique', 'Fantastic']
+    const randomEnhancer = enhancers[Math.floor(Math.random() * enhancers.length)]
+    
+    return `${randomEnhancer} ${baseTitle}`
+  }
+
+  /**
+   * 生成智能默认描述（超时时使用，比简单模板描述更详细）
+   */
+  private generateSmartDefaultDescription(templateName: string, prompt: string, parameters: Record<string, any>): string {
+    const shortPrompt = prompt.length > 80 ? prompt.substring(0, 80) + '...' : prompt
+    const paramCount = Object.keys(parameters).length
+    
+    // 基于模板和提示词生成描述
+    let description = ''
+    
+    if (shortPrompt.trim()) {
+      description = `AI-generated video featuring "${shortPrompt}"`
+    } else {
+      description = `Creative AI video based on the ${templateName} template`
+    }
+    
+    // 添加参数信息
+    if (paramCount > 0) {
+      description += ` with ${paramCount} custom parameter${paramCount > 1 ? 's' : ''}`
+    }
+    
+    // 根据模板类型添加特色描述
+    const lowerTemplate = templateName.toLowerCase()
+    if (lowerTemplate.includes('animal')) {
+      description += ', showcasing amazing animal performances'
+    } else if (lowerTemplate.includes('magic')) {
+      description += ', featuring magical elements and special effects'
+    } else if (lowerTemplate.includes('street') || lowerTemplate.includes('city')) {
+      description += ', capturing urban life and street scenes'
+    } else if (lowerTemplate.includes('product')) {
+      description += ', highlighting product features and design'
+    } else if (lowerTemplate.includes('tech')) {
+      description += ', demonstrating cutting-edge technology'
+    } else {
+      description += ', delivering engaging visual storytelling'
+    }
+    
+    return description + '.'
   }
 
   /**

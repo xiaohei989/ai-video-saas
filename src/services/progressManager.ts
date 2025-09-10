@@ -167,7 +167,9 @@ class ProgressManager {
         } else {
           // 相同进度值，检查停滞时间
           const lastChangeTime = existing.lastProgressChangeTime || existing.updatedAt
-          const stagnantTime = now.getTime() - lastChangeTime.getTime()
+          // 确保 lastChangeTime 是 Date 对象
+          const lastChangeDate = lastChangeTime instanceof Date ? lastChangeTime : new Date(lastChangeTime)
+          const stagnantTime = now.getTime() - lastChangeDate.getTime()
           
           if (stagnantTime > 30000) { // 30秒停滞
             if (!existing.isProgressStagnant) {
@@ -549,7 +551,8 @@ class ProgressManager {
           const progress: VideoProgress = {
             ...progressData,
             updatedAt: new Date(progressData.updatedAt),
-            startedAt: progressData.startedAt ? new Date(progressData.startedAt) : undefined
+            startedAt: progressData.startedAt ? new Date(progressData.startedAt) : undefined,
+            lastProgressChangeTime: progressData.lastProgressChangeTime ? new Date(progressData.lastProgressChangeTime) : undefined
           }
           
           // 检查数据是否过期（2小时，延长以支持长时间任务）
@@ -776,7 +779,8 @@ class ProgressManager {
             estimatedRemainingTime: progressData.estimatedDuration ? progressData.estimatedDuration - progressData.elapsedTime! : undefined,
             qingyunTaskId: progressData.qingyunTaskId,
             pollingAttempts: progressData.pollingState?.attempts,
-            lastPollingStatus: progressData.pollingState?.lastStatus
+            lastPollingStatus: progressData.pollingState?.lastStatus,
+            lastProgressChangeTime: progressData.lastProgressChangeTime ? new Date(progressData.lastProgressChangeTime) : undefined
           }
           
           // 检查数据是否过期（2小时）

@@ -72,7 +72,8 @@ class ViralShareService {
               callToAction: "Who else wants to join the 60-cent revolution?"
             }
           ]
-        },
+        }
+      },
       youtube: {
         shocking: [
           {

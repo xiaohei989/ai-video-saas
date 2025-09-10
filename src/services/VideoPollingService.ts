@@ -8,6 +8,12 @@ import { videoTaskManager, type VideoTask } from './VideoTaskManager'
 import supabaseVideoService from './supabaseVideoService'
 import { detectApiProvider, getApiProviderDisplayName } from '@/utils/apiProviderDetector'
 
+// 超时配置（基于10分钟正常生成时间）
+const TIMEOUT_START = 8 * 60 * 1000      // 8分钟后开始检查
+const TIMEOUT_FORCE_COMPLETE = 12 * 60 * 1000  // 12分钟强制完成（99%）
+const TIMEOUT_FORCE_FAIL = 15 * 60 * 1000      // 15分钟强制失败
+const LOG_INTERVAL = 60 * 1000                 // 每分钟最多输出一次日志
+
 interface PollingConfig {
   userId: string
   onTaskUpdate: (task: VideoTask) => void
@@ -22,6 +28,7 @@ class VideoPollingService {
   private lastCheckTime = 0
   private completedTasks = new Set<string>() // 防止重复完成处理
   private lastActiveTasksCount = 0 // 追踪活跃任务数量变化
+  private lastTimeoutLog = new Map<string, number>() // 控制日志频率
 
   /**
    * 启动轮询
@@ -53,6 +60,7 @@ class VideoPollingService {
     this.isPolling = false
     this.config = null
     this.completedTasks.clear() // 清理已完成任务记录
+    this.lastTimeoutLog.clear() // 清理超时日志记录
     this.lastActiveTasksCount = 0
   }
 
@@ -110,9 +118,6 @@ class VideoPollingService {
 
     console.log(`[POLLING] ✅ 处理任务完成: ${taskId} (来源: ${source})`)
     
-    // 标记为已处理
-    this.completedTasks.add(taskId)
-    
     try {
       // 标记任务完成
       await videoTaskManager.markTaskComplete(taskId, videoUrl)
@@ -128,11 +133,14 @@ class VideoPollingService {
       // 通知完成
       this.config?.onTaskComplete(completedTask)
       
+      // 成功后才标记为已处理
+      this.completedTasks.add(taskId)
+      
       console.log(`[POLLING] 任务完成处理完毕: ${taskId}`)
       return true
     } catch (error) {
       console.error(`[POLLING] 处理任务完成时出错 ${taskId}:`, error)
-      // 出错时移除标记，允许重试
+      // 确保不阻塞后续重试
       this.completedTasks.delete(taskId)
       return false
     }
@@ -213,32 +221,55 @@ class VideoPollingService {
         this.config?.onTaskUpdate(latestTask)
       }
       
-      // 🕐 超时检测 - 如果任务运行时间过长且进度接近100%，检查是否应该完成
-      if (currentTask && currentTask.status === 'processing' && currentTask.progress >= 95) {
+      // 🕐 超时检测 - 基于10分钟正常生成时间的超时处理
+      if (currentTask && currentTask.status === 'processing') {
         const elapsedTime = Date.now() - currentTask.startedAt.getTime()
-        const elapsedMinutes = elapsedTime / (1000 * 60)
+        const elapsedMinutes = Math.round(elapsedTime / (1000 * 60))
         
-        if (elapsedMinutes > 3) { // 超过3分钟
-          console.log(`[POLLING] ⏰ 任务运行超时 ${Math.round(elapsedMinutes)} 分钟，进度 ${currentTask.progress}%，检查完成状态: ${taskId}`)
+        // 8分钟后开始检查
+        if (elapsedTime > TIMEOUT_START) {
+          const now = Date.now()
+          const lastLog = this.lastTimeoutLog.get(taskId) || 0
           
-          // 重新获取最新视频状态
-          const latestVideo = await supabaseVideoService.getVideo(taskId)
-          if (latestVideo?.video_url && latestVideo.video_url.length > 0) {
-            console.log(`[POLLING] 🎯 超时检测发现视频URL，尝试标记完成: ${taskId}`)
+          // 控制日志频率：每分钟最多输出一次
+          if (now - lastLog > LOG_INTERVAL) {
+            console.log(`[POLLING] ⏰ 任务运行 ${elapsedMinutes} 分钟，进度 ${currentTask.progress}%: ${taskId}`)
+            this.lastTimeoutLog.set(taskId, now)
+          }
+          
+          // 强制失败 - 15分钟后任何进度都失败
+          if (elapsedTime > TIMEOUT_FORCE_FAIL) {
+            console.log(`[POLLING] 🚨 任务运行超过15分钟强制失败: ${taskId}`)
+            await videoTaskManager.markTaskFailed(taskId, '任务超时')
+            this.config?.onTaskFailed({ ...currentTask, status: 'failed', errorMessage: '任务超时' })
+            return
+          }
+          
+          // 99%进度强制完成 - 12分钟后如果是99%进度则强制完成
+          if (elapsedTime > TIMEOUT_FORCE_COMPLETE && currentTask.progress >= 99) {
+            console.log(`[POLLING] 🎯 99%进度运行超过12分钟，强制完成检测: ${taskId}`)
             
-            // 使用统一的完成处理方法
-            const handled = await this.handleTaskCompletion(taskId, latestVideo.video_url, currentTask, '超时检测')
-            if (handled) {
-              // 更新数据库状态
-              try {
-                await supabaseVideoService.updateVideoAsSystem(taskId, {
-                  status: 'completed',
-                  processing_completed_at: new Date().toISOString()
-                })
-                console.log(`[POLLING] 超时检测已更新数据库状态为completed: ${taskId}`)
-              } catch (updateError) {
-                console.error(`[POLLING] 超时检测更新数据库状态失败: ${taskId}`, updateError)
+            // 重新获取最新视频状态
+            const latestVideo = await supabaseVideoService.getVideo(taskId)
+            if (latestVideo?.video_url && latestVideo.video_url.length > 0) {
+              console.log(`[POLLING] ✅ 发现视频URL，强制标记完成: ${taskId}`)
+              
+              // 使用统一的完成处理方法
+              const handled = await this.handleTaskCompletion(taskId, latestVideo.video_url, currentTask, '强制完成')
+              if (handled) {
+                // 更新数据库状态
+                try {
+                  await supabaseVideoService.updateVideoAsSystem(taskId, {
+                    status: 'completed',
+                    processing_completed_at: new Date().toISOString()
+                  })
+                  console.log(`[POLLING] 强制完成已更新数据库状态: ${taskId}`)
+                } catch (updateError) {
+                  console.error(`[POLLING] 强制完成更新数据库失败: ${taskId}`, updateError)
+                }
               }
+            } else {
+              console.log(`[POLLING] ⚠️ 99%进度但无视频URL，继续等待: ${taskId}`)
             }
           }
         }

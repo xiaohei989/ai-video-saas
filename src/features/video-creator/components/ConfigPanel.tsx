@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ChevronRight, ChevronDown, Gem, AlertCircle, Zap, Sparkles, Shuffle, Copy, Eye, EyeOff } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { ChevronRight, ChevronDown, Gem, AlertCircle, Zap, Sparkles, Shuffle, Copy, Eye, EyeOff, Lock } from 'lucide-react'
 import { Template } from '../data/templates'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,6 +10,13 @@ import ImageUploader from './ImageUploader'
 import { PromptGenerator } from '@/services/promptGenerator'
 import { generateRandomParams } from '@/utils/randomParams'
 import { getVideoCreditCost } from '@/config/credits'
+import { useAuth } from '@/contexts/AuthContext'
+import { SubscriptionService } from '@/services/subscriptionService'
+import { edgeCacheClient } from '@/services/EdgeFunctionCacheClient'
+import { InputValidator } from '@/utils/inputValidator'
+import { securityMonitor } from '@/services/securityMonitorService'
+import { ThreatType, SecurityLevel } from '@/config/security'
+import type { Subscription } from '@/types'
 
 interface ConfigPanelProps {
   selectedTemplate: Template
@@ -20,6 +28,8 @@ interface ConfigPanelProps {
   onParamChange: (key: string, value: any) => void
   onGenerate: (promptData: { prompt: string; jsonPrompt: any }) => void
   isGenerating: boolean
+  isLimited?: boolean
+  remainingRequests?: number
 }
 
 export default function ConfigPanel({
@@ -31,12 +41,67 @@ export default function ConfigPanel({
   onTemplateChange,
   onParamChange,
   onGenerate,
-  isGenerating
+  isGenerating,
+  isLimited = false,
+  remainingRequests = 0
 }: ConfigPanelProps) {
   const { t } = useTranslation()
+  const { user } = useAuth()
   const [showTemplateList, setShowTemplateList] = useState(false)
   const [showPromptDebug, setShowPromptDebug] = useState(false)
   const [showValidationError, setShowValidationError] = useState(false)
+  const [subscription, setSubscription] = useState<Subscription | null>(null)
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true)
+  
+  // 获取用户订阅信息
+  useEffect(() => {
+    const loadSubscription = async () => {
+      if (!user?.id) {
+        setSubscriptionLoading(false)
+        return
+      }
+
+      try {
+        setSubscriptionLoading(true)
+        // 优先使用缓存获取订阅信息
+        const tier = await edgeCacheClient.getUserSubscription(user.id)
+        
+        if (tier && tier !== 'free') {
+          // 如果有有效订阅，构建subscription对象
+          setSubscription({
+            id: '',
+            userId: user.id,
+            stripeSubscriptionId: '',
+            planId: tier as any,
+            status: 'active' as const,
+            currentPeriodStart: new Date(),
+            currentPeriodEnd: new Date(),
+            cancelAtPeriodEnd: false,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          })
+        } else {
+          // 免费用户或缓存未命中时，使用原方法
+          const data = await SubscriptionService.getCurrentSubscription(user.id)
+          setSubscription(data)
+        }
+      } catch (error) {
+        console.error('[ConfigPanel] 加载订阅信息失败:', error)
+        setSubscription(null)
+      } finally {
+        setSubscriptionLoading(false)
+      }
+    }
+
+    loadSubscription()
+  }, [user?.id])
+
+  // 检查用户是否有有效订阅（不依赖积分数量）
+  const isSubscribed = !!(
+    subscription && 
+    subscription.status === 'active' && 
+    subscription.planId
+  )
 
   // Auto-fill activity description and voiceover when activity changes
   useEffect(() => {
@@ -108,6 +173,38 @@ export default function ConfigPanel({
     }
   }, [params.baby_profession, selectedTemplate.slug])
 
+  // Fireplace Cozy Selfie: Auto-fill dialogue when character changes
+  useEffect(() => {
+    if (selectedTemplate.slug === 'fireplace-cozy-selfie' && params.character_type) {
+      const characterParam = selectedTemplate.params?.character_type
+      if (characterParam) {
+        const selectedOption = characterParam.options?.find(
+          option => option.value === params.character_type
+        )
+        
+        if (selectedOption && selectedOption.metadata?.default_dialogue) {
+          onParamChange('dialogue_content', selectedOption.metadata.default_dialogue)
+        }
+      }
+    }
+  }, [params.character_type, selectedTemplate.slug])
+
+  // Ocean Selfie Surprise: Auto-fill dialogue when character changes
+  useEffect(() => {
+    if (selectedTemplate.slug === 'ocean-selfie-surprise' && params.character_style) {
+      const characterParam = selectedTemplate.params?.character_style
+      if (characterParam) {
+        const selectedOption = characterParam.options?.find(
+          option => option.value === params.character_style
+        )
+        
+        if (selectedOption && selectedOption.metadata?.default_dialogue) {
+          onParamChange('dialogue_content', selectedOption.metadata.default_dialogue)
+        }
+      }
+    }
+  }, [params.character_style, selectedTemplate.slug])
+
   // Reset validation error when parameters change
   useEffect(() => {
     setShowValidationError(false)
@@ -147,7 +244,37 @@ export default function ConfigPanel({
               type="text"
               className="w-full px-2 py-1 text-xs border border-input bg-background rounded-md focus:outline-none focus:ring-1 focus:ring-ring"
               value={value !== undefined ? value : (param.default || '')}
-              onChange={(e) => onParamChange(key, e.target.value)}
+              onChange={(e) => {
+                const inputValue = e.target.value
+                // 输入验证
+                if (inputValue.length > 0) {
+                  const validation = InputValidator.validateString(inputValue, {
+                    sanitize: true,
+                    allowHtml: false,
+                    maxLength: 500
+                  })
+                  
+                  if (validation.threatLevel === SecurityLevel.HIGH || validation.threatLevel === SecurityLevel.CRITICAL) {
+                    securityMonitor.logSecurityEvent({
+                      type: ThreatType.SUSPICIOUS_PATTERN,
+                      level: validation.threatLevel,
+                      userId: user?.id,
+                      details: {
+                        input: inputValue.substring(0, 100),
+                        paramKey: key,
+                        templateId: selectedTemplate.id,
+                        threats: validation.threats
+                      },
+                      blocked: false,
+                      action: 'config_param_input'
+                    })
+                  }
+                  
+                  onParamChange(key, validation.sanitized || inputValue)
+                } else {
+                  onParamChange(key, inputValue)
+                }
+              }}
               placeholder={param.placeholder || `e.g., ${param.default || 'Enter value'}`}
             />
           </div>
@@ -163,7 +290,37 @@ export default function ConfigPanel({
             <textarea
               className="w-full px-2 py-1 text-xs border border-input bg-background rounded-md focus:outline-none focus:ring-1 focus:ring-ring resize-vertical"
               value={value !== undefined ? value : (param.default || '')}
-              onChange={(e) => onParamChange(key, e.target.value)}
+              onChange={(e) => {
+                const inputValue = e.target.value
+                // 输入验证
+                if (inputValue.length > 0) {
+                  const validation = InputValidator.validateString(inputValue, {
+                    sanitize: true,
+                    allowHtml: false,
+                    maxLength: 2000 // textarea允许更长的内容
+                  })
+                  
+                  if (validation.threatLevel === SecurityLevel.HIGH || validation.threatLevel === SecurityLevel.CRITICAL) {
+                    securityMonitor.logSecurityEvent({
+                      type: ThreatType.SUSPICIOUS_PATTERN,
+                      level: validation.threatLevel,
+                      userId: user?.id,
+                      details: {
+                        input: inputValue.substring(0, 100),
+                        paramKey: key,
+                        templateId: selectedTemplate.id,
+                        threats: validation.threats
+                      },
+                      blocked: false,
+                      action: 'config_param_textarea'
+                    })
+                  }
+                  
+                  onParamChange(key, validation.sanitized || inputValue)
+                } else {
+                  onParamChange(key, inputValue)
+                }
+              }}
               placeholder={param.placeholder || 'Enter content...'}
               rows={param.rows || 3}
             />
@@ -490,29 +647,36 @@ export default function ConfigPanel({
         </div>
       </div>
 
-      {/* 测试模式：提示词显示区域 */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="border-t border-border bg-muted/20 p-2">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-medium text-muted-foreground">测试模式 - 最新提示词</span>
+      {/* 提示词显示区域 */}
+      <div className="border-t border-border bg-muted/20 p-2">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-xs font-medium text-muted-foreground flex items-center gap-1">
+            {t('configPanel.prompt')}
+            {!isSubscribed && <Lock className="h-3 w-3" />}
+          </span>
+          {isSubscribed && (
             <div className="flex gap-1">
               <button
                 className="p-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                 onClick={() => setShowPromptDebug(!showPromptDebug)}
-                title={showPromptDebug ? "隐藏提示词" : "显示提示词"}
+                title={showPromptDebug ? t('configPanel.hidePrompt') : t('configPanel.viewPrompt')}
               >
                 {showPromptDebug ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
               </button>
               <button
                 className="p-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                 onClick={copyPromptToClipboard}
-                title="复制提示词到剪贴板"
+                title={t('configPanel.copyPrompt')}
               >
                 <Copy className="h-3 w-3" />
               </button>
             </div>
-          </div>
-          {showPromptDebug && (
+          )}
+        </div>
+        
+        {isSubscribed ? (
+          // 订阅用户：显示完整提示词
+          showPromptDebug && (
             <div className="bg-background border border-border rounded-md p-2 max-h-32 overflow-y-auto">
               <pre className="text-xs text-foreground whitespace-pre-wrap break-words">
                 {(() => {
@@ -523,9 +687,25 @@ export default function ConfigPanel({
                 })()}
               </pre>
             </div>
-          )}
-        </div>
-      )}
+          )
+        ) : (
+          // 免费用户：显示升级提示
+          <div className="bg-background border border-border rounded-md p-3 text-center">
+            <div className="flex items-center justify-center mb-2">
+              <Lock className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <p className="text-xs text-muted-foreground mb-3">
+              {t('configPanel.promptAccessRequired')}
+            </p>
+            <Link to="/pricing">
+              <Button size="sm" variant="default" className="text-xs">
+                <Gem className="h-3 w-3 mr-1" />
+                {t('configPanel.upgradeToUnlock')}
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
 
     </div>
   )

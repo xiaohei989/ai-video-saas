@@ -11,6 +11,10 @@ import EnvironmentIndicator from './components/stripe/EnvironmentIndicator'
 import TemplateSync from './components/system/TemplateSync'
 import CookieConsentBanner from './components/common/CookieConsentBanner'
 import analyticsService from './services/analyticsService'
+import { csrfService } from './services/csrfService'
+import { securityMonitor } from './services/securityMonitorService'
+import { validateSecurityConfig, generateCSPString } from './config/security'
+import redisCacheIntegrationService from './services/RedisCacheIntegrationService'
 
 // 调试工具（开发环境）
 if (process.env.NODE_ENV === 'development') {
@@ -59,6 +63,8 @@ import HelpCenterPage from './pages/HelpCenterPage'
 // Test pages
 import TestApicoreApi from './pages/TestApicoreApi'
 import TestAnalytics from './pages/TestAnalytics'
+import TestAIContent from './pages/TestAIContent'
+import SimpleAITest from './pages/SimpleAITest'
 
 // Admin pages
 import AdminRoute from './components/admin/AdminRoute'
@@ -74,12 +80,52 @@ const queryClient = new QueryClient({
 })
 
 function App() {
-  // 初始化Google Analytics
+  // 初始化Google Analytics、安全服务和缓存服务
   React.useEffect(() => {
-    const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID
-    if (measurementId) {
-      analyticsService.initialize(measurementId)
+    const initializeServices = async () => {
+      // 初始化Google Analytics
+      const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID
+      if (measurementId) {
+        analyticsService.initialize(measurementId)
+      }
+      
+      // 验证安全配置
+      const isSecurityConfigValid = validateSecurityConfig()
+      if (!isSecurityConfigValid && process.env.NODE_ENV === 'production') {
+        console.error('Security configuration validation failed')
+      }
+      
+      // 初始化CSRF保护
+      csrfService.generateToken()
+      
+      // 初始化多级缓存服务
+      try {
+        await redisCacheIntegrationService.initialize()
+        console.log('[App] 多级缓存服务初始化完成')
+      } catch (error) {
+        console.error('[App] 缓存服务初始化失败:', error)
+      }
     }
+    
+    initializeServices()
+    
+    // 设置安全头 - 临时注释以修复APICore CORS问题
+    // const cspString = generateCSPString()
+    // if (typeof document !== 'undefined') {
+    //   const metaCSP = document.createElement('meta')
+    //   metaCSP.httpEquiv = 'Content-Security-Policy'
+    //   metaCSP.content = cspString
+    //   document.head.appendChild(metaCSP)
+    // }
+    
+    // 记录应用启动
+    securityMonitor.logSecurityEvent({
+      type: 'suspicious_pattern' as any,
+      level: 'low' as any,
+      details: { action: 'app_start' },
+      blocked: false,
+      action: 'app_initialization'
+    })
   }, [])
 
   return (
@@ -139,6 +185,8 @@ function App() {
               <Route path="/test-watermark" element={<Layout><TestWatermark /></Layout>} />
               <Route path="/test-watermark-simple" element={<Layout><SimpleWatermarkTest /></Layout>} />
               <Route path="/test-protection" element={<Layout><TestProtection /></Layout>} />
+              <Route path="/test-ai-content" element={<Layout><TestAIContent /></Layout>} />
+              <Route path="/simple-ai-test" element={<SimpleAITest />} />
               <Route path="/title-effects" element={<TitleEffectDemo />} />
             </Routes>
             <Toaster />

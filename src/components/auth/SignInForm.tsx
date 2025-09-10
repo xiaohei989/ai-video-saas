@@ -9,6 +9,11 @@ import { useTranslation } from 'react-i18next'
 import { Loader2, Mail, Lock } from 'lucide-react'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useSEO } from '@/hooks/useSEO'
+import { useLoginLimiter } from '@/hooks/useRateLimiter'
+import { useCSRF } from '@/services/csrfService'
+import { InputValidator, validationSchemas } from '@/utils/inputValidator'
+import { securityMonitor } from '@/services/securityMonitorService'
+import { ThreatType, SecurityLevel } from '@/config/security'
 
 // Google 图标组件
 const GoogleIcon = ({ className }: { className?: string }) => (
@@ -24,9 +29,12 @@ export default function SignInForm() {
   const { t } = useTranslation()
   const { signIn, signInWithGoogle, loading, error } = useAuth()
   const { trackLogin, trackEvent } = useAnalytics()
+  const { executeWithLimit, isLimited } = useLoginLimiter()
+  const { secureFetch } = useCSRF()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [validationErrors, setValidationErrors] = useState<{ email?: string; password?: string }>({})
 
   // SEO优化
   useSEO('signin')
@@ -34,29 +42,103 @@ export default function SignInForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    // 检查是否被限流
+    if (isLimited()) {
+      alert('登录尝试过于频繁，请稍后再试')
+      return
+    }
+    
     if (!email || !password) {
       alert(t('auth.fillAllFields'))
       return
     }
 
-    try {
-      setIsSubmitting(true)
-      await signIn(email, password)
-      
-      // 跟踪邮箱登录成功事件
-      trackLogin('email')
-    } catch (err: any) {
-      console.error('Sign in error:', err)
-      if (err.message?.includes('Invalid login credentials')) {
-        alert(t('auth.invalidCredentials'))
-      } else if (err.message?.includes('Email not confirmed')) {
-        alert(t('auth.emailNotConfirmed'))
-      } else {
-        alert(t('auth.signInError') + ': ' + err.message)
-      }
-    } finally {
-      setIsSubmitting(false)
+    // 输入验证
+    const emailValidation = InputValidator.validateEmail(email)
+    const passwordValidation = InputValidator.validateString(password, {
+      minLength: 6,
+      maxLength: 100,
+      sanitize: true
+    })
+
+    const newValidationErrors: { email?: string; password?: string } = {}
+    
+    if (!emailValidation.isValid) {
+      newValidationErrors.email = emailValidation.errors[0]
     }
+    
+    if (!passwordValidation.isValid) {
+      newValidationErrors.password = passwordValidation.errors[0]
+    }
+    
+    setValidationErrors(newValidationErrors)
+    
+    if (Object.keys(newValidationErrors).length > 0) {
+      return
+    }
+
+    // 使用限流保护的登录
+    await executeWithLimit(async () => {
+      try {
+        setIsSubmitting(true)
+        
+        // 记录登录尝试
+        await securityMonitor.logSecurityEvent({
+          type: ThreatType.SUSPICIOUS_PATTERN,
+          level: SecurityLevel.LOW,
+          details: {
+            email: email,
+            action: 'login_attempt',
+            timestamp: Date.now()
+          },
+          blocked: false,
+          action: 'user_login_attempt'
+        })
+        
+        await signIn(emailValidation.sanitized || email, passwordValidation.sanitized || password)
+        
+        // 跟踪邮箱登录成功事件
+        trackLogin('email')
+        
+        // 记录登录成功
+        await securityMonitor.logSecurityEvent({
+          type: ThreatType.SUSPICIOUS_PATTERN,
+          level: SecurityLevel.LOW,
+          details: {
+            email: email,
+            action: 'login_success'
+          },
+          blocked: false,
+          action: 'user_login_success'
+        })
+        
+      } catch (err: any) {
+        console.error('Sign in error:', err)
+        
+        // 记录登录失败
+        await securityMonitor.logSecurityEvent({
+          type: ThreatType.SUSPICIOUS_PATTERN,
+          level: SecurityLevel.MEDIUM,
+          details: {
+            email: email,
+            error: err.message,
+            action: 'login_failed'
+          },
+          blocked: false,
+          action: 'user_login_failed'
+        })
+        
+        if (err.message?.includes('Invalid login credentials')) {
+          alert(t('auth.invalidCredentials'))
+        } else if (err.message?.includes('Email not confirmed')) {
+          alert(t('auth.emailNotConfirmed'))
+        } else {
+          alert(t('auth.signInError') + ': ' + err.message)
+        }
+      } finally {
+        setIsSubmitting(false)
+      }
+    })
   }
 
   const handleGoogleSignIn = async () => {
@@ -124,12 +206,21 @@ export default function SignInForm() {
                 type="email"
                 placeholder={t('auth.emailPlaceholder')}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  // 清除验证错误
+                  if (validationErrors.email) {
+                    setValidationErrors(prev => ({ ...prev, email: undefined }))
+                  }
+                }}
                 disabled={isSubmitting || loading}
-                className="pl-10"
+                className={`pl-10 ${validationErrors.email ? 'border-red-500' : ''}`}
                 required
               />
             </div>
+            {validationErrors.email && (
+              <p className="text-sm text-red-600 mt-1">{validationErrors.email}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -141,12 +232,21 @@ export default function SignInForm() {
                 type="password"
                 placeholder={t('auth.passwordPlaceholder')}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  // 清除验证错误
+                  if (validationErrors.password) {
+                    setValidationErrors(prev => ({ ...prev, password: undefined }))
+                  }
+                }}
                 disabled={isSubmitting || loading}
-                className="pl-10"
+                className={`pl-10 ${validationErrors.password ? 'border-red-500' : ''}`}
                 required
               />
             </div>
+            {validationErrors.password && (
+              <p className="text-sm text-red-600 mt-1">{validationErrors.password}</p>
+            )}
           </div>
 
           <div className="flex items-center justify-between">
@@ -161,7 +261,7 @@ export default function SignInForm() {
           <Button
             type="submit"
             className="w-full"
-            disabled={isSubmitting || loading}
+            disabled={isSubmitting || loading || isLimited()}
           >
             {isSubmitting ? (
               <>

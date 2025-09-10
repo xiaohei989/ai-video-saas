@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { supabase, secureSupabase } from '@/lib/supabase'
 import i18n from '@/i18n/config'
 import { validateEmailAsync } from './emailValidator'
 import { getClientIPAddress } from '@/utils/deviceFingerprint'

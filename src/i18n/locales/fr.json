@@ -317,7 +317,7 @@
     "title": "Modèles tendances",
     "selectTemplate": "Créez des vidéos virales maintenant",
     "parameters": "Paramètres",
-    "generate": "Générer la vidéo",
+    "generate": "Générer",
     "creditCost": "{{cost}} crédits",
     "preview": "Aperçu",
     "sortBy": {

@@ -35,6 +35,33 @@ export interface ApicoreApiConfig {
   maxRetries?: number;
 }
 
+export interface ChatMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
+export interface ChatCompletionRequest {
+  model: string;
+  messages: ChatMessage[];
+  max_tokens?: number;
+  temperature?: number;
+  response_format?: { type: 'json_object' | 'text' };
+}
+
+export interface ChatCompletionResponse {
+  choices: {
+    message: {
+      content: string;
+      role: string;
+    };
+  }[];
+  usage?: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+}
+
 class ApicoreApiService {
   private config: ApicoreApiConfig;
   private headers: HeadersInit;
@@ -158,16 +185,27 @@ class ApicoreApiService {
    * 查询任务状态
    */
   async queryStatus(taskId: string): Promise<ApicoreTaskResponse> {
+    console.log(`[APICORE API] === 查询任务状态: ${taskId} ===`);
+    
     // 首先尝试GET请求
     try {
-      return await this.queryStatusWithGet(taskId);
+      console.log(`[APICORE API] 尝试GET请求查询状态...`);
+      const result = await this.queryStatusWithGet(taskId);
+      console.log(`[APICORE API] GET请求成功，状态:`, JSON.stringify(result, null, 2));
+      return result;
     } catch (corsError) {
-      // 静默处理CORS错误，使用fallback
+      console.warn(`[APICORE API] GET请求失败，尝试POST fallback:`, corsError);
+      
       try {
-        return await this.queryStatusWithPost(taskId);
+        console.log(`[APICORE API] 尝试POST请求查询状态...`);
+        const result = await this.queryStatusWithPost(taskId);
+        console.log(`[APICORE API] POST请求成功，状态:`, JSON.stringify(result, null, 2));
+        return result;
       } catch (postError) {
-        // 静默使用模拟进度
-        return this.getMockProgressStatus(taskId);
+        console.warn(`[APICORE API] POST请求也失败，使用模拟进度:`, postError);
+        const mockResult = this.getMockProgressStatus(taskId);
+        console.log(`[APICORE API] 使用模拟状态:`, JSON.stringify(mockResult, null, 2));
+        return mockResult;
       }
     }
   }
@@ -274,7 +312,7 @@ class ApicoreApiService {
         // curl显示响应格式：{ code, data: { status, data: { videoUrl } } }
         const currentStatus = status.data?.status || status.data?.data?.status || status.status || 'UNKNOWN';
         const videoUrl = status.data?.data?.videoUrl || status.data?.videoUrl || status.videoUrl || status.video_url;
-        const failReason = status.data?.fail_reason;
+        const failReason = status.data?.fail_reason || status.data?.data?.failReason || status.data?.data?.fail_reason;
         const apiProgress = status.data?.progress;
         
         // 只在状态变化时记录时间
@@ -333,8 +371,8 @@ class ApicoreApiService {
         }
 
         // 检查失败状态
-        if (currentStatus === 'FAILED' || currentStatus === 'ERROR') {
-          const errorMsg = failReason || currentStatus;
+        if (currentStatus === 'FAILED' || currentStatus === 'ERROR' || currentStatus === 'FAILURE') {
+          const errorMsg = failReason || status.data?.message || currentStatus;
           console.error('[APICORE API] Task failed:', errorMsg);
           throw new Error(`Video generation failed: ${errorMsg}`);
         }
@@ -434,8 +472,11 @@ class ApicoreApiService {
     return message.includes('401') || // 认证失败
            message.includes('403') || // 权限不足
            message.includes('404') || // 任务不存在
-           message.includes('FAILED') || // 任务失败
-           message.includes('ERROR');   // 错误状态
+           message.includes('FAILED') || // 任务失败（大写）
+           message.includes('failed') || // 任务失败（小写）
+           message.includes('failure') || // 失败状态
+           message.includes('ERROR') ||   // 错误状态（大写）
+           message.includes('error');     // 错误状态（小写）
   }
 
   /**
@@ -508,6 +549,112 @@ class ApicoreApiService {
       return model.includes('-aspect');
     }
     return false;
+  }
+
+  /**
+   * 大模型文本生成 - 支持GPT和Claude模型
+   */
+  async generateText(request: ChatCompletionRequest): Promise<ChatCompletionResponse> {
+    console.log(`[APICORE API] 开始文本生成，模型: ${request.model}`);
+    console.log(`[APICORE API] 消息数量: ${request.messages.length}`);
+    
+    let lastError: Error | null = null;
+    
+    for (let attempt = 1; attempt <= this.config.maxRetries!; attempt++) {
+      try {
+        const headers = new Headers();
+        headers.append('Authorization', `Bearer ${this.config.apiKey}`);
+        headers.append('Content-Type', 'application/json');
+        
+        const requestOptions = {
+          method: 'POST' as const,
+          headers: headers,
+          body: JSON.stringify({
+            model: request.model,
+            messages: request.messages,
+            max_tokens: request.max_tokens || 500,
+            temperature: request.temperature || 0.7,
+            ...(request.response_format && { response_format: request.response_format })
+          }),
+          redirect: 'follow' as RequestRedirect
+        };
+        
+        console.log(`[APICORE API] 发送文本生成请求 (尝试 ${attempt}/${this.config.maxRetries})`);
+        
+        const response = await fetch(`${this.config.endpoint}/v1/chat/completions`, requestOptions);
+
+        if (!response.ok) {
+          const errorBody = await response.text();
+          throw new Error(`API Error (${response.status}): ${errorBody || response.statusText}`);
+        }
+
+        const result = await response.json();
+        
+        console.log(`[APICORE API] 文本生成成功，tokens使用:`, {
+          prompt_tokens: result.usage?.prompt_tokens,
+          completion_tokens: result.usage?.completion_tokens,
+          total_tokens: result.usage?.total_tokens
+        });
+        
+        return result;
+      } catch (error) {
+        lastError = error as Error;
+        console.error(`[APICORE API] 文本生成尝试 ${attempt} 失败:`, error);
+        
+        if (attempt < this.config.maxRetries!) {
+          const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+          console.log(`[APICORE API] ${delay}ms 后重试...`);
+          await this.sleep(delay);
+        }
+      }
+    }
+
+    throw lastError || new Error('文本生成失败');
+  }
+
+  /**
+   * 快捷方法：生成简单文本响应
+   */
+  async generateSimpleText(
+    prompt: string, 
+    model: string = 'gpt-3.5-turbo-0125',
+    options: {
+      maxTokens?: number;
+      temperature?: number;
+      jsonMode?: boolean;
+    } = {}
+  ): Promise<string> {
+    const request: ChatCompletionRequest = {
+      model: model,
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: options.maxTokens || 500,
+      temperature: options.temperature || 0.7,
+      ...(options.jsonMode && { response_format: { type: 'json_object' } })
+    };
+
+    const response = await this.generateText(request);
+    
+    if (!response.choices || !response.choices[0] || !response.choices[0].message) {
+      throw new Error('API响应格式不正确');
+    }
+
+    return response.choices[0].message.content;
+  }
+
+  /**
+   * 检查模型是否支持文本生成
+   */
+  supportsTextGeneration(model: string): boolean {
+    const supportedModels = [
+      'gpt-3.5-turbo-0125',
+      'gpt-4o-mini',
+      'gpt-4o',
+      'claude-3-5-haiku-20241022',
+      'claude-3-5-sonnet-20241022',
+      'claude-3-opus-20240229'
+    ];
+    
+    return supportedModels.includes(model);
   }
 }
 

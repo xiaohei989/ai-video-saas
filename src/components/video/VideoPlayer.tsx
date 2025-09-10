@@ -38,6 +38,9 @@ interface VideoPlayerProps {
   onLoadProgress?: (progress: LoadProgress) => void
   onLoadComplete?: () => void
   onLoadError?: (error: string) => void
+  
+  // 时间信息回调
+  onTimeUpdate?: (currentTime: number, duration: number, isPlaying: boolean) => void
 }
 
 export default function VideoPlayer({
@@ -61,7 +64,8 @@ export default function VideoPlayer({
   onLoadStart,
   onLoadProgress,
   onLoadComplete,
-  onLoadError
+  onLoadError,
+  onTimeUpdate
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -159,6 +163,8 @@ export default function VideoPlayer({
     const handleTimeUpdate = () => {
       if (!isDragging) {
         setCurrentTime(video.currentTime)
+        // 调用时间更新回调
+        onTimeUpdate?.(video.currentTime, video.duration || 0, !video.paused)
       }
     }
 
@@ -334,6 +340,13 @@ export default function VideoPlayer({
           }
         }}
       />
+      
+      {/* 时间显示（右上角） */}
+      {isPlaying && duration > 0 && (
+        <div className="absolute top-2 right-2 z-10 bg-black/50 text-white px-1.5 py-0.5 rounded text-[10px] font-light backdrop-blur-sm">
+          {formatTime(currentTime)} / {formatTime(duration)}
+        </div>
+      )}
       
       {/* 播放按钮覆盖层 */}
       {showPlayButton && !isPlaying && !isLoading && !hasLoadError && (
@@ -517,10 +530,6 @@ export default function VideoPlayer({
               </Button>
             )}
             
-            {/* 时间显示 */}
-            <span className="text-white/80 text-[10px] font-light tracking-wide min-w-[65px] text-right ml-2 select-none">
-              {formatTime(currentTime)} / {formatTime(duration)}
-            </span>
           </div>
           
           {/* 右侧控制组 */}

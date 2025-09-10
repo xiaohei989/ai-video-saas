@@ -60,6 +60,7 @@ export interface LazyVideoPlayerProps {
   onError?: (error: string) => void
   onVisibilityChange?: (isVisible: boolean) => void
   onThumbnailLoad?: (thumbnail: string) => void
+  onTimeUpdate?: (currentTime: number, duration: number, isPlaying: boolean) => void
 }
 
 const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
@@ -89,6 +90,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
   onError,
   onVisibilityChange,
   onThumbnailLoad,
+  onTimeUpdate,
   ...restProps
 }) => {
   const { t } = useTranslation()
@@ -181,7 +183,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
       
       return (
         <div className={`w-full h-full flex items-center justify-center ${
-          isLoadCancelled ? 'bg-gray-50 dark:bg-gray-800' : 'bg-red-50 dark:bg-red-900/20'
+          isLoadCancelled ? '' : 'bg-red-50 dark:bg-red-900/20'
         }`}>
           <div className="text-center p-4">
             <AlertCircle className={`h-12 w-12 mx-auto mb-3 ${
@@ -230,8 +232,8 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
             className={`w-full h-full ${objectFit === 'cover' ? 'object-cover' : 'object-contain'}`}
           />
         ) : (
-          <div className="w-full h-full bg-muted flex items-center justify-center">
-            <div className="text-center text-muted-foreground">
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="text-center text-gray-600 dark:text-gray-300">
               <Play className="h-12 w-12 mx-auto mb-2" />
               <p className="text-sm font-medium">{t('video.preview')}</p>
             </div>
@@ -331,6 +333,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
           videoId={videoId}
           videoTitle={videoTitle}
           enableDownloadProtection={enableDownloadProtection}
+          onTimeUpdate={onTimeUpdate}
           alt={alt}
           {...restProps}
         />
@@ -362,6 +365,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
           videoId={videoId}
           videoTitle={videoTitle}
           enableDownloadProtection={enableDownloadProtection}
+          onTimeUpdate={onTimeUpdate}
           alt={alt}
           // 禁用渐进加载相关功能
           enableProgressiveLoading={false}

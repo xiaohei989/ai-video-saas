@@ -57,4 +57,42 @@ export function searchTemplates(keyword: string): Template[] {
   })
 }
 
+// Helper function to get all tags with their frequency
+export function getAllTagsWithFrequency(): Array<{ tag: string; count: number }> {
+  const tagCount: Record<string, number> = {}
+  
+  templateList.forEach(template => {
+    const tags = (template as any).tags || []
+    tags.forEach((tag: string) => {
+      tagCount[tag] = (tagCount[tag] || 0) + 1
+    })
+  })
+  
+  return Object.entries(tagCount)
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count) // 按频率降序排序
+}
+
+// Helper function to get popular tags for display
+export function getPopularTags(limit: number = 16): string[] {
+  return getAllTagsWithFrequency()
+    .slice(0, limit)
+    .map(item => item.tag)
+}
+
+// Helper function to filter templates by tags
+export function getTemplatesByTags(selectedTags: string[]): Template[] {
+  if (selectedTags.length === 0) {
+    return templateList
+  }
+  
+  return templateList.filter(template => {
+    const templateTags = (template as any).tags || []
+    // 使用 AND 逻辑：模板必须包含所有选中的标签
+    return selectedTags.every(selectedTag => 
+      templateTags.includes(selectedTag)
+    )
+  })
+}
+
 export default templateList

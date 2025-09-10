@@ -1,6 +1,8 @@
 import { loadStripe, Stripe } from '@stripe/stripe-js'
-import { supabase } from '@/lib/supabase'
+import { supabase, secureSupabase } from '@/lib/supabase'
 import { getStripePriceId, getStripePublishableKey, getStripeEnvironmentInfo, getStripePriceIdByInterval, getStripeAnnualPriceId } from '@/config/stripe-env'
+import { securityMonitor } from './securityMonitorService'
+import { ThreatType, SecurityLevel } from '@/config/security'
 
 export interface SubscriptionPlan {
   id: string
@@ -209,6 +211,20 @@ class StripeService {
     cancelUrl: string
   ): Promise<{ url: string } | null> {
     try {
+      // 记录支付尝试
+      await securityMonitor.logSecurityEvent({
+        type: ThreatType.SUSPICIOUS_PATTERN,
+        level: SecurityLevel.LOW,
+        userId: userId,
+        details: {
+          planId,
+          action: 'payment_checkout_start',
+          timestamp: Date.now()
+        },
+        blocked: false,
+        action: 'payment_checkout_attempt'
+      })
+      
       // 从所有计划中查找，包括年度计划
       const plan = this.getAllSubscriptionPlans().find(p => p.id === planId)
       if (!plan) {
@@ -237,12 +253,57 @@ class StripeService {
 
       if (error) {
         console.error('Error creating checkout session:', error)
+        
+        // 记录支付失败
+        await securityMonitor.logSecurityEvent({
+          type: ThreatType.SUSPICIOUS_PATTERN,
+          level: SecurityLevel.MEDIUM,
+          userId: userId,
+          details: {
+            planId,
+            error: error.message,
+            action: 'payment_checkout_failed'
+          },
+          blocked: false,
+          action: 'payment_checkout_error'
+        })
+        
         return null
       }
+
+      // 记录支付会话创建成功
+      await securityMonitor.logSecurityEvent({
+        type: ThreatType.SUSPICIOUS_PATTERN,
+        level: SecurityLevel.LOW,
+        userId: userId,
+        details: {
+          planId,
+          planName: plan.name,
+          amount: plan.price,
+          action: 'payment_checkout_success'
+        },
+        blocked: false,
+        action: 'payment_checkout_created'
+      })
 
       return data
     } catch (error) {
       console.error('Error in createSubscriptionCheckout:', error)
+      
+      // 记录异常
+      await securityMonitor.logSecurityEvent({
+        type: ThreatType.SUSPICIOUS_PATTERN,
+        level: SecurityLevel.HIGH,
+        userId: userId,
+        details: {
+          planId,
+          error: error.message,
+          action: 'payment_checkout_exception'
+        },
+        blocked: false,
+        action: 'payment_checkout_critical_error'
+      })
+      
       return null
     }
   }

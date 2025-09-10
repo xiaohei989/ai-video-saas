@@ -1,5 +1,5 @@
 {
-  "id": "finger-touch-activation",
+  "id": "8d6dbb97-75a2-422d-8bf2-f5cdd6fd2279",
   "slug": "finger-touch-activation",
   "name": "Finger Touch Book Magic",
   "icon": "👆",
@@ -62,7 +62,7 @@
     
     "cta": {
       "motion": "{final_freeze}",
-      "text": "{cta_text}",
+      "text": "",
       "style": "{text_style}"
     },
     
@@ -361,7 +361,7 @@
           "label": "💎 Magic Gemstone",
           "metadata": {
             "subject_keyword": "magic gemstone",
-            "visual_description": "Close-up on an ink drawing of a large gemstone in a mineralogy book. A finger touches the crystal, instantly awakening brilliant internal fire and light. The gemstone gains three-dimensional depth with multiple facets that catch and refract light into rainbow beams. Crystal formations grow from the page surface while prismatic colors dance across surrounding pages, creating a dazzling display of optical effects.",
+            "visual_description": "Close-up on ink illustrations of various gemstones in a mineralogy book. A finger touches the gemstone collection, causing brilliant prismatic light waves to ripple outward. The gemstones begin to rise and become three-dimensional, transforming from flat ink into gleaming precious stones. Diamonds, rubies, sapphires, and emeralds bounce and clink as they leap from the page, creating a sparkling treasure pile that reflects multicolored light with each movement.",
             "style": "crystalline realism, prismatic lighting, optical phenomena",
             "camera_movement": "macro finger approach → extreme close-up on internal awakening → prismatic light dance → wide crystal garden",
             "lighting_description": "scholarly reading light transformed into brilliant prismatic rainbow beams and crystal refractions",
@@ -369,25 +369,25 @@
             "book_type": "geology textbook",
             "page_detail": "scientific diagrams with crystal structure charts and mineral classifications",
             "activation_particles": "internal crystal fire and rainbow light refractions",
-            "subject_3d_description": "multifaceted magic gemstone with brilliant internal fire and surrounding crystal formations",
-            "environment_interaction": "rainbow beams dancing across pages, other mineral illustrations beginning to sparkle",
-            "primary_sfx": "crystal resonance and light refractions",
-            "secondary_sfx": "magical chimes and prismatic harmonics",
-            "transformation_sfx": "crystal growth and rainbow light symphony",
+            "subject_3d_description": "collection of various precious gemstones with detailed facets, bouncing and stacking realistically with prismatic light reflections",
+            "environment_interaction": "multicolored light reflections dancing across pages, gemstone sparkles illuminating surrounding mineral charts",
+            "primary_sfx": "gemstones clinking and chiming together",
+            "secondary_sfx": "precious stones bouncing and rolling",
+            "transformation_sfx": "gemstone materialization and treasure accumulation",
             "ambient_start": "quiet laboratory with subtle equipment humming",
-            "ambient_peak": "full crystal cave ambience with magical resonance",
+            "ambient_peak": "full treasure chamber ambience with gemstone symphony",
             "music_accent": "ethereal orchestral themes with crystal bell harmonies",
-            "opening_action": "Finger carefully approaches the gemstone illustration in the geology book. Upon contact, brilliant internal fire awakens within the crystal, and light begins to refract through its structure.",
+            "opening_action": "Finger approaches the various gemstone illustrations in the geology book. Upon contact, brilliant prismatic light waves ripple outward from the touch point, illuminating the different precious stones on the page.",
             "opening_camera": "extreme macro shot focusing on the moment crystal fire ignites",
             "opening_audio": "finger approach + crystal awakening chime + laboratory quiet",
-            "transformation_action": "The gemstone gains three-dimensional depth and multiple facets. Internal fire grows brighter while rainbow beams of refracted light begin dancing across the surrounding pages.",
+            "transformation_action": "The flat gemstone illustrations rise from the page, gaining three-dimensional form and material substance. Diamonds, rubies, sapphires, and emeralds bounce and clink as they transform from ink into gleaming precious stones.",
             "transformation_camera": "close-up rotation around gemstone showing facet details and light refractions",
             "transformation_audio": "crystal resonance + rainbow light symphony + magical chimes",
-            "finale_action": "The fully formed magic gemstone blazes with internal fire, casting prismatic rainbow beams in all directions. Small crystal formations have grown around it, creating a miniature crystal garden on the page.",
+            "finale_action": "The completed collection of precious gemstones sparkles brilliantly, with stones occasionally shifting and clinking together. Multicolored reflections dance across the geology book as the treasure pile gleams with prismatic light from multiple faceted surfaces.",
             "finale_camera": "wide shot capturing complete crystal garden with full prismatic light show",
             "finale_audio": "crystal cave ambience + prismatic harmonics + magical resonance",
-            "final_freeze": "gemstone blazes while rainbow beams form sparkling text patterns",
-            "text_style": "prismatic rainbow letters with crystal refraction effects"
+            "final_freeze": "gemstones freeze mid-sparkle with prismatic light beams creating dazzling reflections",
+            "text_style": "no text, pure gemstone light reflections only"
           }
         },
         {
@@ -429,7 +429,7 @@
           "label": "🌀 Time Portal",
           "metadata": {
             "subject_keyword": "time portal",
-            "visual_description": "Close-up on an ink illustration of a mysterious circular symbol in an ancient mystical tome. A finger touches the center, causing purple energy waves to ripple outward with space-time distortion effects. The illustration begins spinning and glowing, tearing through dimensional barriers as it becomes a three-dimensional portal. The gateway stabilizes, revealing swirling cosmic visions within - distant galaxies, future cities, or magical realms - while energy particles orbit the portal's edge.",
+            "visual_description": "Close-up on an ink illustration of a mysterious circular symbol in an ancient mystical tome. A finger touches the center, causing purple energy waves to ripple outward with space-time distortion effects. The illustration begins spinning and glowing, tearing through dimensional barriers as it becomes a three-dimensional portal. The gateway stabilizes with continuously flowing energy waves pulsing along its edge, revealing dynamic visions of living alien worlds within - swirling galaxies with moving stars, bustling future cities with flying vehicles, magical realms with flowing elements - all in constant motion while energy streams spiral around the portal's perimeter.",
             "style": "mystical sci-fi, dimensional effects, cosmic phenomenon",
             "camera_movement": "macro finger approach → extreme close-up on dimensional tear → spiral into portal depth → wide cosmic revelation",
             "lighting_description": "candlelit mystical study overwhelmed by purple portal energy and cosmic light from other dimensions",
@@ -437,8 +437,8 @@
             "book_type": "ancient mystical tome",
             "page_detail": "mystical symbols with runic writing and dimensional equations",
             "activation_particles": "purple energy waves with space-time distortion ripples",
-            "subject_3d_description": "three-dimensional swirling portal with cosmic visions and orbiting energy particles",
-            "environment_interaction": "other mystical symbols glowing sympathetically, papers fluttering from dimensional winds",
+            "subject_3d_description": "three-dimensional swirling portal with continuously flowing edge energy and dynamic living visions within",
+            "environment_interaction": "papers fluttering from dimensional winds, ambient light fluctuating with portal energy pulses",
             "primary_sfx": "dimensional tearing and cosmic energy humming",
             "secondary_sfx": "portal stabilization and otherworldly echoes",
             "transformation_sfx": "reality warping and interdimensional harmonics",
@@ -451,11 +451,11 @@
             "transformation_action": "The symbol begins spinning and glowing intensely, literally tearing through the page to create dimensional barriers. The illustration becomes a three-dimensional gateway with swirling cosmic depths.",
             "transformation_camera": "spiral camera movement following portal formation and dimensional depth",
             "transformation_audio": "reality warping + portal formation + cosmic energy building",
-            "finale_action": "The portal stabilizes as a perfect three-dimensional gateway, revealing swirling visions of distant realms within its depths. Energy particles orbit the portal's edge while otherworldly light emanates from its center.",
+            "finale_action": "The portal stabilizes as a perfect three-dimensional gateway with continuously flowing energy waves pulsing along its circular edge. Within its depths, dynamic visions of living alien worlds display constant motion - swirling cosmic phenomena, moving creatures in magical realms, bustling activity in future cities - while energy streams spiral endlessly around the portal's perimeter.",
             "finale_camera": "wide shot showing complete portal with cosmic visions and dimensional lighting effects",
             "finale_audio": "interdimensional ambience + cosmic visions + portal energy humming",
-            "final_freeze": "portal swirls freeze while energy particles form mystical text around the gateway",
-            "text_style": "ethereal letters formed by swirling portal energy and cosmic particles"
+            "final_freeze": "portal maintains its swirling motion with edge energy continuing to flow and pulse",
+            "text_style": "no text or symbols, pure portal energy effects only"
           }
         },
         {

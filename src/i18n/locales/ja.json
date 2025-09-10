@@ -306,7 +306,7 @@
     "title": "トレンディングテンプレート",
     "selectTemplate": "テンプレート選択",
     "parameters": "パラメータ",
-    "generate": "動画生成",
+    "generate": "生成",
     "creditCost": "{{cost}} クレジット",
     "preview": "プレビュー",
     "sortBy": {
@@ -438,6 +438,8 @@
     "aboutSeconds": "約{{seconds}}秒",
     "completed": "生成完了！",
     "failed": "生成失敗",
+    "generationLimited": "生成回数の上限に達しました。しばらくしてから再試行してください",
+    "finalizing": "最終処理中...",
     "restoring": "復元中...",
     "unknownStatus": "ステータス不明"
   },
@@ -705,7 +707,13 @@
     "standard": "スタンダード",
     "highQuality": "高画質",
     "generateVideo": "動画生成",
-    "generating": "生成中..."
+    "generating": "生成中...",
+    "prompt": "プロンプト",
+    "viewPrompt": "プロンプトを表示",
+    "hidePrompt": "プロンプトを非表示",
+    "copyPrompt": "プロンプトをクリップボードにコピー",
+    "promptAccessRequired": "詳細なプロンプトは購読者のみ閲覧可能です",
+    "upgradeToUnlock": "アップグレードして解除"
   },
   "helpCenter": {
     "title": "ヘルプセンター",

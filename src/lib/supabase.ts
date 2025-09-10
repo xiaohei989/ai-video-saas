@@ -1,4 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
+import { createSecureSupabaseClient } from '../services/secureSupabaseClient'
+import { securityMonitor } from '../services/securityMonitorService'
+import { InputValidator } from '../utils/inputValidator'
 
 // Supabase 配置
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -8,7 +11,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables')
 }
 
-// 创建 Supabase 客户端
+// 创建安全增强的 Supabase 客户端
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
@@ -22,9 +25,24 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   global: {
     headers: {
       'Accept': 'application/json, application/vnd.pgrst.object+json',
+      'X-Client-Info': 'ai-video-saas',
+      'X-Requested-With': 'XMLHttpRequest'
     },
   },
 })
+
+// 创建安全增强版本的客户端
+export const secureSupabase = createSecureSupabaseClient(
+  supabaseUrl,
+  supabaseAnonKey,
+  {
+    enableCSRF: true,
+    enableRateLimit: true,
+    enableInputValidation: true,
+    enableQueryLogging: true,
+    maxQueryComplexity: 10
+  }
+)
 
 // 数据库类型定义
 export type Database = {
@@ -176,6 +194,20 @@ export const uploadFile = async (
   const maxRetries = options?.maxRetries || 3
   let lastError: any = null
   
+  // 文件安全验证
+  const fileValidation = await InputValidator.validateFile(file)
+  if (!fileValidation.isValid) {
+    // 记录恶意文件上传尝试
+    await securityMonitor.logFileUpload(
+      '', // 将在session检查后获取用户ID
+      file.name,
+      file.size,
+      file.type,
+      false,
+      true
+    )
+    throw new Error(`文件验证失败: ${fileValidation.errors.join(', ')}`)
+  }
   
   // 验证用户认证状态
   const { data: { session }, error: sessionError } = await supabase.auth.getSession()
@@ -183,6 +215,8 @@ export const uploadFile = async (
     console.error('[Storage] 用户未认证:', sessionError)
     throw new Error('用户未登录或session已过期，请重新登录')
   }
+  
+  const userId = session.user?.id || ''
   
   // 重试逻辑
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -227,6 +261,16 @@ export const uploadFile = async (
           continue
         }
       } else {
+        // 记录成功的文件上传
+        await securityMonitor.logFileUpload(
+          userId,
+          file.name,
+          file.size,
+          file.type,
+          true,
+          false
+        )
+        
         // 成功上传
         return data
       }

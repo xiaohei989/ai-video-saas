@@ -8,6 +8,8 @@ export interface VideoRecord {
   userId: string
   templateId: string
   templateName: string
+  title?: string
+  description?: string
   prompt: string
   parameters: Record<string, any>
   videoUrl?: string

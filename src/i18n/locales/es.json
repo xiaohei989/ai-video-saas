@@ -306,7 +306,7 @@
     "title": "Plantillas Tendencia",
     "selectTemplate": "Seleccionar Plantilla",
     "parameters": "Parámetros",
-    "generate": "Generar Video",
+    "generate": "Generar",
     "creditCost": "{{cost}} créditos",
     "preview": "Vista previa",
     "sortBy": {
@@ -444,6 +444,8 @@
     "aboutSeconds": "Aproximadamente {{seconds}} seg",
     "completed": "¡Generación completada!",
     "failed": "Generación fallida",
+    "generationLimited": "Límite de generación alcanzado, espere antes de intentar nuevamente",
+    "finalizing": "Finalizando...",
     "restoring": "Restaurando...",
     "unknownStatus": "Estado desconocido"
   },
@@ -711,7 +713,13 @@
     "standard": "Estándar",
     "highQuality": "Alta Calidad",
     "generateVideo": "Generar Video",
-    "generating": "Generando..."
+    "generating": "Generando...",
+    "prompt": "Prompt",
+    "viewPrompt": "Mostrar prompt",
+    "hidePrompt": "Ocultar prompt",
+    "copyPrompt": "Copiar prompt al portapapeles",
+    "promptAccessRequired": "Solo los suscriptores pueden ver prompts detallados",
+    "upgradeToUnlock": "Actualizar para desbloquear"
   },
   "helpCenter": {
     "title": "Centro de Ayuda",

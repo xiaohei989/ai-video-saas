@@ -195,21 +195,18 @@ export default function PreviewPanel({
                 })()}
               </div>
               {isGenerating ? (
-                <div className="flowing-background flex flex-col items-center gap-4 text-white p-8">
-                  {/* 流体气泡效果层 */}
-                  <div className="fluid-bubbles"></div>
-                  
-                  <div className="relative z-10">
-                    <Loader2 className="h-12 w-12 animate-spin text-white/90" />
+                <div className="flex flex-col items-center gap-4 text-foreground p-8">
+                  <div className="relative">
+                    <Loader2 className="h-12 w-12 animate-spin text-foreground" />
                     {progress > 0 && (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-xs font-semibold text-white">{Math.round(progress)}%</span>
+                        <span className="text-xs font-semibold text-foreground">{Math.round(progress)}%</span>
                       </div>
                     )}
                   </div>
                   
-                  <div className="text-center space-y-2 z-10 relative">
-                    <p className="text-sm font-medium text-white">
+                  <div className="text-center space-y-2">
+                    <p className="text-sm font-medium text-foreground">
                       {status || t('videoCreator.generatingVideo')}
                     </p>
                     
@@ -217,12 +214,12 @@ export default function PreviewPanel({
                     <div className="w-48 mx-auto">
                       <Progress 
                         value={progress} 
-                        className="h-2 bg-white/30 [&>div]:bg-white/90" 
+                        className="h-2" 
                       />
                     </div>
                     
                     {/* Time Information */}
-                    <div className="flex items-center justify-center gap-4 text-xs text-white/90">
+                    <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
                       {elapsedTime && (
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
@@ -238,7 +235,7 @@ export default function PreviewPanel({
                     </div>
                   </div>
                   
-                  <p className="text-xs opacity-70 text-white/80 z-10 relative">
+                  <p className="text-xs text-muted-foreground">
                     {t('videoCreator.pleaseWait')}
                   </p>
                 </div>

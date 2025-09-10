@@ -76,6 +76,13 @@ class AnalyticsService {
   initialize(measurementId?: string) {
     if (this.isInitialized) return
 
+    // 开发环境下跳过GA初始化，避免网络错误
+    if (import.meta.env.DEV) {
+      console.log('[Analytics] 开发环境，跳过Google Analytics初始化')
+      this.isInitialized = true
+      return
+    }
+
     const id = measurementId || this.measurementId
     if (!id) {
       console.warn('Google Analytics Measurement ID未配置')

@@ -187,14 +187,25 @@ export default function VideoCard({
       </div>
       
       <CardContent className="p-4 space-y-3">
-        {/* 标题和模板 */}
+        {/* AI生成的标题和简介 */}
         <div>
           <h3 className="font-semibold text-sm line-clamp-1">
-            {video.templateName}
+            {video.title || video.templateName}
           </h3>
-          <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-            {video.prompt}
-          </p>
+          {video.description ? (
+            <p className="text-xs text-muted-foreground line-clamp-4 mt-0.5">
+              {video.description}
+            </p>
+          ) : (
+            <p className="text-xs text-muted-foreground line-clamp-4 mt-0.5">
+              {video.prompt}
+            </p>
+          )}
+          {video.description && (
+            <p className="text-xs text-muted-foreground/70 line-clamp-1 mt-0.5 italic">
+              模板: {video.templateName}
+            </p>
+          )}
         </div>
         
         {/* 元数据 */}

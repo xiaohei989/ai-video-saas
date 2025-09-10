@@ -678,6 +678,16 @@ class EdgeFunctionCacheClient {
    */
   private async getCounterProcessingStatus(): Promise<any> {
     try {
+      // 开发环境下跳过Edge Function调用，避免CORS错误
+      if (import.meta.env.DEV) {
+        console.log('[EDGE CACHE CLIENT] 开发环境，跳过计数器状态检查')
+        return {
+          queue_size: 0,
+          processing: false,
+          last_processed: new Date().toISOString()
+        }
+      }
+
       const { data: session } = await supabase.auth.getSession()
       
       const response = await fetch(this.COUNTER_FUNCTION_URL, {

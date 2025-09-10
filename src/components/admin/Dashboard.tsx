@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { formatShortDate } from '@/utils/dateFormat'
 import {
   Card,
   CardContent,
@@ -129,7 +130,7 @@ export const Dashboard: React.FC = () => {
   const formatTrendData = (data: Record<string, number>) => {
     return Object.entries(data)
       .map(([date, value]) => ({
-        date: new Date(date).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }),
+        date: formatShortDate(date),
         value
       }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())

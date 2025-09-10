@@ -1,0 +1,211 @@
+{
+  "id": "5f7e8d9c-3b4a-5c6d-7e8f-9a0b1c2d3e4f",
+  "slug": "fireplace-cozy-selfie",
+  "name": "Fireplace Cozy International Beauty Selfie",
+  "icon": "🔥",
+  "description": "Cozy POV selfie with international beauties in a warm fireplace-lit room",
+  "previewUrl": "/templates/videos/fireplace-seduction-selfie.mp4",
+  "credits": 8,
+  
+  "tags": ["selfie", "cozy", "fireplace", "charming", "pov", "asmr", "international", "beauty"],
+  "createdAt": "2025-02-01T14:00:00Z",
+  "version": "1.0.0",
+  "lastModified": "2025-02-01T14:00:00Z",
+  
+  "promptTemplate": {
+    "model": "veo3",
+    "duration": "8s",
+    "aspect_ratio": "9:16",
+    
+    "visual_core": {
+      "description": "A warm, dimly lit American country villa living room. The only strong light source is a roaring fireplace, casting flickering golden shadows. The shot is a cozy selfie-POV, held by the subject. A {character_description}, wearing a comfortable silk robe, lies lazily on a plush sofa, backlit by the fire. {pronoun_subject} looks directly into the lens with a playful and charming smile, then slowly sits up, the camera moving smoothly with {pronoun_object}.",
+      "style": "cinematic, cozy, warm color palette, low-light, charming, high-detail, realistic skin texture",
+      "camera": "selfie-POV, handheld, smooth motion, starts low (on sofa), rises with subject",
+      "lighting": "fireplace glow, golden shadows, warm backlighting"
+    },
+    
+    "timeline": [
+      {
+        "time": "0-3s",
+        "action": "{character} lies on sofa, looking at camera with charming smile",
+        "camera": "static selfie angle, slight handheld movement"
+      },
+      {
+        "time": "3-6s",
+        "action": "{character} slowly sits up while maintaining eye contact",
+        "camera": "smooth upward motion following the subject"
+      },
+      {
+        "time": "6-8s",
+        "action": "{character} whispers softly to camera",
+        "dialogue": {
+          "language": "en-US",
+          "text": "{dialogue_content}",
+          "style": "ASMR whisper"
+        }
+      }
+    ],
+    
+    "audio": {
+      "dialogue": {
+        "text": "{dialogue_content}",
+        "style": "ASMR whisper, extremely close, {voice_style}"
+      },
+      "ambience": "roaring fireplace, soft crackling, cozy room tone"
+    }
+  },
+
+  "params": {
+    "character_type": {
+      "type": "select",
+      "label": "Character",
+      "required": true,
+      "default": "korean_beauty",
+      "options": [
+        {
+          "value": "korean_beauty",
+          "label": "🇰🇷 Korean Beauty",
+          "metadata": {
+            "character": "Korean beauty",
+            "character_description": "stunning 20-year-old Korean beauty with flawless skin and elegant features",
+            "pronoun_subject": "She",
+            "pronoun_object": "her",
+            "voice_style": "soft, breathy Korean-accented female voice",
+            "default_dialogue": "안녕... it's so warm here by the fire"
+          }
+        },
+        {
+          "value": "japanese_beauty",
+          "label": "🇯🇵 Japanese Beauty",
+          "metadata": {
+            "character": "Japanese beauty",
+            "character_description": "graceful 20-year-old Japanese beauty with delicate features and mysterious charm",
+            "pronoun_subject": "She",
+            "pronoun_object": "her",
+            "voice_style": "gentle, whispery Japanese-accented female voice",
+            "default_dialogue": "こんばんは... the fireplace is so cozy tonight"
+          }
+        },
+        {
+          "value": "chinese_beauty",
+          "label": "🇨🇳 Chinese Beauty",
+          "metadata": {
+            "character": "Chinese beauty",
+            "character_description": "elegant 20-year-old Chinese beauty with classic features and alluring eyes",
+            "pronoun_subject": "She",
+            "pronoun_object": "her",
+            "voice_style": "melodic, sultry Chinese-accented female voice",
+            "default_dialogue": "你好... come enjoy the warmth with me"
+          }
+        },
+        {
+          "value": "american_beauty",
+          "label": "🇺🇸 American Beauty",
+          "metadata": {
+            "character": "American beauty",
+            "character_description": "confident 20-year-old American beauty with sun-kissed skin and captivating smile",
+            "pronoun_subject": "She",
+            "pronoun_object": "her",
+            "voice_style": "confident, seductive American female voice",
+            "default_dialogue": "Hey there... come join me by the fireplace"
+          }
+        },
+        {
+          "value": "french_beauty",
+          "label": "🇫🇷 French Beauty",
+          "metadata": {
+            "character": "French beauty",
+            "character_description": "sophisticated 20-year-old French beauty with chic style and enchanting accent",
+            "pronoun_subject": "She",
+            "pronoun_object": "her",
+            "voice_style": "sensual, breathy French-accented female voice",
+            "default_dialogue": "Bonsoir... the fire is so beautiful tonight"
+          }
+        },
+        {
+          "value": "brazilian_beauty",
+          "label": "🇧🇷 Brazilian Beauty",
+          "metadata": {
+            "character": "Brazilian beauty",
+            "character_description": "vibrant 20-year-old Brazilian beauty with sun-bronzed skin and infectious energy",
+            "pronoun_subject": "She",
+            "pronoun_object": "her",
+            "voice_style": "warm, playful Brazilian-accented female voice",
+            "default_dialogue": "Olá... this fireplace is amazing"
+          }
+        },
+        {
+          "value": "russian_beauty",
+          "label": "🇷🇺 Russian Beauty",
+          "metadata": {
+            "character": "Russian beauty",
+            "character_description": "striking 20-year-old Russian beauty with piercing eyes and model-like features",
+            "pronoun_subject": "She",
+            "pronoun_object": "her",
+            "voice_style": "deep, mysterious Russian-accented female voice",
+            "default_dialogue": "Привет... the warmth feels so good"
+          }
+        },
+        {
+          "value": "italian_beauty",
+          "label": "🇮🇹 Italian Beauty",
+          "metadata": {
+            "character": "Italian beauty",
+            "character_description": "passionate 20-year-old Italian beauty with Mediterranean charm and expressive eyes",
+            "pronoun_subject": "She",
+            "pronoun_object": "her",
+            "voice_style": "warm, melodious Italian-accented female voice",
+            "default_dialogue": "Ciao... this cozy fire is perfect"
+          }
+        },
+        {
+          "value": "indian_beauty",
+          "label": "🇮🇳 Indian Beauty",
+          "metadata": {
+            "character": "Indian beauty",
+            "character_description": "exotic 20-year-old Indian beauty with captivating eyes and graceful movements",
+            "pronoun_subject": "She",
+            "pronoun_object": "her",
+            "voice_style": "melodic, enchanting Indian-accented female voice",
+            "default_dialogue": "नमस्ते... the fireplace is so peaceful"
+          }
+        },
+        {
+          "value": "spanish_beauty",
+          "label": "🇪🇸 Spanish Beauty",
+          "metadata": {
+            "character": "Spanish beauty",
+            "character_description": "fiery 20-year-old Spanish beauty with passionate spirit and mesmerizing presence",
+            "pronoun_subject": "She",
+            "pronoun_object": "her",
+            "voice_style": "sultry, passionate Spanish-accented female voice",
+            "default_dialogue": "Hola... come warm up by the fire"
+          }
+        }
+      ]
+    },
+    
+    "dialogue_content": {
+      "type": "textarea",
+      "label": "Dialogue Content (ASMR Whisper)",
+      "required": true,
+      "placeholder": "Enter what she whispers softly...",
+      "maxLength": 100,
+      "rows": 2,
+      "default": "안녕... it's so warm here by the fire"
+    },
+    
+    "character": {"type": "hidden", "linkedTo": "character_type", "linkType": "metadata"},
+    "character_description": {"type": "hidden", "linkedTo": "character_type", "linkType": "metadata"},
+    "pronoun_subject": {"type": "hidden", "linkedTo": "character_type", "linkType": "metadata"},
+    "pronoun_object": {"type": "hidden", "linkedTo": "character_type", "linkType": "metadata"},
+    "voice_style": {"type": "hidden", "linkedTo": "character_type", "linkType": "metadata"},
+    "default_dialogue": {"type": "hidden", "linkedTo": "character_type", "linkType": "metadata"},
+    
+    "makePublic": {
+      "type": "toggle",
+      "label": "Make video public",
+      "default": false
+    }
+  }
+}

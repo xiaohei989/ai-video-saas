@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { formatFullDate } from '@/utils/dateFormat'
 import { 
   Users, 
   Gift, 
@@ -257,7 +258,7 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
                            invitation.invitation_code}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {new Date(invitation.created_at).toLocaleDateString('zh-CN')}
+                          {formatFullDate(invitation.created_at)}
                         </p>
                       </div>
                     </div>

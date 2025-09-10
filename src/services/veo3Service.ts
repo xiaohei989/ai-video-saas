@@ -1155,7 +1155,7 @@ class Veo3Service {
         this.activeJobs.set(apicoreTaskId, job)
 
         // 在后台继续轮询（使用通用方法）
-        this.resumePollingInBackground(apicoreTaskId, apicoreService, videoRecordId)
+        this.resumePollingInBackground(apicoreTaskId, apicoreService, videoRecordId, 'apicore')
         
         console.log(`[VEO3 SERVICE] ✅ APICore轮询恢复成功: ${apicoreTaskId}`)
         return true
@@ -1324,7 +1324,7 @@ class Veo3Service {
 
         // 在后台继续轮询（不阻塞返回）
         console.log(`[VEO3 SERVICE] 🔄 启动后台轮询...`)
-        this.resumePollingInBackground(qingyunTaskId, qingyunService, videoRecordId)
+        this.resumePollingInBackground(qingyunTaskId, qingyunService, videoRecordId, 'qingyun')
         
         console.log(`[VEO3 SERVICE] ✅ 青云API轮询恢复成功: ${qingyunTaskId}`)
         return true
@@ -1351,30 +1351,33 @@ class Veo3Service {
    * 在后台继续轮询任务状态
    */
   private async resumePollingInBackground(
-    qingyunTaskId: string, 
-    qingyunService: any, 
-    videoRecordId: string
+    taskId: string, 
+    apiService: any, 
+    videoRecordId: string,
+    provider: 'apicore' | 'qingyun' = 'qingyun'
   ) {
+    const providerName = provider === 'apicore' ? 'APICore' : '青云API'
     console.log(`[VEO3 SERVICE] 🔄 ========== 开始后台轮询 ==========`)
-    console.log(`[VEO3 SERVICE] 🎯 青云任务ID: ${qingyunTaskId}`)
+    console.log(`[VEO3 SERVICE] 🎯 ${providerName}任务ID: ${taskId}`)
     console.log(`[VEO3 SERVICE] 🎬 视频记录ID: ${videoRecordId}`)
     console.log(`[VEO3 SERVICE] ⏰ 开始时间: ${new Date().toISOString()}`)
     
     try {
-      console.log(`[VEO3 SERVICE] 🚀 启动青云API轮询监控...`)
+      console.log(`[VEO3 SERVICE] 🚀 启动${providerName}轮询监控...`)
 
       // 继续轮询任务直到完成
-      const result = await qingyunService.pollUntilComplete(
-        qingyunTaskId,
+      const result = await apiService.pollUntilComplete(
+        taskId,
         (progress: number) => {
           // 更新进度
-          console.log(`[VEO3 SERVICE] 📊 青云API进度更新: ${progress}%`)
+          console.log(`[VEO3 SERVICE] 📊 ${providerName}进度更新: ${progress}%`)
           progressManager.updateProgress(videoRecordId, {
             progress,
             status: 'processing',
             statusText: progress > 80 ? i18n.t('videoCreator.almostComplete') : i18n.t('videoCreator.processing'),
-            apiProvider: 'qingyun',
-            qingyunTaskId,
+            apiProvider: provider,
+            apicoreTaskId: provider === 'apicore' ? taskId : undefined,
+            qingyunTaskId: provider === 'qingyun' ? taskId : undefined,
             pollingAttempts: (progressManager.getProgress(videoRecordId)?.pollingAttempts || 0) + 1
           })
         }
@@ -1382,7 +1385,7 @@ class Veo3Service {
 
       // 更新任务状态
       console.log(`[VEO3 SERVICE] 🎉 后台轮询完成！更新任务状态...`)
-      const job = this.activeJobs.get(qingyunTaskId)
+      const job = this.activeJobs.get(taskId)
       if (job) {
         job.status = 'completed'
         job.progress = 100
@@ -1390,14 +1393,22 @@ class Veo3Service {
         job.videoUrl = result.video_url || undefined
         console.log(`[VEO3 SERVICE] ✅ activeJobs状态更新完成`)
       } else {
-        console.warn(`[VEO3 SERVICE] ⚠️ 在activeJobs中未找到任务 ${qingyunTaskId}`)
+        console.warn(`[VEO3 SERVICE] ⚠️ 在activeJobs中未找到任务 ${taskId}`)
       }
 
-      console.log(`[VEO3 SERVICE] 🎬 恢复的任务完成: ${qingyunTaskId}`)
+      console.log(`[VEO3 SERVICE] 🎬 恢复的任务完成: ${taskId}`)
       console.log(`[VEO3 SERVICE] 🎥 生成的视频URL: ${result.video_url || 'NULL'}`)
       
       // 更新进度管理器
       console.log(`[VEO3 SERVICE] 📊 更新进度管理器为完成状态...`)
+      progressManager.updateProgress(videoRecordId, {
+        progress: 100,
+        status: 'completed',
+        statusText: i18n.t('videoCreator.completed'),
+        apiProvider: provider,
+        apicoreTaskId: provider === 'apicore' ? taskId : undefined,
+        qingyunTaskId: provider === 'qingyun' ? taskId : undefined
+      })
       progressManager.markAsCompleted(videoRecordId, result.video_url || undefined)
       console.log(`[VEO3 SERVICE] ✅ 进度管理器更新完成`)
 
@@ -1412,14 +1423,14 @@ class Veo3Service {
 
       // 清理任务
       setTimeout(() => {
-        this.activeJobs.delete(qingyunTaskId)
-        console.log(`[VEO3 SERVICE] Cleaned up restored task: ${qingyunTaskId}`)
+        this.activeJobs.delete(taskId)
+        console.log(`[VEO3 SERVICE] Cleaned up restored task: ${taskId}`)
       }, 30000) // 30秒后清理
 
     } catch (error) {
-      console.error(`[VEO3 SERVICE] 💥 后台轮询失败: ${qingyunTaskId}`)
+      console.error(`[VEO3 SERVICE] 💥 后台轮询失败: ${taskId}`)
       console.error(`[VEO3 SERVICE] 错误详情:`, {
-        taskId: qingyunTaskId,
+        taskId: taskId,
         videoId: videoRecordId,
         error: error instanceof Error ? error.message : String(error),
         stack: (error as Error)?.stack,
@@ -1428,13 +1439,13 @@ class Veo3Service {
       
       // 标记为失败
       console.log(`[VEO3 SERVICE] 💀 标记任务为失败状态...`)
-      const job = this.activeJobs.get(qingyunTaskId)
+      const job = this.activeJobs.get(taskId)
       if (job) {
         job.status = 'failed'
         job.error = error instanceof Error ? error.message : String(error)
         console.log(`[VEO3 SERVICE] ✅ activeJobs失败状态更新完成`)
       } else {
-        console.warn(`[VEO3 SERVICE] ⚠️ 在activeJobs中未找到失败的任务 ${qingyunTaskId}`)
+        console.warn(`[VEO3 SERVICE] ⚠️ 在activeJobs中未找到失败的任务 ${taskId}`)
       }
 
       // 更新进度管理器
@@ -1457,7 +1468,7 @@ class Veo3Service {
 
       // 清理任务
       console.log(`[VEO3 SERVICE] 🧹 清理失败的任务...`)
-      this.activeJobs.delete(qingyunTaskId)
+      this.activeJobs.delete(taskId)
       console.log(`[VEO3 SERVICE] ✅ 任务清理完成`)
     }
   }

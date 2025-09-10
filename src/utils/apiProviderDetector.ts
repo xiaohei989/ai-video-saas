@@ -12,15 +12,16 @@ export type ApiProvider = 'qingyun' | 'apicore';
  */
 export function detectApiProvider(taskId: string): ApiProvider {
   if (!taskId || typeof taskId !== 'string') {
-    console.warn('[API DETECTOR] Invalid task ID, defaulting to qingyun:', taskId);
-    return 'qingyun';
+    console.warn('[API DETECTOR] Invalid task ID, defaulting to apicore:', taskId);
+    return 'apicore'; // 默认改为APICore
   }
 
   // APICore任务ID格式: 标准UUID (36位，包含4个连字符)
-  // 例如: 096caa9f-418a-44cd-9012-c90eb0072f7f
+  // 例如: 096caa9f-418a-44cd-9012-c90eb0072f7f, 856dc0eb-bed4-4898-a23a-804a1d87e35a
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(taskId);
   
   if (isUUID) {
+    console.log(`[API DETECTOR] 检测到APICore任务: ${taskId}`);
     return 'apicore';
   }
 
@@ -33,9 +34,9 @@ export function detectApiProvider(taskId: string): ApiProvider {
     return 'qingyun';
   }
 
-  // 如果都不匹配，默认使用青云API（向后兼容）
-  console.warn(`[API DETECTOR] 无法识别Task ID格式，默认使用青云API: ${taskId}`);
-  return 'qingyun';
+  // 如果都不匹配，默认使用APICore（因为现在主要使用APICore）
+  console.warn(`[API DETECTOR] 无法识别Task ID格式，默认使用APICore: ${taskId}`);
+  return 'apicore';
 }
 
 /**

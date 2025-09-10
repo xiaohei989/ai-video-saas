@@ -141,6 +141,31 @@ class TemplateHotReload {
   }
 
   /**
+   * 强制重新初始化模板文件哈希值（用于缓存清除后）
+   */
+  private async forceInitializeTemplateHashes(): Promise<void> {
+    try {
+      console.log('🔄 强制重新初始化模板哈希值...')
+
+      // 动态导入模板列表
+      const { templateList } = await import('/src/features/video-creator/data/templates/index?t=' + Date.now())
+      
+      // 清除现有哈希值
+      this.detector.templateHashes.clear()
+      
+      // 基于模板内容计算哈希值
+      templateList.forEach((template: any) => {
+        const contentHash = this.calculateTemplateHash(template)
+        this.detector.templateHashes.set(template.id, contentHash)
+      })
+
+      console.log(`🎯 强制重新初始化了${this.detector.templateHashes.size}个模板的哈希值`)
+    } catch (error) {
+      console.error('❌ 强制初始化模板哈希失败:', error)
+    }
+  }
+
+  /**
    * 检查模板文件是否有变化
    */
   private async checkForTemplateChanges(): Promise<void> {
@@ -248,8 +273,12 @@ class TemplateHotReload {
     try {
       await clearTemplateCache()
       
-      // 更新哈希记录
-      await this.initializeTemplateHashes()
+      // 🔑 关键修复：清除内存中的哈希缓存，防止死循环
+      this.detector.templateHashes.clear()
+      console.log('🧹 已清除内存中的模板哈希缓存')
+      
+      // 强制重新初始化哈希记录
+      await this.forceInitializeTemplateHashes()
       
       // 保存更新后的哈希值
       this.saveHashesToStorage()
