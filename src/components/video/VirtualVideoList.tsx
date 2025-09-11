@@ -99,8 +99,8 @@ const VirtualVideoList = <T extends VideoItem = VideoItem>({
   const networkQuality = useSimpleNetworkQuality()
 
   // 批量懒加载管理
-  const videoUrls = useMemo(() => videos.map(v => v.video_url).filter(Boolean), [videos])
-  const batchLazyLoad = useBatchLazyLoad(videoUrls, {
+  // const videoUrls = useMemo(() => videos.map(v => v.video_url).filter(Boolean), [videos]) // unused
+  const batchLazyLoad = useBatchLazyLoad({
     enableThumbnailCache: true,
     thumbnailQuality: networkQuality.isSlowConnection ? 'low' : 'medium'
   })

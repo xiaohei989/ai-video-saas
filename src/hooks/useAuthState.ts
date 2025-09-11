@@ -172,7 +172,7 @@ export function useAuthError() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (event) => {
         if (event === 'SIGNED_OUT') {
           setError(null)
         } else if (event === 'TOKEN_REFRESHED') {

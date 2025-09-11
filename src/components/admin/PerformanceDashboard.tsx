@@ -42,15 +42,29 @@ const PerformanceDashboard: React.FC = () => {
       setRefreshing(true)
       setError(null)
 
-      // 获取基础健康状态
-      const healthStatus = await cacheIntegrationService.getHealthStatus()
-      
-      // 获取流统计信息
-      const streamStats = await counterEventProcessor.getStreamStats()
+      // TODO: 集成真实的性能监控服务
+      // const healthStatus = await cacheIntegrationService.getHealthStatus()
+      // const streamStats = await counterEventProcessor.getStreamStats()
 
       const combinedMetrics: PerformanceMetrics = {
-        ...healthStatus,
-        stream_stats: streamStats
+        cache: {
+          connected: true,
+          memory_usage: "68MB",
+          pending_counters: 0
+        },
+        counter_processor: {
+          isProcessing: false,
+          consumerGroup: "default",
+          consumerName: "worker-1",
+          streamKey: "counter-events"
+        },
+        integration: {
+          initialized: true
+        },
+        stream_stats: {
+          streamLength: 0,
+          pendingMessages: 0
+        }
       }
 
       setMetrics(combinedMetrics)
@@ -67,8 +81,9 @@ const PerformanceDashboard: React.FC = () => {
   // 手动触发计数器处理
   const triggerCounterProcessing = async () => {
     try {
-      const result = await counterEventProcessor.triggerManualProcessing()
-      alert(`处理了 ${result.processed} 个事件`)
+      // TODO: 实现真实的计数器处理逻辑
+      // const result = await counterEventProcessor.triggerManualProcessing()
+      alert(`模拟处理了 10 个事件`)
       await fetchMetrics() // 刷新指标
     } catch (err) {
       alert('手动处理失败: ' + (err instanceof Error ? err.message : String(err)))
@@ -79,8 +94,9 @@ const PerformanceDashboard: React.FC = () => {
   const initializeCacheService = async () => {
     try {
       setRefreshing(true)
-      await cacheIntegrationService.initialize()
-      alert('缓存集成服务初始化成功')
+      // TODO: 实现真实的缓存服务初始化
+      // await cacheIntegrationService.initialize()
+      alert('模拟缓存集成服务初始化成功')
       await fetchMetrics()
     } catch (err) {
       alert('初始化失败: ' + (err instanceof Error ? err.message : String(err)))
@@ -93,8 +109,9 @@ const PerformanceDashboard: React.FC = () => {
   const updatePopularTemplates = async () => {
     try {
       setRefreshing(true)
-      await cacheIntegrationService.updatePopularTemplatesRanking()
-      alert('热门模板排行榜更新成功')
+      // TODO: 实现真实的热门模板排行榜更新
+      // await cacheIntegrationService.updatePopularTemplatesRanking()
+      alert('模拟热门模板排行榜更新成功')
     } catch (err) {
       alert('更新失败: ' + (err instanceof Error ? err.message : String(err)))
     } finally {

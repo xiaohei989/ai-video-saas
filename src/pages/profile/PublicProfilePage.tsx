@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
@@ -22,7 +22,6 @@ import {
   Plus,
   Minus,
   Share2,
-  Copy,
   ExternalLink
 } from 'lucide-react'
 
@@ -54,13 +53,12 @@ interface Template {
 export default function PublicProfilePage() {
   const { t } = useTranslation()
   const { username } = useParams<{ username: string }>()
-  const { user, profile: currentUserProfile } = useAuth()
+  const { user } = useAuth()
   
   const [profile, setProfile] = useState<PublicProfile | null>(null)
   const [templates, setTemplates] = useState<Template[]>([])
   const [isFollowing, setIsFollowing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'templates' | 'liked'>('templates')
   const [stats, setStats] = useState({
     totalViews: 0,
     totalLikes: 0,

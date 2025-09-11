@@ -7,7 +7,7 @@ import { UserList, UserShow, UserEdit } from './Users'
 import { TemplateList, TemplateEdit, TemplateCreate, TemplateShow } from './TemplateManagement'
 import { TicketList, TicketShow, TicketEdit } from './Tickets'
 import { FAQList, FAQEdit, FAQCreate } from './FAQ'
-import { SystemSettings, SystemSettingsList, SystemSettingsEdit, SystemSettingsCreate } from './SystemSettings'
+import { SystemSettingsList, SystemSettingsEdit, SystemSettingsCreate } from './SystemSettings'
 import AdminDebug from './AdminDebug'
 import ErrorBoundary from './ErrorBoundary'
 

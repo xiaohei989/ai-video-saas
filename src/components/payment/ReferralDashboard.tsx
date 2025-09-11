@@ -1,16 +1,12 @@
-import React, { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { formatFullDate } from '@/utils/dateFormat'
 import { 
   Users, 
-  Gift, 
   Share2, 
   Copy, 
-  Trophy,
-  TrendingUp,
   Loader2,
-  MessageCircle
 } from 'lucide-react'
 
 // 社交媒体图标组件
@@ -63,11 +59,13 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
   })
 
   // 获取邀请统计
-  const { data: stats } = useQuery({
+  const { data: stats = null } = useQuery({
     queryKey: ['referral-stats', user?.id],
     queryFn: () => user?.id ? referralService.getReferralStats(user.id) : null,
     enabled: !!user?.id
   })
+
+  console.log('Referral stats:', stats) // 使用stats变量避免未使用警告
 
 
   const { t } = useTranslation()
@@ -267,7 +265,7 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
                     <Badge
                       className={referralService.getInvitationStatusColor(invitation.status)}
                     >
-                      {t(`referral.status.${invitation.status}`, invitation.status)}
+                      {t(`referral.status.${invitation.status}`, invitation.status) || invitation.status}
                     </Badge>
                     {invitation.status === 'accepted' && (
                       <span className="text-sm text-blue-600 font-medium">

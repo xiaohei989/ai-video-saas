@@ -1,4 +1,3 @@
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { FaXTwitter, FaFacebook, FaDiscord, FaTiktok, FaInstagram } from 'react-icons/fa6'

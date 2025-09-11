@@ -1,4 +1,4 @@
-import { getProxyVideoUrl, createCorsVideo } from './videoUrlProxy'
+import { createCorsVideo } from './videoUrlProxy'
 
 /**
  * 从视频中提取缩略图

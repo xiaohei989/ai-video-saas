@@ -88,6 +88,10 @@ class FontLoader {
   async preloadHandwritingFonts(): Promise<void> {
     const fonts = [
       {
+        family: 'Dancing Script',
+        url: 'https://fonts.gstatic.com/s/dancingscript/v25/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7BMSo3Sup8.woff2'
+      },
+      {
         family: 'Kalam',
         url: 'https://fonts.gstatic.com/s/kalam/v16/YA9dr0Wd4kDdMtD6GgLI.woff2'
       },

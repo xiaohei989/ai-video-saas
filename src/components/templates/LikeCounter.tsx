@@ -3,7 +3,6 @@
  * 点赞数量显示组件（仅展示，无交互）
  */
 
-import React from 'react'
 import { Heart } from 'lucide-react'
 import { cn } from '@/lib/utils'
 

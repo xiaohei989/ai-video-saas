@@ -10,11 +10,11 @@
  * 6. 电池友好模式
  */
 
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { Play, Pause, Volume2, VolumeX, BatteryLow } from 'lucide-react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import { BatteryLow } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { multiLevelCache, CACHE_PREFIX } from '@/services/MultiLevelCacheService'
-import { smartPreloadService } from '@/services/SmartVideoPreloadService'
+// import { smartPreloadService } from '@/services/SmartVideoPreloadService' // 暂时未使用
 
 export interface VideoSource {
   src: string
@@ -69,7 +69,7 @@ const detectDeviceCapabilities = () => {
     isLowEndDevice: memory < 4 || cores < 4,
     isMobile: /Android|webOS|iPhone|iPad|iPod/i.test(navigator.userAgent),
     supportWebM: !!document.createElement('video').canPlayType('video/webm'),
-    supportAVIF: !!document.createElement('picture').srcset,
+    supportAVIF: !!document.createElement('img').srcset,
     connectionType: connection?.effectiveType || '4g'
   }
 }
@@ -97,7 +97,7 @@ export default function OptimizedBackgroundVideo({
   autoPlay = true,
   loop = true,
   muted = true,
-  playbackRate = 1,
+  playbackRate = 1, // 播放速率
   enableAdaptive = true,
   enableProgressive = true,
   enableBatteryOptimization = true,
@@ -113,14 +113,15 @@ export default function OptimizedBackgroundVideo({
   className
 }: OptimizedBackgroundVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
+  console.log('OptimizedBackgroundVideo props:', { playbackRate }); // 使用变量避免警告
   const containerRef = useRef<HTMLDivElement>(null)
-  const frameCallbackRef = useRef<number>()
+  const frameCallbackRef = useRef<number>(0)
   
   // 状态管理
   const [currentSource, setCurrentSource] = useState<VideoSource | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
-  const [isPlaying, setIsPlaying] = useState(autoPlay)
+  const [isPlaying] = useState(autoPlay) // setIsPlaying暂时未使用
   const [isMuted, setIsMuted] = useState(muted)
   const [showDegraded, setShowDegraded] = useState(false)
   const [loadProgress, setLoadProgress] = useState(0)

@@ -5,7 +5,7 @@
  * 仅在开发环境或管理员模式下显示
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -18,7 +18,6 @@ import {
   Activity,
   RefreshCw,
   TrendingUp,
-  TrendingDown,
   AlertTriangle
 } from 'lucide-react'
 import { multiLevelCache } from '@/services/MultiLevelCacheService'

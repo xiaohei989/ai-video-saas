@@ -12,16 +12,8 @@ import {
   SelectInput,
   SearchInput,
   TopToolbar,
-  FilterButton,
   useRecordContext,
-  ChipField,
-  ReferenceField,
-  ReferenceManyField,
-  ShowButton,
   EditButton,
-  DeleteButton,
-  ArrayField,
-  SingleFieldList,
   useDataProvider,
   useRefresh,
   useNotify,
@@ -47,84 +39,85 @@ const priorityChoices = [
   { id: 'urgent', name: '紧急' },
 ]
 
-const StatusField: React.FC<{ source?: string; record?: any; label?: string }> = ({ record, source }) => {
-  const status = record?.[source || 'status']
-  const statusChoice = statusChoices.find(s => s.id === status)
-  return <Badge variant="outline">{statusChoice?.name || status}</Badge>
-}
+// TODO: 重新启用这些组件时取消注释
+// const StatusField: React.FC<{ source?: string; record?: any; label?: string }> = ({ record, source }) => {
+//   const status = record?.[source || 'status']
+//   const statusChoice = statusChoices.find(s => s.id === status)
+//   return <Badge variant="outline">{statusChoice?.name || status}</Badge>
+// }
 
-const PriorityField: React.FC<{ source?: string; record?: any; label?: string }> = ({ record, source }) => {
-  const priority = record?.[source || 'priority']
-  const priorityChoice = priorityChoices.find(p => p.id === priority)
-  const variant = priority === 'urgent' ? 'destructive' : priority === 'high' ? 'default' : 'secondary'
-  return <Badge variant={variant}>{priorityChoice?.name || priority}</Badge>
-}
+// const PriorityField: React.FC<{ source?: string; record?: any; label?: string }> = ({ record, source }) => {
+//   const priority = record?.[source || 'priority']
+//   const priorityChoice = priorityChoices.find(p => p.id === priority)
+//   const variant = priority === 'urgent' ? 'destructive' : priority === 'high' ? 'default' : 'secondary'
+//   return <Badge variant={variant}>{priorityChoice?.name || priority}</Badge>
+// }
 
-const CustomDeleteButton: React.FC<{ record?: any }> = ({ record }) => {
-  const dataProvider = useDataProvider()
-  const notify = useNotify()
-  const redirect = useRedirect()
-  const [showConfirm, setShowConfirm] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
+// const CustomDeleteButton: React.FC<{ record?: any }> = ({ record }) => {
+//   const dataProvider = useDataProvider()
+//   const notify = useNotify()
+//   const redirect = useRedirect()
+//   const [showConfirm, setShowConfirm] = useState(false)
+//   const [isDeleting, setIsDeleting] = useState(false)
 
-  const handleDelete = async () => {
-    setIsDeleting(true)
-    try {
-      await dataProvider.delete('tickets', {
-        id: record.id,
-        previousData: record
-      })
-      notify('工单删除成功', { type: 'success' })
-      redirect('/admin/tickets')
-    } catch (error) {
-      notify('删除失败：' + (error instanceof Error ? error.message : '未知错误'), { type: 'error' })
-    } finally {
-      setIsDeleting(false)
-      setShowConfirm(false)
-    }
-  }
+//   const handleDelete = async () => {
+//     setIsDeleting(true)
+//     try {
+//       await dataProvider.delete('tickets', {
+//         id: record.id,
+//         previousData: record
+//       })
+//       notify('工单删除成功', { type: 'success' })
+//       redirect('/admin/tickets')
+//     } catch (error) {
+//       notify('删除失败：' + (error instanceof Error ? error.message : '未知错误'), { type: 'error' })
+//     } finally {
+//       setIsDeleting(false)
+//       setShowConfirm(false)
+//     }
+//   }
 
-  return (
-    <>
-      <button
-        onClick={() => setShowConfirm(true)}
-        className="px-3 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors"
-        disabled={isDeleting}
-      >
-        删除
-      </button>
+//   return (
+//     <>
+//       <button
+//         onClick={() => setShowConfirm(true)}
+//         className="px-3 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors"
+//         disabled={isDeleting}
+//       >
+//         删除
+//       </button>
       
-      {showConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900">确认删除工单</h3>
-            <p className="text-gray-600 mb-6">
-              确定要删除工单 <strong>{record?.ticket_number}</strong> 吗？
-              <br />
-              <span className="text-red-600">删除后将无法恢复，包括所有相关消息。</span>
-            </p>
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={() => setShowConfirm(false)}
-                className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
-                disabled={isDeleting}
-              >
-                取消
-              </button>
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded transition-colors"
-                disabled={isDeleting}
-              >
-                {isDeleting ? '删除中...' : '确认删除'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  )
-}
+//       {showConfirm && (
+//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+//           <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+//             <h3 className="text-lg font-semibold mb-4 text-gray-900">确认删除工单</h3>
+//             <p className="text-gray-600 mb-6">
+//               确定要删除工单 <strong>{record?.ticket_number}</strong> 吗？
+//               <br />
+//               <span className="text-red-600">删除后将无法恢复，包括所有相关消息。</span>
+//             </p>
+//             <div className="flex gap-3 justify-end">
+//               <button
+//                 onClick={() => setShowConfirm(false)}
+//                 className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+//                 disabled={isDeleting}
+//               >
+//                 取消
+//               </button>
+//               <button
+//                 onClick={handleDelete}
+//                 className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded transition-colors"
+//                 disabled={isDeleting}
+//               >
+//                 {isDeleting ? '删除中...' : '确认删除'}
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </>
+//   )
+// }
 
 const TicketFilters = [
   <SearchInput source="q" placeholder="搜索工单" alwaysOn />,
@@ -175,17 +168,13 @@ const MessageList: React.FC = () => {
         ) : (
           <div className="space-y-4">
             {messages.map((message: any, index: number) => {
-              // 双重判断：检查role + 比较sender_id与工单user_id
-              const isAdmin = (message.sender?.role === 'admin' || message.sender?.role === 'super_admin') ||
-                             (message.sender_id !== record.user_id)
-              
               // 如果sender_id等于工单user_id，则为用户消息；否则为管理员消息
-              const isUserMessage = message.sender_id === record.user_id
+              const isUserMessage = message.sender_id === record?.user_id
               const isAdminMessage = !isUserMessage
               
               const senderName = isAdminMessage 
                 ? (message.sender?.full_name || message.sender?.username || '管理员')
-                : (record.user_name || message.sender?.full_name || message.sender?.username || '用户')
+                : (record?.user_name || message.sender?.full_name || message.sender?.username || '用户')
               
               return (
                 <div
@@ -245,7 +234,7 @@ const ReplyForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!replyContent.trim()) return
+    if (!replyContent.trim() || !record?.id) return
 
     setIsSubmitting(true)
     try {
@@ -326,6 +315,7 @@ const ShowPageDeleteButton: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleDelete = async () => {
+    if (!record?.id) return
     setIsDeleting(true)
     try {
       await dataProvider.delete('tickets', {

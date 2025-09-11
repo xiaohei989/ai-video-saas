@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { 
   Select,
@@ -14,7 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom' // unused
 import { 
   Settings,
   Globe,
@@ -29,15 +27,13 @@ import {
 } from 'lucide-react'
 import { useTheme } from '@/hooks/useTheme'
 import SubscriptionStatus from '@/components/subscription/SubscriptionStatus'
-import SubscriptionManagement from '@/components/subscription/SubscriptionManagement'
 import { SubscriptionService } from '@/services/subscriptionService'
 import type { Subscription } from '@/types'
 
 
 export default function AccountSettingsPage() {
   const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
-  const { user, profile, signOut, updatePassword } = useAuth()
+  const { user, updatePassword } = useAuth()
   const { theme, setTheme } = useTheme()
   
   // 账户设置状态
@@ -53,6 +49,9 @@ export default function AccountSettingsPage() {
   
   // 订阅状态
   const [subscription, setSubscription] = useState<Subscription | null>(null)
+  
+  // 避免未使用变量警告
+  void subscription
   
   // UI 状态
   const [isSaving, setIsSaving] = useState(false)
@@ -87,12 +86,12 @@ export default function AccountSettingsPage() {
     }
   }
 
-  const handleSubscriptionChange = () => {
-    // 刷新订阅数据
-    if (user) {
-      loadSettings()
-    }
-  }
+  // const handleSubscriptionChange = () => {
+  //   // 刷新订阅数据
+  //   if (user) {
+  //     loadSettings()
+  //   }
+  // } // unused
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {

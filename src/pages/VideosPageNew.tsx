@@ -15,7 +15,6 @@ import {
   Share2, 
   Trash2, 
   Eye, 
-  Filter,
   Search,
   Grid,
   List,
@@ -38,7 +37,6 @@ import {
 import LazyVideoPlayer from '@/components/video/LazyVideoPlayer'
 import supabaseVideoService from '@/services/supabaseVideoService'
 import videoShareService from '@/services/videoShareService'
-import referralService from '@/services/referralService'
 import VideoShareModal from '@/components/share/VideoShareModal'
 import { videoTaskManager, type VideoTask } from '@/services/VideoTaskManager'
 import { videoPollingService } from '@/services/VideoPollingService'
@@ -46,7 +44,6 @@ import { progressManager, type VideoProgress } from '@/services/progressManager'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { AuthContext } from '@/contexts/AuthContext'
 import type { Database } from '@/lib/supabase'
-import { templates } from '@/features/video-creator/data/templates'
 import { formatRelativeTime, formatDuration } from '@/utils/timeFormat'
 import { toast } from 'sonner'
 import { SubscriptionService } from '@/services/subscriptionService'
@@ -55,10 +52,11 @@ import { useSEO } from '@/hooks/useSEO'
 type Video = Database['public']['Tables']['videos']['Row']
 
 export default function VideosPageNew() {
-  const { t, i18n } = useTranslation()
-  const { user } = useContext(AuthContext)
+  const { t } = useTranslation()
+  const authContext = useContext(AuthContext)
+  const user = authContext?.user
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
+  const [/* searchParams */] = useSearchParams()
 
   // SEO优化
   useSEO('videos')
@@ -66,9 +64,9 @@ export default function VideosPageNew() {
   // 状态管理
   const [videos, setVideos] = useState<Video[]>([])
   const [activeTasks, setActiveTasks] = useState<Map<string, VideoTask>>(new Map())
-  const [videoProgress, setVideoProgress] = useState<Map<string, VideoProgress>>(new Map())
+  const [/* videoProgress */, setVideoProgress] = useState<Map<string, VideoProgress>>(new Map())
   // 🚀 关键优化：初始loading设为false，避免显示loading界面
-  const [loading, setLoading] = useState(false)
+  const [loading /* setLoading */] = useState(false)
   // 🚀 添加初始数据加载状态跟踪
   const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [filter, setFilter] = useState<'all' | 'completed' | 'processing' | 'failed'>('all')
@@ -232,7 +230,7 @@ export default function VideosPageNew() {
       const result = await supabaseVideoService.getUserVideos(
         user.id, 
         undefined, // filter
-        { pageSize: 1000 } // 获取更多视频用于前端分页
+        { page: 1, pageSize: 1000 } // 获取更多视频用于前端分页
       )
       setVideos(result.videos)
     } catch (error) {
@@ -399,7 +397,7 @@ export default function VideosPageNew() {
    */
   const handleShareVideo = async (video: Video) => {
     try {
-      const shareData = await videoShareService.createShareLink(video.id)
+      const shareData = await videoShareService.generateShareLink(video.id)
       
       if (navigator.share) {
         await navigator.share({
@@ -650,7 +648,7 @@ export default function VideosPageNew() {
                     // 有视频URL - 显示视频播放器
                     <LazyVideoPlayer
                       src={video.video_url}
-                      poster={video.thumbnail_url}
+                      poster={video.thumbnail_url || undefined}
                       className="w-full h-full"
                       objectFit="cover"
                       showPlayButton={false} // 桌面端隐藏播放按钮，移动端会自动显示
@@ -900,7 +898,7 @@ export default function VideosPageNew() {
       <VideoShareModal
         open={videoShareModalOpen}
         onOpenChange={setVideoShareModalOpen}
-        video={selectedShareVideo || { id: '', title: '', description: '', video_url: '', template_id: '', metadata: {}, thumbnail_url: '' }}
+        video={selectedShareVideo || { id: '', title: undefined, description: undefined, video_url: undefined, template_id: undefined, metadata: {}, thumbnail_url: undefined }}
       />
 
     </div>

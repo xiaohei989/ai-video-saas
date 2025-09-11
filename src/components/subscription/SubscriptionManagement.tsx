@@ -12,9 +12,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Settings, CreditCard, History, AlertTriangle, ExternalLink } from 'lucide-react'
+import { Settings, CreditCard, AlertTriangle, ExternalLink } from 'lucide-react'
 import { SubscriptionService } from '@/services/subscriptionService'
 import type { Subscription } from '@/types'
 import { format } from 'date-fns'
@@ -188,7 +187,7 @@ export default function SubscriptionManagement({
           <div className="space-y-3">
             <div className="flex justify-between">
               <span>{t('subscription.planDetails.monthlyCredits', { credits: '' }).replace('{{credits}} ', '')}</span>
-              <span className="font-medium">{planDetails.credits.toLocaleString()} {t('credits.credits', { count: '' }).replace('{{count}} ', '')}</span>
+              <span className="font-medium">{planDetails.credits.toLocaleString()} {t('credits.credits', planDetails.credits.toString())}</span>
             </div>
             <div className="border-t pt-3">
               <div className="text-sm font-medium mb-2">{t('subscription.status.includedFeatures')}</div>

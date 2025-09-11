@@ -17,7 +17,7 @@
 
 import { idb } from '@/services/idbService'
 import edgeCacheClient from './EdgeFunctionCacheClient'
-import { supabase } from '@/lib/supabase'
+// import { supabase } from '@/lib/supabase' // unused
 
 export interface CacheOptions {
   ttl?: number // 过期时间（秒）
@@ -517,7 +517,7 @@ class MultiLevelCacheService {
    * 清理过期缓存
    */
   private cleanupExpiredCache(): void {
-    const now = Date.now()
+    // const now = Date.now() // unused
     const expiredKeys: string[] = []
 
     this.memoryCache.forEach((entry, key) => {

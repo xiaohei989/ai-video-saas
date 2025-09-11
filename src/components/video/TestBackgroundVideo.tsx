@@ -2,7 +2,7 @@
  * 测试背景视频组件 - 简化版本用于调试
  */
 
-import React, { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { cn } from '@/utils/cn'
 
 interface TestBackgroundVideoProps {

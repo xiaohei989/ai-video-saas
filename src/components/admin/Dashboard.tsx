@@ -194,7 +194,7 @@ export const Dashboard: React.FC = () => {
     )
   }
 
-  const dashboardStats = stats.dashboard_stats || stats // 类型适配
+  const dashboardStats = stats
 
   return (
     <div className="p-6 space-y-6">

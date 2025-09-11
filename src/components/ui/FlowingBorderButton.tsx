@@ -5,7 +5,7 @@
  * 保持原有的 Button 组件样式和交互行为
  */
 
-import React, { forwardRef } from 'react'
+import { forwardRef } from 'react'
 import { cn } from '@/utils/cn'
 import { Button, ButtonProps } from '@/components/ui/button'
 

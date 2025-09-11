@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Loader2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -54,7 +54,6 @@ const packageColors = {
 }
 
 export function CreditsPurchase({ 
-  onPurchaseSuccess,
   className = '' 
 }: CreditsPurchaseProps) {
   const { t } = useTranslation()
@@ -161,7 +160,7 @@ export function CreditsPurchase({
 
                 {/* 积分数量 */}
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  {t('credits.credits', { count: pkg.credits.toLocaleString() })}
+                  {t('credits.credits', pkg.credits.toString())}
                 </p>
 
                 {/* 购买按钮 */}

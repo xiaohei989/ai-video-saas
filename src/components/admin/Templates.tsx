@@ -32,8 +32,7 @@ import {
   ImageField,
   UrlField
 } from 'react-admin'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Check, X, Download, Upload } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 
 const TemplateFilters = [
   <SearchInput source="q" placeholder="搜索模板名称" alwaysOn />,
@@ -182,7 +181,7 @@ export const TemplateList: React.FC = () => (
     >
       <TextField source="name" label="模板名称" />
       <TextField source="category" label="分类" />
-      <AuditStatusField source="audit_status" label="审核状态" />
+      <AuditStatusField source="audit_status" />
       <BooleanField source="is_premium" label="高级模板" />
       <NumberField source="credit_cost" label="积分消耗" />
       <NumberField source="usage_count" label="使用次数" />
@@ -206,7 +205,7 @@ export const TemplateShow: React.FC = () => {
         <TextField source="slug" label="URL标识" />
         <RichTextField source="description" label="描述" />
         <TextField source="category" label="分类" />
-        <AuditStatusField source="audit_status" label="审核状态" />
+        <AuditStatusField source="audit_status" />
         <BooleanField source="is_premium" label="高级模板" />
         <BooleanField source="is_active" label="启用状态" />
         <BooleanField source="is_public" label="公开状态" />

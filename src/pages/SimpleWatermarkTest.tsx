@@ -2,7 +2,7 @@
  * 简单的水印测试页面
  */
 
-import React, { useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import WatermarkService from '@/services/watermarkService'
 

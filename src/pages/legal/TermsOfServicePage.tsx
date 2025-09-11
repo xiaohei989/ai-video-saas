@@ -1,4 +1,4 @@
-import React from 'react'
+// import React from 'react' // unused
 import { useTranslation } from 'react-i18next'
 import { LegalPageLayout } from './LegalPageLayout'
 

@@ -11,7 +11,7 @@ import type { Plugin } from 'vite'
 export function removeUnnecessaryPreloads(): Plugin {
   return {
     name: 'remove-unnecessary-preloads',
-    transformIndexHtml(html, ctx) {
+    transformIndexHtml(html, _ctx) {
       // 在开发和生产环境都移除不必要的预加载链接
       console.log('[VITE PLUGIN] Removing unnecessary preload links...')
       

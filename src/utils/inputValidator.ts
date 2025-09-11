@@ -24,7 +24,6 @@ export interface ValidationOptions {
 }
 
 export class InputValidator {
-  private static readonly MALICIOUS_PATTERNS = SECURITY_CONFIG.INPUT_VALIDATION.FORBIDDEN_PATTERNS;
   private static readonly MAX_LENGTH = SECURITY_CONFIG.INPUT_VALIDATION.MAX_STRING_LENGTH;
 
   /**
@@ -84,7 +83,7 @@ export class InputValidator {
       for (const pattern of opts.customPatterns) {
         if (pattern.test(input)) {
           result.warnings.push(`Input matches custom forbidden pattern: ${pattern.source}`);
-          result.threatLevel = Math.max(result.threatLevel as any, SecurityLevel.MEDIUM as any);
+          result.threatLevel = SecurityLevel.MEDIUM;
         }
       }
     }
@@ -261,7 +260,7 @@ export class InputValidator {
       if (error instanceof z.ZodError) {
         return {
           isValid: false,
-          errors: error.errors.map(e => e.message),
+          errors: error.issues.map(e => e.message),
           warnings: [],
           threatLevel: SecurityLevel.MEDIUM,
           threats: [ThreatType.SUSPICIOUS_PATTERN]
@@ -295,7 +294,7 @@ export class InputValidator {
       if (error instanceof z.ZodError) {
         return {
           isValid: false,
-          errors: error.errors.map(e => e.message),
+          errors: error.issues.map(e => e.message),
           warnings: [],
           threatLevel: SecurityLevel.MEDIUM,
           threats: [ThreatType.SUSPICIOUS_PATTERN]
@@ -337,7 +336,7 @@ export class InputValidator {
     }
 
     // 常见密码检查
-    if (SECURITY_CONFIG.PASSWORD.COMMON_PASSWORDS.includes(password.toLowerCase())) {
+    if (SECURITY_CONFIG.PASSWORD.COMMON_PASSWORDS.includes(password.toLowerCase() as any)) {
       errors.push('Password is too common, please choose a stronger password');
       threatLevel = SecurityLevel.MEDIUM;
     }
@@ -345,7 +344,7 @@ export class InputValidator {
     // 重复字符检查
     if (/(.)\1{3,}/.test(password)) {
       warnings.push('Password contains repeated characters');
-      threatLevel = Math.max(threatLevel as any, SecurityLevel.LOW as any);
+      threatLevel = SecurityLevel.LOW;
     }
 
     // 连续字符检查
@@ -427,7 +426,7 @@ export class InputValidator {
     }
 
     // 文件类型检查
-    if (!SECURITY_CONFIG.INPUT_VALIDATION.ALLOWED_FILE_TYPES.includes(file.type)) {
+    if (!SECURITY_CONFIG.INPUT_VALIDATION.ALLOWED_FILE_TYPES.includes(file.type as any)) {
       errors.push('File type not allowed');
       threats.push(ThreatType.MALICIOUS_UPLOAD);
       threatLevel = SecurityLevel.HIGH;
@@ -438,7 +437,7 @@ export class InputValidator {
     if (!fileNameValidation.isValid) {
       errors.push(...fileNameValidation.errors);
       threats.push(...fileNameValidation.threats);
-      threatLevel = Math.max(threatLevel as any, fileNameValidation.threatLevel as any);
+      threatLevel = fileNameValidation.threatLevel;
     }
 
     // 魔术数字检查

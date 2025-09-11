@@ -11,7 +11,7 @@ import { useAnalytics } from '@/hooks/useAnalytics'
 import { useSEO } from '@/hooks/useSEO'
 import { useLoginLimiter } from '@/hooks/useRateLimiter'
 import { useCSRF } from '@/services/csrfService'
-import { InputValidator, validationSchemas } from '@/utils/inputValidator'
+import { InputValidator } from '@/utils/inputValidator'
 import { securityMonitor } from '@/services/securityMonitorService'
 import { ThreatType, SecurityLevel } from '@/config/security'
 
@@ -28,9 +28,9 @@ const GoogleIcon = ({ className }: { className?: string }) => (
 export default function SignInForm() {
   const { t } = useTranslation()
   const { signIn, signInWithGoogle, loading, error } = useAuth()
-  const { trackLogin, trackEvent } = useAnalytics()
+  const { trackLogin } = useAnalytics()
   const { executeWithLimit, isLimited } = useLoginLimiter()
-  const { secureFetch } = useCSRF()
+  const { } = useCSRF()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -56,7 +56,6 @@ export default function SignInForm() {
     // 输入验证
     const emailValidation = InputValidator.validateEmail(email)
     const passwordValidation = InputValidator.validateString(password, {
-      minLength: 6,
       maxLength: 100,
       sanitize: true
     })

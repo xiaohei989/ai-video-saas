@@ -47,7 +47,7 @@ const AdminRoute: React.FC<AdminRouteProps> = ({
       // 获取用户权限信息
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('role, is_banned, full_name')
+        .select('role, is_banned, full_name, avatar_url')
         .eq('id', session.user.id)
         .single()
 

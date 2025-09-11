@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Crown, CreditCard, Star } from 'lucide-react'
 import { SubscriptionService } from '@/services/subscriptionService'
 import { edgeCacheClient } from '@/services/EdgeFunctionCacheClient'
-import type { Subscription, SubscriptionTier } from '@/types'
+import type { Subscription } from '@/types'
 
 interface MembershipBadgeProps {
   userId: string
@@ -81,15 +81,22 @@ export default function MembershipBadge({
     )
   }
 
-  const planDetails = SubscriptionService.getPlanDetails(subscription.planId)
+  // const planDetails = SubscriptionService.getPlanDetails(subscription.planId) // 暂时未使用
   
   // 根据计划类型设置不同的样式和图标 - 支持年度订阅
   const getBadgeProps = () => {
     const basePlanId = subscription.planId.replace('-annual', '')
     const isAnnual = subscription.planId.includes('-annual')
     
-    let baseConfig = {
-      variant: 'secondary' as const,
+    interface BadgeConfig {
+      variant: 'default' | 'secondary' | 'destructive' | 'outline'
+      className: string
+      icon: React.ReactNode
+      text: string
+    }
+    
+    let baseConfig: BadgeConfig = {
+      variant: 'secondary',
       className: '',
       icon: <Star className="h-3 w-3" />,
       text: t('membership.basic')
@@ -98,6 +105,7 @@ export default function MembershipBadge({
     switch (basePlanId) {
       case 'enterprise':
         baseConfig = {
+          ...baseConfig,
           variant: 'default' as const,
           className: 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0',
           icon: <Crown className="h-3 w-3" />,
@@ -106,6 +114,7 @@ export default function MembershipBadge({
         break
       case 'pro':
         baseConfig = {
+          ...baseConfig,
           variant: 'default' as const,
           className: 'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0',
           icon: <CreditCard className="h-3 w-3" />,
@@ -114,6 +123,7 @@ export default function MembershipBadge({
         break
       case 'basic':
         baseConfig = {
+          ...baseConfig,
           variant: 'default' as const,
           className: 'bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0',
           icon: <Star className="h-3 w-3" />,

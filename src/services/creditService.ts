@@ -1,4 +1,4 @@
-import { supabase, secureSupabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 export interface CreditTransaction {
   id: string

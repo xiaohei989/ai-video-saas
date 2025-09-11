@@ -3,7 +3,7 @@
  * 用于测试和展示不同的动画效果
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import AnimatedHeroTitle, { 

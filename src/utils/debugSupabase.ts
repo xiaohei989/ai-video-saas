@@ -11,7 +11,7 @@ export async function debugSupabaseConnection() {
   try {
     // 1. 测试基本连接
     console.log('1. 测试基本连接...')
-    const { data: connectionTest, error: connectionError } = await supabase
+    const { error: connectionError } = await supabase
       .from('templates')
       .select('count')
       .limit(1)

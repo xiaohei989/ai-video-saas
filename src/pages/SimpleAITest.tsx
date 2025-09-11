@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import aiContentService from '@/services/aiContentService'
 
 export default function SimpleAITest() {
@@ -23,7 +23,8 @@ export default function SimpleAITest() {
       
       setResult(JSON.stringify(metadata, null, 2))
     } catch (error) {
-      setResult(`错误: ${error.message}`)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      setResult(`错误: ${errorMessage}`)
     } finally {
       setLoading(false)
     }

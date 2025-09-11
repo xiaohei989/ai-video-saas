@@ -55,7 +55,7 @@ function performRemoval(): void {
 /**
  * 监控新添加的预加载链接并移除
  */
-export function setupPreloadLinkMonitoring(): void {
+export function setupPreloadLinkMonitoring(): (() => void) | void {
   // 使用MutationObserver监控动态添加的预加载链接
   if ('MutationObserver' in window) {
     const observer = new MutationObserver(mutations => {

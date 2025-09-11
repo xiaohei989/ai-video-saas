@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Play, Pause, Volume2, VolumeX, Maximize, Download, Share2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Slider } from '@/components/ui/slider'
+// import { Slider } from '@/components/ui/slider' // 暂时未使用
 import { cn } from '@/utils/cn'
 import { extractVideoThumbnail } from '@/utils/videoThumbnail'
 import videoLoaderService, { type LoadProgress } from '@/services/VideoLoaderService'
@@ -134,14 +134,16 @@ export default function VideoPlayer({
         .catch(err => {
           // 如果播放失败，强制静音播放
           console.log('Auto-play failed, trying muted:', err)
-          videoRef.current.muted = true
-          setIsMuted(true)
-          videoRef.current.play()
-            .then(() => {
-              setIsPlaying(true)
-              setIsAutoPlaying(true)
-            })
-            .catch(e => console.log('Muted auto-play also failed:', e))
+          if (videoRef.current) {
+            videoRef.current.muted = true
+            setIsMuted(true)
+            videoRef.current.play()
+              .then(() => {
+                setIsPlaying(true)
+                setIsAutoPlaying(true)
+              })
+              .catch(e => console.log('Muted auto-play also failed:', e))
+          }
         })
     } else if (!isHovering && isAutoPlaying) {
       // 只在自动播放状态下才自动暂停
@@ -255,13 +257,13 @@ export default function VideoPlayer({
     setIsMuted(newMuted)
   }
 
-  const handleSeek = (value: number[]) => {
-    if (!videoRef.current) return
-    
-    const newTime = value[0]
-    videoRef.current.currentTime = newTime
-    setCurrentTime(newTime)
-  }
+  // const handleSeek = (value: number[]) => {
+  //   if (!videoRef.current) return
+  //   
+  //   const newTime = value[0]
+  //   videoRef.current.currentTime = newTime
+  //   setCurrentTime(newTime)
+  // } // 暂时未使用
 
   const handleProgressClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!videoRef.current || !duration) return

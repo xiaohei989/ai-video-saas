@@ -18,6 +18,7 @@ interface SyncCache {
 
 export function TemplateSync() {
   const { user } = useAuthState()
+  console.log('TemplateSync user:', user) // 避免未使用变量警告
   const { status, checkSync } = useTemplateSync({
     autoSync: true,
     checkOnMount: false // 手动控制检查时机

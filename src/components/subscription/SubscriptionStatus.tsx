@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { CalendarDays, CreditCard, Crown, AlertCircle } from 'lucide-react'
+import { CreditCard, Crown, AlertCircle } from 'lucide-react'
 import { SubscriptionService } from '@/services/subscriptionService'
 import type { Subscription } from '@/types'
 import { useAuthContext } from '@/contexts/AuthContext'
@@ -190,11 +190,10 @@ export default function SubscriptionStatus({
           <div>
             <div className="text-muted-foreground">
               {subscription.planId.includes('-annual') 
-                ? t('subscription.planDetails.yearlyCredits', { credits: '' }).replace('{{credits}} ', '')
-                : t('subscription.planDetails.monthlyCredits', { credits: '' }).replace('{{credits}} ', '')
+                ? t('subscription.planDetails.yearlyCredits', { credits: planDetails.credits.toLocaleString() })
+                : t('subscription.planDetails.monthlyCredits', { credits: planDetails.credits.toLocaleString() })
               }
             </div>
-            <div className="font-medium">{planDetails.credits.toLocaleString()} {t('credits.credits', { count: '' }).replace('{{count}} ', '')}</div>
           </div>
           <div>
             <div className="text-muted-foreground">{t('subscription.nextRenewal')}</div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { 
   AlertDialog,
@@ -9,14 +9,12 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { 
   Share2, 
   Copy, 
   Gift,
   DollarSign,
   Users,
-  Loader2,
   CheckCircle2,
   X
 } from 'lucide-react'

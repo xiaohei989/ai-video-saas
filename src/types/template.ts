@@ -1,4 +1,4 @@
-export type ParameterType = 'text' | 'image' | 'select' | 'toggle' | 'slider' | 'number'
+export type ParameterType = 'text' | 'image' | 'select' | 'toggle' | 'slider' | 'number' | 'textarea' | 'hidden'
 
 export interface TemplateParameter {
   type: ParameterType

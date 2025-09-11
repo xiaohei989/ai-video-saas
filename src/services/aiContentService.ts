@@ -28,7 +28,7 @@ class AIContentService {
   private readonly endpoint: string
   private readonly primaryModel = 'gpt-3.5-turbo-0125'
   private readonly fallbackModel = 'claude-3-5-haiku-20241022'
-  private readonly maxRetries = 2
+  // private readonly maxRetries = 2 // unused
   private readonly timeout = 10000
 
   constructor() {
@@ -307,31 +307,31 @@ ${formattedParams}
   }
 
   /**
-   * 验证生成的内容质量
+   * 验证生成的内容质量 - 暂时未使用
    */
-  private validateMetadata(metadata: VideoMetadata): boolean {
-    // 检查标题长度
-    if (!metadata.title || metadata.title.length < 5 || metadata.title.length > 100) {
-      return false
-    }
-    
-    // 检查简介长度
-    if (!metadata.description || metadata.description.length < 20 || metadata.description.length > 500) {
-      return false
-    }
-    
-    // 检查是否包含明显的错误内容
-    const invalidContent = ['undefined', 'null', 'error', '错误']
-    const combinedText = (metadata.title + metadata.description).toLowerCase()
-    
-    for (const invalid of invalidContent) {
-      if (combinedText.includes(invalid)) {
-        return false
-      }
-    }
-    
-    return true
-  }
+  // private validateMetadata(metadata: VideoMetadata): boolean {
+  //   // 检查标题长度
+  //   if (!metadata.title || metadata.title.length < 5 || metadata.title.length > 100) {
+  //     return false
+  //   }
+  //   
+  //   // 检查简介长度
+  //   if (!metadata.description || metadata.description.length < 20 || metadata.description.length > 500) {
+  //     return false
+  //   }
+  //   
+  //   // 检查是否包含明显的错误内容
+  //   const invalidContent = ['undefined', 'null', 'error', '错误']
+  //   const combinedText = (metadata.title + metadata.description).toLowerCase()
+  //   
+  //   for (const invalid of invalidContent) {
+  //     if (combinedText.includes(invalid)) {
+  //       return false
+  //     }
+  //   }
+  //   
+  //   return true
+  // }
 
   /**
    * 检查服务是否可用

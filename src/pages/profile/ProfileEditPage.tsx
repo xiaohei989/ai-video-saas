@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase, uploadFile } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
@@ -12,7 +12,6 @@ import {
   Mail, 
   Globe, 
   FileText, 
-  Link2, 
   Twitter,
   Instagram,
   Youtube,
@@ -45,7 +44,6 @@ export default function ProfileEditPage() {
   const [avatarPreview, setAvatarPreview] = useState('')
   
   // UI 状态
-  const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [successMessage, setSuccessMessage] = useState('')
@@ -232,7 +230,7 @@ export default function ProfileEditPage() {
         bio,
         website,
         social_links: socialLinks,
-        avatar_url: avatarUrl
+        avatar_url: avatarUrl || undefined
       })
 
       await refreshProfile()

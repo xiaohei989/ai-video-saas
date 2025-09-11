@@ -5,7 +5,6 @@
  */
 
 import {
-  getStripeMode,
   isStripeTestMode,
   getStripePrices,
   getStripePriceId,

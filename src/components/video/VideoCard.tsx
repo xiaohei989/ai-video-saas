@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { 
@@ -34,11 +34,10 @@ export default function VideoCard({
   onSelect,
   className
 }: VideoCardProps) {
-  const [isHovering, setIsHovering] = useState(false)
   const [extractedThumbnail, setExtractedThumbnail] = useState<string | null>(null)
   const [thumbnailError, setThumbnailError] = useState<string | null>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const [videoLoaded, setVideoLoaded] = useState(false)
+  // const videoRef = useRef<HTMLVideoElement>(null) // 暂时未使用
+  // const [videoLoaded] = useState(false) // setVideoLoaded暂时未使用
 
   // Extract thumbnail if not provided using cache service and proxy
   useEffect(() => {
@@ -66,9 +65,9 @@ export default function VideoCard({
 
   // Removed hover video preview - now only plays on click
 
-  const handleVideoLoad = () => {
-    setVideoLoaded(true)
-  }
+  // const handleVideoLoad = () => {
+  //   setVideoLoaded(true)
+  // } // 暂时未使用
   const getStatusIcon = () => {
     switch (video.status) {
       case 'completed':
@@ -111,11 +110,11 @@ export default function VideoCard({
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  const formatFileSize = (bytes?: number) => {
-    if (!bytes) return 'N/A'
-    const mb = bytes / (1024 * 1024)
-    return `${mb.toFixed(1)} MB`
-  }
+  // const formatFileSize = (bytes?: number) => {
+  //   if (!bytes) return 'N/A'
+  //   const mb = bytes / (1024 * 1024)
+  //   return `${mb.toFixed(1)} MB`
+  // } // 暂时未使用
 
   return (
     <Card 
@@ -126,11 +125,7 @@ export default function VideoCard({
       onClick={onSelect}
     >
       {/* 缩略图区域 */}
-      <div 
-        className="relative aspect-video bg-muted"
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-      >
+      <div className="relative aspect-video bg-muted">
         {/* Show thumbnail or placeholder */}
         {video.thumbnailUrl || extractedThumbnail ? (
           <img 

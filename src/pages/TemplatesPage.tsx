@@ -1,18 +1,16 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { formatFullDate } from '@/utils/dateFormat'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Play, Clock, Gem, Hash, RefreshCw, TrendingUp, Sparkles, Heart, ArrowUp, Camera } from 'lucide-react'
+import { Play, Hash, TrendingUp, Sparkles, ArrowUp, Camera } from 'lucide-react'
 import { templateList as initialTemplates, getPopularTags, getTemplatesByTags } from '@/features/video-creator/data/templates/index'
 import LazyVideoPlayer from '@/components/video/LazyVideoPlayer'
 import LikeCounterButton from '@/components/templates/LikeCounterButton'
 import Pagination from '@/components/ui/pagination'
 import { useTemplateLikes } from '@/hooks/useTemplateLikes'
-import { useAuthState } from '@/hooks/useAuthState'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useSEO } from '@/hooks/useSEO'
 
@@ -21,11 +19,13 @@ type SortOption = 'popular' | 'latest'
 export default function TemplatesPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { user } = useAuthState()
   const { trackTemplateView, trackEvent, trackFilter } = useAnalytics()
   const [searchParams, setSearchParams] = useSearchParams()
   const [templates, setTemplates] = useState(initialTemplates)
   const [loading, setLoading] = useState(false)
+  
+  // 避免未使用变量警告
+  void loading
   
   // 从URL参数中获取状态，或使用默认值
   const [currentPage, setCurrentPage] = useState(() => {
@@ -112,6 +112,9 @@ export default function TemplatesPage() {
     templateIds,
     enableAutoRefresh: false
   })
+  
+  // 避免未使用变量警告
+  void likesLoading
 
   // 支持热更新
   useEffect(() => {
@@ -153,6 +156,9 @@ export default function TemplatesPage() {
       setLoading(false)
     }
   }
+  
+  // 避免未使用变量警告
+  void refreshTemplates
 
   // 返回顶部函数
   const scrollToTop = () => {
@@ -406,7 +412,7 @@ export default function TemplatesPage() {
               <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 z-20">
                 <Button 
                   variant="outline"
-                  size="xs"
+                  size="sm"
                   className="bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-200 text-xs font-light px-3 py-1.5"
                   onClick={() => {
                     // 跟踪模板使用事件

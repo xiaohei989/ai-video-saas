@@ -157,13 +157,19 @@ export const RATE_LIMIT_CONFIGS = {
   PASSWORD_RESET: SECURITY_CONFIG.RATE_LIMIT.LIMITS.PASSWORD_RESET,
   
   // 邮件发送
-  EMAIL_SEND: { maxRequests: 10, windowMs: 3600000 }, // 每小时10封
+  EMAIL_SEND: { 
+    maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_EMAIL_SEND_MAX) || 10, 
+    windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_EMAIL_SEND_WINDOW) || 3600000 
+  },
   
   // 文件上传
   FILE_UPLOAD: SECURITY_CONFIG.RATE_LIMIT.LIMITS.FILE_UPLOAD,
   
   // 模板创建
-  TEMPLATE_CREATE: { maxRequests: 20, windowMs: 3600000 }, // 每小时20次
+  TEMPLATE_CREATE: { 
+    maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_TEMPLATE_CREATE_MAX) || 20, 
+    windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_TEMPLATE_CREATE_WINDOW) || 3600000 
+  },
   
   // 点赞操作
   LIKE_ACTION: SECURITY_CONFIG.RATE_LIMIT.LIMITS.LIKE_ACTION,
@@ -172,7 +178,10 @@ export const RATE_LIMIT_CONFIGS = {
   COMMENT_POST: SECURITY_CONFIG.RATE_LIMIT.LIMITS.COMMENT_POST,
   
   // 搜索请求
-  SEARCH_REQUEST: { maxRequests: 200, windowMs: 300000 } // 5分钟200次
+  SEARCH_REQUEST: { 
+    maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_SEARCH_REQUEST_MAX) || 200, 
+    windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_SEARCH_REQUEST_WINDOW) || 300000 
+  }
 } as const;
 
 // 全局限流器实例

@@ -250,7 +250,7 @@ class ProgressManager {
             }
           }
           
-          const simulatedProgress = this.calculateSmoothedProgress(elapsedTime, existing.status, quality)
+          const simulatedProgress = this.calculateSmoothedProgress(elapsedTime, existing.status, quality || 'pro')
           
           // 只有进度有显著变化时才更新
           if (Math.abs(simulatedProgress - existing.progress) >= 1) {
@@ -258,7 +258,7 @@ class ProgressManager {
               ...existing,
               progress: simulatedProgress,
               elapsedTime,
-              estimatedRemainingTime: this.calculateRemainingTime(elapsedTime, simulatedProgress, quality),
+              estimatedRemainingTime: this.calculateRemainingTime(elapsedTime, simulatedProgress, quality || 'pro'),
               statusText: this.getProgressStatusText(simulatedProgress, existing.status),
               updatedAt: now
             }
@@ -680,6 +680,8 @@ class ProgressManager {
     fixed: number
     errors: string[]
   }> {
+    // 避免未使用参数警告
+    void userId
     console.log(`[PROGRESS MANAGER] 🔍 开始状态一致性检查...`)
     const result = { checked: 0, fixed: 0, errors: [] }
     
@@ -726,7 +728,7 @@ class ProgressManager {
           }
           
         } catch (error) {
-          const errorMsg = `State check failed for ${videoId}: ${error}`
+          const errorMsg = `State check failed for ${String(videoId)}: ${String(error)}`
           console.error(`[PROGRESS MANAGER] ❌ 状态检查出错:`, errorMsg)
           result.errors.push(errorMsg)
         }
@@ -735,7 +737,7 @@ class ProgressManager {
       console.log(`[PROGRESS MANAGER] ✅ 状态一致性检查完成: 检查${result.checked}个，修复${result.fixed}个，错误${result.errors.length}个`)
       
     } catch (error) {
-      const errorMsg = `State consistency check failed: ${error}`
+      const errorMsg = `State consistency check failed: ${String(error)}`
       console.error(`[PROGRESS MANAGER] 💥 状态一致性检查失败:`, errorMsg)
       result.errors.push(errorMsg)
     }

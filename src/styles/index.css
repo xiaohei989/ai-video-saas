@@ -235,19 +235,23 @@ html.dark {
     }
 }
 
-/* 手写体字体类 */
+/* 手写体字体类 - 优化手写风格 */
 .font-handwriting {
-  font-family: 'Caveat', 'Kalam', cursive;
+  font-family: 'Dancing Script', 'Caveat', 'Kalam', cursive;
+  font-weight: 500;
+  letter-spacing: 0.025em;
 }
 
 .font-handwriting-bold {
-  font-family: 'Caveat', 'Kalam', cursive;
-  font-weight: 600;
+  font-family: 'Dancing Script', 'Caveat', 'Kalam', cursive;
+  font-weight: 700;
+  letter-spacing: 0.025em;
 }
 
 .font-handwriting-light {
-  font-family: 'Caveat', 'Kalam', cursive;
+  font-family: 'Dancing Script', 'Caveat', 'Kalam', cursive;
   font-weight: 400;
+  letter-spacing: 0.025em;
 }
 
 /* 导航背景框样式 - 优化GPU加速 */

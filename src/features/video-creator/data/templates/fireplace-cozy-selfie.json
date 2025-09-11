@@ -15,7 +15,7 @@
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
-    "aspect_ratio": "9:16",
+    "aspect_ratio": "16:9",
     
     "visual_core": {
       "description": "A warm, dimly lit American country villa living room. The only strong light source is a roaring fireplace, casting flickering golden shadows. The shot is a cozy selfie-POV, held by the subject. A {character_description}, wearing a comfortable silk robe, lies lazily on a plush sofa, backlit by the fire. {pronoun_subject} looks directly into the lens with a playful and charming smile, then slowly sits up, the camera moving smoothly with {pronoun_object}.",

@@ -152,7 +152,7 @@ export function useToggleLikeMutation() {
 
       return { previousStatus }
     },
-    onError: (err, templateId, context) => {
+    onError: (_err, templateId, context) => {
       // 回滚乐观更新
       if (context?.previousStatus) {
         queryClient.setQueryData(

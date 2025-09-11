@@ -45,13 +45,10 @@ export function useBackgroundVideo(config: BackgroundVideoConfig) {
   const {
     videos = [],
     autoPlay = true,
-    loop = true,
     muted = true,
     enablePlaylist = false,
     playlistInterval = 30,
-    shufflePlaylist = false,
-    enableMobileOptimization = true,
-    fallbackImage = '/images/background-fallback.jpg'
+    shufflePlaylist = false
   } = config
 
   // 状态管理
@@ -64,8 +61,8 @@ export function useBackgroundVideo(config: BackgroundVideoConfig) {
   const [playlist, setPlaylist] = useState<string[]>(videos)
 
   // Refs
-  const playlistIntervalRef = useRef<NodeJS.Timeout>()
-  const videoLoadingTimeoutRef = useRef<NodeJS.Timeout>()
+  const playlistIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const videoLoadingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // 检测移动设备
   useEffect(() => {

@@ -45,5 +45,5 @@ mode = "smart"
 # 路由配置
 [[routes]]
 pattern = "api/*"
-zone_name = "your-domain.com"
+zone_name = "veo3video.me"
 custom_domain = true

@@ -231,8 +231,8 @@ class TemplateHotReload {
 
     } catch (error) {
       // 静默处理，避免干扰正常使用
-      if (error?.message?.includes('Failed to resolve') || 
-          error?.message?.includes('fetch')) {
+      if ((error as any)?.message?.includes('Failed to resolve') || 
+          (error as any)?.message?.includes('fetch')) {
         // 模块解析失败，通常是文件还在编译中，忽略
         return
       }
@@ -324,11 +324,12 @@ export default templateHotReload
 
 // 将这些函数暴露到全局window对象，方便控制台调用
 if (typeof window !== 'undefined') {
-  (window as any).clearAllVideoCache = clearAllVideoCache;
-  (window as any).clearVideoCache = clearVideoCache;
+  // 暂时注释未定义的函数
+  // (window as any).clearAllVideoCache = clearAllVideoCache;
+  // (window as any).clearVideoCache = clearVideoCache;
   (window as any).clearTemplateCache = clearTemplateCache;
-  (window as any).forceReloadAllVideos = forceReloadAllVideos;
-  (window as any).resetApicoreApiService = resetApicoreApiService;
+  // (window as any).forceReloadAllVideos = forceReloadAllVideos;
+  // (window as any).resetApicoreApiService = resetApicoreApiService;
   
   console.log('🛠️ 缓存清除工具已加载到全局对象:')
   console.log('- window.clearAllVideoCache() - 清除所有视频缓存')

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -184,8 +184,8 @@ export default function TestApicoreApi() {
       const taskId = createResponse.data
       addLog(`任务创建成功: ${taskId}`)
       updateResult({ 
-        taskId,
-        status: 'processing',
+        taskId: taskId,
+        status: 'processing' as const,
         progress: 5
       })
 
@@ -193,21 +193,21 @@ export default function TestApicoreApi() {
       addLog('开始轮询任务状态...')
       const pollResult = await service.pollUntilComplete(
         taskId,
-        (progress) => {
+        (progress: number) => {
           addLog(`进度更新: ${progress}%`)
-          updateResult({ progress })
+          updateResult({ progress: progress })
         },
         60, // 最大60次尝试
         10000 // 每10秒查询一次
       )
 
       const videoUrl = pollResult.videoUrl || pollResult.video_url
-      const finalStatus = pollResult.status || 'completed'
+      // const finalStatus = pollResult.status || 'completed' // unused
 
       if (videoUrl) {
         addLog(`视频生成完成！URL: ${videoUrl}`)
         updateResult({
-          status: 'completed',
+          status: 'completed' as const,
           progress: 100,
           videoUrl,
           endTime: new Date()
@@ -220,7 +220,7 @@ export default function TestApicoreApi() {
       const errorMessage = error instanceof Error ? error.message : String(error)
       addLog(`错误: ${errorMessage}`)
       updateResult({
-        status: 'failed',
+        status: 'failed' as const,
         error: errorMessage,
         endTime: new Date()
       })

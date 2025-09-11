@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   List,
   Datagrid,
@@ -50,7 +50,7 @@ import {
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 import { bulkImportTemplates, bulkExportTemplates } from '@/services/templateFileService'
-import { syncTemplateToFrontend, syncAllTemplatesToFrontend } from '@/services/templateSyncService'
+import { syncAllTemplatesToFrontend } from '@/services/templateSyncService'
 
 // 基于数据库实际结构的模板接口
 interface DatabaseTemplate {
@@ -312,8 +312,8 @@ const TemplatePreview: React.FC<{ template: DatabaseTemplate }> = ({ template })
           <div className="space-y-2">
             <Button
               onClick={() => setShowVideo(!showVideo)}
-              size="sm"
-              variant="outline"
+              size="small"
+              variant="outlined"
               className="flex items-center gap-2"
             >
               <Play className="h-4 w-4" />
@@ -607,7 +607,7 @@ export const TemplateList: React.FC = () => (
       <TextField source="category" label="分类" />
       
       {/* 状态信息 */}
-      <AuditStatusField source="audit_status" label="审核状态" />
+      <AuditStatusField source="audit_status" />
       <BooleanField source="is_active" label="启用" />
       
       {/* 统计信息 */}
@@ -646,7 +646,7 @@ export const TemplateShow: React.FC = () => {
                 <RichTextField source="description" label="描述" />
                 <TextField source="category" label="分类" />
                 <TextField source="version" label="版本" />
-                <AuditStatusField source="audit_status" label="审核状态" />
+                <AuditStatusField source="audit_status" />
                 
                 {/* 状态标识组 */}
                 <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded">
@@ -891,7 +891,7 @@ export const TemplateEdit: React.FC = () => {
             <FileInput 
               source="thumbnail_file" 
               label="更新缩略图" 
-              accept="image/*"
+              accept={{"image/*": []}}
               placeholder="选择新的缩略图文件"
             >
               <FileField source="src" title="title" />
@@ -900,7 +900,7 @@ export const TemplateEdit: React.FC = () => {
             <FileInput 
               source="preview_file" 
               label="更新预览视频" 
-              accept="video/*"
+              accept={{"video/*": []}}
               placeholder="选择新的预览视频文件"
             >
               <FileField source="src" title="title" />
@@ -950,8 +950,9 @@ export const TemplateEdit: React.FC = () => {
 
 // 模板创建组件
 export const TemplateCreate: React.FC = () => {
-  const [jsonFile, setJsonFile] = useState<File | null>(null)
-  const [videoFile, setVideoFile] = useState<File | null>(null)
+  // TODO: 实现文件上传功能时重新启用这些状态
+  // const [jsonFile, setJsonFile] = useState<File | null>(null)
+  // const [videoFile, setVideoFile] = useState<File | null>(null)
 
   return (
     <Create title="创建新模板">
@@ -968,7 +969,7 @@ export const TemplateCreate: React.FC = () => {
                 <FileInput 
                   source="config_file" 
                   label="配置文件(JSON)" 
-                  accept=".json"
+                  accept={{".json": []}}           
                   placeholder="选择JSON配置文件"
                 >
                   <FileField source="src" title="title" />
@@ -978,7 +979,7 @@ export const TemplateCreate: React.FC = () => {
                 <FileInput 
                   source="thumbnail_file" 
                   label="缩略图" 
-                  accept="image/*"
+                  accept={{"image/*": []}}
                   placeholder="选择缩略图"
                 >
                   <FileField source="src" title="title" />
@@ -988,7 +989,7 @@ export const TemplateCreate: React.FC = () => {
                 <FileInput 
                   source="preview_file" 
                   label="预览视频" 
-                  accept="video/*"
+                  accept={{"video/*": []}}
                   placeholder="选择预览视频"
                 >
                   <FileField source="src" title="title" />

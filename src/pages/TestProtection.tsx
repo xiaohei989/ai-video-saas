@@ -2,7 +2,7 @@
  * 视频下载保护机制测试页面
  */
 
-import React, { useState, useContext } from 'react'
+import { useState, useContext } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -12,7 +12,8 @@ import { AuthContext } from '@/contexts/AuthContext'
 import { Shield, Download, AlertTriangle, CheckCircle } from 'lucide-react'
 
 export default function TestProtection() {
-  const { user } = useContext(AuthContext)
+  const authContext = useContext(AuthContext)
+  const user = authContext?.user
   const [testResults, setTestResults] = useState<string[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
   

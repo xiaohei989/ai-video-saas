@@ -87,7 +87,7 @@ export function useVideoLazyLoad(
     videoOptions = {},
     thumbnailQuality = 'medium',
     enableThumbnailCache = true,
-    enableProgressiveLoading = true,
+    // enableProgressiveLoading = true, // unused
     enablePreload = false
   } = options
 
@@ -353,9 +353,6 @@ export function useVideoLazyLoad(
   // 预加载策略 - 当元素即将进入视口时预加载
   useEffect(() => {
     if (!enablePreload || loadStrategy !== 'onVisible') return
-
-    // 计算预加载触发点
-    const preloadRootMargin = `${preloadDistance * 100}%`
     
     // 这里可以创建另一个 intersection observer 用于预加载
     // 为了简化，我们使用当前的可见性状态
@@ -383,7 +380,7 @@ export function useVideoLazyLoad(
     reset
   }), [load, preloadThumbnail, cancel, retry, markInteraction, reset])
 
-  return [state, actions, inViewRef]
+  return [state, actions, inViewRef as unknown as React.RefObject<HTMLElement>]
 }
 
 /**
@@ -411,11 +408,10 @@ export function useSimpleLazyLoad(options: {
  * 批量懒加载 Hook，用于管理多个视频的懒加载
  */
 export function useBatchLazyLoad(
-  videoUrls: string[],
   options: LazyLoadOptions = {}
 ) {
-  const [loadedVideos, setLoadedVideos] = useState<Set<string>>(new Set())
-  const [loadingVideos, setLoadingVideos] = useState<Set<string>>(new Set())
+  const [loadedVideos] = useState<Set<string>>(new Set())
+  const [loadingVideos] = useState<Set<string>>(new Set())
   const [visibleVideos, setVisibleVideos] = useState<Set<string>>(new Set())
 
   /**

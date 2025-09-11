@@ -13,7 +13,7 @@ import CookieConsentBanner from './components/common/CookieConsentBanner'
 import analyticsService from './services/analyticsService'
 import { csrfService } from './services/csrfService'
 import { securityMonitor } from './services/securityMonitorService'
-import { validateSecurityConfig, generateCSPString } from './config/security'
+import { validateSecurityConfig } from './config/security'
 import redisCacheIntegrationService from './services/RedisCacheIntegrationService'
 
 // 调试工具（开发环境）

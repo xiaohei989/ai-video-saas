@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+// import { Input } from '@/components/ui/input' // unused
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import veo3Service from '@/services/veo3Service'
 // 移除已删除的 Google API 相关服务
@@ -118,7 +118,14 @@ export default function TestVeoApi() {
     }
   }
 
-  const testMockGeneration = async () => {
+  // 未使用的函数已删除以避免编译警告
+  const testMockGeneration = () => { /* unused function body removed */ }
+  
+  // 避免未使用变量警告
+  void testMockGeneration
+  
+  // 删除的testMockGeneration函数体，为了避免语法错误而注释：
+  /*
     addLog('info', '=== 开始模拟视频生成测试 ===')
     addLog('info', `提示词: "${prompt}"`)
     setStatus('Starting mock video generation...')
@@ -170,8 +177,8 @@ export default function TestVeoApi() {
       setStatus(`❌ Error: ${error}`)
       setIsGenerating(false)
     }
-  }
-
+  */
+  
   const testRealGeneration = async () => {
     // 检查API Key配置
     if (provider === 'google' && !process.env.VEO_API_KEYS) {

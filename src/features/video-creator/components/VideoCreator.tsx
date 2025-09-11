@@ -1,17 +1,12 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { useSearchParams, useNavigate, Link } from 'react-router-dom'
+import { useState, useEffect, useContext } from 'react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import ConfigPanel from './ConfigPanel'
 import PreviewPanel from './PreviewPanel'
 import { templates } from '../data/templates'
-import veo3Service from '@/services/veo3Service'
-import supabaseVideoService from '@/services/supabaseVideoService'
 import videoQueueService from '@/services/videoQueueService'
-import { generateRandomParams, getParamsDescription } from '@/utils/randomParams'
+import { generateRandomParams } from '@/utils/randomParams'
 import { AuthContext } from '@/contexts/AuthContext'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
-import { Clock, Users, Info } from 'lucide-react'
 import { toast } from 'sonner'
 import { getVideoCreditCost } from '@/config/credits'
 import { useAnalytics } from '@/hooks/useAnalytics'
@@ -27,8 +22,9 @@ export default function VideoCreator() {
   const templateIdFromUrl = searchParams.get('template')
   const paramsFromUrl = searchParams.get('params')
   const navigate = useNavigate()
-  const { user } = useContext(AuthContext)
-  const { trackVideoGeneration, trackTemplateView, trackTemplateUse, trackEvent } = useAnalytics()
+  const authContext = useContext(AuthContext)
+  const user = authContext?.user
+  const { trackVideoGeneration, trackTemplateView, trackTemplateUse } = useAnalytics()
   const { executeWithLimit, isLimited, getRemainingRequests } = useVideoGenerationLimiter()
 
   // SEO优化
@@ -58,23 +54,24 @@ export default function VideoCreator() {
   const [aspectRatio, setAspectRatio] = useState<'16:9' | '9:16'>('16:9')
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedVideoUrl, setGeneratedVideoUrl] = useState<string | null>(null)
-  const [currentVideoId, setCurrentVideoId] = useState<string | null>(null)
   const [generationProgress, setGenerationProgress] = useState(0)
   const [generationStatus, setGenerationStatus] = useState<string>('')
   const [startTime, setStartTime] = useState<number | null>(null)
+  const [_currentVideoId, setCurrentVideoId] = useState<string | null>(null)
   
   // 队列相关状态
-  const [queueStatus, setQueueStatus] = useState<{
+  const [_queueStatus, setQueueStatus] = useState<{
     isQueued: boolean
     position?: number
     estimatedWaitMinutes?: number
     message?: string
   }>({ isQueued: false })
-  const [userQueueInfo, setUserQueueInfo] = useState<{
+  const [_userQueueInfo, setUserQueueInfo] = useState<{
     activeCount: number
     maxAllowed: number
     tier?: string
   } | null>(null)
+  
 
   // Handle template selection from URL parameter on component mount
   useEffect(() => {
@@ -134,7 +131,7 @@ export default function VideoCreator() {
       setSelectedTemplate(template)
       
       // 跟踪模板查看事件
-      trackTemplateView(template.id, template.category)
+      trackTemplateView(template.id, template.category || 'unknown')
       
       // Generate random params for the new template
       const randomParams = generateRandomParams(template)
@@ -150,7 +147,7 @@ export default function VideoCreator() {
       
       // Update URL to reflect the new template selection
       const newSearchParams = new URLSearchParams(searchParams)
-      newSearchParams.set('template', template.slug)
+      newSearchParams.set('template', template.slug || template.id)
       navigate({ search: newSearchParams.toString() }, { replace: true })
       
     }
@@ -237,6 +234,7 @@ export default function VideoCreator() {
     } else {
       // 兼容旧的调用方式，生成提示词
       prompt = selectedTemplate.promptTemplate as string
+      jsonPrompt = null  // 旧方式不使用JSON格式
       
       // Replace placeholders (保留原有逻辑作为备用)
       Object.entries(selectedTemplate.params).forEach(([key, param]) => {
@@ -273,15 +271,6 @@ export default function VideoCreator() {
     const requiredCredits = getVideoCreditCost(quality === 'fast' ? 'standard' : 'high', aspectRatio)
 
 
-    // Extract image data from parameters if present
-    let imageData = null
-    Object.entries(selectedTemplate.params).forEach(([key, param]) => {
-      if (param.type === 'image' && params[key]) {
-        imageData = params[key]
-        console.log('Found image parameter:', key, 'with data')
-      }
-    })
-    
     // Removed special handling for art-coffee-machine custom images
 
     setIsGenerating(true)
@@ -293,7 +282,7 @@ export default function VideoCreator() {
     const result = await executeWithLimit(async () => {
       try {
         // 跟踪模板使用和视频生成开始事件
-        trackTemplateUse(selectedTemplate.id, selectedTemplate.category)
+        trackTemplateUse(selectedTemplate.id, selectedTemplate.category || 'unknown')
         // 验证提示词内容
         const promptValidation = InputValidator.validateString(prompt, {
           sanitize: true,
@@ -339,7 +328,6 @@ export default function VideoCreator() {
             title: selectedTemplate.name,
             description: selectedTemplate.description,
             prompt: promptValidation.sanitized || prompt,
-            jsonPrompt: jsonPrompt,
             parameters: params,
             creditsUsed: requiredCredits,
             isPublic: false,
@@ -389,7 +377,7 @@ export default function VideoCreator() {
           level: SecurityLevel.LOW,
           userId: user.id,
           details: {
-            error: error.message,
+            error: (error as Error)?.message || 'Unknown error',
             templateId: selectedTemplate.id
           },
           blocked: false,

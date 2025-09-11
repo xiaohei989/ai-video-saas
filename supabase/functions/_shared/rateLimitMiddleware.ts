@@ -78,23 +78,49 @@ export class RateLimitMiddleware {
     const url = new URL(request.url);
     const userAgent = request.headers.get('user-agent') || 'unknown';
     const authorization = request.headers.get('authorization');
+    const clientIP = this.getClientIP(request);
     
     // 尝试从JWT中获取用户ID
     let userId = 'anonymous';
+    let isAuthenticated = false;
+    
     if (authorization?.startsWith('Bearer ')) {
       try {
         const token = authorization.split(' ')[1];
         const payload = JSON.parse(atob(token.split('.')[1]));
-        userId = payload.sub || 'anonymous';
-      } catch {
-        // JWT解析失败，使用IP
-        userId = this.getClientIP(request);
+        if (payload.sub && payload.sub !== 'anonymous') {
+          userId = payload.sub;
+          isAuthenticated = true;
+        }
+      } catch (error) {
+        console.warn('JWT parsing failed:', error);
+        // JWT解析失败，继续使用anonymous
       }
-    } else {
-      userId = this.getClientIP(request);
+    }
+    
+    // 为匿名用户生成更细粒度的标识符，避免IP冲突
+    if (!isAuthenticated) {
+      // 使用IP + User-Agent的hash来区分不同的匿名用户
+      const userFingerprint = this.generateUserFingerprint(clientIP, userAgent);
+      userId = `anon_${userFingerprint}`;
     }
 
     return `rate_limit:${url.pathname}:${userId}`;
+  }
+
+  /**
+   * 生成用户指纹用于匿名用户识别
+   */
+  private generateUserFingerprint(ip: string, userAgent: string): string {
+    // 创建简单的hash来区分不同的匿名用户
+    const combined = `${ip}:${userAgent}`;
+    let hash = 0;
+    for (let i = 0; i < combined.length; i++) {
+      const char = combined.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash).toString(36);
   }
 
   /**
@@ -301,35 +327,35 @@ export class RateLimitMiddleware {
 // 全局限流器实例
 export const rateLimiter = new RateLimitMiddleware();
 
-// 预定义的限流配置
+// 预定义的限流配置（从环境变量读取）
 export const EDGE_FUNCTION_RATE_LIMITS = {
   // 视频生成API
   VIDEO_GENERATION: {
-    windowSeconds: 3600, // 1小时
-    maxRequests: 50,     // 50次请求
+    windowSeconds: parseInt(Deno.env.get('EDGE_RATE_LIMIT_VIDEO_GENERATION_WINDOW')) || 3600,
+    maxRequests: parseInt(Deno.env.get('EDGE_RATE_LIMIT_VIDEO_GENERATION_MAX')) || 50,
   },
   
   // 普通API
   GENERAL_API: {
-    windowSeconds: 60,   // 1分钟
-    maxRequests: 100,    // 100次请求
+    windowSeconds: parseInt(Deno.env.get('EDGE_RATE_LIMIT_GENERAL_API_WINDOW')) || 60,
+    maxRequests: parseInt(Deno.env.get('EDGE_RATE_LIMIT_GENERAL_API_MAX')) || 100,
   },
   
   // 认证相关
   AUTH_API: {
-    windowSeconds: 900,  // 15分钟
-    maxRequests: 10,     // 10次请求
+    windowSeconds: parseInt(Deno.env.get('EDGE_RATE_LIMIT_AUTH_API_WINDOW')) || 900,
+    maxRequests: parseInt(Deno.env.get('EDGE_RATE_LIMIT_AUTH_API_MAX')) || 10,
   },
   
   // 文件上传
   UPLOAD_API: {
-    windowSeconds: 3600, // 1小时
-    maxRequests: 100,    // 100次上传
+    windowSeconds: parseInt(Deno.env.get('EDGE_RATE_LIMIT_UPLOAD_API_WINDOW')) || 3600,
+    maxRequests: parseInt(Deno.env.get('EDGE_RATE_LIMIT_UPLOAD_API_MAX')) || 100,
   },
   
   // 管理员API
   ADMIN_API: {
-    windowSeconds: 60,   // 1分钟
-    maxRequests: 200,    // 200次请求
+    windowSeconds: parseInt(Deno.env.get('EDGE_RATE_LIMIT_ADMIN_API_WINDOW')) || 60,
+    maxRequests: parseInt(Deno.env.get('EDGE_RATE_LIMIT_ADMIN_API_MAX')) || 200,
   }
 } as const;

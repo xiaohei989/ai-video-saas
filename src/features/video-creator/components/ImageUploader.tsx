@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Upload, X } from 'lucide-react'
 import { Card } from '@/components/ui/card'
@@ -19,6 +19,19 @@ export default function ImageUploader({
   const { t } = useTranslation()
   const [preview, setPreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // 初始化preview状态从传入的value
+  useEffect(() => {
+    if (value) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPreview(reader.result as string)
+      }
+      reader.readAsDataURL(value)
+    } else {
+      setPreview(null)
+    }
+  }, [value])
 
   const handleFileSelect = (file: File) => {
     if (file && file.type.startsWith('image/')) {

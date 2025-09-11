@@ -21,12 +21,10 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: flowingGradient 3s ease-in-out infinite;
-  filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5));
 }
 
 .hero-title-flowing-hover {
   animation: flowingGradientFast 1.5s ease-in-out infinite;
-  filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.8));
 }
 
 /* === 彩虹渐变特效 === */
@@ -56,13 +54,7 @@
 
 /* === 霓虹灯特效 === */
 .hero-title-neon {
-  color: #fff;
-  text-shadow: 
-    0 0 5px #00ffff,
-    0 0 10px #00ffff,
-    0 0 20px #00ffff,
-    0 0 40px #00ffff,
-    0 0 80px #00ffff;
+  color: #00ffff;
   animation: neonFlicker 2s ease-in-out infinite alternate;
 }
 
@@ -129,30 +121,20 @@
 /* 霓虹灯闪烁动画 */
 @keyframes neonFlicker {
   0%, 100% {
-    text-shadow: 
-      0 0 5px #00ffff,
-      0 0 10px #00ffff,
-      0 0 20px #00ffff,
-      0 0 40px #00ffff,
-      0 0 80px #00ffff;
+    opacity: 1;
   }
   50% {
-    text-shadow: 
-      0 0 2px #00ffff,
-      0 0 5px #00ffff,
-      0 0 10px #00ffff,
-      0 0 20px #00ffff,
-      0 0 35px #00ffff;
+    opacity: 0.8;
   }
 }
 
 /* 脉冲发光动画 */
 @keyframes pulseGlow {
   0%, 100% {
-    filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.8));
+    opacity: 1;
   }
   50% {
-    filter: drop-shadow(0 0 40px rgba(102, 126, 234, 1));
+    opacity: 0.9;
   }
 }
 
@@ -288,17 +270,17 @@
   animation-duration: 1.5s;
 }
 
-/* === 发光强度变体 === */
+/* === 发光强度变体 (已移除发光效果) === */
 .text-glow-subtle {
-  filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.3));
+  /* 发光效果已移除 */
 }
 
 .text-glow-medium {
-  filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5));
+  /* 发光效果已移除 */
 }
 
 .text-glow-strong {
-  filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.8));
+  /* 发光效果已移除 */
 }
 
 /* === 响应式优化 === */
@@ -309,7 +291,6 @@
   .hero-title-pulse {
     /* 移动端减少动画强度 */
     animation-duration: 4s;
-    filter: none;
   }
   
   .hero-title-glitch {
@@ -364,6 +345,5 @@
   
   .hero-title-neon {
     color: #00ffff;
-    text-shadow: 0 0 2px #00ffff;
   }
 }

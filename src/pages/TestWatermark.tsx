@@ -3,7 +3,7 @@
  * 模拟免费用户下载视频时添加水印的功能
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'

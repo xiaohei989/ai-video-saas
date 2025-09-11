@@ -64,7 +64,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
   const [isSigningOut, setIsSigningOut] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
-  const { theme, setTheme, resolvedTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
   
   // 导航背景框动态定位系统
   const navRefs = useRef<(HTMLAnchorElement | null)[]>([])
@@ -241,24 +241,13 @@ export function Header({ className = "" }: HeaderProps = {}) {
               alt="Logo" 
               className="h-8 w-8"
             />
-            {/* Slogan - 仅在大屏幕且有足够空间时显示，使用设计感字体 */}
+            {/* Slogan - 仅在大屏幕且有足够空间时显示，使用手写字体 */}
             <div className="hidden xl:block min-w-0 flex-shrink-0">
               <div className="flex flex-col leading-tight whitespace-nowrap">
-                <span className="text-sm font-bold text-gray-800 dark:text-gray-100" 
-                      style={{ 
-                        fontFamily: '"Space Grotesk", "Outfit", "SF Pro Display", system-ui, sans-serif', 
-                        letterSpacing: '0.015em',
-                        fontWeight: '700'
-                      }}>
+                <span className="text-sm text-gray-800 dark:text-gray-100 font-handwriting-bold">
                   Viral Videos
                 </span>
-                <span className="text-xs font-medium text-gray-600 dark:text-gray-400 italic" 
-                      style={{ 
-                        fontFamily: '"Poppins", "Inter", "SF Pro Text", system-ui, sans-serif', 
-                        letterSpacing: '0.03em',
-                        fontStyle: 'italic',
-                        fontWeight: '500'
-                      }}>
+                <span className="text-xs text-gray-600 dark:text-gray-400 font-handwriting italic">
                   Made Simple
                 </span>
               </div>
@@ -273,28 +262,28 @@ export function Header({ className = "" }: HeaderProps = {}) {
               style={indicatorStyle}
             />
             <Link 
-              ref={el => navRefs.current[0] = el}
+              ref={el => { navRefs.current[0] = el }}
               to="/" 
               className={`relative z-10 text-sm font-medium px-3 py-2 rounded-md transition-all duration-300 flex items-center justify-center min-h-[32px] ${location.pathname === '/' ? 'text-accent-foreground' : 'hover:bg-accent/60'}`}
             >
               {t('nav.home')}
             </Link>
             <Link 
-              ref={el => navRefs.current[1] = el}
+              ref={el => { navRefs.current[1] = el }}
               to="/templates" 
               className={`relative z-10 text-sm font-medium px-3 py-2 rounded-md transition-all duration-300 flex items-center justify-center min-h-[32px] ${location.pathname === '/templates' ? 'text-accent-foreground' : 'hover:bg-accent/60'}`}
             >
               {t('nav.templates')}
             </Link>
             <Link 
-              ref={el => navRefs.current[2] = el}
+              ref={el => { navRefs.current[2] = el }}
               to="/videos" 
               className={`relative z-10 text-sm font-medium px-3 py-2 rounded-md transition-all duration-300 flex items-center justify-center min-h-[32px] ${location.pathname === '/videos' ? 'text-accent-foreground' : 'hover:bg-accent/60'}`}
             >
               {t('nav.videos')}
             </Link>
             <Link 
-              ref={el => navRefs.current[3] = el}
+              ref={el => { navRefs.current[3] = el }}
               to="/pricing" 
               className={`relative z-10 text-sm font-medium px-3 py-2 rounded-md transition-all duration-300 flex items-center justify-center min-h-[32px] ${location.pathname === '/pricing' ? 'text-accent-foreground' : 'hover:bg-accent/60'}`}
             >
@@ -417,7 +406,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
                         <span>{t('referral.inviteFriends')}</span>
                       </Link>
                       {/* 管理员入口 */}
-                      {(profile?.role === 'admin' || profile?.role === 'super_admin') && (
+                      {((profile as any)?.role === 'admin' || (profile as any)?.role === 'super_admin') && (
                         <Link
                           to="/admin"
                           className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-accent transition-colors duration-200 bg-red-50 dark:bg-red-900/20"
@@ -623,7 +612,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
                       <span>{t('referral.inviteFriends')}</span>
                     </Link>
                     {/* 管理员入口 - 移动端 */}
-                    {(profile?.role === 'admin' || profile?.role === 'super_admin') && (
+                    {((profile as any)?.role === 'admin' || (profile as any)?.role === 'super_admin') && (
                       <Link
                         to="/admin"
                         className="flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-accent transition-all duration-200 bg-red-50 dark:bg-red-900/20"

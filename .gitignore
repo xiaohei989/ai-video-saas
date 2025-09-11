@@ -10,13 +10,14 @@ coverage/
 build/
 dist/
 
-# Misc
+# Environment files (必须排除所有含有敏感信息的环境文件)
 .DS_Store
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
 
 # Security - 敏感文件
 *.secret

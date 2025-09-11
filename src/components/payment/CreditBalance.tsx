@@ -1,4 +1,3 @@
-import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Gem, TrendingUp, TrendingDown, Activity } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'

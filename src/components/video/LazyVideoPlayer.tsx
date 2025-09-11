@@ -318,7 +318,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
   // 如果视频已加载，显示实际的VideoPlayer
   if (lazyState.isLoaded && !lazyState.hasError) {
     return (
-      <div ref={inViewRef} className={cn("relative", className)}>
+      <div ref={inViewRef as React.RefObject<HTMLDivElement>} className={cn("relative", className)}>
         <VideoPlayer
           src={src}
           poster={poster || lazyState.thumbnail || undefined}
@@ -350,7 +350,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
        lazyState.error.includes('HEAD request failed'))) {
     console.log('[LazyVideoPlayer] Network error detected, falling back to standard VideoPlayer:', lazyState.error)
     return (
-      <div ref={inViewRef} className={cn("relative", className)}>
+      <div ref={inViewRef as React.RefObject<HTMLDivElement>} className={cn("relative", className)}>
         <VideoPlayer
           src={src}
           poster={poster}
@@ -377,7 +377,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
 
   // 显示占位符或加载状态
   return (
-    <div ref={inViewRef} className={cn("relative aspect-video bg-muted", className)}>
+    <div ref={inViewRef as React.RefObject<HTMLDivElement>} className={cn("relative aspect-video bg-muted", className)}>
       {renderPlaceholderContent()}
       
       {/* 加载覆盖层 */}
@@ -410,13 +410,21 @@ export const SimpleLazyVideoPlayer: React.FC<{
   alt?: string
   showPlayButton?: boolean
   onClick?: () => void
+  userId?: string
+  videoId?: string
+  videoTitle?: string
+  enableDownloadProtection?: boolean
 }> = ({ 
   src, 
   poster, 
   className, 
   alt,
   showPlayButton = true,
-  onClick 
+  onClick,
+  userId,
+  videoId,
+  videoTitle,
+  enableDownloadProtection = true
 }) => {
   const [lazyState, lazyActions, inViewRef] = useVideoLazyLoad(src, {
     threshold: 0.1,
@@ -431,7 +439,7 @@ export const SimpleLazyVideoPlayer: React.FC<{
 
   if (lazyState.isLoaded) {
     return (
-      <div ref={inViewRef} className={className}>
+      <div ref={inViewRef as React.RefObject<HTMLDivElement>} className={className}>
         <VideoPlayer
           src={src}
           poster={poster || lazyState.thumbnail || undefined}
@@ -449,7 +457,7 @@ export const SimpleLazyVideoPlayer: React.FC<{
 
   return (
     <div 
-      ref={inViewRef} 
+      ref={inViewRef as React.RefObject<HTMLDivElement>} 
       className={cn("relative aspect-video bg-muted cursor-pointer", className)}
       onClick={handleClick}
     >

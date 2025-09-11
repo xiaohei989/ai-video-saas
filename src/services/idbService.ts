@@ -39,9 +39,9 @@ interface CacheDBSchema extends DBSchema {
   }
 }
 
-interface CacheEntry {
+interface CacheEntry<T = any> {
   key: string
-  data: any
+  data: T
   timestamp: number
   ttl: number
   size: number
@@ -83,7 +83,7 @@ class IDBCacheService {
   private async initializeDB(): Promise<void> {
     try {
       this.db = await openDB<CacheDBSchema>(this.dbName, this.version, {
-        upgrade(db, oldVersion, newVersion, transaction) {
+        upgrade(db) {
           // 创建缓存存储
           if (!db.objectStoreNames.contains('cache')) {
             const cacheStore = db.createObjectStore('cache', { keyPath: 'key' })
@@ -532,11 +532,10 @@ class IDBCacheService {
       const existing = await this.db.get('metadata', 'stats')
       if (!existing) {
         await this.db.put('metadata', {
-          key: 'stats',
           totalSize: 0,
           itemCount: 0,
           lastCleanup: Date.now()
-        })
+        }, 'stats')
       }
     } catch (error) {
       console.error('[IDBCache] 初始化元数据失败:', error)
@@ -588,11 +587,10 @@ class IDBCacheService {
 
     try {
       await this.db.put('metadata', {
-        key: 'stats',
         totalSize: 0,
         itemCount: 0,
         lastCleanup: Date.now()
-      })
+      }, 'stats')
     } catch (error) {
       console.error('[IDBCache] 重置元数据失败:', error)
     }

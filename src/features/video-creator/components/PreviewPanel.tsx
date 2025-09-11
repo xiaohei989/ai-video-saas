@@ -1,11 +1,10 @@
-import React, { useMemo, useEffect, useState } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Play, Loader2, Clock, Zap, Monitor, Smartphone, Lock } from 'lucide-react'
 import { Template } from '../data/templates'
 import { Progress } from '@/components/ui/progress'
 import { CustomSelect } from '@/components/ui/custom-select'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -72,8 +71,6 @@ export default function PreviewPanel({
   const templateIds = useMemo(() => [template.id], [template.id])
   
   const {
-    likeStatuses,
-    loading: likesLoading,
     getLikeStatus,
     updateStatus
   } = useTemplateLikes({
@@ -241,8 +238,8 @@ export default function PreviewPanel({
                 </div>
               ) : videoUrl || template.previewUrl ? (
                 <LazyVideoPlayer
-                  key={`${template.id}-${videoUrl || template.previewUrl}`}
-                  src={videoUrl || template.previewUrl}
+                  key={`${template.id}-${videoUrl || template.previewUrl || ''}`}
+                  src={videoUrl || template.previewUrl || ''}
                   poster={template.thumbnailUrl}
                   className="w-full h-full"
                   showPlayButton={true}

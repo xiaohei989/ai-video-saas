@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { supabase, ensureValidSession } from '@/lib/supabase'
 import { useNavigate } from 'react-router-dom'
@@ -116,13 +116,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<AuthError | null>(null)
   
   // 用于跟踪是否是初始加载
-  const isInitialLoadRef = React.useRef(true)
+  const isInitialLoadRef = useRef(true)
   
   // 🚀 性能优化：使用ref跟踪loading状态，确保原子性
-  const loadingRef = React.useRef(loading)
+  const loadingRef = useRef(loading)
   
   // 每次loading状态变化时同步更新ref
-  React.useEffect(() => {
+  useEffect(() => {
     loadingRef.current = loading
   }, [loading])
 
@@ -153,7 +153,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const fetchProfile = async (userId: string, userEmail?: string) => {
     try {
       // 创建基本profile对象作为后备（使用外部函数）
-      const basicProfileData = createBasicProfile(userId, userEmail || session?.user?.email || '')
       
       // 🚀 优先使用缓存获取profile
       try {
@@ -264,7 +263,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   // Token检查定时器
-  const tokenCheckIntervalRef = React.useRef<NodeJS.Timeout | null>(null)
+  const tokenCheckIntervalRef = useRef<NodeJS.Timeout | null>(null)
   
   // 启动Token检查定时器
   const startTokenCheck = () => {
@@ -283,8 +282,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (error) {
         console.error('定期Token检查失败:', error)
         // Token刷新失败，可能需要重新登录
-        if (error.message?.includes('refresh_token_not_found') || 
-            error.message?.includes('invalid_grant')) {
+        const errorMessage = (error as Error)?.message || ''
+        if (errorMessage.includes('refresh_token_not_found') || 
+            errorMessage.includes('invalid_grant')) {
           console.log('Token无法刷新，清除会话状态')
           setSession(null)
           setUser(null)
@@ -320,7 +320,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ])
         
         const { data: { session }, error } = await sessionPromise as any
-        const authTime = performance.now() - authStart
         
         
         if (error) {
@@ -364,7 +363,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const authTime = performance.now() - authStart
         const errorMessage = (err as Error)?.message || 'Unknown error'
         const isTimeoutError = errorMessage.includes('Session timeout')
-        const isNetworkError = errorMessage.includes('network') || errorMessage.includes('fetch')
         
         if (isTimeoutError) {
           console.warn(`[AUTH] ⏰ 网络请求超时 (${Math.round(authTime)}ms)，这可能是网络延迟导致的`)
@@ -477,12 +475,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             
             // 检查是否是真正的用户登录操作
             // 定义公开页面，这些页面不应该触发自动导航
-            const publicPages = ['/pricing', '/templates', '/', '/privacy', '/terms', '/cookies']
             const authPages = ['/signin', '/signup', '/forgot-password', '/reset-password']
             const protectedPages = ['/videos', '/profile', '/create']
             
             const currentPath = window.location.pathname
-            const isOnPublicPage = publicPages.some(path => currentPath === path || currentPath.startsWith(path))
             const isOnAuthPage = authPages.some(path => currentPath.startsWith(path))
             const isOnProtectedPage = protectedPages.some(path => currentPath.startsWith(path))
             

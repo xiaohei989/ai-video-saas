@@ -170,7 +170,7 @@ export const setCacheStrategy = (resourceType: 'static' | 'api' | 'media') => {
   const strategy = strategies[resourceType];
   
   // 如果支持Service Worker，设置缓存策略
-  if ('serviceWorker' in navigator && window.workbox) {
+  if ('serviceWorker' in navigator && (window as any).workbox) {
     // 使用Workbox设置缓存策略
     console.log(`Setting cache strategy for ${resourceType}:`, strategy);
   }
@@ -183,8 +183,8 @@ export const trackPerformance = (eventName: string, timing: number) => {
   if (typeof window === 'undefined') return;
   
   // 发送到Cloudflare Web Analytics
-  if (window.gtag) {
-    window.gtag('event', 'performance', {
+  if ((window as any).gtag) {
+    ;(window as any).gtag('event', 'performance', {
       event_category: 'Performance',
       event_label: eventName,
       value: Math.round(timing),

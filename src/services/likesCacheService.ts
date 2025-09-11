@@ -130,7 +130,7 @@ class LikesCacheService {
    * 更新模板点赞状态（用于点赞/取消点赞操作后）
    */
   updateLikeStatus(templateId: string, isLiked: boolean, newLikeCount: number): void {
-    const existing = this.cache.get(templateId)
+    // const existing = this.cache.get(templateId) // unused
     
     const updated: CachedLikeStatus = {
       template_id: templateId,
@@ -240,7 +240,7 @@ class LikesCacheService {
    * 更新批量缓存中的单个数据
    */
   private updateBatchCaches(templateId: string, status: CachedLikeStatus): void {
-    this.batchCache.forEach((batchData, key) => {
+    this.batchCache.forEach((batchData) => {
       if (batchData.data.has(templateId)) {
         batchData.data.set(templateId, status)
       }

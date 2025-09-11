@@ -42,7 +42,7 @@ export function useOptimizedLike({
   const [error, setError] = useState<string | null>(null)
 
   // 防抖相关
-  const debounceTimerRef = useRef<NodeJS.Timeout>()
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const pendingLikeStateRef = useRef<boolean | null>(null)
 
   // React Query hooks

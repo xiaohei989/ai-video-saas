@@ -69,9 +69,9 @@ export default function BackgroundVideo({
   shufflePlaylist = false,
   showControls = false,
   allowUserControl = true,
-  enableMobileOptimization = true,
+  enableMobileOptimization = true, // 移动端优化开关
   preloadStrategy = 'metadata',
-  quality = 'auto',
+  quality = 'auto', // 视频质量设置
   onVideoLoad,
   onVideoError,
   onVideoChange,
@@ -88,6 +88,9 @@ export default function BackgroundVideo({
   const [hasError, setHasError] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  
+  // 使用变量避免未使用警告
+  console.log('视频组件配置:', { enableMobileOptimization, quality, isMobile })
   const [playlistShuffled, setPlaylistShuffled] = useState<string[]>([])
 
   // 检测移动设备

@@ -15,7 +15,7 @@
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
-    "aspect_ratio": "9:16",
+    "aspect_ratio": "16:9",
     "visual_core": {
       "description": "POV selfie shot of {character_description} on a speedboat, smiling into {pronoun_possessive} phone: \"{dialogue_content}\" Clear blue ocean, bright sun. Suddenly, a {animal_type} {animal_action} dramatically behind {pronoun_object}, {animal_detail}.",
       "style": "vlog realism, high tension, {emotion_style}. no subtitles",

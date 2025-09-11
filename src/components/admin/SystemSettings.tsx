@@ -9,16 +9,10 @@ import {
   SimpleForm,
   TextInput,
   SelectInput,
-  BooleanInput,
-  NumberInput,
   useRecordContext,
   TopToolbar,
   CreateButton,
   EditButton,
-  ShowButton,
-  useUpdate,
-  useNotify,
-  useRefresh,
   Button
 } from 'react-admin'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -57,7 +51,7 @@ export const SystemSettingsList: React.FC = () => (
     <Datagrid rowClick="edit">
       <TextField source="setting_key" label="设置键" />
       <TextField source="description" label="描述" />
-      <SettingValueField source="setting_value" label="当前值" />
+      <SettingValueField source="setting_value" />
       <TextField source="category" label="分类" />
       <DateField source="updated_at" label="更新时间" showTime />
       <EditButton />
@@ -76,7 +70,7 @@ export const SystemSettingsEdit: React.FC = () => {
       <SimpleForm>
         <TextInput source="setting_key" label="设置键" disabled />
         <TextInput source="description" label="描述" disabled />
-        <TextField source="category" label="分类" disabled />
+        <TextInput source="category" label="分类" disabled />
         <TextInput source="setting_value" label="设置值" required />
       </SimpleForm>
     </Edit>
@@ -181,8 +175,8 @@ export const SystemSettings: React.FC = () => {
           <Button
             onClick={() => updateSetting(setting.setting_key, !value)}
             disabled={saving === setting.setting_key}
-            variant={value ? "default" : "outline"}
-            size="sm"
+            variant={value ? "contained" : "outlined"}
+            size="small"
           >
             {value ? '启用' : '禁用'}
           </Button>
@@ -215,7 +209,7 @@ export const SystemSettings: React.FC = () => {
                 updateSetting(setting.setting_key, parseInt(input.value))
               }}
               disabled={saving === setting.setting_key}
-              size="sm"
+              size="small"
             >
               更新
             </Button>
@@ -248,7 +242,7 @@ export const SystemSettings: React.FC = () => {
               updateSetting(setting.setting_key, input.value)
             }}
             disabled={saving === setting.setting_key}
-            size="sm"
+            size="small"
           >
             更新
           </Button>

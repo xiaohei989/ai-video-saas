@@ -35,7 +35,7 @@ class MultilingualViralShareService {
     language: ShareTemplate['language'] = 'en'
   ): ShareTemplate {
     const templates = this.getMultilingualTemplates(platform, style, language)
-    const selectedTemplate = this.selectBestTemplate(templates, content)
+    const selectedTemplate = this.selectBestTemplate(templates)
     
     return {
       platform,
@@ -230,13 +230,13 @@ class MultilingualViralShareService {
       }
     }
 
-    return allTemplates[language]?.[platform]?.[style] || allTemplates['en']?.[platform]?.[style] || []
+    return (allTemplates as any)[language]?.[platform]?.[style] || (allTemplates as any)['en']?.[platform]?.[style] || []
   }
 
   /**
    * 选择最佳模板
    */
-  private selectBestTemplate(templates: any[], content: VideoShareContent) {
+  private selectBestTemplate(templates: any[]) {
     // 如果没有模板，返回默认模板
     if (!templates || templates.length === 0) {
       return {
@@ -313,7 +313,7 @@ class MultilingualViralShareService {
       }
     }
 
-    const langTemplates = hashtagTemplates[language] || hashtagTemplates['en']
+    const langTemplates = (hashtagTemplates as any)[language] || (hashtagTemplates as any)['en']
     const categoryHashtags = this.getCategoryHashtags(content.templateCategory, language)
     
     return [
@@ -356,7 +356,7 @@ class MultilingualViralShareService {
       }
     }
 
-    return categoryMap[language]?.[category] || categoryMap['en']?.[category] || ['Creative', 'Amazing']
+    return (categoryMap as any)[language]?.[category] || (categoryMap as any)['en']?.[category] || ['Creative', 'Amazing']
   }
 
   /**
@@ -401,7 +401,7 @@ That's 99.8% cheaper than traditional methods! 🤯`,
 ¡99.8% más barato que métodos tradicionales! 🤯`
     }
 
-    return comparisons[language] || comparisons['en']
+    return (comparisons as any)[language] || (comparisons as any)['en']
   }
 
   /**
@@ -441,7 +441,7 @@ That's 99.8% cheaper than traditional methods! 🤯`,
       ]
     }
 
-    return quotes[language] || quotes['en']
+    return (quotes as any)[language] || (quotes as any)['en']
   }
 
   /**

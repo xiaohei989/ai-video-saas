@@ -27,12 +27,36 @@ export function useRateLimiter(
     };
   }, [action, customConfig]);
 
-  // 生成限流键
+  // 生成限流键（与后端保持一致）
   const getRateLimitKey = useCallback((additionalKey?: string) => {
-    const userId = user?.id || 'anonymous';
+    let userId = 'anonymous';
+    
+    if (user?.id) {
+      userId = user.id;
+    } else {
+      // 为匿名用户生成指纹，与后端逻辑保持一致
+      const userAgent = navigator.userAgent || 'unknown';
+      const fingerprint = generateUserFingerprint(userAgent);
+      userId = `anon_${fingerprint}`;
+    }
+    
     const baseKey = `${userId}:${action}`;
     return additionalKey ? `${baseKey}:${additionalKey}` : baseKey;
   }, [user?.id, action]);
+
+  // 生成用户指纹（与后端算法保持一致）
+  const generateUserFingerprint = (userAgent: string): string => {
+    // 注意：前端无法获取真实IP，所以只使用UserAgent
+    // 这与后端略有不同，但对于已登录用户不影响
+    const combined = `frontend:${userAgent}`;
+    let hash = 0;
+    for (let i = 0; i < combined.length; i++) {
+      const char = combined.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash).toString(36);
+  };
 
   // 检查是否允许请求
   const checkLimit = useCallback((additionalKey?: string): RateLimitResult => {

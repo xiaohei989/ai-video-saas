@@ -1,4 +1,4 @@
-import { Template, ParameterValue } from '@/types/template';
+import { Template, VideoGenerationParams } from '@/types/template';
 import { Template as LocalTemplate, TemplateParam } from '@/features/video-creator/data/templates';
 
 // JSON提示词模板的接口定义
@@ -29,6 +29,9 @@ interface JsonPromptTemplate {
     action?: string;
     camera?: string;
     audio?: string;
+    dialogue?: {
+      text?: string;
+    };
   }>;
   cta?: {
     motion?: string;
@@ -133,9 +136,9 @@ export class PromptGenerator {
     
     template.parameters.forEach(param => {
       if (param.required) {
-        const value = values[param.key];
+        const value = values[param.name];
         if (value === undefined || value === null || value === '') {
-          missingParams.push(param.key);
+          missingParams.push(param.name);
         }
       }
     });
@@ -379,10 +382,10 @@ export class PromptGenerator {
     // 替换所有占位符（支持 {key} 和 {{key}} 两种格式）
     template.parameters.forEach(param => {
       const placeholders = [
-        `{${param.key}}`,
-        `{{${param.key}}}`
+        `{${param.name}}`,
+        `{{${param.name}}}`
       ];
-      const value = values[param.key];
+      const value = values[param.name];
       
       placeholders.forEach(placeholder => {
         if (prompt.includes(placeholder)) {

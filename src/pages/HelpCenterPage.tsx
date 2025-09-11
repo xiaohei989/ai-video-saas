@@ -16,7 +16,6 @@ import {
   FileText,
   Clock,
   User,
-  AlertCircle,
   Loader2,
   ExternalLink,
   X
@@ -46,7 +45,8 @@ const getFAQData = (t: any): FAQ[] => {
 
 export default function HelpCenterPage() {
   const { t } = useTranslation()
-  const { user } = useContext(AuthContext)
+  const authContext = useContext(AuthContext)
+  const user = authContext?.user
   const [searchQuery, setSearchQuery] = useState('')
 
   // SEO优化

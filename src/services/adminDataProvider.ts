@@ -71,8 +71,10 @@ export const adminDataProvider: DataProvider = {
     try {
       console.log(`[DataProvider] getList called for ${resource}`, params)
       
-      const { page, perPage } = params.pagination
+      const { page, perPage } = params.pagination || { page: 1, perPage: 10 }
       const { field, order } = params.sort || { field: 'created_at', order: 'DESC' }
+      // 销毁未使用的变量以避免警告
+      void field; void order;
 
       // 对于logs资源，使用Supabase直接查询
       if (resource === 'logs') {
@@ -516,7 +518,7 @@ export const adminDataProvider: DataProvider = {
           throw new Error(`Unsupported resource update: ${resource}`)
       }
 
-      const result = await adminApiCall({ endpoint, method: 'POST', body })
+      await adminApiCall({ endpoint, method: 'POST', body })
       return { data: { id: params.id, ...params.data } }
     } catch (error) {
       console.error(`[DataProvider] update error for ${resource}:`, error)
@@ -535,7 +537,7 @@ export const adminDataProvider: DataProvider = {
           .eq('id', params.id)
 
         if (error) throw error
-        return { data: params.previousData }
+        return { data: params.previousData || {} }
       }
 
       if (resource === 'faqs') {
@@ -545,7 +547,7 @@ export const adminDataProvider: DataProvider = {
           .eq('id', params.id)
 
         if (error) throw error
-        return { data: params.previousData }
+        return { data: params.previousData || {} }
       }
 
       let endpoint = ''
@@ -587,7 +589,7 @@ export const adminDataProvider: DataProvider = {
 
   // 批量删除
   deleteMany: async (resource, params) => {
-    const results = await Promise.all(
+    await Promise.all(
       params.ids.map(id => 
         adminDataProvider.delete(resource, { id, previousData: {} })
       )
@@ -617,7 +619,7 @@ export const adminDataProvider: DataProvider = {
 
   // 批量更新
   updateMany: async (resource, params) => {
-    const results = await Promise.all(
+    await Promise.all(
       params.ids.map(id => 
         adminDataProvider.update(resource, { id, data: params.data, previousData: {} })
       )

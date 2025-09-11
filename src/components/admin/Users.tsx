@@ -18,22 +18,31 @@ import {
   TopToolbar,
   ExportButton,
   FilterButton,
-  CreateButton,
   EditButton,
   ShowButton,
-  DeleteButton,
   useRecordContext,
   useUpdate,
   useNotify,
   useRefresh,
   Button,
-  ChipField,
-  ArrayField,
-  SingleFieldList,
-  ReferenceField,
   ReferenceManyField
 } from 'react-admin'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { UserX, UserCheck, MapPin, CreditCard, Video, FileText } from 'lucide-react'
+
+const VideoStatsField = () => {
+  const record = useRecordContext()
+  return (
+    <div className="space-y-2">
+      <div className="text-sm text-gray-600">
+        总视频数: <span className="font-medium">{(record as any)?.video_count || 0}</span>
+      </div>
+      <div className="text-sm text-gray-600">
+        今日生成: <span className="font-medium">{(record as any)?.videos_today || 0}</span>
+      </div>
+    </div>
+  )
+}
 
 const UserFilters = [
   <SearchInput source="q" placeholder="搜索用户名或邮箱" alwaysOn />,
@@ -64,6 +73,7 @@ const BanUserButton: React.FC = () => {
   const refresh = useRefresh()
 
   const handleBan = () => {
+    if (!record?.id) return
     const reason = prompt('请输入封禁原因:')
     if (!reason) return
 
@@ -87,6 +97,7 @@ const BanUserButton: React.FC = () => {
   }
 
   const handleUnban = () => {
+    if (!record?.id) return
     update(
       'users',
       {
@@ -168,10 +179,10 @@ export const UserList: React.FC = () => (
     >
       <TextField source="username" label="用户名" />
       <EmailField source="email" label="邮箱" />
-      <RoleField source="role" label="角色" />
+      <RoleField source="role" />
       <NumberField source="credits" label="积分余额" />
       <BooleanField source="is_banned" label="封禁状态" />
-      <CountryField source="registration_country" label="注册地区" />
+      <CountryField source="registration_country" />
       <DateField source="created_at" label="注册时间" showTime />
       <DateField source="last_active_at" label="最后活跃" showTime />
       <ShowButton />
@@ -201,7 +212,7 @@ export const UserShow: React.FC = () => {
                 <TextField source="username" label="用户名" />
                 <EmailField source="email" label="邮箱" />
                 <TextField source="full_name" label="姓名" />
-                <RoleField source="role" label="角色" />
+                <RoleField source="role" />
                 <BooleanField source="is_banned" label="封禁状态" />
                 <TextField source="banned_reason" label="封禁原因" />
                 <DateField source="banned_at" label="封禁时间" showTime />
@@ -223,9 +234,9 @@ export const UserShow: React.FC = () => {
             <CardContent>
               <SimpleShowLayout>
                 <TextField source="registration_ip" label="注册IP" />
-                <CountryField source="registration_country" label="注册地区" />
+                <CountryField source="registration_country" />
                 <TextField source="last_login_ip" label="最后登录IP" />
-                <CountryField source="last_login_country" label="最后登录地区" />
+                <CountryField source="last_login_country" />
               </SimpleShowLayout>
             </CardContent>
           </Card>
@@ -263,21 +274,7 @@ export const UserShow: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ReferenceManyField
-                reference="videos"
-                target="user_id"
-                label=""
-                perPage={5}
-              >
-                <div className="space-y-2">
-                  <div className="text-sm text-gray-600">
-                    总视频数: <span className="font-medium">{{video_count}}</span>
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    今日生成: <span className="font-medium">{{videos_today}}</span>
-                  </div>
-                </div>
-              </ReferenceManyField>
+              <VideoStatsField />
             </CardContent>
           </Card>
 

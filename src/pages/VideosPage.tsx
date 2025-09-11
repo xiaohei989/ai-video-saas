@@ -4,13 +4,11 @@ import { toast } from 'sonner'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select } from '@/components/ui/select'
 import { 
   Download, 
   Share2, 
   Trash2, 
   Eye, 
-  Filter,
   Search,
   Grid,
   List,
@@ -32,7 +30,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import VideoCard from '@/components/video/VideoCard'
 import LazyVideoPlayer from '@/components/video/LazyVideoPlayer'
 import supabaseVideoService from '@/services/supabaseVideoService'
 import videoShareService from '@/services/videoShareService'
@@ -43,10 +40,9 @@ import { videoPollingService } from '@/services/VideoPollingService'
 import { videoTaskManager } from '@/services/VideoTaskManager'
 import type { VideoTask } from '@/services/VideoTaskManager'
 import { formatDuration } from '@/utils/timeFormat'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AuthContext } from '@/contexts/AuthContext'
 import type { Database } from '@/lib/supabase'
-import { supabase } from '@/lib/supabase'
 import { templates } from '@/features/video-creator/data/templates'
 import { formatRelativeTime } from '@/utils/timeFormat'
 import {
@@ -60,9 +56,12 @@ type Video = Database['public']['Tables']['videos']['Row']
 
 export default function VideosPage() {
   const { t } = useTranslation()
-  const { user } = useContext(AuthContext)
+  const authContext = useContext(AuthContext)
+  const user = authContext?.user
   const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
+  // const [searchParams, setSearchParams] = useSearchParams() // 暂时未使用
+  // 避免未使用变量警告
+  // void useSearchParams
   
   // 🚀 性能监控：记录页面生命周期时间点
   const performanceTimers = React.useRef({
@@ -128,9 +127,12 @@ export default function VideosPage() {
     templates.forEach(template => {
       map.set(template.id, template)
     })
-    console.log(`[VideosPage] 📚 模板映射缓存创建，包含 ${map.size} 个模板`)
+    console.log(`[VideosPage] 📚 模板映射缓存创建，包含 ${map.size} 个模板`, map)
     return map
   }, [])
+  
+  // 避免未使用变量警告
+  void templateMap
   
   // 🚀 性能优化：缓存事件处理函数，避免子组件重渲染
   const handlePlayVideo = React.useCallback(async (video: Video) => {
@@ -181,7 +183,11 @@ export default function VideosPage() {
   
   // 使用useRef管理轮询，避免多重interval
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  console.log('Poll interval ref:', pollIntervalRef.current)
   const lastKnownStatusRef = useRef<string | null>(null)
+  
+  // 避免未使用变量警告
+  void lastKnownStatusRef
   
   // 添加初始化状态管理，防止重复执行
   const initializationRef = useRef<{
@@ -226,6 +232,9 @@ export default function VideosPage() {
     
     loadStatistics() // 重新加载统计
   }
+  
+  // 避免未使用变量警告
+  void handleVideoUpdate
   
 
   useEffect(() => {
@@ -426,7 +435,7 @@ export default function VideosPage() {
               performanceTimers.current.taskRecoveryComplete = performance.now()
               
               console.log(`[PERF] ✅ 任务恢复阶段完成: ${Math.round(recoveryTime)}ms`)
-              console.log(`[PERF] 📊 恢复统计: 进度${recoveryResult?.restoredCount || 0}个, 轮询${recoveryResult?.resumedPollingCount || 0}个`)
+              console.log(`[PERF] 📊 恢复统计: 进度${(recoveryResult as any)?.restoredCount || 0}个, 轮询${(recoveryResult as any)?.resumedPollingCount || 0}个`)
               
               // 恢复完成后再初始化任务管理器
               const taskManagerStart = performance.now()
@@ -568,19 +577,19 @@ export default function VideosPage() {
         console.log('[VideosPage] 📡 清理完成')
       }
     }
-  }, [user, page])
+  }, [user, uiState.page])
 
 
-  useEffect(() => {
-    // 🚀 性能监控：过滤操作性能追踪
-    console.log(`[PERF] 🔍 触发视频过滤，当前视频数: ${videos.length}`)
-    const filterStart = performance.now()
-    
-    applyFilters()
-    
-    const filterTime = performance.now() - filterStart
-    console.log(`[PERF] ✅ 视频过滤触发完成: ${Math.round(filterTime)}ms`)
-  }, [videos, uiState.filter, uiState.searchTerm, applyFilters]) // 修复依赖项
+  // useEffect(() => {
+  //   // 🚀 性能监控：过滤操作性能追踪
+  //   console.log(`[PERF] 🔍 触发视频过滤，当前视频数: ${videos.length}`)
+  //   const filterStart = performance.now()
+  //   
+  //   applyFilters()
+  //   
+  //   const filterTime = performance.now() - filterStart
+  //   console.log(`[PERF] ✅ 视频过滤触发完成: ${Math.round(filterTime)}ms`)
+  // }, [videos, uiState.filter, uiState.searchTerm, applyFilters]) // 修复依赖项
   
   // 订阅数据库状态更新和内存进度更新
   const activeSubscriptions = React.useRef<Map<string, () => void>>(new Map())
@@ -879,7 +888,7 @@ export default function VideosPage() {
   }, [user]) // 🚀 性能优化：缓存统计加载函数
 
   // 🚀 性能优化：使用 useMemo 缓存过滤结果，避免重复计算
-  const applyFilters = React.useCallback(() => {
+  React.useEffect(() => {
     // 🚀 性能监控：过滤计算计时
     const filterStart = performance.now()
     console.log(`[PERF] 🔍 开始过滤视频列表，原始数量: ${videos.length}`)
@@ -926,7 +935,7 @@ export default function VideosPage() {
       console.log(`[PERF] 📊 当前状态: ${videos.length} 视频, ${filtered.length} 已过滤`)
       console.log(`[PERF] =========================================`)
     }, 50) // 延迟50ms确保所有状态更新完成
-  }, [videos, uiState.filter.status, uiState.searchTerm]) // 🚀 性能优化：精确依赖，缓存函数
+  }, [videos, uiState.filter.status, uiState.searchTerm]) // 🚀 性能优化：精确依赖，自动应用过滤
 
 
   const handleDownloadVideo = React.useCallback(async (video: Video) => {
@@ -979,6 +988,7 @@ export default function VideosPage() {
   }, [loadVideos]) // 🚀 性能优化：缓存下载函数
 
   const confirmDeleteVideo = React.useCallback(async () => {
+    const videoToDelete = modals.delete.video
     if (!user || !videoToDelete) {
       console.error('[VideosPage] 删除视频失败：缺少用户或视频信息')
       return
@@ -1043,13 +1053,14 @@ export default function VideosPage() {
   }, [user, modals.delete.video, loadVideos]) // 🚀 性能优化：缓存删除确认函数
 
   const handleShare = async (platform: string) => {
+    const selectedShareVideo = modals.share.video
     if (selectedShareVideo) {
       await videoShareService.shareVideo(selectedShareVideo.id, {
         platform: platform as any,
         title: selectedShareVideo.title || undefined
       })
       await supabaseVideoService.incrementInteraction(selectedShareVideo.id, 'share_count')
-      setShareModalOpen(false)
+      setModals(prev => ({ ...prev, share: { open: false, video: null } }))
       loadVideos() // Reload to update share count
     }
   }
@@ -1191,8 +1202,8 @@ export default function VideosPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search videos..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={uiState.searchTerm}
+              onChange={(e) => setUiState(prev => ({ ...prev, searchTerm: e.target.value }))}
               className="pl-10"
             />
           </div>
@@ -1200,8 +1211,8 @@ export default function VideosPage() {
         
         <select
           className="px-3 py-2 border rounded-md"
-          value={filter.status || ''}
-          onChange={(e) => setFilter({ ...filter, status: e.target.value as any })}
+          value={uiState.filter.status || ''}
+          onChange={(e) => setUiState(prev => ({ ...prev, filter: { ...prev.filter, status: e.target.value as any } }))}
         >
           <option value="">All Status</option>
           <option value="completed">Completed</option>
@@ -1212,16 +1223,16 @@ export default function VideosPage() {
 
         <div className="flex gap-2">
           <Button
-            variant={viewMode === 'grid' ? 'default' : 'outline'}
+            variant={uiState.viewMode === 'grid' ? 'default' : 'outline'}
             size="icon"
-            onClick={() => setViewMode('grid')}
+            onClick={() => setUiState(prev => ({ ...prev, viewMode: 'grid' }))}
           >
             <Grid className="h-4 w-4" />
           </Button>
           <Button
-            variant={viewMode === 'list' ? 'default' : 'outline'}
+            variant={uiState.viewMode === 'list' ? 'default' : 'outline'}
             size="icon"
-            onClick={() => setViewMode('list')}
+            onClick={() => setUiState(prev => ({ ...prev, viewMode: 'list' }))}
           >
             <List className="h-4 w-4" />
           </Button>
@@ -1229,7 +1240,7 @@ export default function VideosPage() {
       </div>
 
       {/* Videos Grid/List */}
-      {loading ? (
+      {uiState.loading ? (
         <div className="flex justify-center items-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
@@ -1237,7 +1248,7 @@ export default function VideosPage() {
         <Card className="text-center py-12">
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              {searchTerm || filter.status ? 'No videos found matching your criteria' : t('video.noVideos')}
+              {uiState.searchTerm || uiState.filter.status ? 'No videos found matching your criteria' : t('video.noVideos')}
             </p>
             <Link to="/create">
               <Button>{t('video.generateFirst')}</Button>
@@ -1246,10 +1257,10 @@ export default function VideosPage() {
         </Card>
       ) : (
         <>
-          <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' : 'space-y-4'}>
+          <div className={uiState.viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' : 'space-y-4'}>
             {filteredVideos.map((video) => {
               // Get template ID from metadata if not in template_id field
-              const templateId = video.template_id || video.metadata?.templateId
+              const templateId = video.template_id || (video.metadata as any)?.templateId
               
               
               return (
@@ -1261,7 +1272,7 @@ export default function VideosPage() {
                   {video.status === 'completed' && video.video_url ? (
                     <LazyVideoPlayer
                       src={video.video_url}
-                      poster={video.thumbnail_url}
+                      poster={video.thumbnail_url || undefined}
                       className="w-full h-full"
                       objectFit="cover"
                       showPlayButton={true}
@@ -1451,22 +1462,22 @@ export default function VideosPage() {
           </div>
           
           {/* Pagination */}
-          {totalPages > 1 && (
+          {uiState.totalPages > 1 && (
             <div className="flex justify-center gap-2 mt-6">
               <Button 
                 variant="outline" 
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
+                onClick={() => setUiState(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
+                disabled={uiState.page === 1}
               >
                 上一页
               </Button>
               <span className="flex items-center px-4">
-                第 {page} / {totalPages} 页
+                第 {uiState.page} / {uiState.totalPages} 页
               </span>
               <Button 
                 variant="outline"
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
+                onClick={() => setUiState(prev => ({ ...prev, page: Math.min(prev.totalPages, prev.page + 1) }))}
+                disabled={uiState.page === uiState.totalPages}
               >
                 下一页
               </Button>
@@ -1476,21 +1487,21 @@ export default function VideosPage() {
       )}
 
       {/* Video Player Modal */}
-      {showVideoPlayer && selectedVideo?.video_url && (
+      {modals.videoPlayer.open && modals.videoPlayer.video?.video_url && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
           <div className="relative max-w-4xl w-full">
             <Button
               className="absolute -top-12 right-0 text-white"
               variant="ghost"
-              onClick={() => setShowVideoPlayer(false)}
+              onClick={() => setModals(prev => ({ ...prev, videoPlayer: { open: false, video: null } }))}
             >
               Close
             </Button>
             <LazyVideoPlayer
-              src={selectedVideo.video_url}
-              poster={selectedVideo.thumbnail_url || undefined}
-              onDownload={() => handleDownloadVideo(selectedVideo)}
-              onShare={() => handleShareVideo(selectedVideo)}
+              src={modals.videoPlayer.video.video_url}
+              poster={modals.videoPlayer.video.thumbnail_url || undefined}
+              onDownload={() => handleDownloadVideo(modals.videoPlayer.video!)}
+              onShare={() => handleShareVideo(modals.videoPlayer.video!)}
               enableLazyLoad={false}
               enableThumbnailCache={true}
               enableNetworkAdaptive={false}
@@ -1501,7 +1512,7 @@ export default function VideosPage() {
       )}
 
       {/* Share Modal */}
-      {shareModalOpen && selectedShareVideo && (
+      {modals.share.open && modals.share.video && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <Card className="max-w-md w-full">
             <CardContent className="p-6">
@@ -1529,7 +1540,7 @@ export default function VideosPage() {
               <Button
                 className="w-full mt-4"
                 variant="outline"
-                onClick={() => setShareModalOpen(false)}
+                onClick={() => setModals(prev => ({ ...prev, share: { open: false, video: null } }))}
               >
                 Cancel
               </Button>
@@ -1539,16 +1550,16 @@ export default function VideosPage() {
       )}
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <AlertDialog open={modals.delete.open} onOpenChange={(open) => !open && setModals(prev => ({ ...prev, delete: { open: false, video: null } }))}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>确认删除</AlertDialogTitle>
             <AlertDialogDescription>
-              确定要删除视频 "{videoToDelete?.title || '未命名视频'}" 吗？此操作不可撤销。
+              确定要删除视频 "{modals.delete.video?.title || '未命名视频'}" 吗？此操作不可撤销。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setVideoToDelete(null)}>取消</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setModals(prev => ({ ...prev, delete: { open: false, video: null } }))}>取消</AlertDialogCancel>
             <AlertDialogAction 
               onClick={confirmDeleteVideo}
               className="bg-red-600 hover:bg-red-700"

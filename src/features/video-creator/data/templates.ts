@@ -1,11 +1,27 @@
 export interface TemplateParam {
-  type: 'image' | 'text' | 'select' | 'toggle' | 'slider'
+  type: 'image' | 'text' | 'select' | 'toggle' | 'slider' | 'textarea'
   label: string
   required?: boolean
   default?: any
-  options?: { value: string; label: string }[]
+  placeholder?: string
+  description?: string
+  rows?: number
+  options?: { 
+    value: string; 
+    label: string; 
+    activity_description?: string;
+    voiceover_content?: string;
+    metadata?: {
+      default_dialogue?: string;
+      [key: string]: any;
+    }
+  }[]
   min?: number
   max?: number
+  showWhen?: {
+    field: string;
+    value: any;
+  }
 }
 
 // JSON格式的提示词模板结构
@@ -47,10 +63,12 @@ export interface JsonPromptTemplate {
 
 export interface Template {
   id: string
+  slug?: string  // URL友好的字符串标识符
   name: string
   icon: string
   credits: number
   description: string
+  category?: string   // 模板分类
   previewUrl?: string
   thumbnailUrl?: string
   tags?: string[]

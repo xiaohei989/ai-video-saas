@@ -88,7 +88,7 @@ class EdgeFunctionCacheClient {
   private readonly COUNTER_FUNCTION_URL: string
   private readonly DEFAULT_TTL = 3600 // 1小时
   private readonly SHORT_TTL = 300 // 5分钟
-  private readonly LONG_TTL = 86400 // 24小时
+  // private readonly LONG_TTL = 86400 // 24小时 // unused
   
   // 本地内存缓存作为二级缓存
   private localCache = new Map<string, { data: any, expiry: number }>()

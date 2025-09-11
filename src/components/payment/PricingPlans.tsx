@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { Check, Loader2 } from 'lucide-react'
@@ -29,7 +29,7 @@ export function PricingPlans({
   className = '',
   billingInterval = 'month'
 }: PricingPlansProps) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { user } = useAuthContext()
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
   

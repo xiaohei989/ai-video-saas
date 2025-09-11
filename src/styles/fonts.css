@@ -22,12 +22,15 @@
 /* 手写体字体 - 异步加载 */
 .font-handwriting {
   font-family: 
-    "Kalam",
+    "Dancing Script",
     "Caveat",
+    "Kalam",
     cursive,
     ui-sans-serif,
     system-ui;
   font-display: swap;
+  font-weight: 500;
+  letter-spacing: 0.025em;
 }
 
 /* 字体加载优化 */
@@ -41,7 +44,7 @@
 
 /* 异步加载Google字体的类 */
 .fonts-loaded .font-handwriting {
-  font-family: "Kalam", "Caveat", cursive;
+  font-family: "Dancing Script", "Caveat", "Kalam", cursive;
 }
 
 /* 字体加载前的占位样式 */

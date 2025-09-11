@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -8,11 +8,10 @@ import { CheckCircle, XCircle, Gift, CreditCard, Users } from 'lucide-react'
 import PricingPlans from '@/components/payment/PricingPlans'
 import CreditsPurchase from '@/components/payment/CreditsPurchase'
 import ReferralDashboard from '@/components/payment/ReferralDashboard'
-import CreditBalance from '@/components/payment/CreditBalance'
+// import CreditBalance from '@/components/payment/CreditBalance' // unused
 import CompactUserInfo from '@/components/subscription/CompactUserInfo'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
-import { useAnalytics } from '@/hooks/useAnalytics'
 import { useSEO } from '@/hooks/useSEO'
 
 // 计费周期类型
@@ -21,7 +20,6 @@ type BillingInterval = 'month' | 'year'
 export default function PricingPage() {
   const { t } = useTranslation()
   const { user } = useAuthContext()
-  const { trackEvent } = useAnalytics()
   const [searchParams, setSearchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState('subscription')
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('month')

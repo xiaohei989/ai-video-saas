@@ -24,31 +24,31 @@ export const SECURITY_CONFIG = {
     // 不同操作的限流配置
     LIMITS: {
       API_GENERAL: { 
-        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_API_GENERAL_MAX) || 100, 
+        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_API_GENERAL_MAX) || 1000, 
         windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_API_GENERAL_WINDOW) || 60000 
       },
       VIDEO_GENERATION: { 
-        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_VIDEO_GENERATION_MAX) || 10, 
+        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_VIDEO_GENERATION_MAX) || 100, 
         windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_VIDEO_GENERATION_WINDOW) || 3600000 
       },
       LOGIN_ATTEMPT: { 
-        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_LOGIN_ATTEMPT_MAX) || 5, 
+        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_LOGIN_ATTEMPT_MAX) || 20, 
         windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_LOGIN_ATTEMPT_WINDOW) || 900000 
       },
       PASSWORD_RESET: { 
-        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_PASSWORD_RESET_MAX) || 3, 
+        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_PASSWORD_RESET_MAX) || 5, 
         windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_PASSWORD_RESET_WINDOW) || 3600000 
       },
       FILE_UPLOAD: { 
-        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_FILE_UPLOAD_MAX) || 50, 
+        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_FILE_UPLOAD_MAX) || 100, 
         windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_FILE_UPLOAD_WINDOW) || 3600000 
       },
       LIKE_ACTION: { 
-        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_LIKE_ACTION_MAX) || 100, 
+        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_LIKE_ACTION_MAX) || 200, 
         windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_LIKE_ACTION_WINDOW) || 300000 
       },
       COMMENT_POST: { 
-        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_COMMENT_POST_MAX) || 30, 
+        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_COMMENT_POST_MAX) || 50, 
         windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_COMMENT_POST_WINDOW) || 600000 
       },
     }
@@ -308,7 +308,8 @@ export interface SecurityEvent {
 
 // 获取环境特定的安全配置
 export function getSecurityConfig(environment: 'development' | 'production' | 'test' = 'production') {
-  const config = { ...SECURITY_CONFIG };
+  // 创建深度可变副本
+  const config = JSON.parse(JSON.stringify(SECURITY_CONFIG));
   
   if (environment === 'development') {
     // 开发环境下放松一些限制

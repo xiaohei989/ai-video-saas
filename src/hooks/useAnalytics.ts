@@ -9,14 +9,16 @@ import analyticsService, {
 import { AuthContext } from '@/contexts/AuthContext'
 
 export const useAnalytics = () => {
-  const { user } = useContext(AuthContext)
+  const authContext = useContext(AuthContext)
+  const user = authContext?.user
+  const profile = authContext?.profile
   const location = useLocation()
 
   // 自动跟踪页面浏览
   useEffect(() => {
     analyticsService.trackPageView(location.pathname, document.title, {
       user_authenticated: !!user,
-      user_tier: user?.subscription_tier || 'free'
+      user_tier: 'free' // TODO: 需要从订阅服务获取
     })
   }, [location.pathname, user])
 
@@ -33,15 +35,15 @@ export const useAnalytics = () => {
 
       const userProperties: UserProperties = {
         user_id: user.id,
-        subscription_tier: user.subscription_tier || 'free',
-        credits_balance_range: getCreditsBalanceRange(user.credits || 0),
-        language: user.language || 'en',
-        registration_method: user.google_id ? 'google' : 'email'
+        subscription_tier: 'free', // TODO: 需要从订阅服务获取
+        credits_balance_range: getCreditsBalanceRange(profile?.credits || 0),
+        language: profile?.language || 'en',
+        registration_method: 'email' // TODO: 需要从用户配置获取
       }
 
       analyticsService.setUserProperties(userProperties)
     }
-  }, [user])
+  }, [user, profile])
 
   // 通用事件跟踪
   const trackEvent = useCallback((event: AnalyticsEvent) => {

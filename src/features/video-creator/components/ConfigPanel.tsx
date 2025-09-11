@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { ChevronRight, ChevronDown, Gem, AlertCircle, Zap, Sparkles, Shuffle, Copy, Eye, EyeOff, Lock } from 'lucide-react'
+import { ChevronRight, ChevronDown, Gem, AlertCircle, Sparkles, Shuffle, Copy, Eye, EyeOff, Lock } from 'lucide-react'
 import { Template } from '../data/templates'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CustomSelect } from '@/components/ui/custom-select'
 import ImageUploader from './ImageUploader'
 import { PromptGenerator } from '@/services/promptGenerator'
@@ -41,9 +40,7 @@ export default function ConfigPanel({
   onTemplateChange,
   onParamChange,
   onGenerate,
-  isGenerating,
-  isLimited = false,
-  remainingRequests = 0
+  isGenerating
 }: ConfigPanelProps) {
   const { t } = useTranslation()
   const { user } = useAuth()
@@ -51,18 +48,15 @@ export default function ConfigPanel({
   const [showPromptDebug, setShowPromptDebug] = useState(false)
   const [showValidationError, setShowValidationError] = useState(false)
   const [subscription, setSubscription] = useState<Subscription | null>(null)
-  const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   
   // 获取用户订阅信息
   useEffect(() => {
     const loadSubscription = async () => {
       if (!user?.id) {
-        setSubscriptionLoading(false)
         return
       }
 
       try {
-        setSubscriptionLoading(true)
         // 优先使用缓存获取订阅信息
         const tier = await edgeCacheClient.getUserSubscription(user.id)
         
@@ -89,7 +83,7 @@ export default function ConfigPanel({
         console.error('[ConfigPanel] 加载订阅信息失败:', error)
         setSubscription(null)
       } finally {
-        setSubscriptionLoading(false)
+        // cleanup
       }
     }
 

@@ -84,8 +84,8 @@ class CacheManager {
       // ThumbnailCache统计
       const thumbnailStats = await thumbnailCacheService.getCacheStats()
       stats.thumbnailCache = {
-        memoryItems: thumbnailStats.memoryItems,
-        dbItems: thumbnailStats.dbItems,
+        memoryItems: (thumbnailStats as any).memoryItems || 0,
+        dbItems: (thumbnailStats as any).dbItems || 0,
         totalSize: this.formatBytes(thumbnailStats.totalSize)
       }
 
@@ -199,8 +199,8 @@ class CacheManager {
   private clearLikesCache(): void {
     try {
       // 假设likesCacheService有清除方法
-      if (typeof likesCacheService.clearAll === 'function') {
-        likesCacheService.clearAll()
+      if (typeof (likesCacheService as any).clearAll === 'function') {
+        ;(likesCacheService as any).clearAll()
       }
       console.log('[CacheManager] 点赞缓存已清除')
     } catch (error) {

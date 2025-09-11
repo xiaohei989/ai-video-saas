@@ -1,4 +1,4 @@
-import React from 'react'
+// import React from 'react' // unused
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -78,7 +78,7 @@ export default function UserCenterPage() {
               {profile?.avatar_url ? (
                 <img 
                   src={profile.avatar_url} 
-                  alt={profile.username}
+                  alt={profile.username || 'User avatar'}
                   className="w-full h-full object-cover"
                 />
               ) : (
