@@ -143,7 +143,7 @@ export default function VideosPageNew() {
             })
             
             // 订阅实时进度更新
-            const unsubscribe = progressManager.subscribe(task.id, (progress) => {
+            progressManager.subscribe(task.id, (progress) => {
               setVideoProgress(prev => {
                 const newMap = new Map(prev)
                 newMap.set(task.id, progress)
@@ -403,10 +403,10 @@ export default function VideosPageNew() {
         await navigator.share({
           title: video.title || 'AI Generated Video',
           text: video.description || 'Check out this AI generated video!',
-          url: shareData.shareUrl
+          url: typeof shareData === 'string' ? shareData : shareData.shareUrl
         })
       } else {
-        await navigator.clipboard.writeText(shareData.shareUrl)
+        await navigator.clipboard.writeText(typeof shareData === 'string' ? shareData : shareData.shareUrl)
         toast.success(t('videos.shareLinkCopied'))
       }
       
@@ -898,7 +898,7 @@ export default function VideosPageNew() {
       <VideoShareModal
         open={videoShareModalOpen}
         onOpenChange={setVideoShareModalOpen}
-        video={selectedShareVideo || { id: '', title: undefined, description: undefined, video_url: undefined, template_id: undefined, metadata: {}, thumbnail_url: undefined }}
+        video={selectedShareVideo || { id: '', title: null, description: null, video_url: null, template_id: null, metadata: {}, thumbnail_url: null }}
       />
 
     </div>

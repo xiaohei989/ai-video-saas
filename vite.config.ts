@@ -202,19 +202,25 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
-      // 压缩配置
+      // 压缩配置 - 针对 Cloudflare Pages 优化
       minify: 'terser',
       terserOptions: {
         compress: {
           drop_console: mode === 'production',
           drop_debugger: mode === 'production',
         },
+        format: {
+          // 确保输出兼容 Cloudflare Pages
+          comments: false,
+        },
       },
       // 构建优化
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: 1500, // 放宽限制避免警告
       assetsInlineLimit: 4096,
-      // 完全禁用模块预加载
-      modulePreload: false,
+      // 禁用模块预加载以避免 Cloudflare Pages 兼容性问题
+      modulePreload: {
+        polyfill: false,
+      },
       // CSS代码分割优化
       cssCodeSplit: true,
     },

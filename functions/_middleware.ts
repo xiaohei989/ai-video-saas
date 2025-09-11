@@ -76,25 +76,24 @@ function setCacheHeaders(headers: Headers, pathname: string) {
 }
 
 function setPerformanceHeaders(headers: Headers, pathname: string) {
-  // 启用Brotli压缩
-  if (pathname.match(/\.(js|css|html|json|xml|txt)$/)) {
-    headers.set('Content-Encoding', 'br');
+  // 设置正确的 Content-Type
+  if (pathname.endsWith('.js')) {
+    headers.set('Content-Type', 'application/javascript; charset=utf-8');
+  } else if (pathname.endsWith('.css')) {
+    headers.set('Content-Type', 'text/css; charset=utf-8');
+  } else if (pathname.endsWith('.json')) {
+    headers.set('Content-Type', 'application/json; charset=utf-8');
+  } else if (pathname.endsWith('.html') || pathname === '/') {
+    headers.set('Content-Type', 'text/html; charset=utf-8');
   }
   
-  // 预加载关键资源
+  // 预加载关键资源 - 使用实际的资源路径
   if (pathname === '/') {
     const preloadLinks = [
-      '</assets/index.css>; rel=preload; as=style',
-      '</assets/index.js>; rel=preload; as=script',
       '<https://fonts.googleapis.com>; rel=preconnect',
       '<https://fonts.gstatic.com>; rel=preconnect; crossorigin'
     ];
     headers.set('Link', preloadLinks.join(', '));
-  }
-  
-  // Early Hints for critical resources
-  if (pathname === '/create-video') {
-    headers.set('Link', '</assets/video-creator.js>; rel=preload; as=script');
   }
 }
 

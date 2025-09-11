@@ -10,11 +10,9 @@ pages_build_output_dir = "build"
 
 # 环境变量配置
 [env.production.vars]
-NODE_ENV = "production"
 VITE_APP_ENV = "production"
 
 [env.preview.vars]
-NODE_ENV = "development"
 VITE_APP_ENV = "preview"
 
 # KV存储绑定（如果需要）
@@ -33,17 +31,6 @@ VITE_APP_ENV = "preview"
 # binding = "VIDEOS"
 # bucket_name = "ai-video-storage"
 
-# 函数配置（如果使用Pages Functions）
-[build]
-command = "npm run build"
-cwd = "./"
-
 # 安全配置
 [placement]
 mode = "smart"
-
-# 路由配置
-[[routes]]
-pattern = "api/*"
-zone_name = "veo3video.me"
-custom_domain = true
