@@ -5,7 +5,8 @@ import { Redis } from 'https://deno.land/x/upstash_redis@v1.31.6/mod.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-requested-with',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, DELETE',
 }
 
 interface SocialCacheRequest {
