@@ -54,6 +54,12 @@
     "weakPassword": "密码强度太弱",
     "signUpSuccess": "注册成功！",
     "signInSuccess": "登录成功！",
+    "loginSuccess": "登录成功！",
+    "redirectingToApp": "正在跳转到应用...",
+    "completingLogin": "正在完成登录",
+    "verifyingCredentials": "正在验证您的身份信息，请稍候...",
+    "redirectingIn3Seconds": "3秒后将跳转到登录页面...",
+    "redirectNow": "立即跳转到登录页面",
     "signUpError": "注册失败",
     "signInError": "登录失败",
     "emailAlreadyExists": "该邮箱已被注册",
@@ -524,7 +530,8 @@
     "packages": {
       "basic": "基础包",
       "pro": "专业包",
-      "premium": "高级包"
+      "premium": "高级包",
+      "enterprise": "企业包"
     },
     "popular": "热门",
     "save": "省{{percent}}%",

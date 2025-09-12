@@ -51,6 +51,12 @@
     "weakPassword": "La contraseña es muy débil",
     "signUpSuccess": "¡Registro exitoso!",
     "signInSuccess": "¡Inicio de sesión exitoso!",
+    "loginSuccess": "¡Inicio de sesión exitoso!",
+    "redirectingToApp": "Redirigiendo a la aplicación...",
+    "completingLogin": "Completando inicio de sesión",
+    "verifyingCredentials": "Por favor espere, verificando sus credenciales...",
+    "redirectingIn3Seconds": "Redirigiendo a la página de inicio de sesión en 3 segundos...",
+    "redirectNow": "Ir a la página de inicio de sesión ahora",
     "signUpError": "Error al registrarse",
     "signInError": "Error al iniciar sesión",
     "emailAlreadyExists": "El correo ya está registrado",
@@ -653,7 +659,8 @@
     "packages": {
       "basic": "Paquete Básico",
       "pro": "Paquete Pro",
-      "premium": "Paquete Premium"
+      "premium": "Paquete Premium",
+      "enterprise": "Paquete Enterprise"
     },
     "popular": "Popular",
     "save": "Ahorra {{percent}}%",

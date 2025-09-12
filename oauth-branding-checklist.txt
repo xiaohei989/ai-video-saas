@@ -1,0 +1,34 @@
+
+✅ OAuth品牌化配置检查清单
+========================
+
+🎨 **品牌素材准备**：
+- [ ] 应用Logo (建议120x120px PNG格式)
+- [ ] 应用名称确定: Veo3Video
+- [ ] 隐私政策页面已创建
+- [ ] 服务条款页面已创建
+
+🔧 **Google OAuth配置**：
+- [ ] 访问Google Cloud Console OAuth同意屏幕
+- [ ] 设置应用名称为: Veo3Video
+- [ ] 上传应用Logo
+- [ ] 配置应用首页链接: https://veo3video.me
+- [ ] 配置隐私政策链接
+- [ ] 配置服务条款链接
+- [ ] 添加授权域名: veo3video.me
+- [ ] 保存配置
+
+🍎 **Apple OAuth配置**：
+- [ ] 访问Apple Developer Console
+- [ ] 确认Service ID描述为: Veo3Video
+- [ ] 验证配置正确
+
+🧪 **测试验证**：
+- [ ] 测试Google OAuth登录
+- [ ] 确认显示品牌名称而非域名
+- [ ] 测试Apple OAuth登录
+- [ ] 确认用户体验良好
+
+🎯 **预期效果**：
+用户在OAuth登录时将看到专业的品牌名称和Logo，
+而不是复杂的技术域名，大大提升用户信任度。

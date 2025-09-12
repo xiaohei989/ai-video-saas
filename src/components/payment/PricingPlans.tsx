@@ -43,7 +43,11 @@ export function PricingPlans({
   })
 
   const handlePlanSelect = async (planId: string) => {
-    if (!user) return
+    if (!user) {
+      // 未登录用户跳转到登录页面
+      window.location.href = `/signin?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
+      return
+    }
     
     setLoadingPlan(planId)
     

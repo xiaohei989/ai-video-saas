@@ -369,9 +369,8 @@ export default function TemplatesPage() {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {paginatedTemplates.map((template: any, index: number) => {
-          // 智能懒加载策略：首屏模板立即加载，其余保持懒加载
-          const isFirstScreen = index < 6 // 前6个模板为首屏
-          const enableLazy = !isFirstScreen // 只有非首屏才启用懒加载
+          // 所有视频都使用懒加载，优先显示缩略图
+          const enableLazy = true // 启用懒加载，静默后台加载视频
           
           return (
           <Card key={template.id} className="overflow-hidden shadow-md flex flex-col">

@@ -51,6 +51,12 @@
     "weakPassword": "كلمة المرور ضعيفة جداً",
     "signUpSuccess": "تم التسجيل بنجاح!",
     "signInSuccess": "تم تسجيل الدخول بنجاح!",
+    "loginSuccess": "تم تسجيل الدخول بنجاح!",
+    "redirectingToApp": "إعادة التوجيه إلى التطبيق...",
+    "completingLogin": "إكمال تسجيل الدخول",
+    "verifyingCredentials": "يرجى الانتظار، جاري التحقق من بيانات الاعتماد...",
+    "redirectingIn3Seconds": "إعادة التوجيه إلى صفحة تسجيل الدخول خلال 3 ثوانٍ...",
+    "redirectNow": "الذهاب إلى صفحة تسجيل الدخول الآن",
     "signUpError": "فشل التسجيل",
     "signInError": "فشل تسجيل الدخول",
     "emailAlreadyExists": "البريد الإلكتروني مسجل مسبقاً",
@@ -403,7 +409,8 @@
     "packages": {
       "basic": "الباقة الأساسية",
       "pro": "الباقة المحترفة",
-      "premium": "الباقة الممتازة"
+      "premium": "الباقة الممتازة",
+      "enterprise": "باقة الشركات"
     },
     "popular": "الأكثر شعبية",
     "save": "وفر {{percent}}%",

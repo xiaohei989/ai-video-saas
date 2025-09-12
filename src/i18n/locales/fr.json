@@ -51,6 +51,12 @@
     "weakPassword": "Mot de passe trop faible",
     "signUpSuccess": "Inscription réussie !",
     "signInSuccess": "Connexion réussie !",
+    "loginSuccess": "Connexion réussie !",
+    "redirectingToApp": "Redirection vers l'application...",
+    "completingLogin": "Finalisation de la connexion",
+    "verifyingCredentials": "Veuillez patienter, vérification de vos informations d'identification...",
+    "redirectingIn3Seconds": "Redirection vers la page de connexion dans 3 secondes...",
+    "redirectNow": "Aller à la page de connexion maintenant",
     "signUpError": "Échec de l'inscription",
     "signInError": "Échec de la connexion",
     "emailAlreadyExists": "E-mail déjà enregistré",
@@ -403,7 +409,8 @@
     "packages": {
       "basic": "Forfait de base",
       "pro": "Forfait Pro",
-      "premium": "Forfait Premium"
+      "premium": "Forfait Premium",
+      "enterprise": "Forfait Entreprise"
     },
     "popular": "Populaire",
     "save": "Économisez {{percent}}%",

@@ -1,0 +1,33 @@
+
+OAuth提供商配置更新清单：
+==========================
+
+✅ Google OAuth Console 更新：
+1. 访问: https://console.cloud.google.com/apis/credentials
+2. 找到您的OAuth 2.0客户端ID
+3. 编辑 "已获授权的重定向URI"
+4. 添加: https://api.veo3video.me/auth/v1/callback
+5. 删除: https://hvkzwrnvxsleeonqqrzq.supabase.co/auth/v1/callback
+6. 保存更改
+
+✅ Apple Developer Console 更新：
+1. 访问: https://developer.apple.com/account/resources/identifiers/list/serviceId
+2. 选择 Service ID: com.veo3video.webapp.web
+3. 编辑 "Sign In with Apple" 配置
+4. 在 "Return URLs" 中：
+   - 添加: https://api.veo3video.me/auth/v1/callback
+   - 删除: https://hvkzwrnvxsleeonqqrzq.supabase.co/auth/v1/callback
+5. 保存更改
+
+✅ Supabase Dashboard 更新：
+1. 访问: https://supabase.com/dashboard/project/hvkzwrnvxsleeonqqrzq/settings/general
+2. 进入 "Custom domains" 部分
+3. 添加自定义域名: api.veo3video.me
+4. 等待SSL证书自动配置完成
+5. 测试域名可访问性
+
+⚠️  注意事项：
+- DNS配置需要时间传播，请在配置完成后等待
+- 建议先在开发环境测试
+- 现有用户可能需要重新登录
+- 保留环境文件备份以便回滚

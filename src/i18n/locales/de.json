@@ -51,6 +51,12 @@
     "weakPassword": "Passwort ist zu schwach",
     "signUpSuccess": "Registrierung erfolgreich!",
     "signInSuccess": "Anmeldung erfolgreich!",
+    "loginSuccess": "Anmeldung erfolgreich!",
+    "redirectingToApp": "Weiterleitung zur Anwendung...",
+    "completingLogin": "Anmeldung wird abgeschlossen",
+    "verifyingCredentials": "Bitte warten, Ihre Anmeldedaten werden überprüft...",
+    "redirectingIn3Seconds": "Weiterleitung zur Anmeldeseite in 3 Sekunden...",
+    "redirectNow": "Jetzt zur Anmeldeseite gehen",
     "signUpError": "Registrierung fehlgeschlagen",
     "signInError": "Anmeldung fehlgeschlagen",
     "emailAlreadyExists": "E-Mail bereits registriert",
@@ -566,7 +572,8 @@
     "packages": {
       "basic": "Basis-Paket",
       "pro": "Pro-Paket",
-      "premium": "Premium-Paket"
+      "premium": "Premium-Paket",
+      "enterprise": "Enterprise-Paket"
     },
     "popular": "Beliebt",
     "save": "{{percent}}% sparen",

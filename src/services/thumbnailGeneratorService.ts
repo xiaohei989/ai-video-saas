@@ -38,9 +38,16 @@ class ThumbnailGeneratorService {
    */
   async checkThumbnailExists(thumbnailPath: string): Promise<boolean> {
     try {
-      const response = await fetch(thumbnailPath, { method: 'HEAD' })
+      const response = await fetch(thumbnailPath, { 
+        method: 'HEAD',
+        signal: AbortSignal.timeout(5000) // 5秒超时
+      })
       return response.ok
-    } catch {
+    } catch (error) {
+      // 静默处理HTTP/2协议错误和网络错误
+      if (import.meta.env.DEV && !(error instanceof Error && error.name === 'AbortError')) {
+        console.warn(`[ThumbnailGenerator] 缩略图检查失败: ${thumbnailPath}`, error)
+      }
       return false
     }
   }

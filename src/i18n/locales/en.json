@@ -54,6 +54,12 @@
     "weakPassword": "Password is too weak",
     "signUpSuccess": "Sign up successful!",
     "signInSuccess": "Sign in successful!",
+    "loginSuccess": "Login Successful!",
+    "redirectingToApp": "Redirecting to application...",
+    "completingLogin": "Completing Login",
+    "verifyingCredentials": "Please wait, verifying your credentials...",
+    "redirectingIn3Seconds": "Redirecting to login page in 3 seconds...",
+    "redirectNow": "Go to login page now",
     "signUpError": "Sign up failed",
     "signInError": "Sign in failed",
     "emailAlreadyExists": "Email already registered",
@@ -530,7 +536,8 @@
     "packages": {
       "basic": "Basic Package",
       "pro": "Pro Package",
-      "premium": "Premium Package"
+      "premium": "Premium Package",
+      "enterprise": "Enterprise Package"
     },
     "popular": "Popular",
     "save": "Save {{percent}}%",

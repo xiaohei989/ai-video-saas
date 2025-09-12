@@ -716,6 +716,14 @@ class EdgeFunctionCacheClient {
       }
     }
   }
+
+  /**
+   * 强制清理所有本地缓存（用于环境变更后的清理）
+   */
+  clearAllLocalCache(): void {
+    this.localCache.clear()
+    console.log('[EDGE CACHE CLIENT] 已清理所有本地缓存')
+  }
 }
 
 // 创建单例实例

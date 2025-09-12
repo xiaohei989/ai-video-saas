@@ -1,0 +1,22 @@
+
+DNS配置要求：
+==============
+
+请在您的域名DNS提供商（如Cloudflare）中添加以下CNAME记录：
+
+类型: CNAME
+名称: api
+值: hvkzwrnvxsleeonqqrzq.supabase.co
+TTL: 300 (或自动)
+
+示例（如果使用Cloudflare）：
+1. 登录Cloudflare Dashboard
+2. 选择域名 veo3video.me
+3. 进入 DNS 设置
+4. 点击 "Add record"
+5. 选择类型: CNAME
+6. 名称: api 
+7. 目标: hvkzwrnvxsleeonqqrzq.supabase.co
+8. 点击保存
+
+配置完成后，请等待DNS传播（通常需要几分钟到几小时）

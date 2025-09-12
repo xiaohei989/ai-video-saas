@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { supabase } from '@/lib/supabase'
 import { Loader2, CheckCircle, AlertTriangle } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { log } from '@/utils/logger'
 
 export default function AuthCallback() {
   const { t } = useTranslation()
@@ -187,14 +188,14 @@ export default function AuthCallback() {
             </AlertDescription>
           </Alert>
           <p className="text-center text-sm text-muted-foreground">
-            3秒后将跳转到登录页面...
+            {t('auth.redirectingIn3Seconds')}
           </p>
           <div className="flex justify-center">
             <button
               onClick={() => navigate('/signin', { replace: true })}
               className="text-sm text-primary hover:underline"
             >
-              立即跳转到登录页面
+{t('auth.redirectNow')}
             </button>
           </div>
         </div>
@@ -208,9 +209,9 @@ export default function AuthCallback() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
           <CheckCircle className="h-12 w-12 mx-auto text-green-500" />
-          <h2 className="text-xl font-semibold text-green-600">登录成功！</h2>
+          <h2 className="text-xl font-semibold text-green-600">{t('auth.loginSuccess')}</h2>
           <p className="text-sm text-muted-foreground">
-            正在跳转到应用...
+            {t('auth.redirectingToApp')}
           </p>
         </div>
       </div>
@@ -222,9 +223,9 @@ export default function AuthCallback() {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center space-y-4">
         <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-        <h2 className="text-lg font-semibold">正在完成登录</h2>
+        <h2 className="text-lg font-semibold">{t('auth.completingLogin')}</h2>
         <p className="text-sm text-muted-foreground">
-          正在验证您的身份信息，请稍候...
+          {t('auth.verifyingCredentials')}
         </p>
       </div>
     </div>

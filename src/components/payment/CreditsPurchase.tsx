@@ -61,7 +61,11 @@ export function CreditsPurchase({
   const [loadingPackage, setLoadingPackage] = useState<string | null>(null)
 
   const handlePurchase = async (pkg: CreditPackage) => {
-    if (!user) return
+    if (!user) {
+      // 未登录用户跳转到登录页面
+      window.location.href = `/signin?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
+      return
+    }
     
     setLoadingPackage(pkg.id)
     
@@ -160,7 +164,7 @@ export function CreditsPurchase({
 
                 {/* 积分数量 */}
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  {t('credits.credits', pkg.credits.toString())}
+                  {t('credits.credits', { count: pkg.credits })}
                 </p>
 
                 {/* 购买按钮 */}
@@ -168,11 +172,11 @@ export function CreditsPurchase({
                   <Button
                     onClick={(e) => {
                       e.stopPropagation()
-                      if (!isLoading && user) {
+                      if (!isLoading) {
                         handlePurchase(pkg)
                       }
                     }}
-                    disabled={isLoading || !user}
+                    disabled={isLoading}
                     variant={pkg.id === 'pro' ? 'default' : 'outline'}
                     className={pkg.id === 'pro' ? 'w-full bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 text-white hover:from-purple-700 hover:via-pink-700 hover:to-orange-700 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 animate-pulse' : 'w-full'}
                     size="lg"

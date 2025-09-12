@@ -187,7 +187,7 @@ export default function SubscriptionManagement({
           <div className="space-y-3">
             <div className="flex justify-between">
               <span>{t('subscription.planDetails.monthlyCredits', { credits: '' }).replace('{{credits}} ', '')}</span>
-              <span className="font-medium">{planDetails.credits.toLocaleString()} {t('credits.credits', planDetails.credits.toString())}</span>
+              <span className="font-medium">{t('credits.credits', { count: planDetails.credits })}</span>
             </div>
             <div className="border-t pt-3">
               <div className="text-sm font-medium mb-2">{t('subscription.status.includedFeatures')}</div>

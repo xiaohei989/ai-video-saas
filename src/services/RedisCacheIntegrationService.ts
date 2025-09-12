@@ -31,6 +31,9 @@ class RedisCacheIntegrationService {
     try {
       console.log('[REDIS CACHE] 🚀 初始化多级缓存服务...')
       
+      // 清理本地缓存，防止URL变更后的缓存问题
+      edgeCacheClient.clearAllLocalCache()
+      
       // 测试Redis连接
       const healthStatus = await edgeCacheClient.getHealthStatus()
       

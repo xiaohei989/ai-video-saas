@@ -54,6 +54,12 @@
     "weakPassword": "パスワードが弱すぎます",
     "signUpSuccess": "サインアップ成功！",
     "signInSuccess": "サインイン成功！",
+    "loginSuccess": "ログイン成功！",
+    "redirectingToApp": "アプリにリダイレクトしています...",
+    "completingLogin": "ログインを完了しています",
+    "verifyingCredentials": "お待ちください、認証情報を確認中です...",
+    "redirectingIn3Seconds": "3秒後にログインページにリダイレクトします...",
+    "redirectNow": "今すぐログインページに移動",
     "signUpError": "サインアップ失敗",
     "signInError": "サインイン失敗",
     "emailAlreadyExists": "メールアドレスは既に登録されています",
@@ -653,7 +659,8 @@
     "packages": {
       "basic": "ベーシックパッケージ",
       "pro": "プロパッケージ",
-      "premium": "プレミアムパッケージ"
+      "premium": "プレミアムパッケージ",
+      "enterprise": "エンタープライズパッケージ"
     },
     "popular": "人気",
     "save": "{{percent}}%お得",

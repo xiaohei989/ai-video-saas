@@ -263,16 +263,19 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
               src={thumbnailSrc}
               alt={alt}
               className={`w-full h-full ${objectFit === 'cover' ? 'object-cover' : 'object-contain'} transition-opacity duration-300`}
+              onError={(e) => {
+                // 静默处理图片加载错误，避免显示broken image
+                const target = e.target as HTMLImageElement;
+                if (target.src !== poster && poster) {
+                  target.src = poster; // 尝试fallback到原始poster
+                } else if (target.src !== '/logo.png') {
+                  target.src = '/logo.png'; // 最后fallback到logo
+                }
+              }}
+              loading="lazy"
             />
             
-            {/* 加载中时显示模糊版本作为背景 */}
-            {lazyState.isLoading && smartThumbnails?.blur && (
-              <img
-                src={smartThumbnails.blur}
-                alt={`${alt} (blur)`}
-                className={`absolute inset-0 w-full h-full ${objectFit === 'cover' ? 'object-cover' : 'object-contain'} opacity-30 transition-opacity duration-500`}
-              />
-            )}
+            {/* 移除加载中的模糊效果，保持界面简洁 */}
           </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center">
@@ -299,7 +302,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
   }
 
   /**
-   * 渲染加载覆盖层
+   * 渲染加载覆盖层 - 简化版本，不显示任何Loading状态
    */
   const renderLoadingContent = () => {
     if (renderLoadingOverlay && lazyState.loadProgress) {
@@ -309,50 +312,12 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
       })
     }
 
-    // 默认加载覆盖层
-    const progress = lazyState.loadProgress
-    
-    return (
-      <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-        <div className="text-center text-white px-4">
-          <Loader2 className="h-12 w-12 animate-spin mx-auto mb-3" />
-          
-          {progress && (
-            <>
-              <div className="text-lg font-semibold mb-2">
-                {Math.round(progress.percentage)}%
-              </div>
-              
-              <div className="w-64 mx-auto mb-2">
-                <Progress 
-                  value={progress.percentage} 
-                  className="h-2"
-                />
-              </div>
-              
-              {progress.speed > 0 && (
-                <div className="text-sm opacity-80">
-                  {progress.speed.toFixed(1)} KB/s
-                  {progress.remainingTime > 0 && (
-                    <span className="ml-2">
-                      {t('common.remaining')} {Math.round(progress.remainingTime)}s
-                    </span>
-                  )}
-                </div>
-              )}
-            </>
-          )}
-          
-          <div className="text-xs opacity-60 mt-2">
-            {t('video.loading')}
-          </div>
-        </div>
-      </div>
-    )
+    // 不显示任何默认加载覆盖层，保持界面简洁
+    return null
   }
 
   /**
-   * 渲染网络状态指示器
+   * 渲染网络状态指示器 - 完全移除
    */
   const renderNetworkIndicator = () => {
     return null
@@ -423,21 +388,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
     <div ref={inViewRef as React.RefObject<HTMLDivElement>} className={cn("relative aspect-video bg-muted", className)}>
       {renderPlaceholderContent()}
       
-      {/* 加载覆盖层 */}
-      {lazyState.isLoading && renderLoadingContent()}
-      
-      {/* 网络状态指示器 */}
-      {renderNetworkIndicator()}
-      
-      {/* 缩略图加载指示器 */}
-      {lazyState.thumbnailLoading && !lazyState.isLoading && (
-        <div className="absolute top-2 left-2 z-10">
-          <div className="bg-black/50 text-white px-2 py-1 rounded-md text-xs flex items-center gap-1">
-            <Loader2 className="h-3 w-3 animate-spin" />
-            {t('video.thumbnail')}
-          </div>
-        </div>
-      )}
+      {/* 移除所有加载指示器，保持界面简洁 */}
     </div>
   )
 }
@@ -524,11 +475,7 @@ export const SimpleLazyVideoPlayer: React.FC<{
         </div>
       )}
       
-      {lazyState.isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-          <Loader2 className="h-8 w-8 animate-spin text-white" />
-        </div>
-      )}
+      {/* 移除加载状态指示器，保持界面简洁 */}
     </div>
   )
 }

@@ -51,6 +51,12 @@
     "weakPassword": "비밀번호가 너무 약합니다",
     "signUpSuccess": "회원가입 성공!",
     "signInSuccess": "로그인 성공!",
+    "loginSuccess": "로그인 성공!",
+    "redirectingToApp": "앱으로 이동 중입니다...",
+    "completingLogin": "로그인을 완료하는 중",
+    "verifyingCredentials": "잠시만 기다려 주세요, 인증 정보를 확인 중입니다...",
+    "redirectingIn3Seconds": "3초 후 로그인 페이지로 이동합니다...",
+    "redirectNow": "지금 로그인 페이지로 이동",
     "signUpError": "회원가입 실패",
     "signInError": "로그인 실패",
     "emailAlreadyExists": "이메일이 이미 등록되어 있습니다",
@@ -647,7 +653,8 @@
     "packages": {
       "basic": "기본 패키지",
       "pro": "프로 패키지",
-      "premium": "프리미엄 패키지"
+      "premium": "프리미엄 패키지",
+      "enterprise": "엔터프라이즈 패키지"
     },
     "popular": "인기",
     "save": "{{percent}}% 절약",

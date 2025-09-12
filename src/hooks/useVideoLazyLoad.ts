@@ -319,7 +319,7 @@ export function useVideoLazyLoad(
     thumbnailPromiseRef.current = null
   }, [cancel])
 
-  // 根据加载策略自动触发加载
+  // 根据加载策略自动触发加载 - 添加延迟避免同时加载过多视频
   useEffect(() => {
     const shouldLoad = (() => {
       switch (loadStrategy) {
@@ -335,9 +335,17 @@ export function useVideoLazyLoad(
     })()
 
     if (shouldLoad && !state.isLoaded && !state.isLoading && !state.hasError) {
-      load().catch(error => {
-        console.error('[LazyLoad] Auto load failed:', error)
-      })
+      // 添加随机延迟(500-1500ms)来避免同时加载多个视频
+      const delay = 500 + Math.random() * 1000
+      const timer = setTimeout(() => {
+        if (!state.isLoaded && !state.isLoading && !state.hasError) {
+          load().catch(error => {
+            console.error('[LazyLoad] Auto load failed:', error)
+          })
+        }
+      }, delay)
+
+      return () => clearTimeout(timer)
     }
   }, [loadStrategy, state.isVisible, state.hasInteracted, state.isLoaded, state.isLoading, state.hasError, load])
 

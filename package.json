@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "build:cloudflare": "cp .env.cloudflare .env.local && npm run build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
@@ -17,7 +17,10 @@
     "stripe:deploy-prod": "node scripts/deploy-stripe-env.js production",
     "stripe:deploy-status": "node scripts/deploy-stripe-env.js status",
     "cf:deploy": "wrangler pages publish build",
-    "cf:dev": "wrangler pages dev build"
+    "cf:dev": "wrangler pages dev build",
+    "oauth:update-domain": "node scripts/update-oauth-domain.js",
+    "oauth:test-domain": "node scripts/test-custom-domain.js",
+    "oauth:setup-branding": "node scripts/setup-oauth-branding.js"
   },
   "keywords": [],
   "author": "",
