@@ -498,8 +498,9 @@ export default function TemplatesPage() {
             totalItems={totalItems}
             onPageChange={handlePageChange}
             onPageSizeChange={handlePageSizeChange}
-            showPageSizeSelector={true}
+            showPageSizeSelector={false}
             pageSizeOptions={[9, 12, 18, 24]}
+            showInfo={false}
           />
         </div>
       )}

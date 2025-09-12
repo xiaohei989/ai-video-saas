@@ -96,6 +96,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
 }) => {
   const { t } = useTranslation()
   const [hasUserInteraction, setHasUserInteraction] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
   
   // 智能缩略图状态
   const [smartThumbnails, setSmartThumbnails] = useState<{ normal: string; blur: string } | null>(null)
@@ -302,7 +303,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
   }
 
   /**
-   * 渲染加载覆盖层 - 简化版本，不显示任何Loading状态
+   * 渲染加载覆盖层 - 只在悬浮状态显示转圈动画
    */
   const renderLoadingContent = () => {
     if (renderLoadingOverlay && lazyState.loadProgress) {
@@ -312,7 +313,18 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
       })
     }
 
-    // 不显示任何默认加载覆盖层，保持界面简洁
+    // 非悬浮状态：不显示任何加载信息
+    if (!isHovered) return null
+    
+    // 悬浮状态且正在加载：显示转圈动画
+    if (lazyState.isLoading) {
+      return (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+          <Loader2 className="h-8 w-8 text-white animate-spin" />
+        </div>
+      )
+    }
+    
     return null
   }
 
@@ -326,7 +338,12 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
   // 如果视频已加载，显示实际的VideoPlayer
   if (lazyState.isLoaded && !lazyState.hasError) {
     return (
-      <div ref={inViewRef as React.RefObject<HTMLDivElement>} className={cn("relative", className)}>
+      <div 
+        ref={inViewRef as React.RefObject<HTMLDivElement>} 
+        className={cn("relative", className)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <VideoPlayer
           src={src}
           poster={poster || lazyState.thumbnail || undefined}
@@ -358,7 +375,12 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
        lazyState.error.includes('HEAD request failed'))) {
     console.log('[LazyVideoPlayer] Network error detected, falling back to standard VideoPlayer:', lazyState.error)
     return (
-      <div ref={inViewRef as React.RefObject<HTMLDivElement>} className={cn("relative", className)}>
+      <div 
+        ref={inViewRef as React.RefObject<HTMLDivElement>} 
+        className={cn("relative", className)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <VideoPlayer
           src={src}
           poster={poster}
@@ -385,10 +407,14 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
 
   // 显示占位符或加载状态
   return (
-    <div ref={inViewRef as React.RefObject<HTMLDivElement>} className={cn("relative aspect-video bg-muted", className)}>
+    <div 
+      ref={inViewRef as React.RefObject<HTMLDivElement>} 
+      className={cn("relative aspect-video bg-muted", className)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {renderPlaceholderContent()}
-      
-      {/* 移除所有加载指示器，保持界面简洁 */}
+      {renderLoadingContent()}
     </div>
   )
 }
