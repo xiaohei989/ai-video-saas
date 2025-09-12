@@ -43,6 +43,9 @@ serve(async (req) => {
     const envInfo = getEdgeStripeEnvironmentInfo()
     console.log(`[CHECKOUT] 🔧 运行环境: ${envInfo.environment}`)
 
+    const requestBody = await req.json()
+    console.log(`[CHECKOUT] 📝 请求参数:`, JSON.stringify(requestBody, null, 2))
+    
     const { 
       priceId, 
       amount,
@@ -54,7 +57,27 @@ serve(async (req) => {
       cancelUrl, 
       mode = 'subscription',
       type = 'subscription'
-    } = await req.json()
+    } = requestBody
+    
+    // 验证必要参数
+    if (!priceId) {
+      console.error('[CHECKOUT] ❌ 缺少 priceId 参数')
+      throw new Error('Missing required parameter: priceId')
+    }
+    if (!userId) {
+      console.error('[CHECKOUT] ❌ 缺少 userId 参数')
+      throw new Error('Missing required parameter: userId')
+    }
+    if (!successUrl) {
+      console.error('[CHECKOUT] ❌ 缺少 successUrl 参数')
+      throw new Error('Missing required parameter: successUrl')
+    }
+    if (!cancelUrl) {
+      console.error('[CHECKOUT] ❌ 缺少 cancelUrl 参数')
+      throw new Error('Missing required parameter: cancelUrl')
+    }
+    
+    console.log(`[CHECKOUT] ✅ 参数验证通过: priceId=${priceId}, userId=${userId}, mode=${mode}`)
 
     // 获取或创建Stripe客户
     let customer
@@ -148,9 +171,16 @@ serve(async (req) => {
       },
     )
   } catch (error) {
-    console.error('Error:', error)
+    console.error('[CHECKOUT] ❌ 发生错误:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    })
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        details: `Checkout session creation failed: ${error.message}`
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,

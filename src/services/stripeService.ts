@@ -240,6 +240,17 @@ class StripeService {
         stripePriceId: plan.stripePriceId
       })
 
+      // 检查stripePriceId是否为空
+      if (!plan.stripePriceId) {
+        console.error(`❌ stripePriceId is empty for plan: ${plan.id}`)
+        console.log(`Available price IDs:`, {
+          basic: getStripePriceId('basic'),
+          pro: getStripePriceId('pro'),
+          enterprise: getStripePriceId('enterprise')
+        })
+        throw new Error(`Missing Stripe price ID for plan: ${plan.id}`)
+      }
+
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: {
           priceId: plan.stripePriceId,
