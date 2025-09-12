@@ -6,17 +6,22 @@
   "description": "Touch an illustration in a book to bring it to life with spectacular magical effects",
   "previewUrl": "/templates/videos/finger-touch-activation.mp4",
   "credits": 10,
-
-  "tags": ["magic", "book", "touch", "activation", "3D", "transformation", "interactive"],
+  "tags": [
+    "magic",
+    "book",
+    "touch",
+    "activation",
+    "3D",
+    "transformation",
+    "interactive"
+  ],
   "createdAt": "2025-01-30T16:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-30T16:00:00Z",
-
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
     "aspect_ratio": "16:9",
-    
     "visual_core": {
       "description": "{visual_description}",
       "style": "{style}",
@@ -24,7 +29,6 @@
       "lighting": "{lighting_description}",
       "environment": "{environment_setting}"
     },
-    
     "elements": [
       "{book_type} book with {page_detail}",
       "human finger approaching illustration",
@@ -32,13 +36,11 @@
       "{subject_3d_description}",
       "{environment_interaction}"
     ],
-    
     "audio": {
       "sfx": "{primary_sfx}, {secondary_sfx}, {transformation_sfx}",
       "ambience": "{ambient_start} breaking into {ambient_peak}",
       "music": "magical, cinematic score with {music_accent}"
     },
-    
     "timeline": [
       {
         "time": "0-2s",
@@ -59,13 +61,11 @@
         "audio": "{finale_audio}"
       }
     ],
-    
     "cta": {
       "motion": "{final_freeze}",
       "text": "",
       "style": "{text_style}"
     },
-    
     "keywords": [
       "hyper-realistic",
       "book magic",
@@ -76,7 +76,6 @@
       "magical realism"
     ]
   },
-
   "params": {
     "subject": {
       "type": "select",
@@ -494,41 +493,152 @@
         }
       ]
     },
-    
-
-    "visual_description": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "style": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "camera_movement": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "lighting_description": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "environment_setting": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "subject_keyword": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "book_type": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "page_detail": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "activation_particles": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "subject_3d_description": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "environment_interaction": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "primary_sfx": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "secondary_sfx": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "transformation_sfx": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "ambient_start": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "ambient_peak": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "music_accent": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "opening_action": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "opening_camera": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "opening_audio": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "transformation_action": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "transformation_camera": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "transformation_audio": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "finale_action": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "finale_camera": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "finale_audio": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "final_freeze": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    "text_style": {"type": "hidden", "linkedTo": "subject", "linkType": "metadata"},
-    
+    "visual_description": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "style": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "camera_movement": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "lighting_description": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "environment_setting": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "subject_keyword": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "book_type": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "page_detail": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "activation_particles": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "subject_3d_description": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "environment_interaction": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "primary_sfx": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "secondary_sfx": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "transformation_sfx": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "ambient_start": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "ambient_peak": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "music_accent": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "opening_action": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "opening_camera": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "opening_audio": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "transformation_action": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "transformation_camera": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "transformation_audio": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "finale_action": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "finale_camera": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "finale_audio": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "final_freeze": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
+    "text_style": {
+      "type": "hidden",
+      "linkedTo": "subject",
+      "linkType": "metadata"
+    },
     "makePublic": {
       "type": "toggle",
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/finger-touch-activation-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/finger-touch-activation-thumbnail-blur.jpg"
 }

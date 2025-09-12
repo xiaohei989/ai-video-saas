@@ -23,9 +23,17 @@ const GoogleIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
+// Apple 图标组件
+const AppleIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
+  </svg>
+)
+
+
 export default function SignUpForm() {
   const { t } = useTranslation()
-  const { signUp, signInWithGoogle, loading } = useAuth()
+  const { signUp, signInWithGoogle, signInWithApple, loading } = useAuth()
   const [searchParams] = useSearchParams()
   const { trackSignUp, trackEvent } = useAnalytics()
 
@@ -285,6 +293,33 @@ export default function SignUpForm() {
     }
   }
 
+  const handleAppleSignUp = async () => {
+    try {
+      setIsSubmitting(true)
+      await signInWithApple()
+      
+      // 跟踪Apple注册成功事件
+      trackSignUp('apple')
+    } catch (err: any) {
+      console.error('Apple sign up error:', err)
+      alert(t('auth.appleSignUpError') + ': ' + err.message)
+      
+      // 跟踪注册失败事件
+      trackEvent({
+        action: 'sign_up_failed',
+        category: 'user_engagement',
+        label: 'apple',
+        custom_parameters: {
+          error_type: 'apple_auth_error',
+          method: 'apple'
+        }
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
@@ -319,21 +354,41 @@ export default function SignUpForm() {
       </CardHeader>
       
       <CardContent className="space-y-4">
-        {/* Google OAuth 按钮 */}
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={handleGoogleSignUp}
-          disabled={isSubmitting || loading}
-        >
-          {isSubmitting ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <GoogleIcon className="mr-2 h-4 w-4" />
-          )}
-          {t('auth.signUpWithGoogle')}
-        </Button>
+        {/* OAuth 按钮组 */}
+        <div className="space-y-3">
+          {/* Google OAuth 按钮 */}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full transition-colors duration-200"
+            onClick={handleGoogleSignUp}
+            disabled={isSubmitting || loading}
+          >
+            {isSubmitting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <GoogleIcon className="mr-2 h-4 w-4" />
+            )}
+            {t('auth.signUpWithGoogle')}
+          </Button>
+
+          {/* Apple OAuth 按钮 */}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full bg-black text-white hover:bg-gray-800 hover:text-white border-black transition-colors duration-200"
+            onClick={handleAppleSignUp}
+            disabled={isSubmitting || loading}
+          >
+            {isSubmitting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <AppleIcon className="mr-2 h-4 w-4" />
+            )}
+            {t('auth.signUpWithApple')}
+          </Button>
+
+        </div>
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
@@ -341,7 +396,7 @@ export default function SignUpForm() {
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">
-              {t('auth.orContinueWith')}
+              {t('auth.orContinueWithEmail')}
             </span>
           </div>
         </div>
@@ -391,7 +446,7 @@ export default function SignUpForm() {
                 placeholder={t('auth.emailPlaceholder')}
                 value={email}
                 onChange={(e) => handleEmailChange(e.target.value)}
-                disabled={isSubmitting || loading || securityBlocked !== null}
+                disabled={isSubmitting || loading}
                 className="pl-10"
                 required
               />

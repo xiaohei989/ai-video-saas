@@ -6,17 +6,22 @@
   "description": "An ancient spellbook summons legendary creatures through elemental magic",
   "previewUrl": "/templates/videos/magical-creature-summon.mp4",
   "credits": 12,
-  
-  "tags": ["magic", "fantasy", "creature", "book", "summoning", "epic", "elemental"],
+  "tags": [
+    "magic",
+    "fantasy",
+    "creature",
+    "book",
+    "summoning",
+    "epic",
+    "elemental"
+  ],
   "createdAt": "2025-01-30T14:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-30T14:00:00Z",
-  
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
     "aspect_ratio": "16:9",
-    
     "visual_core": {
       "description": "{visual_description}",
       "style": "{style}",
@@ -24,20 +29,17 @@
       "lighting": "{lighting_description}",
       "environment": "{environment_setting}"
     },
-    
     "elements": [
       "ancient book with yellowed pages",
       "{element_particles} floating upward",
       "{creature_adjective} {creature_type} materializing from {element}",
       "{environment_effects}"
     ],
-    
     "audio": {
       "sfx": "{primary_sfx}, {secondary_sfx}, {creature_sound}",
       "ambience": "{ambient_start} breaking into {ambient_peak}",
       "music": "rising orchestral score with {music_accent}"
     },
-    
     "timeline": [
       {
         "time": "0-2s",
@@ -58,13 +60,11 @@
         "audio": "{finale_audio}"
       }
     ],
-    
     "cta": {
       "motion": "{final_freeze}",
       "text": "{cta_text}",
       "style": "{text_style}"
     },
-    
     "keywords": [
       "hyper-realistic",
       "cinematic fantasy",
@@ -75,7 +75,6 @@
       "magical realism"
     ]
   },
-
   "params": {
     "creature_type": {
       "type": "select",
@@ -533,7 +532,6 @@
         }
       ]
     },
-    
     "cta_text": {
       "type": "text",
       "label": "Ending Text",
@@ -541,38 +539,142 @@
       "required": true,
       "default": "veo3video.me"
     },
-
-    "visual_description": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "style": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "camera_movement": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "lighting_description": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "environment_setting": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "creature_adjective": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "element": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "element_particles": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "environment_effects": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "primary_sfx": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "secondary_sfx": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "creature_sound": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "ambient_start": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "ambient_peak": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "music_accent": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "opening_action": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "opening_camera": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "opening_audio": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "transformation_action": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "transformation_camera": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "transformation_audio": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "finale_action": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "finale_camera": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "finale_audio": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "final_freeze": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    "text_style": {"type": "hidden", "linkedTo": "creature_type", "linkType": "metadata"},
-    
+    "visual_description": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "style": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "camera_movement": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "lighting_description": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "environment_setting": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "creature_adjective": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "element": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "element_particles": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "environment_effects": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "primary_sfx": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "secondary_sfx": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "creature_sound": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "ambient_start": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "ambient_peak": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "music_accent": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "opening_action": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "opening_camera": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "opening_audio": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "transformation_action": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "transformation_camera": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "transformation_audio": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "finale_action": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "finale_camera": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "finale_audio": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "final_freeze": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
+    "text_style": {
+      "type": "hidden",
+      "linkedTo": "creature_type",
+      "linkType": "metadata"
+    },
     "makePublic": {
       "type": "toggle",
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/magical-creature-summon-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/magical-creature-summon-thumbnail-blur.jpg"
 }

@@ -38,12 +38,12 @@ function setSecurityHeaders(headers: Headers) {
   // Content Security Policy
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.googletagmanager.com",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: blob: https: http:",
+    "img-src 'self' data: blob: https: http: https://www.google-analytics.com https://ssl.google-analytics.com",
     "media-src 'self' blob: https: http:",
-    "connect-src 'self' https://*.supabase.co https://api.stripe.com https://api.qingyuntop.top https://api.apicore.ai",
+    "connect-src 'self' https://*.supabase.co https://api.stripe.com https://api.qingyuntop.top https://api.apicore.ai https://www.google-analytics.com https://ssl.google-analytics.com https://region1.google-analytics.com https://region1.analytics.google.com https://analytics.google.com https://stats.g.doubleclick.net https://flagcdn.com https://flagpedia.net",
     "frame-src https://js.stripe.com",
     "worker-src 'self' blob:"
   ].join('; ');

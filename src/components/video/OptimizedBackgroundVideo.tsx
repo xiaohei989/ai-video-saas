@@ -14,6 +14,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { BatteryLow } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { multiLevelCache, CACHE_PREFIX } from '@/services/MultiLevelCacheService'
+import { thumbnailGenerator } from '@/services/thumbnailGeneratorService'
 // import { smartPreloadService } from '@/services/SmartVideoPreloadService' // 暂时未使用
 
 export interface VideoSource {
@@ -49,6 +50,9 @@ export interface OptimizedBackgroundVideoProps {
   enableGradient?: boolean
   enableBlur?: boolean // 加载时模糊效果
   transitionDuration?: number // 过渡动画时长（毫秒）
+  
+  // 缩略图配置
+  autoGenerateThumbnail?: boolean // 自动生成缩略图
   
   // 回调
   onQualityChange?: (quality: string) => void
@@ -108,6 +112,7 @@ export default function OptimizedBackgroundVideo({
   enableGradient = true,
   enableBlur = true,
   transitionDuration = 1000,
+  autoGenerateThumbnail = false,
   onQualityChange,
   onPerformanceIssue,
   className
@@ -129,6 +134,9 @@ export default function OptimizedBackgroundVideo({
   // 设备能力
   const deviceCapabilities = useMemo(() => detectDeviceCapabilities(), [])
   const [batteryStatus, setBatteryStatus] = useState<{ level: number; charging: boolean } | null>(null)
+  
+  // 动态缩略图
+  const [dynamicThumbnails, setDynamicThumbnails] = useState<{ normal: string; blur: string } | null>(null)
   
   // 性能监控
   const performanceMonitor = useRef({
@@ -206,6 +214,68 @@ export default function OptimizedBackgroundVideo({
     
     return fallbackSource
   }, [sources, deviceCapabilities, enableAdaptive, enableBatteryOptimization, enableMemoryOptimization, onQualityChange, onPerformanceIssue])
+
+  /**
+   * 获取最佳缩略图
+   */
+  const getBestThumbnails = useCallback(async (videoSrc: string) => {
+    try {
+      const thumbnails = await thumbnailGenerator.getBestThumbnail(videoSrc, fallbackImage)
+      setDynamicThumbnails(thumbnails)
+      
+      // 预加载缩略图
+      if (thumbnails.normal !== fallbackImage) {
+        await thumbnailGenerator.preloadThumbnails([thumbnails.normal, thumbnails.blur])
+        if (import.meta.env.DEV) {
+          console.log('[OptimizedBG] 🖼️ 缩略图预加载完成')
+        }
+      }
+      
+      return thumbnails
+    } catch (error) {
+      console.warn('[OptimizedBG] 缩略图获取失败:', error)
+      return { normal: fallbackImage, blur: fallbackBlurImage || fallbackImage }
+    }
+  }, [fallbackImage, fallbackBlurImage])
+
+  /**
+   * 生成视频缩略图（客户端）
+   */
+  const generateVideoThumbnail = useCallback(async (video: HTMLVideoElement) => {
+    if (!autoGenerateThumbnail) return null
+    
+    try {
+      // 等待视频元数据加载
+      if (video.readyState < 1) {
+        await new Promise((resolve) => {
+          video.addEventListener('loadedmetadata', resolve, { once: true })
+        })
+      }
+      
+      // 跳到第2秒生成缩略图
+      video.currentTime = Math.min(2, video.duration * 0.1)
+      
+      await new Promise((resolve) => {
+        video.addEventListener('seeked', resolve, { once: true })
+      })
+      
+      const thumbnails = await thumbnailGenerator.generateThumbnailFromVideo(video, {
+        blurRadius: 20,
+        quality: 2
+      })
+      
+      setDynamicThumbnails(thumbnails)
+      
+      if (import.meta.env.DEV) {
+        console.log('[OptimizedBG] 🎬 动态缩略图生成完成')
+      }
+      
+      return thumbnails
+    } catch (error) {
+      console.warn('[OptimizedBG] 动态缩略图生成失败:', error)
+      return null
+    }
+  }, [autoGenerateThumbnail])
 
   /**
    * 渐进式加载视频
@@ -353,14 +423,23 @@ export default function OptimizedBackgroundVideo({
       const source = await selectBestSource()
       if (source) {
         setCurrentSource(source)
-        await loadVideoProgressive(source)
+        
+        // 同时加载缩略图和视频
+        const [thumbnails] = await Promise.allSettled([
+          getBestThumbnails(source.src),
+          loadVideoProgressive(source)
+        ])
+        
+        if (thumbnails.status === 'fulfilled' && import.meta.env.DEV) {
+          console.log('[OptimizedBG] 🎯 缩略图和视频加载完成')
+        }
       }
       
       setIsLoading(false)
     }
     
     init()
-  }, [selectBestSource, loadVideoProgressive])
+  }, [selectBestSource, loadVideoProgressive, getBestThumbnails])
 
   // 性能监控
   useEffect(() => {
@@ -421,8 +500,10 @@ export default function OptimizedBackgroundVideo({
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url(${enableBlur && fallbackBlurImage ? fallbackBlurImage : fallbackImage})`,
-            filter: enableBlur && !fallbackBlurImage ? 'blur(8px)' : undefined,
+            backgroundImage: `url(${enableBlur ? 
+              (dynamicThumbnails?.blur || fallbackBlurImage || fallbackImage) : 
+              (dynamicThumbnails?.normal || fallbackImage)})`,
+            filter: enableBlur && !dynamicThumbnails?.blur && !fallbackBlurImage ? 'blur(8px)' : undefined,
             transform: 'scale(1.1)' // 补偿模糊边缘
           }}
         />
@@ -466,8 +547,8 @@ export default function OptimizedBackgroundVideo({
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url(${fallbackBlurImage || fallbackImage})`,
-            filter: !fallbackBlurImage ? 'blur(20px)' : undefined,
+            backgroundImage: `url(${dynamicThumbnails?.blur || fallbackBlurImage || fallbackImage})`,
+            filter: !dynamicThumbnails?.blur && !fallbackBlurImage ? 'blur(20px)' : undefined,
             transform: 'scale(1.1)',
             transition: `opacity ${transitionDuration}ms ease-out`,
             opacity: isLoading ? 1 : 0
@@ -497,6 +578,11 @@ export default function OptimizedBackgroundVideo({
           setIsLoading(false)
           if (autoPlay && videoRef.current) {
             videoRef.current.play().catch(console.error)
+            
+            // 尝试生成动态缩略图（不阻塞主流程）
+            if (!dynamicThumbnails && autoGenerateThumbnail && videoRef.current) {
+              generateVideoThumbnail(videoRef.current).catch(console.warn)
+            }
           }
         }}
         onError={() => {

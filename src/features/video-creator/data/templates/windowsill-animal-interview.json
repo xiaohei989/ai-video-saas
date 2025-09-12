@@ -5,13 +5,20 @@
   "icon": "🎤",
   "description": "Photorealistic animal interview on windowsill with human-like gestures and voice responses",
   "previewUrl": "/templates/videos/windowsill-animal-interview.mp4",
-
-  "tags": ["interview", "animals", "windowsill", "gestures", "photorealistic", "surreal", "comedy", "home"],
+  "tags": [
+    "interview",
+    "animals",
+    "windowsill",
+    "gestures",
+    "photorealistic",
+    "surreal",
+    "comedy",
+    "home"
+  ],
   "createdAt": "2025-01-29T20:30:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-29T20:30:00Z",
   "promptTemplate": "A realistic {animal} sitting on a windowsill, calmly gazing outside. Quiet home interior with natural daylight pouring through a window, sheer curtains gently swaying. A reporter appears next to the window with a microphone and asks, 'What should people do after watching this video?' The {animal} turns to the camera, raises one paw — now anatomically adjusted to form a perfect human-like {gesture} — and confidently says in English, 'Like it.' Photorealistic with light surreal enhancement — real fur, lighting, and movement, but the paw forms a clearly defined gesture like a human hand. Camera starts with a mid-shot over the reporter's shoulder, cuts to a tight front-facing close-up of the {animal}'s gesture and face, ends with a slow zoom-out for comedic timing. Peaceful and homey atmosphere with whimsical twist, using soft color tones and warm light.",
-
   "params": {
     "animal": {
       "type": "select",
@@ -19,14 +26,38 @@
       "required": true,
       "default": "cat",
       "options": [
-        { "value": "cat", "label": "Cat 🐱" },
-        { "value": "dog", "label": "Dog 🐶" },
-        { "value": "rabbit", "label": "Rabbit 🐰" },
-        { "value": "hedgehog", "label": "Hedgehog 🦔" },
-        { "value": "squirrel", "label": "Squirrel 🐿️" },
-        { "value": "small bird", "label": "Small Bird 🐦" },
-        { "value": "ferret", "label": "Ferret 🐾" },
-        { "value": "hamster", "label": "Hamster 🐹" }
+        {
+          "value": "cat",
+          "label": "Cat 🐱"
+        },
+        {
+          "value": "dog",
+          "label": "Dog 🐶"
+        },
+        {
+          "value": "rabbit",
+          "label": "Rabbit 🐰"
+        },
+        {
+          "value": "hedgehog",
+          "label": "Hedgehog 🦔"
+        },
+        {
+          "value": "squirrel",
+          "label": "Squirrel 🐿️"
+        },
+        {
+          "value": "small bird",
+          "label": "Small Bird 🐦"
+        },
+        {
+          "value": "ferret",
+          "label": "Ferret 🐾"
+        },
+        {
+          "value": "hamster",
+          "label": "Hamster 🐹"
+        }
       ]
     },
     "gesture": {
@@ -35,14 +66,38 @@
       "required": true,
       "default": "thumbs-up gesture",
       "options": [
-        { "value": "thumbs-up gesture", "label": "Thumbs Up 👍" },
-        { "value": "thumbs-down gesture", "label": "Thumbs Down 👎" },
-        { "value": "peace sign", "label": "Peace Sign ✌️" },
-        { "value": "waving gesture", "label": "Waving 👋" },
-        { "value": "rock horns", "label": "Rock Horns 🤘" },
-        { "value": "OK sign", "label": "OK Sign 👌" },
-        { "value": "vulcan salute", "label": "Vulcan Salute 🖖" },
-        { "value": "stop gesture", "label": "Stop Gesture 🤚" }
+        {
+          "value": "thumbs-up gesture",
+          "label": "Thumbs Up 👍"
+        },
+        {
+          "value": "thumbs-down gesture",
+          "label": "Thumbs Down 👎"
+        },
+        {
+          "value": "peace sign",
+          "label": "Peace Sign ✌️"
+        },
+        {
+          "value": "waving gesture",
+          "label": "Waving 👋"
+        },
+        {
+          "value": "rock horns",
+          "label": "Rock Horns 🤘"
+        },
+        {
+          "value": "OK sign",
+          "label": "OK Sign 👌"
+        },
+        {
+          "value": "vulcan salute",
+          "label": "Vulcan Salute 🖖"
+        },
+        {
+          "value": "stop gesture",
+          "label": "Stop Gesture 🤚"
+        }
       ]
     },
     "makePublic": {
@@ -50,5 +105,7 @@
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/windowsill-animal-interview-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/windowsill-animal-interview-thumbnail-blur.jpg"
 }

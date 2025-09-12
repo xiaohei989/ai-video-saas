@@ -5,13 +5,19 @@
   "icon": "📹",
   "description": "Security camera footage with timestamp display of various animal groups bouncing on trampolines in night vision",
   "previewUrl": "/templates/videos/surveillance-animal-trampoline.mp4",
-
-  "tags": ["surveillance", "animals", "trampoline", "night-vision", "security-camera", "backyard", "timestamp"],
+  "tags": [
+    "surveillance",
+    "animals",
+    "trampoline",
+    "night-vision",
+    "security-camera",
+    "backyard",
+    "timestamp"
+  ],
   "createdAt": "2025-01-29T17:30:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-29T17:30:00Z",
   "promptTemplate": "A group of {animal_count} {animal} bounce energetically on a large round trampoline placed on grass in a backyard at night. Captured from a fixed, top-down high-angle surveillance camera, grainy black-and-white night vision footage with {timestamp_display} displayed in the corner, visible noise, slight motion blur, and low-light exposure, medium-long shot. The background features a wooden fence and shadowy trees.",
-
   "params": {
     "animal": {
       "type": "select",
@@ -19,19 +25,58 @@
       "required": true,
       "default": "pandas",
       "options": [
-        { "value": "pandas", "label": "Pandas 🐼" },
-        { "value": "bear cubs", "label": "Bear Cubs 🐻" },
-        { "value": "raccoons", "label": "Raccoons 🦝" },
-        { "value": "puppies", "label": "Puppies 🐶" },
-        { "value": "kittens", "label": "Kittens 🐱" },
-        { "value": "rabbits", "label": "Rabbits 🐰" },
-        { "value": "piglets", "label": "Piglets 🐷" },
-        { "value": "lambs", "label": "Lambs 🐑" },
-        { "value": "ducklings", "label": "Ducklings 🐥" },
-        { "value": "foxes", "label": "Foxes 🦊" },
-        { "value": "hedgehogs", "label": "Hedgehogs 🦔" },
-        { "value": "squirrels", "label": "Squirrels 🐿️" },
-        { "value": "penguins", "label": "Penguins 🐧" }
+        {
+          "value": "pandas",
+          "label": "Pandas 🐼"
+        },
+        {
+          "value": "bear cubs",
+          "label": "Bear Cubs 🐻"
+        },
+        {
+          "value": "raccoons",
+          "label": "Raccoons 🦝"
+        },
+        {
+          "value": "puppies",
+          "label": "Puppies 🐶"
+        },
+        {
+          "value": "kittens",
+          "label": "Kittens 🐱"
+        },
+        {
+          "value": "rabbits",
+          "label": "Rabbits 🐰"
+        },
+        {
+          "value": "piglets",
+          "label": "Piglets 🐷"
+        },
+        {
+          "value": "lambs",
+          "label": "Lambs 🐑"
+        },
+        {
+          "value": "ducklings",
+          "label": "Ducklings 🐥"
+        },
+        {
+          "value": "foxes",
+          "label": "Foxes 🦊"
+        },
+        {
+          "value": "hedgehogs",
+          "label": "Hedgehogs 🦔"
+        },
+        {
+          "value": "squirrels",
+          "label": "Squirrels 🐿️"
+        },
+        {
+          "value": "penguins",
+          "label": "Penguins 🐧"
+        }
       ]
     },
     "animal_count": {
@@ -40,12 +85,30 @@
       "required": true,
       "default": "4-5",
       "options": [
-        { "value": "2-3", "label": "Small Family (2-3)" },
-        { "value": "4-5", "label": "Active Group (4-5)" },
-        { "value": "6-8", "label": "Medium Pack (6-8)" },
-        { "value": "8-10", "label": "Large Family (8-10)" },
-        { "value": "10-15", "label": "Party Group (10-15)" },
-        { "value": "15+", "label": "Super Gathering (15+)" }
+        {
+          "value": "2-3",
+          "label": "Small Family (2-3)"
+        },
+        {
+          "value": "4-5",
+          "label": "Active Group (4-5)"
+        },
+        {
+          "value": "6-8",
+          "label": "Medium Pack (6-8)"
+        },
+        {
+          "value": "8-10",
+          "label": "Large Family (8-10)"
+        },
+        {
+          "value": "10-15",
+          "label": "Party Group (10-15)"
+        },
+        {
+          "value": "15+",
+          "label": "Super Gathering (15+)"
+        }
       ]
     },
     "timestamp_display": {
@@ -54,14 +117,38 @@
       "required": true,
       "default": "2024-01-29 23:47:15",
       "options": [
-        { "value": "2024-01-29 23:47:15", "label": "Standard Format" },
-        { "value": "29/01/2024 23:47:15", "label": "European Format" },
-        { "value": "01-29-2024 11:47:15 PM", "label": "US Format" },
-        { "value": "CAM-01 2024-01-29 23:47:15", "label": "Camera ID Style" },
-        { "value": "BACKYARD-CAM 01-29 23:47:15", "label": "Location Style" },
-        { "value": "REC ● 2024-01-29 23:47:15", "label": "Recording Style" },
-        { "value": "2024-01-29 01:15:28", "label": "Late Night Time" },
-        { "value": "2024-01-29 03:22:51", "label": "Early Morning Time" }
+        {
+          "value": "2024-01-29 23:47:15",
+          "label": "Standard Format"
+        },
+        {
+          "value": "29/01/2024 23:47:15",
+          "label": "European Format"
+        },
+        {
+          "value": "01-29-2024 11:47:15 PM",
+          "label": "US Format"
+        },
+        {
+          "value": "CAM-01 2024-01-29 23:47:15",
+          "label": "Camera ID Style"
+        },
+        {
+          "value": "BACKYARD-CAM 01-29 23:47:15",
+          "label": "Location Style"
+        },
+        {
+          "value": "REC ● 2024-01-29 23:47:15",
+          "label": "Recording Style"
+        },
+        {
+          "value": "2024-01-29 01:15:28",
+          "label": "Late Night Time"
+        },
+        {
+          "value": "2024-01-29 03:22:51",
+          "label": "Early Morning Time"
+        }
       ]
     },
     "makePublic": {
@@ -69,5 +156,7 @@
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/surveillance-animal-trampoline-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/surveillance-animal-trampoline-thumbnail-blur.jpg"
 }

@@ -5,13 +5,20 @@
   "icon": "😰",
   "description": "Cinematic close-up of a worried baby expressing various adult anxieties with custom response options",
   "previewUrl": "/templates/videos/baby-adult-anxiety-comedy.mp4",
-
-  "tags": ["comedy", "baby", "anxiety", "adult-problems", "cinematic", "close-up", "custom", "realistic"],
+  "tags": [
+    "comedy",
+    "baby",
+    "anxiety",
+    "adult-problems",
+    "cinematic",
+    "close-up",
+    "custom",
+    "realistic"
+  ],
   "createdAt": "2025-01-29T21:30:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-29T21:30:00Z",
   "promptTemplate": "A cinematic long take, an extreme close-up shot. The focus is on a sunlit nursery where a baby, around one year old, looks deeply sad and worried. The background features a cream-colored carpet and a baby crib, beautifully blurred to create a stunning depth of field with excellent bokeh. The camera captures a continuous action: First, the baby lifts his head, his eyes welling with tears, his expression filled with profound sorrow. He lets out a heavy, world-weary sigh, facing the camera directly. (The frame is a tight single shot on the baby; no one else appears). At this moment, a gentle, adult female voice asks from off-screen in {response_language}: '{interview_question}' Then, a black microphone enters the frame, moving into position right in front of the baby. The baby replies in a desperate, childish voice in {response_language}: '{baby_answer}' Both the interviewer and baby speak clearly in {response_language} language with appropriate accents and pronunciation.",
-
   "params": {
     "complaint_type": {
       "type": "select",
@@ -19,18 +26,54 @@
       "required": true,
       "default": "My formula money... it all got wiped out in the market!",
       "options": [
-        { "value": "My formula money... it all got wiped out in the market!", "label": "Stock Market Loss 📉" },
-        { "value": "I need to update my LinkedIn... crawling skills aren't enough anymore!", "label": "Career Anxiety 💼" },
-        { "value": "She left me for someone who can walk... I understand though.", "label": "Relationship Drama 💕" },
-        { "value": "The nursery mortgage rates are killing us!", "label": "Housing Crisis 🏠" },
-        { "value": "Formula prices doubled! This is worse than 2008!", "label": "Inflation Stress 🍼" },
-        { "value": "My social media engagement is terrible... only family likes my posts.", "label": "Social Media Anxiety 📱" },
-        { "value": "College applications start at 6 months now, I'm already behind!", "label": "Education Pressure 🎓" },
-        { "value": "My sleep schedule is ruined and it's affecting my work-life balance!", "label": "Health Anxiety 🏥" },
-        { "value": "They're outsourcing all the baby jobs to AI now!", "label": "AI Job Replacement 🤖" },
-        { "value": "Dating apps are brutal when you're pre-verbal.", "label": "Dating Struggles 💔" },
-        { "value": "My performance review is tomorrow and I can't even sit up!", "label": "Work Performance 📊" },
-        { "value": "custom", "label": "Custom Q&A ✏️" }
+        {
+          "value": "My formula money... it all got wiped out in the market!",
+          "label": "Stock Market Loss 📉"
+        },
+        {
+          "value": "I need to update my LinkedIn... crawling skills aren't enough anymore!",
+          "label": "Career Anxiety 💼"
+        },
+        {
+          "value": "She left me for someone who can walk... I understand though.",
+          "label": "Relationship Drama 💕"
+        },
+        {
+          "value": "The nursery mortgage rates are killing us!",
+          "label": "Housing Crisis 🏠"
+        },
+        {
+          "value": "Formula prices doubled! This is worse than 2008!",
+          "label": "Inflation Stress 🍼"
+        },
+        {
+          "value": "My social media engagement is terrible... only family likes my posts.",
+          "label": "Social Media Anxiety 📱"
+        },
+        {
+          "value": "College applications start at 6 months now, I'm already behind!",
+          "label": "Education Pressure 🎓"
+        },
+        {
+          "value": "My sleep schedule is ruined and it's affecting my work-life balance!",
+          "label": "Health Anxiety 🏥"
+        },
+        {
+          "value": "They're outsourcing all the baby jobs to AI now!",
+          "label": "AI Job Replacement 🤖"
+        },
+        {
+          "value": "Dating apps are brutal when you're pre-verbal.",
+          "label": "Dating Struggles 💔"
+        },
+        {
+          "value": "My performance review is tomorrow and I can't even sit up!",
+          "label": "Work Performance 📊"
+        },
+        {
+          "value": "custom",
+          "label": "Custom Q&A ✏️"
+        }
       ]
     },
     "interview_question": {
@@ -47,7 +90,7 @@
     },
     "baby_answer": {
       "type": "text",
-      "label": "Custom Baby Response", 
+      "label": "Custom Baby Response",
       "required": false,
       "default": "",
       "placeholder": "Enter baby's response (max 20 words)...",
@@ -64,17 +107,41 @@
       "required": false,
       "default": "English",
       "options": [
-        { "value": "English", "label": "English 🇺🇸" },
-        { "value": "Chinese", "label": "Chinese 🇨🇳" },
-        { "value": "Japanese", "label": "Japanese 🇯🇵" },
-        { "value": "Korean", "label": "Korean 🇰🇷" },
-        { "value": "Spanish", "label": "Spanish 🇪🇸" },
-        { "value": "French", "label": "French 🇫🇷" },
-        { "value": "German", "label": "German 🇩🇪" },
-        { "value": "Italian", "label": "Italian 🇮🇹" }
+        {
+          "value": "English",
+          "label": "English 🇺🇸"
+        },
+        {
+          "value": "Chinese",
+          "label": "Chinese 🇨🇳"
+        },
+        {
+          "value": "Japanese",
+          "label": "Japanese 🇯🇵"
+        },
+        {
+          "value": "Korean",
+          "label": "Korean 🇰🇷"
+        },
+        {
+          "value": "Spanish",
+          "label": "Spanish 🇪🇸"
+        },
+        {
+          "value": "French",
+          "label": "French 🇫🇷"
+        },
+        {
+          "value": "German",
+          "label": "German 🇩🇪"
+        },
+        {
+          "value": "Italian",
+          "label": "Italian 🇮🇹"
+        }
       ],
       "showWhen": {
-        "field": "complaint_type", 
+        "field": "complaint_type",
         "value": "custom"
       }
     },
@@ -83,5 +150,7 @@
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/baby-adult-anxiety-comedy-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/baby-adult-anxiety-comedy-thumbnail-blur.jpg"
 }

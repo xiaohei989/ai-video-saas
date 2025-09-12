@@ -5,13 +5,19 @@
   "icon": "🌪️",
   "description": "Cut miniature natural phenomenon models revealing dynamic interior structures in 4K ASMR videos",
   "previewUrl": "/templates/videos/natural-phenomenon-cutting-asmr.mp4",
-  
-  "tags": ["asmr", "cutting", "natural", "4k", "miniature", "effects", "relaxing"],
+  "tags": [
+    "asmr",
+    "cutting",
+    "natural",
+    "4k",
+    "miniature",
+    "effects",
+    "relaxing"
+  ],
   "createdAt": "2025-01-29T12:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-29T12:00:00Z",
   "promptTemplate": "A realistic 4K close-up shot of a pair of hands with subtle tattoos on fingers and knuckles and a {knife_type} quickly cutting a realistic miniature model of a {natural_phenomenon} on a {cutting_board}. It cuts it into {cutting_style}, revealing its dynamic and unexpected interior. The sound is ASMR style, emphasizing crisp cutting, accompanied by sounds unique to the revealed interior.",
-
   "params": {
     "natural_phenomenon": {
       "type": "select",
@@ -19,44 +25,44 @@
       "required": true,
       "default": "volcano",
       "options": [
-        { 
-          "value": "volcano", 
+        {
+          "value": "volcano",
           "label": "Volcano 🌋",
           "interior": "glowing lava with molten fragments",
           "sound": "sizzling lava and bubbling magma"
         },
-        { 
-          "value": "tornado", 
+        {
+          "value": "tornado",
           "label": "Tornado 🌪️",
           "interior": "swirling vapor with miniature wind currents",
           "sound": "ethereal whooshing and wind howling"
         },
-        { 
-          "value": "thunderstorm cloud", 
+        {
+          "value": "thunderstorm cloud",
           "label": "Thunderstorm Cloud ⛈️",
           "interior": "pulsating lightning with electric cores",
           "sound": "electric crackles and thunder rumbles"
         },
-        { 
-          "value": "meteorite", 
+        {
+          "value": "meteorite",
           "label": "Meteorite ☄️",
           "interior": "molten core with crystalline fragments",
           "sound": "crumbling rock and metallic clinks"
         },
-        { 
-          "value": "lightning ball", 
+        {
+          "value": "lightning ball",
           "label": "Lightning Ball ⚡",
           "interior": "electric core with energy waves",
           "sound": "high-frequency electric hum and sparks"
         },
-        { 
-          "value": "glacier", 
+        {
+          "value": "glacier",
           "label": "Glacier 🧊",
           "interior": "ice crystals with frozen vapor trails",
           "sound": "crisp ice cracking and gentle crystalline chimes"
         },
-        { 
-          "value": "rainbow crystal", 
+        {
+          "value": "rainbow crystal",
           "label": "Rainbow Crystal 🌈",
           "interior": "rainbow spectrum with light refraction patterns",
           "sound": "ethereal light wave resonance and crystal singing"
@@ -65,26 +71,50 @@
     },
     "knife_type": {
       "type": "select",
-      "label": "Knife Type", 
+      "label": "Knife Type",
       "required": true,
       "default": "sharp steel knife",
       "options": [
-        { "value": "sharp steel knife", "label": "Sharp Steel Knife" },
-        { "value": "white ceramic knife", "label": "White Ceramic Knife" },
-        { "value": "Japanese santoku knife", "label": "Japanese Santoku Knife" },
-        { "value": "damascus steel knife", "label": "Damascus Steel Knife" }
+        {
+          "value": "sharp steel knife",
+          "label": "Sharp Steel Knife"
+        },
+        {
+          "value": "white ceramic knife",
+          "label": "White Ceramic Knife"
+        },
+        {
+          "value": "Japanese santoku knife",
+          "label": "Japanese Santoku Knife"
+        },
+        {
+          "value": "damascus steel knife",
+          "label": "Damascus Steel Knife"
+        }
       ]
     },
     "cutting_board": {
       "type": "select",
       "label": "Cutting Surface",
-      "required": true, 
+      "required": true,
       "default": "wooden cutting board",
       "options": [
-        { "value": "wooden cutting board", "label": "Wooden Cutting Board" },
-        { "value": "marble countertop", "label": "Marble Countertop" },
-        { "value": "black slate surface", "label": "Black Slate Surface" },
-        { "value": "bamboo cutting board", "label": "Bamboo Cutting Board" }
+        {
+          "value": "wooden cutting board",
+          "label": "Wooden Cutting Board"
+        },
+        {
+          "value": "marble countertop",
+          "label": "Marble Countertop"
+        },
+        {
+          "value": "black slate surface",
+          "label": "Black Slate Surface"
+        },
+        {
+          "value": "bamboo cutting board",
+          "label": "Bamboo Cutting Board"
+        }
       ]
     },
     "cutting_style": {
@@ -93,10 +123,22 @@
       "required": true,
       "default": "two halves",
       "options": [
-        { "value": "two halves", "label": "Cut in Half" },
-        { "value": "multiple thin slices", "label": "Multiple Thin Slices" }, 
-        { "value": "cross-sectional cuts", "label": "Cross-sectional Cuts" },
-        { "value": "spiral cuts", "label": "Spiral Cuts" }
+        {
+          "value": "two halves",
+          "label": "Cut in Half"
+        },
+        {
+          "value": "multiple thin slices",
+          "label": "Multiple Thin Slices"
+        },
+        {
+          "value": "cross-sectional cuts",
+          "label": "Cross-sectional Cuts"
+        },
+        {
+          "value": "spiral cuts",
+          "label": "Spiral Cuts"
+        }
       ]
     },
     "makePublic": {
@@ -104,5 +146,7 @@
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/natural-phenomenon-cutting-asmr-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/natural-phenomenon-cutting-asmr-thumbnail-blur.jpg"
 }

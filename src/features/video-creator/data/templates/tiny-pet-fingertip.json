@@ -5,8 +5,16 @@
   "icon": "🐾",
   "description": "Capture an ultra-miniature adorable animal standing on fingertip, creating a heartwarming and healing scene",
   "previewUrl": "/templates/videos/tiny-pet-fingertip.mp4",
-
-  "tags": ["cute pets", "miniature", "healing", "adorable", "fingertip", "animals", "heartwarming", "tiny"],
+  "tags": [
+    "cute pets",
+    "miniature",
+    "healing",
+    "adorable",
+    "fingertip",
+    "animals",
+    "heartwarming",
+    "tiny"
+  ],
   "category": "Animals/Pets",
   "createdAt": "2024-02-01T14:30:00Z",
   "version": "1.0.0",
@@ -19,31 +27,106 @@
       "required": true,
       "default": "kitten",
       "options": [
-        { "value": "kitten", "label": "Kitten 🐱" },
-        { "value": "puppy", "label": "Puppy 🐶" },
-        { "value": "bunny", "label": "Bunny 🐰" },
-        { "value": "hamster", "label": "Hamster 🐹" },
-        { "value": "baby panda", "label": "Baby Panda 🐼" },
-        { "value": "baby tiger", "label": "Baby Tiger 🐅" },
-        { "value": "baby lion", "label": "Baby Lion 🦁" },
-        { "value": "baby wolf", "label": "Baby Wolf 🐺" },
-        { "value": "baby bear", "label": "Baby Bear 🐻" },
-        { "value": "baby leopard", "label": "Baby Leopard 🐆" },
-        { "value": "baby dragon", "label": "Baby Dragon 🐉" },
-        { "value": "baby phoenix", "label": "Baby Phoenix 🔥" },
-        { "value": "baby unicorn", "label": "Baby Unicorn 🦄" },
-        { "value": "baby griffin", "label": "Baby Griffin 🦅" },
-        { "value": "fairy dragon", "label": "Fairy Dragon ✨" },
-        { "value": "baby pegasus", "label": "Baby Pegasus 🦋" },
-        { "value": "baby nine-tailed fox", "label": "Baby Nine-tailed Fox 🦊" },
-        { "value": "baby owl", "label": "Baby Owl 🦉" },
-        { "value": "hedgehog", "label": "Hedgehog 🦔" },
-        { "value": "sugar glider", "label": "Sugar Glider 🐿️" },
-        { "value": "baby fox", "label": "Baby Fox 🦊" },
-        { "value": "baby raccoon", "label": "Baby Raccoon 🦝" },
-        { "value": "chinchilla", "label": "Chinchilla 🐭" },
-        { "value": "baby koala", "label": "Baby Koala 🐨" },
-        { "value": "baby elephant", "label": "Baby Elephant 🐘" }
+        {
+          "value": "kitten",
+          "label": "Kitten 🐱"
+        },
+        {
+          "value": "puppy",
+          "label": "Puppy 🐶"
+        },
+        {
+          "value": "bunny",
+          "label": "Bunny 🐰"
+        },
+        {
+          "value": "hamster",
+          "label": "Hamster 🐹"
+        },
+        {
+          "value": "baby panda",
+          "label": "Baby Panda 🐼"
+        },
+        {
+          "value": "baby tiger",
+          "label": "Baby Tiger 🐅"
+        },
+        {
+          "value": "baby lion",
+          "label": "Baby Lion 🦁"
+        },
+        {
+          "value": "baby wolf",
+          "label": "Baby Wolf 🐺"
+        },
+        {
+          "value": "baby bear",
+          "label": "Baby Bear 🐻"
+        },
+        {
+          "value": "baby leopard",
+          "label": "Baby Leopard 🐆"
+        },
+        {
+          "value": "baby dragon",
+          "label": "Baby Dragon 🐉"
+        },
+        {
+          "value": "baby phoenix",
+          "label": "Baby Phoenix 🔥"
+        },
+        {
+          "value": "baby unicorn",
+          "label": "Baby Unicorn 🦄"
+        },
+        {
+          "value": "baby griffin",
+          "label": "Baby Griffin 🦅"
+        },
+        {
+          "value": "fairy dragon",
+          "label": "Fairy Dragon ✨"
+        },
+        {
+          "value": "baby pegasus",
+          "label": "Baby Pegasus 🦋"
+        },
+        {
+          "value": "baby nine-tailed fox",
+          "label": "Baby Nine-tailed Fox 🦊"
+        },
+        {
+          "value": "baby owl",
+          "label": "Baby Owl 🦉"
+        },
+        {
+          "value": "hedgehog",
+          "label": "Hedgehog 🦔"
+        },
+        {
+          "value": "sugar glider",
+          "label": "Sugar Glider 🐿️"
+        },
+        {
+          "value": "baby fox",
+          "label": "Baby Fox 🦊"
+        },
+        {
+          "value": "baby raccoon",
+          "label": "Baby Raccoon 🦝"
+        },
+        {
+          "value": "chinchilla",
+          "label": "Chinchilla 🐭"
+        },
+        {
+          "value": "baby koala",
+          "label": "Baby Koala 🐨"
+        },
+        {
+          "value": "baby elephant",
+          "label": "Baby Elephant 🐘"
+        }
       ]
     },
     "animal_color": {
@@ -52,13 +135,34 @@
       "required": true,
       "default": "natural",
       "options": [
-        { "value": "natural", "label": "Natural" },
-        { "value": "pure white", "label": "Pure White" },
-        { "value": "golden", "label": "Golden" },
-        { "value": "grey", "label": "Grey" },
-        { "value": "brown", "label": "Brown" },
-        { "value": "black and white", "label": "Black and White" },
-        { "value": "multicolored", "label": "Multicolored" }
+        {
+          "value": "natural",
+          "label": "Natural"
+        },
+        {
+          "value": "pure white",
+          "label": "Pure White"
+        },
+        {
+          "value": "golden",
+          "label": "Golden"
+        },
+        {
+          "value": "grey",
+          "label": "Grey"
+        },
+        {
+          "value": "brown",
+          "label": "Brown"
+        },
+        {
+          "value": "black and white",
+          "label": "Black and White"
+        },
+        {
+          "value": "multicolored",
+          "label": "Multicolored"
+        }
       ]
     },
     "size_adjective": {
@@ -67,10 +171,22 @@
       "required": true,
       "default": "impossibly tiny",
       "options": [
-        { "value": "impossibly tiny", "label": "Impossibly Tiny" },
-        { "value": "adorably small", "label": "Adorably Small" },
-        { "value": "pocket-sized", "label": "Pocket-sized" },
-        { "value": "miniature", "label": "Miniature" }
+        {
+          "value": "impossibly tiny",
+          "label": "Impossibly Tiny"
+        },
+        {
+          "value": "adorably small",
+          "label": "Adorably Small"
+        },
+        {
+          "value": "pocket-sized",
+          "label": "Pocket-sized"
+        },
+        {
+          "value": "miniature",
+          "label": "Miniature"
+        }
       ]
     },
     "special_feature": {
@@ -79,11 +195,26 @@
       "required": true,
       "default": "bright round eyes",
       "options": [
-        { "value": "bright round eyes", "label": "Bright Round Eyes" },
-        { "value": "fluffy soft fur", "label": "Fluffy Soft Fur" },
-        { "value": "tiny delicate paws", "label": "Tiny Delicate Paws" },
-        { "value": "cute button nose", "label": "Cute Button Nose" },
-        { "value": "round chubby body", "label": "Round Chubby Body" }
+        {
+          "value": "bright round eyes",
+          "label": "Bright Round Eyes"
+        },
+        {
+          "value": "fluffy soft fur",
+          "label": "Fluffy Soft Fur"
+        },
+        {
+          "value": "tiny delicate paws",
+          "label": "Tiny Delicate Paws"
+        },
+        {
+          "value": "cute button nose",
+          "label": "Cute Button Nose"
+        },
+        {
+          "value": "round chubby body",
+          "label": "Round Chubby Body"
+        }
       ]
     },
     "animal_action": {
@@ -92,11 +223,26 @@
       "required": true,
       "default": "looks curiously at the camera",
       "options": [
-        { "value": "looks curiously at the camera", "label": "Looks Curiously at Camera" },
-        { "value": "yawns adorably", "label": "Yawns Adorably" },
-        { "value": "tilts its tiny head playfully", "label": "Tilts Head Playfully" },
-        { "value": "blinks sleepily", "label": "Blinks Sleepily" },
-        { "value": "wiggles happily", "label": "Wiggles Happily" }
+        {
+          "value": "looks curiously at the camera",
+          "label": "Looks Curiously at Camera"
+        },
+        {
+          "value": "yawns adorably",
+          "label": "Yawns Adorably"
+        },
+        {
+          "value": "tilts its tiny head playfully",
+          "label": "Tilts Head Playfully"
+        },
+        {
+          "value": "blinks sleepily",
+          "label": "Blinks Sleepily"
+        },
+        {
+          "value": "wiggles happily",
+          "label": "Wiggles Happily"
+        }
       ]
     },
     "scene_setting": {
@@ -105,11 +251,25 @@
       "required": true,
       "default": "cozy indoor setting by a sunlit window",
       "options": [
-        { "value": "cozy indoor setting by a sunlit window", "label": "Cozy Indoor by Window" },
-        { "value": "sunny garden with soft flowers", "label": "Sunny Garden" },
-        { "value": "soft bedroom with warm blankets", "label": "Soft Bedroom" },
-        { "value": "natural outdoor setting", "label": "Natural Outdoor" }
+        {
+          "value": "cozy indoor setting by a sunlit window",
+          "label": "Cozy Indoor by Window"
+        },
+        {
+          "value": "sunny garden with soft flowers",
+          "label": "Sunny Garden"
+        },
+        {
+          "value": "soft bedroom with warm blankets",
+          "label": "Soft Bedroom"
+        },
+        {
+          "value": "natural outdoor setting",
+          "label": "Natural Outdoor"
+        }
       ]
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/tiny-pet-fingertip-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/tiny-pet-fingertip-thumbnail-blur.jpg"
 }

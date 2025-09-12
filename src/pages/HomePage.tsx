@@ -47,8 +47,8 @@ export default function HomePage() {
       {/* Background Video - 优化背景视频 */}
       <OptimizedBackgroundVideo
         sources={optimizedVideoSources}
-        fallbackImage="/logo.png"
-        fallbackBlurImage="/logo.png"
+        fallbackImage="/templates/thumbnails/butterfly-thumbnail.jpg"
+        fallbackBlurImage="/templates/thumbnails/butterfly-thumbnail-blur.jpg"
         className="fixed inset-0 z-0"
         autoPlay={true}
         loop={true}

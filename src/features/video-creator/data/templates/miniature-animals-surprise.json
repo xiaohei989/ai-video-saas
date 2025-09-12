@@ -5,9 +5,17 @@
   "icon": "🦒",
   "description": "Hyper-realistic miniature animals hidden in unexpected containers, revealing surprise moments when doors open",
   "previewUrl": "/templates/videos/miniature-animals-surprise.mp4",
-
   "category": "Animals/Surprise",
-  "tags": ["miniature", "animals", "surprise", "realistic", "cute", "unexpected", "macro", "fantasy"],
+  "tags": [
+    "miniature",
+    "animals",
+    "surprise",
+    "realistic",
+    "cute",
+    "unexpected",
+    "macro",
+    "fantasy"
+  ],
   "createdAt": "2025-01-24T10:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-29T04:30:00Z",
@@ -19,24 +27,78 @@
       "required": true,
       "default": "baby giraffes",
       "options": [
-        {"value": "baby giraffes", "label": "Baby Giraffes 🦒"},
-        {"value": "baby elephants", "label": "Baby Elephants 🐘"},
-        {"value": "baby pandas", "label": "Baby Pandas 🐼"},
-        {"value": "baby lions", "label": "Baby Lions 🦁"},
-        {"value": "baby dragons", "label": "Baby Dragons 🐉"},
-        {"value": "baby phoenixes", "label": "Baby Phoenixes 🔥"},
-        {"value": "baby unicorns", "label": "Baby Unicorns 🦄"},
-        {"value": "baby griffins", "label": "Baby Griffins 🦅"},
-        {"value": "baby pegasus", "label": "Baby Pegasus ✨"},
-        {"value": "baby nine-tailed foxes", "label": "Baby Nine-tailed Foxes 🦊"},
-        {"value": "baby zebras", "label": "Baby Zebras 🦓"},
-        {"value": "baby koalas", "label": "Baby Koalas 🐨"},
-        {"value": "baby penguins", "label": "Baby Penguins 🐧"},
-        {"value": "baby owls", "label": "Baby Owls 🦉"},
-        {"value": "baby cerberus puppies", "label": "Baby Cerberus Puppies 🐺"},
-        {"value": "baby hippogriffs", "label": "Baby Hippogriffs 🦋"},
-        {"value": "baby qilins", "label": "Baby Qilins 🦌"},
-        {"value": "baby white tigers", "label": "Baby White Tigers 🐅"}
+        {
+          "value": "baby giraffes",
+          "label": "Baby Giraffes 🦒"
+        },
+        {
+          "value": "baby elephants",
+          "label": "Baby Elephants 🐘"
+        },
+        {
+          "value": "baby pandas",
+          "label": "Baby Pandas 🐼"
+        },
+        {
+          "value": "baby lions",
+          "label": "Baby Lions 🦁"
+        },
+        {
+          "value": "baby dragons",
+          "label": "Baby Dragons 🐉"
+        },
+        {
+          "value": "baby phoenixes",
+          "label": "Baby Phoenixes 🔥"
+        },
+        {
+          "value": "baby unicorns",
+          "label": "Baby Unicorns 🦄"
+        },
+        {
+          "value": "baby griffins",
+          "label": "Baby Griffins 🦅"
+        },
+        {
+          "value": "baby pegasus",
+          "label": "Baby Pegasus ✨"
+        },
+        {
+          "value": "baby nine-tailed foxes",
+          "label": "Baby Nine-tailed Foxes 🦊"
+        },
+        {
+          "value": "baby zebras",
+          "label": "Baby Zebras 🦓"
+        },
+        {
+          "value": "baby koalas",
+          "label": "Baby Koalas 🐨"
+        },
+        {
+          "value": "baby penguins",
+          "label": "Baby Penguins 🐧"
+        },
+        {
+          "value": "baby owls",
+          "label": "Baby Owls 🦉"
+        },
+        {
+          "value": "baby cerberus puppies",
+          "label": "Baby Cerberus Puppies 🐺"
+        },
+        {
+          "value": "baby hippogriffs",
+          "label": "Baby Hippogriffs 🦋"
+        },
+        {
+          "value": "baby qilins",
+          "label": "Baby Qilins 🦌"
+        },
+        {
+          "value": "baby white tigers",
+          "label": "Baby White Tigers 🐅"
+        }
       ]
     },
     "animal_count": {
@@ -44,10 +106,22 @@
       "label": "Animal Count",
       "default": "two",
       "options": [
-        {"value": "one", "label": "One"},
-        {"value": "two", "label": "Two"},
-        {"value": "three", "label": "Three"},
-        {"value": "a family of four", "label": "A Family of Four"}
+        {
+          "value": "one",
+          "label": "One"
+        },
+        {
+          "value": "two",
+          "label": "Two"
+        },
+        {
+          "value": "three",
+          "label": "Three"
+        },
+        {
+          "value": "a family of four",
+          "label": "A Family of Four"
+        }
       ]
     },
     "container_type": {
@@ -56,16 +130,46 @@
       "required": true,
       "default": "birdhouse",
       "options": [
-        {"value": "birdhouse", "label": "Birdhouse 🏠"},
-        {"value": "vintage mailbox", "label": "Vintage Mailbox 📮"},
-        {"value": "large flower pot", "label": "Large Flower Pot 🪴"},
-        {"value": "antique teacup", "label": "Antique Teacup ☕"},
-        {"value": "old shoebox", "label": "Old Shoebox 📦"},
-        {"value": "tree hollow", "label": "Tree Hollow 🌳"},
-        {"value": "miniature castle", "label": "Miniature Castle 🏰"},
-        {"value": "glass terrarium", "label": "Glass Terrarium 🔮"},
-        {"value": "ancient treasure chest", "label": "Ancient Treasure Chest 💎"},
-        {"value": "mushroom house", "label": "Mushroom House 🍄"}
+        {
+          "value": "birdhouse",
+          "label": "Birdhouse 🏠"
+        },
+        {
+          "value": "vintage mailbox",
+          "label": "Vintage Mailbox 📮"
+        },
+        {
+          "value": "large flower pot",
+          "label": "Large Flower Pot 🪴"
+        },
+        {
+          "value": "antique teacup",
+          "label": "Antique Teacup ☕"
+        },
+        {
+          "value": "old shoebox",
+          "label": "Old Shoebox 📦"
+        },
+        {
+          "value": "tree hollow",
+          "label": "Tree Hollow 🌳"
+        },
+        {
+          "value": "miniature castle",
+          "label": "Miniature Castle 🏰"
+        },
+        {
+          "value": "glass terrarium",
+          "label": "Glass Terrarium 🔮"
+        },
+        {
+          "value": "ancient treasure chest",
+          "label": "Ancient Treasure Chest 💎"
+        },
+        {
+          "value": "mushroom house",
+          "label": "Mushroom House 🍄"
+        }
       ]
     },
     "animal_action": {
@@ -74,14 +178,38 @@
       "required": true,
       "default": "are alert and waiting; one gently yawns, both subtly move their ears and blink",
       "options": [
-        {"value": "are alert and waiting; one gently yawns, both subtly move their ears and blink", "label": "Alert and Waiting, Yawning"},
-        {"value": "are sleeping peacefully, then slowly wake up", "label": "Sleeping Peacefully, Waking Up"},
-        {"value": "curiously look at the camera with big eyes", "label": "Looking Curiously at Camera"},
-        {"value": "playfully interact with each other", "label": "Playing with Each Other"},
-        {"value": "are eating from tiny bowls", "label": "Eating from Tiny Bowls"},
-        {"value": "stand up excitedly when door opens", "label": "Standing Up Excitedly When Door Opens"},
-        {"value": "are practicing their tiny roars or chirps", "label": "Practicing Tiny Roars or Chirps"},
-        {"value": "are reading tiny magical books", "label": "Reading Tiny Magical Books"}
+        {
+          "value": "are alert and waiting; one gently yawns, both subtly move their ears and blink",
+          "label": "Alert and Waiting, Yawning"
+        },
+        {
+          "value": "are sleeping peacefully, then slowly wake up",
+          "label": "Sleeping Peacefully, Waking Up"
+        },
+        {
+          "value": "curiously look at the camera with big eyes",
+          "label": "Looking Curiously at Camera"
+        },
+        {
+          "value": "playfully interact with each other",
+          "label": "Playing with Each Other"
+        },
+        {
+          "value": "are eating from tiny bowls",
+          "label": "Eating from Tiny Bowls"
+        },
+        {
+          "value": "stand up excitedly when door opens",
+          "label": "Standing Up Excitedly When Door Opens"
+        },
+        {
+          "value": "are practicing their tiny roars or chirps",
+          "label": "Practicing Tiny Roars or Chirps"
+        },
+        {
+          "value": "are reading tiny magical books",
+          "label": "Reading Tiny Magical Books"
+        }
       ]
     },
     "environment": {
@@ -89,14 +217,37 @@
       "label": "Environment Scene",
       "default": "Open field with lush green grass and blue sky",
       "options": [
-        {"value": "Open field with lush green grass and blue sky", "label": "Open Field with Green Grass and Blue Sky"},
-        {"value": "Blooming garden with colorful flowers", "label": "Blooming Garden with Colorful Flowers"},
-        {"value": "Peaceful forest clearing with dappled sunlight", "label": "Peaceful Forest Clearing with Dappled Sunlight"},
-        {"value": "Cozy backyard with wooden fence", "label": "Cozy Backyard with Wooden Fence"},
-        {"value": "Magical garden with floating lights and mystical fog", "label": "Magical Garden with Floating Lights and Mystical Fog"},
-        {"value": "Enchanted forest with glowing mushrooms", "label": "Enchanted Forest with Glowing Mushrooms"},
-        {"value": "Cloud kingdom floating in the sky", "label": "Cloud Kingdom Floating in the Sky"}
+        {
+          "value": "Open field with lush green grass and blue sky",
+          "label": "Open Field with Green Grass and Blue Sky"
+        },
+        {
+          "value": "Blooming garden with colorful flowers",
+          "label": "Blooming Garden with Colorful Flowers"
+        },
+        {
+          "value": "Peaceful forest clearing with dappled sunlight",
+          "label": "Peaceful Forest Clearing with Dappled Sunlight"
+        },
+        {
+          "value": "Cozy backyard with wooden fence",
+          "label": "Cozy Backyard with Wooden Fence"
+        },
+        {
+          "value": "Magical garden with floating lights and mystical fog",
+          "label": "Magical Garden with Floating Lights and Mystical Fog"
+        },
+        {
+          "value": "Enchanted forest with glowing mushrooms",
+          "label": "Enchanted Forest with Glowing Mushrooms"
+        },
+        {
+          "value": "Cloud kingdom floating in the sky",
+          "label": "Cloud Kingdom Floating in the Sky"
+        }
       ]
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/miniature-animals-surprise-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/miniature-animals-surprise-thumbnail-blur.jpg"
 }

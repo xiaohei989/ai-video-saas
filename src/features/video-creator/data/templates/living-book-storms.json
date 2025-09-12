@@ -6,23 +6,27 @@
   "description": "An ancient book transforms into a living diorama with ships battling through storms",
   "previewUrl": "/templates/videos/living-book-storms.mp4",
   "credits": 15,
-  
-  "tags": ["magic", "book", "storm", "ship", "fantasy", "cinematic", "diorama"],
+  "tags": [
+    "magic",
+    "book",
+    "storm",
+    "ship",
+    "fantasy",
+    "cinematic",
+    "diorama"
+  ],
   "createdAt": "2025-01-30T10:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-30T10:00:00Z",
-  
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
     "aspect_ratio": "16:9",
-
     "product": {
       "name": "Living Book of Storms",
       "type": "Fantasy Diorama Effect",
       "brand_style": "Hyper-realistic, cinematic, magical realism"
     },
-
     "visual_core": {
       "description": "An ancient book transforms into a living diorama of a stormy sea with {ship_description} battling the tempest, culminating with magical glowing text materializing above the scene.",
       "style": "photorealistic fantasy, cinematic magic",
@@ -30,7 +34,6 @@
       "lighting": "dim library glow → lightning flashes with harsh shadows",
       "environment": "old library desk, candlelight, pages of the book becoming ocean waves"
     },
-
     "elements": [
       "ancient open book with yellowed pages",
       "illustrated {ship_description} and stormy sea",
@@ -39,13 +42,11 @@
       "lightning flash casting shadow across desk",
       "glowing magical text '{cta_text}' floating above the scene"
     ],
-
     "audio": {
       "sfx": "book pages rustling, distant thunder rumble, storm fade-in",
       "ambience": "silent library background → storm sounds → wind howl, creaking wood",
       "music": "dark orchestral tension build"
     },
-
     "timeline": [
       {
         "time": "0-2s",
@@ -72,13 +73,11 @@
         "audio": "storm fading to gentle mystical chime"
       }
     ],
-
     "cta": {
       "motion": "Final freeze frame of the storm contained within the book, mist drifting upward.",
       "text": "{cta_text}",
       "style": "dramatic serif typography emerging from mist"
     },
-
     "keywords": [
       "hyper-realistic",
       "cinematic fantasy",
@@ -92,7 +91,6 @@
       "floating typography"
     ]
   },
-  
   "params": {
     "ship_type": {
       "type": "select",
@@ -202,7 +200,6 @@
         }
       ]
     },
-    
     "cta_text": {
       "type": "text",
       "label": "Ending Text",
@@ -210,35 +207,32 @@
       "required": true,
       "default": "veo3video.me"
     },
-    
     "ship_description": {
       "type": "hidden",
       "linkedTo": "ship_type",
       "linkType": "metadata"
     },
-    
     "ship_material": {
       "type": "hidden",
       "linkedTo": "ship_type",
       "linkType": "metadata"
     },
-    
     "crew_type": {
       "type": "hidden",
       "linkedTo": "ship_type",
       "linkType": "metadata"
     },
-    
     "crew_action": {
       "type": "hidden",
       "linkedTo": "ship_type",
       "linkType": "metadata"
     },
-    
     "makePublic": {
       "type": "toggle",
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/living-book-storms-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/living-book-storms-thumbnail-blur.jpg"
 }

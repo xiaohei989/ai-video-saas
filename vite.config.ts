@@ -159,67 +159,58 @@ export default defineConfig(({ mode }) => {
       // Cloudflare Pages 优化配置
       rollupOptions: {
         output: {
-          manualChunks: (id) => {
-            // 核心依赖 - 立即需要的库
-            if (id.includes('react/') || id.includes('react-dom/')) {
-              return 'react-core'
-            }
-            
-            // 路由相关 - 根据路由懒加载
-            if (id.includes('react-router')) {
-              return 'router'
-            }
-            
-            // UI组件库 - 按需加载
-            if (id.includes('@radix-ui')) {
-              return 'ui-components'
-            }
-            
-            // 数据库和API - 异步加载
-            if (id.includes('@supabase/supabase-js')) {
-              return 'supabase'
-            }
-            
-            // 支付相关 - 延迟加载
-            if (id.includes('@stripe/stripe-js')) {
-              return 'stripe'
-            }
-            
-            // 图表库 - 延迟加载
-            if (id.includes('recharts') || id.includes('d3')) {
-              return 'charts'
-            }
-            
-            // 国际化 - 按需加载
-            if (id.includes('i18next') || id.includes('react-i18next')) {
-              return 'i18n'
-            }
-            
-            // 其他第三方库
-            if (id.includes('node_modules') && !id.includes('react/') && !id.includes('react-dom/')) {
-              return 'vendor'
-            }
-          },
+          // 暂时禁用手动chunk分割，让Rollup自动处理
+          // 这避免了复杂的React依赖关系导致的初始化问题
         },
       },
-      // 压缩配置 - 针对 Cloudflare Pages 优化
-      minify: 'terser',
+      // 暂时禁用压缩以调试问题
+      minify: false,
       terserOptions: {
         compress: {
           drop_console: mode === 'production',
           drop_debugger: mode === 'production',
+          // 保留必要的函数名，避免 React Context 解析问题
+          keep_fnames: /^(createContext|useContext|Context)$/,
+          // 避免变量提升导致的初始化问题
+          hoist_vars: false,
+          hoist_funs: false,
+          // 保持原始声明顺序
+          sequences: false,
         },
         format: {
           // 确保输出兼容 Cloudflare Pages
           comments: false,
         },
+        mangle: {
+          // 保留关键的 React 函数名
+          reserved: ['createContext', 'useContext', 'Context', 'React'],
+          // 不要混淆顶级作用域的变量名
+          toplevel: false,
+        },
       },
       // 构建优化
       chunkSizeWarningLimit: 1500, // 放宽限制避免警告
       assetsInlineLimit: 4096,
-      // 禁用模块预加载以避免 Cloudflare Pages 兼容性问题
+      // 模块预加载配置 - 确保正确的加载顺序
       modulePreload: {
-        polyfill: false,
+        polyfill: true,
+        resolveDependencies: (filename, deps, { hostId, hostType }) => {
+          // 按优先级排序依赖
+          const sortedDeps = deps.sort((a, b) => {
+            // React 核心库最高优先级
+            if (a.includes('react-core') && !b.includes('react-core')) return -1
+            if (!a.includes('react-core') && b.includes('react-core')) return 1
+            
+            // React 生态系统第二优先级
+            if (a.includes('react-ecosystem') && !b.includes('react-ecosystem')) return -1
+            if (!a.includes('react-ecosystem') && b.includes('react-ecosystem')) return 1
+            
+            return 0
+          })
+          
+          console.log('[MODULE PRELOAD] Sorted dependencies:', sortedDeps.map(d => d.split('/').pop()))
+          return sortedDeps
+        }
       },
       // CSS代码分割优化
       cssCodeSplit: true,

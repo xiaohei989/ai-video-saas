@@ -19,6 +19,7 @@ import { Progress } from '@/components/ui/progress'
 import { cn } from '@/utils/cn'
 import { useVideoLazyLoad, type LazyLoadOptions } from '@/hooks/useVideoLazyLoad'
 import { useSimpleNetworkQuality } from '@/hooks/useNetworkQuality'
+import { thumbnailGenerator } from '@/services/thumbnailGeneratorService'
 
 export interface LazyVideoPlayerProps {
   // 基本视频属性
@@ -96,6 +97,9 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
   const { t } = useTranslation()
   const [hasUserInteraction, setHasUserInteraction] = useState(false)
   
+  // 智能缩略图状态
+  const [smartThumbnails, setSmartThumbnails] = useState<{ normal: string; blur: string } | null>(null)
+  
   // 网络质量检测
   const networkQuality = useSimpleNetworkQuality()
   
@@ -142,6 +146,33 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
     }
   }, [lazyState.isLoaded, lazyState.isLoading, lazyState.hasError, lazyActions, handleInteraction])
 
+  // 智能缩略图初始化
+  React.useEffect(() => {
+    const initSmartThumbnails = async () => {
+      try {
+        const thumbnails = await thumbnailGenerator.getBestThumbnail(src, poster)
+        setSmartThumbnails(thumbnails)
+        
+        // 通知缩略图加载完成
+        onThumbnailLoad?.(thumbnails.normal)
+        
+        if (import.meta.env.DEV) {
+          console.log(`[LazyVideoPlayer] 🖼️ 智能缩略图获取: ${thumbnails.normal}`)
+        }
+      } catch (error) {
+        console.warn('[LazyVideoPlayer] 智能缩略图获取失败:', error)
+        // 回退到原始poster
+        if (poster) {
+          setSmartThumbnails({ normal: poster, blur: poster })
+        }
+      }
+    }
+    
+    if (enableThumbnailCache) {
+      initSmartThumbnails()
+    }
+  }, [src, poster, enableThumbnailCache, onThumbnailLoad])
+
   // 事件处理器
   useEffect(() => {
     onVisibilityChange?.(lazyState.isVisible)
@@ -173,7 +204,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
       return renderPlaceholder({
         isLoading: lazyState.isLoading,
         hasError: lazyState.hasError,
-        thumbnail: lazyState.thumbnail || undefined
+        thumbnail: smartThumbnails?.normal || lazyState.thumbnail || undefined
       })
     }
 
@@ -220,17 +251,29 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
       )
     }
 
-    // 显示缩略图或默认占位符
-    const thumbnailSrc = lazyState.thumbnail || poster
+    // 智能缩略图选择：优先使用生成的缩略图，然后是懒加载缓存，最后是原始poster
+    const thumbnailSrc = smartThumbnails?.normal || lazyState.thumbnail || poster
     
     return (
       <>
         {thumbnailSrc ? (
-          <img
-            src={thumbnailSrc}
-            alt={alt}
-            className={`w-full h-full ${objectFit === 'cover' ? 'object-cover' : 'object-contain'}`}
-          />
+          <div className="relative w-full h-full">
+            {/* 主缩略图 */}
+            <img
+              src={thumbnailSrc}
+              alt={alt}
+              className={`w-full h-full ${objectFit === 'cover' ? 'object-cover' : 'object-contain'} transition-opacity duration-300`}
+            />
+            
+            {/* 加载中时显示模糊版本作为背景 */}
+            {lazyState.isLoading && smartThumbnails?.blur && (
+              <img
+                src={smartThumbnails.blur}
+                alt={`${alt} (blur)`}
+                className={`absolute inset-0 w-full h-full ${objectFit === 'cover' ? 'object-cover' : 'object-contain'} opacity-30 transition-opacity duration-500`}
+              />
+            )}
+          </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <div className="text-center text-gray-600 dark:text-gray-300">

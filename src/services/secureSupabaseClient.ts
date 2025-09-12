@@ -31,8 +31,8 @@ export class SecureSupabaseClient {
   private suspiciousQueries: Set<string> = new Set();
 
   constructor(
-    url: string,
-    anonKey: string,
+    clientOrUrl: SupabaseClient<Database> | string,
+    anonKey?: string,
     options: Partial<SecureClientOptions> = {}
   ) {
     this.options = {
@@ -44,17 +44,26 @@ export class SecureSupabaseClient {
       ...options
     };
 
-    // 创建基础Supabase客户端
-    this.client = createClient<Database>(url, anonKey, {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true
-      },
-      global: {
-        headers: this.getSecureHeaders()
+    // 支持两种初始化方式：传入现有客户端或创建新客户端
+    if (typeof clientOrUrl === 'object') {
+      // 使用现有的Supabase客户端实例（推荐方式）
+      this.client = clientOrUrl;
+    } else {
+      // 创建新的Supabase客户端（仅在必要时）
+      if (!anonKey) {
+        throw new Error('anonKey is required when creating new client');
       }
-    });
+      this.client = createClient<Database>(clientOrUrl, anonKey, {
+        auth: {
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: true
+        },
+        global: {
+          headers: this.getSecureHeaders()
+        }
+      });
+    }
 
     // 初始化安全监控
     if (this.options.enableQueryLogging) {
@@ -446,10 +455,23 @@ class SecurePostgrestFilterBuilder<T> {
 }
 
 // 创建安全的Supabase客户端实例
-export const createSecureSupabaseClient = (
+// 重载：支持传入现有客户端或URL+KEY
+export function createSecureSupabaseClient(
+  client: SupabaseClient<Database>,
+  anonKey?: undefined,
+  options?: Partial<SecureClientOptions>
+): SecureSupabaseClient;
+
+export function createSecureSupabaseClient(
   url: string,
   anonKey: string,
   options?: Partial<SecureClientOptions>
-) => {
-  return new SecureSupabaseClient(url, anonKey, options);
-};
+): SecureSupabaseClient;
+
+export function createSecureSupabaseClient(
+  clientOrUrl: SupabaseClient<Database> | string,
+  anonKey?: string,
+  options?: Partial<SecureClientOptions>
+) {
+  return new SecureSupabaseClient(clientOrUrl, anonKey, options);
+}

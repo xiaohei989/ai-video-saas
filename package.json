@@ -22,7 +22,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@google/genai": "^1.15.0",
     "@hookform/resolvers": "^5.2.1",

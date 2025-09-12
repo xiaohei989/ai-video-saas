@@ -6,12 +6,21 @@
   "description": "POV selfie video on a speedboat with a surprise marine predator appearance",
   "previewUrl": "/templates/videos/ocean-selfie-surprise.mp4",
   "credits": 10,
-  
-  "tags": ["selfie", "ocean", "predator", "surprise", "vlog", "comedy", "pov", "marine", "bigfoot", "yeti"],
+  "tags": [
+    "selfie",
+    "ocean",
+    "predator",
+    "surprise",
+    "vlog",
+    "comedy",
+    "pov",
+    "marine",
+    "bigfoot",
+    "yeti"
+  ],
   "createdAt": "2025-02-01T12:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-02-01T12:00:00Z",
-  
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
@@ -47,7 +56,6 @@
       "ambience": "ocean waves, speedboat engine"
     }
   },
-
   "params": {
     "marine_animal": {
       "type": "select",
@@ -137,7 +145,6 @@
         }
       ]
     },
-    
     "character_style": {
       "type": "select",
       "label": "Character Style",
@@ -211,7 +218,6 @@
         }
       ]
     },
-    
     "dialogue_content": {
       "type": "textarea",
       "label": "Dialogue Content",
@@ -221,30 +227,97 @@
       "rows": 3,
       "default": "Hey gorgeous! Just living my best life on this amazing yacht! The vibes are incredible today!"
     },
-    
-    "animal_type": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
-    "animal_action": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
-    "animal_detail": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
-    "animal_sound": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
-    "animal_sound_build": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
-    "animal_sound_peak": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
-    "animal_climax": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
-    "character_reaction": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
-    "reaction_sound": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
-    "emotion_style": {"type": "hidden", "linkedTo": "marine_animal", "linkType": "metadata"},
-    
-    "character": {"type": "hidden", "linkedTo": "character_style", "linkType": "metadata"},
-    "character_description": {"type": "hidden", "linkedTo": "character_style", "linkType": "metadata"},
-    "pronoun_possessive": {"type": "hidden", "linkedTo": "character_style", "linkType": "metadata"},
-    "pronoun_object": {"type": "hidden", "linkedTo": "character_style", "linkType": "metadata"},
-    "speaking_tone": {"type": "hidden", "linkedTo": "character_style", "linkType": "metadata"},
-    "language": {"type": "hidden", "linkedTo": "character_style", "linkType": "metadata"},
-    "default_dialogue": {"type": "hidden", "linkedTo": "character_style", "linkType": "metadata"},
-    
+    "animal_type": {
+      "type": "hidden",
+      "linkedTo": "marine_animal",
+      "linkType": "metadata"
+    },
+    "animal_action": {
+      "type": "hidden",
+      "linkedTo": "marine_animal",
+      "linkType": "metadata"
+    },
+    "animal_detail": {
+      "type": "hidden",
+      "linkedTo": "marine_animal",
+      "linkType": "metadata"
+    },
+    "animal_sound": {
+      "type": "hidden",
+      "linkedTo": "marine_animal",
+      "linkType": "metadata"
+    },
+    "animal_sound_build": {
+      "type": "hidden",
+      "linkedTo": "marine_animal",
+      "linkType": "metadata"
+    },
+    "animal_sound_peak": {
+      "type": "hidden",
+      "linkedTo": "marine_animal",
+      "linkType": "metadata"
+    },
+    "animal_climax": {
+      "type": "hidden",
+      "linkedTo": "marine_animal",
+      "linkType": "metadata"
+    },
+    "character_reaction": {
+      "type": "hidden",
+      "linkedTo": "marine_animal",
+      "linkType": "metadata"
+    },
+    "reaction_sound": {
+      "type": "hidden",
+      "linkedTo": "marine_animal",
+      "linkType": "metadata"
+    },
+    "emotion_style": {
+      "type": "hidden",
+      "linkedTo": "marine_animal",
+      "linkType": "metadata"
+    },
+    "character": {
+      "type": "hidden",
+      "linkedTo": "character_style",
+      "linkType": "metadata"
+    },
+    "character_description": {
+      "type": "hidden",
+      "linkedTo": "character_style",
+      "linkType": "metadata"
+    },
+    "pronoun_possessive": {
+      "type": "hidden",
+      "linkedTo": "character_style",
+      "linkType": "metadata"
+    },
+    "pronoun_object": {
+      "type": "hidden",
+      "linkedTo": "character_style",
+      "linkType": "metadata"
+    },
+    "speaking_tone": {
+      "type": "hidden",
+      "linkedTo": "character_style",
+      "linkType": "metadata"
+    },
+    "language": {
+      "type": "hidden",
+      "linkedTo": "character_style",
+      "linkType": "metadata"
+    },
+    "default_dialogue": {
+      "type": "hidden",
+      "linkedTo": "character_style",
+      "linkType": "metadata"
+    },
     "makePublic": {
       "type": "toggle",
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/ocean-selfie-surprise-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/ocean-selfie-surprise-thumbnail-blur.jpg"
 }

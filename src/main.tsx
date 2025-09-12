@@ -1,6 +1,22 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
+
+// 确保React已完全加载并可用
+if (!React || !React.createContext || !ReactDOM) {
+  throw new Error('React核心库加载失败，请检查依赖配置')
+}
+
+// 添加简单的React Context功能验证
+try {
+  const TestContext = React.createContext(null)
+  if (!TestContext || !TestContext.Provider) {
+    throw new Error('React createContext功能不可用')
+  }
+} catch (error) {
+  console.error('[MAIN] React Context验证失败:', error)
+  throw error
+}
 import './styles/index.css'
 import './styles/fonts.css'
 import './i18n/config'

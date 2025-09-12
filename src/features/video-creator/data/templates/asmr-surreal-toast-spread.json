@@ -5,7 +5,16 @@
   "icon": "🎭",
   "description": "Use various unexpected miniature objects as butter to spread on toast, creating a visually shocking ASMR experience",
   "previewUrl": "/templates/videos/asmr-surreal-toast-spread.mp4",
-  "tags": ["asmr", "surreal", "visual shock", "creative", "miniature", "magical", "toast", "spread"],
+  "tags": [
+    "asmr",
+    "surreal",
+    "visual shock",
+    "creative",
+    "miniature",
+    "magical",
+    "toast",
+    "spread"
+  ],
   "createdAt": "2024-08-24T12:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-29T04:30:00Z",
@@ -17,24 +26,78 @@
       "required": true,
       "default": "Coca-Cola, Pepsi, and Sprite cans",
       "options": [
-        { "value": "Coca-Cola, Pepsi, and Sprite cans", "label": "🥤 Classic Soda Cans" },
-        { "value": "tiny Ferrari, Lamborghini, and Porsche cars", "label": "🏎️ Miniature Sports Cars" },
-        { "value": "miniature Earth, Mars, and Saturn planets", "label": "🪐 Miniature Planets" },
-        { "value": "tiny robots with glowing LED eyes", "label": "🤖 Tiny Robots" },
-        { "value": "miniature Eiffel Tower, Big Ben, and Statue of Liberty", "label": "🗼 Miniature Landmarks" },
-        { "value": "tiny diamonds, rubies, and emeralds", "label": "💎 Miniature Gems" },
-        { "value": "colorful miniature LEGO bricks", "label": "🧱 Miniature LEGO Bricks" },
-        { "value": "miniature gummy bears, lollipops, and chocolates", "label": "🍬 Miniature Candies" },
-        { "value": "tiny realistic eyeballs with different iris colors", "label": "👁️ Miniature Eyeballs" },
-        { "value": "miniature anime figurines and action figures", "label": "🎌 Tiny Figurines" },
-        { "value": "tiny grenades, dynamite sticks, and fireworks with detailed fuses", "label": "💣 Miniature Explosives" },
-        { "value": "miniature gold bars, silver ingots, and platinum coins with reflective surfaces", "label": "💰 Precious Metals" },
-        { "value": "tiny gears, screws, bolts, and mechanical components with intricate details", "label": "⚙️ Mechanical Parts" },
-        { "value": "miniature crystal balls, ancient coins, and mysterious artifacts with glowing effects", "label": "🔮 Mystical Objects" },
-        { "value": "tiny test tubes, beakers, syringes, and laboratory equipment with colorful liquids", "label": "🔬 Lab Equipment" },
-        { "value": "colorful miniature pills, capsules, and tablets in various shapes and sizes", "label": "💊 Medical Capsules" },
-        { "value": "miniature bullets, shells, and cartridges with metallic shine", "label": "🎯 Ammunition" },
-        { "value": "tiny smartphones, computer chips, and electronic components with LED lights", "label": "📱 Electronic Devices" }
+        {
+          "value": "Coca-Cola, Pepsi, and Sprite cans",
+          "label": "🥤 Classic Soda Cans"
+        },
+        {
+          "value": "tiny Ferrari, Lamborghini, and Porsche cars",
+          "label": "🏎️ Miniature Sports Cars"
+        },
+        {
+          "value": "miniature Earth, Mars, and Saturn planets",
+          "label": "🪐 Miniature Planets"
+        },
+        {
+          "value": "tiny robots with glowing LED eyes",
+          "label": "🤖 Tiny Robots"
+        },
+        {
+          "value": "miniature Eiffel Tower, Big Ben, and Statue of Liberty",
+          "label": "🗼 Miniature Landmarks"
+        },
+        {
+          "value": "tiny diamonds, rubies, and emeralds",
+          "label": "💎 Miniature Gems"
+        },
+        {
+          "value": "colorful miniature LEGO bricks",
+          "label": "🧱 Miniature LEGO Bricks"
+        },
+        {
+          "value": "miniature gummy bears, lollipops, and chocolates",
+          "label": "🍬 Miniature Candies"
+        },
+        {
+          "value": "tiny realistic eyeballs with different iris colors",
+          "label": "👁️ Miniature Eyeballs"
+        },
+        {
+          "value": "miniature anime figurines and action figures",
+          "label": "🎌 Tiny Figurines"
+        },
+        {
+          "value": "tiny grenades, dynamite sticks, and fireworks with detailed fuses",
+          "label": "💣 Miniature Explosives"
+        },
+        {
+          "value": "miniature gold bars, silver ingots, and platinum coins with reflective surfaces",
+          "label": "💰 Precious Metals"
+        },
+        {
+          "value": "tiny gears, screws, bolts, and mechanical components with intricate details",
+          "label": "⚙️ Mechanical Parts"
+        },
+        {
+          "value": "miniature crystal balls, ancient coins, and mysterious artifacts with glowing effects",
+          "label": "🔮 Mystical Objects"
+        },
+        {
+          "value": "tiny test tubes, beakers, syringes, and laboratory equipment with colorful liquids",
+          "label": "🔬 Lab Equipment"
+        },
+        {
+          "value": "colorful miniature pills, capsules, and tablets in various shapes and sizes",
+          "label": "💊 Medical Capsules"
+        },
+        {
+          "value": "miniature bullets, shells, and cartridges with metallic shine",
+          "label": "🎯 Ammunition"
+        },
+        {
+          "value": "tiny smartphones, computer chips, and electronic components with LED lights",
+          "label": "📱 Electronic Devices"
+        }
       ]
     },
     "container_type": {
@@ -43,9 +106,18 @@
       "required": true,
       "default": "transparent glass jar",
       "options": [
-        { "value": "transparent glass jar", "label": "Transparent Glass Jar" },
-        { "value": "crystal container", "label": "Crystal Container" },
-        { "value": "vintage mason jar", "label": "Vintage Mason Jar" }
+        {
+          "value": "transparent glass jar",
+          "label": "Transparent Glass Jar"
+        },
+        {
+          "value": "crystal container",
+          "label": "Crystal Container"
+        },
+        {
+          "value": "vintage mason jar",
+          "label": "Vintage Mason Jar"
+        }
       ]
     },
     "item_quantity": {
@@ -61,5 +133,7 @@
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/asmr-surreal-toast-spread-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/asmr-surreal-toast-spread-thumbnail-blur.jpg"
 }

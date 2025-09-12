@@ -5,13 +5,20 @@
   "icon": "🏔️",
   "description": "POV selfie footage of a Yeti sharing daily life activities in the Himalayan mountains with entertaining commentary",
   "previewUrl": "/templates/videos/yeti-mountain-life-vlog.mp4",
-
-  "tags": ["yeti", "mountain", "vlog", "pov", "himalayan", "winter", "daily-life", "entertaining"],
+  "tags": [
+    "yeti",
+    "mountain",
+    "vlog",
+    "pov",
+    "himalayan",
+    "winter",
+    "daily-life",
+    "entertaining"
+  ],
   "createdAt": "2025-01-29T23:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-29T23:00:00Z",
   "promptTemplate": "POV selfie of a realistic white-furred Yeti in {weather_condition} conditions during {time_of_day}, holding a selfie stick with the camera at the end, standing majestically in the Himalayan mountains. {activity_description} The scene unfolds in the breathtaking Himalayan landscape with towering snow-capped peaks reaching into the clouds, pristine glaciers gleaming under natural light, and ancient ice formations creating a dramatic backdrop. Prayer flags flutter in the mountain winds while the thin, crisp air sparkles with ice crystals. Far below, deep valleys disappear into misty clouds, emphasizing the incredible altitude and isolation of this sacred mountain realm. The atmosphere is both serene and powerful, filled with the sounds of mountain winds and distant avalanches echoing through the peaks. National Geographic documentary style, HD quality with cinematic depth of field capturing the majesty of high-altitude wilderness. The Yeti turns to face the camera directly and speaks to the audience in his deep, wise mountain voice: '{voiceover_content}' No background narration or voiceover - only the Yeti's direct speech is heard.",
-
   "params": {
     "weather_condition": {
       "type": "select",
@@ -19,9 +26,18 @@
       "required": true,
       "default": "clear mountain",
       "options": [
-        { "value": "clear mountain", "label": "Clear Mountain ☀️🏔️" },
-        { "value": "blizzard", "label": "Blizzard 🌨️💨" },
-        { "value": "aurora night", "label": "Aurora Night 🌌✨" }
+        {
+          "value": "clear mountain",
+          "label": "Clear Mountain ☀️🏔️"
+        },
+        {
+          "value": "blizzard",
+          "label": "Blizzard 🌨️💨"
+        },
+        {
+          "value": "aurora night",
+          "label": "Aurora Night 🌌✨"
+        }
       ]
     },
     "time_of_day": {
@@ -30,11 +46,26 @@
       "required": true,
       "default": "morning",
       "options": [
-        { "value": "dawn", "label": "Mountain Dawn 🌅" },
-        { "value": "midday", "label": "High Sun ☀️" },
-        { "value": "dusk", "label": "Mountain Dusk 🌇" },
-        { "value": "night", "label": "Star Night 🌙" },
-        { "value": "late_night", "label": "Deep Night ⭐" }
+        {
+          "value": "dawn",
+          "label": "Mountain Dawn 🌅"
+        },
+        {
+          "value": "midday",
+          "label": "High Sun ☀️"
+        },
+        {
+          "value": "dusk",
+          "label": "Mountain Dusk 🌇"
+        },
+        {
+          "value": "night",
+          "label": "Star Night 🌙"
+        },
+        {
+          "value": "late_night",
+          "label": "Deep Night ⭐"
+        }
       ]
     },
     "activity_content": {
@@ -51,7 +82,7 @@
         },
         {
           "value": "track_investigation",
-          "label": "Track Investigation 🔍", 
+          "label": "Track Investigation 🔍",
           "activity_description": "He kneels down and examines animal tracks in the snow with expert precision, his keen eyes reading the story of mountain wildlife movements.",
           "voiceover_content": "Snow leopard tracks... They're getting bolder."
         },
@@ -158,5 +189,7 @@
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/yeti-mountain-life-vlog-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/yeti-mountain-life-vlog-thumbnail-blur.jpg"
 }

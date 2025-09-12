@@ -1,17 +1,23 @@
 {
   "id": "7e9a2b4c-6d8f-4c2a-9e7b-3a1f5d8c2e4b",
-  "slug": "country-historical-evolution", 
+  "slug": "country-historical-evolution",
   "name": "Country Historical Evolution",
   "icon": "🌍",
   "description": "Transform ancient maps into living 3D miniature countries with tilt-shift effect",
   "previewUrl": "/templates/videos/country-historical-evolution.mp4",
   "credits": 10,
-  
-  "tags": ["country", "history", "3d", "miniature", "tilt-shift", "map", "evolution"],
+  "tags": [
+    "country",
+    "history",
+    "3d",
+    "miniature",
+    "tilt-shift",
+    "map",
+    "evolution"
+  ],
   "createdAt": "2025-01-31T10:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-31T10:00:00Z",
-  
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
@@ -46,7 +52,6 @@
       "music": "{music_style} building quickly to a majestic crescendo."
     }
   },
-
   "params": {
     "country": {
       "type": "select",
@@ -504,34 +509,122 @@
         }
       ]
     },
-    
-    "country_name": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "country_display_name": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "country_type": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "map_style": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "map_color": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "map_texture": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "texture_materials": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "cultural_style": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "lighting_description": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "color_palette": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "landmark_1": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "landmark_2": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "building_style": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "water_feature": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "water_color": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "boat_type": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "vegetation": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "vegetation_location": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "text_location": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "text_texture": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "ambient_sounds": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    "music_style": {"type": "hidden", "linkedTo": "country", "linkType": "metadata"},
-    
+    "country_name": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "country_display_name": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "country_type": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "map_style": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "map_color": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "map_texture": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "texture_materials": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "cultural_style": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "lighting_description": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "color_palette": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "landmark_1": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "landmark_2": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "building_style": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "water_feature": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "water_color": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "boat_type": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "vegetation": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "vegetation_location": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "text_location": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "text_texture": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "ambient_sounds": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
+    "music_style": {
+      "type": "hidden",
+      "linkedTo": "country",
+      "linkType": "metadata"
+    },
     "makePublic": {
       "type": "toggle",
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/country-historical-evolution-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/country-historical-evolution-thumbnail-blur.jpg"
 }

@@ -5,13 +5,19 @@
   "icon": "🦶",
   "description": "POV selfie footage of Bigfoot demonstrating wilderness survival skills with customizable voiceover content",
   "previewUrl": "/templates/videos/bigfoot-survival-vlog.mp4",
-
-  "tags": ["bigfoot", "survival", "vlog", "pov", "wilderness", "national-geographic", "custom-voiceover"],
+  "tags": [
+    "bigfoot",
+    "survival",
+    "vlog",
+    "pov",
+    "wilderness",
+    "national-geographic",
+    "custom-voiceover"
+  ],
   "createdAt": "2025-01-29T22:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-29T22:00:00Z",
   "promptTemplate": "POV selfie of a realistic male Bigfoot in {weather_condition} conditions during {time_of_day}, holding a selfie stick with the camera at the end, and a GoPro mounted on forehead. {activity_description} The scene unfolds in a pristine wilderness setting with towering pine trees and ancient oaks forming a natural canopy overhead. Dappled sunlight filters through the dense foliage, creating dramatic light and shadow patterns on the forest floor covered with fallen leaves and moss-covered rocks. In the background, distant mountains rise majestically while a gentle breeze rustles through the branches. The air is crisp and clean, filled with the earthy scents of the wild forest. Natural sounds of chirping birds and rustling wildlife provide an authentic wilderness atmosphere. National Geographic style, HD quality with cinematic depth of field. Voiceover in deep, gruff voice: '{voiceover_content}'",
-
   "params": {
     "weather_condition": {
       "type": "select",
@@ -19,9 +25,18 @@
       "required": true,
       "default": "sunny",
       "options": [
-        { "value": "sunny", "label": "Sunny ☀️" },
-        { "value": "rainy", "label": "Rainy 🌧️" },
-        { "value": "snowy", "label": "Snowy ❄️" }
+        {
+          "value": "sunny",
+          "label": "Sunny ☀️"
+        },
+        {
+          "value": "rainy",
+          "label": "Rainy 🌧️"
+        },
+        {
+          "value": "snowy",
+          "label": "Snowy ❄️"
+        }
       ]
     },
     "time_of_day": {
@@ -30,11 +45,26 @@
       "required": true,
       "default": "morning",
       "options": [
-        { "value": "morning", "label": "Morning 🌅" },
-        { "value": "daytime", "label": "Daytime ☀️" },
-        { "value": "dusk", "label": "Dusk 🌇" },
-        { "value": "night", "label": "Night 🌙" },
-        { "value": "late_night", "label": "Late Night ⭐" }
+        {
+          "value": "morning",
+          "label": "Morning 🌅"
+        },
+        {
+          "value": "daytime",
+          "label": "Daytime ☀️"
+        },
+        {
+          "value": "dusk",
+          "label": "Dusk 🌇"
+        },
+        {
+          "value": "night",
+          "label": "Night 🌙"
+        },
+        {
+          "value": "late_night",
+          "label": "Late Night ⭐"
+        }
       ]
     },
     "activity_content": {
@@ -43,8 +73,8 @@
       "required": true,
       "default": "foraging",
       "options": [
-        { 
-          "value": "foraging", 
+        {
+          "value": "foraging",
           "label": "Foraging 🍇",
           "activity_description": "He holds a large fern leaf filled with freshly picked, dew-covered wild berries. He brings a berry close to the camera lens to inspect it, a curious expression on his face.",
           "voiceover_content": "Alright, first thing's first... breakfast. Found some good ones today. You gotta know which ones to pick, though."
@@ -133,8 +163,8 @@
           "activity_description": "He arranges his makeshift bedding and checks that the fire is properly banked for the night. He takes one last look around before settling in.",
           "voiceover_content": "Time to rest. Tomorrow's another adventure in the wild. Sleep well out there."
         },
-        { 
-          "value": "custom", 
+        {
+          "value": "custom",
           "label": "Custom Activity ✏️",
           "activity_description": "He performs a custom survival activity. [Add your specific activity details here]",
           "voiceover_content": "[Add your custom Bigfoot commentary here]"
@@ -151,7 +181,7 @@
       "rows": 4
     },
     "voiceover_content": {
-      "type": "textarea", 
+      "type": "textarea",
       "label": "Voiceover Content",
       "required": false,
       "default": "Alright, first thing's first... breakfast. Found some good ones today. You gotta know which ones to pick, though.",
@@ -164,5 +194,7 @@
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/bigfoot-survival-vlog-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/bigfoot-survival-vlog-thumbnail-blur.jpg"
 }

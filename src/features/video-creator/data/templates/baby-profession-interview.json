@@ -6,12 +6,18 @@
   "description": "Cynical reporter interviews an optimistic baby about their tough late-night job",
   "previewUrl": "/templates/videos/baby-profession-interview.mp4",
   "credits": 10,
-  
-  "tags": ["comedy", "baby", "interview", "profession", "night", "neon", "city"],
+  "tags": [
+    "comedy",
+    "baby",
+    "interview",
+    "profession",
+    "night",
+    "neon",
+    "city"
+  ],
   "createdAt": "2025-02-01T10:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-02-01T10:00:00Z",
-  
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
@@ -57,7 +63,6 @@
       ]
     }
   },
-
   "params": {
     "baby_profession": {
       "type": "select",
@@ -145,7 +150,6 @@
         }
       ]
     },
-    
     "reporter_question": {
       "type": "textarea",
       "label": "Reporter's Question",
@@ -155,27 +159,46 @@
       "rows": 3,
       "default": "Still delivering food this late, this job must be really tough, huh?"
     },
-    
     "baby_response": {
       "type": "textarea",
-      "label": "Baby's Response", 
+      "label": "Baby's Response",
       "required": true,
       "placeholder": "Enter the baby's enthusiastic response...",
       "maxLength": 150,
       "rows": 3,
       "default": "Not tough at all! I love riding around the city, it's super cool!"
     },
-    
-    "uniform": {"type": "hidden", "linkedTo": "baby_profession", "linkType": "metadata"},
-    "scene_detail": {"type": "hidden", "linkedTo": "baby_profession", "linkType": "metadata"},
-    "interview_location": {"type": "hidden", "linkedTo": "baby_profession", "linkType": "metadata"},
-    "background_atmosphere": {"type": "hidden", "linkedTo": "baby_profession", "linkType": "metadata"},
-    "lighting_style": {"type": "hidden", "linkedTo": "baby_profession", "linkType": "metadata"},
-    
+    "uniform": {
+      "type": "hidden",
+      "linkedTo": "baby_profession",
+      "linkType": "metadata"
+    },
+    "scene_detail": {
+      "type": "hidden",
+      "linkedTo": "baby_profession",
+      "linkType": "metadata"
+    },
+    "interview_location": {
+      "type": "hidden",
+      "linkedTo": "baby_profession",
+      "linkType": "metadata"
+    },
+    "background_atmosphere": {
+      "type": "hidden",
+      "linkedTo": "baby_profession",
+      "linkType": "metadata"
+    },
+    "lighting_style": {
+      "type": "hidden",
+      "linkedTo": "baby_profession",
+      "linkType": "metadata"
+    },
     "makePublic": {
       "type": "toggle",
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/baby-profession-interview-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/baby-profession-interview-thumbnail-blur.jpg"
 }

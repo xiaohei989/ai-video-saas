@@ -101,8 +101,33 @@
       }
     </style>
     
-    <!-- 立即执行的预加载清理脚本 -->
+    <!-- React模块加载顺序控制脚本 -->
     <script>
+      // 确保React核心模块优先加载
+      window.__REACT_LOADING_STATE__ = {
+        core: false,
+        ecosystem: false,
+        ready: false
+      };
+
+      // 监听模块加载事件
+      window.addEventListener('modulepreload', function(e) {
+        const href = e.target?.href || '';
+        if (href.includes('react-core')) {
+          window.__REACT_LOADING_STATE__.core = true;
+          console.log('[MODULE LOAD] React核心模块已加载');
+        } else if (href.includes('react-ecosystem')) {
+          window.__REACT_LOADING_STATE__.ecosystem = true;
+          console.log('[MODULE LOAD] React生态系统模块已加载');
+        }
+        
+        // 检查是否所有关键模块都已加载
+        if (window.__REACT_LOADING_STATE__.core && window.__REACT_LOADING_STATE__.ecosystem) {
+          window.__REACT_LOADING_STATE__.ready = true;
+          console.log('[MODULE LOAD] 所有React模块已准备就绪');
+        }
+      });
+
       // 立即清理预加载链接，防止警告
       (function() {
         function removeProblematicPreloads() {

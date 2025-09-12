@@ -5,8 +5,17 @@
   "icon": "🔪",
   "description": "Create mesmerizing ASMR videos of cutting translucent glass fruits",
   "previewUrl": "/templates/videos/glass-cutting-asmr.mp4",
-
-  "tags": ["asmr", "cutting", "glass", "fruit", "satisfying", "closeup", "knife", "artistic", "relaxing"],
+  "tags": [
+    "asmr",
+    "cutting",
+    "glass",
+    "fruit",
+    "satisfying",
+    "closeup",
+    "knife",
+    "artistic",
+    "relaxing"
+  ],
   "createdAt": "2024-01-15T10:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-29T04:30:00Z",
@@ -18,16 +27,46 @@
       "required": true,
       "default": "strawberry",
       "options": [
-        { "value": "strawberry", "label": "Strawberry 🍓" },
-        { "value": "apple", "label": "Apple 🍎" },
-        { "value": "orange", "label": "Orange 🍊" },
-        { "value": "watermelon", "label": "Watermelon 🍉" },
-        { "value": "lemon", "label": "Lemon 🍋" },
-        { "value": "grapes", "label": "Grapes 🍇" },
-        { "value": "kiwi", "label": "Kiwi 🥝" },
-        { "value": "peach", "label": "Peach 🍑" },
-        { "value": "pear", "label": "Pear 🍐" },
-        { "value": "mango", "label": "Mango 🥭" }
+        {
+          "value": "strawberry",
+          "label": "Strawberry 🍓"
+        },
+        {
+          "value": "apple",
+          "label": "Apple 🍎"
+        },
+        {
+          "value": "orange",
+          "label": "Orange 🍊"
+        },
+        {
+          "value": "watermelon",
+          "label": "Watermelon 🍉"
+        },
+        {
+          "value": "lemon",
+          "label": "Lemon 🍋"
+        },
+        {
+          "value": "grapes",
+          "label": "Grapes 🍇"
+        },
+        {
+          "value": "kiwi",
+          "label": "Kiwi 🥝"
+        },
+        {
+          "value": "peach",
+          "label": "Peach 🍑"
+        },
+        {
+          "value": "pear",
+          "label": "Pear 🍐"
+        },
+        {
+          "value": "mango",
+          "label": "Mango 🥭"
+        }
       ]
     },
     "color": {
@@ -36,18 +75,54 @@
       "required": true,
       "default": "vivid red",
       "options": [
-        { "value": "vivid red", "label": "Vivid Red" },
-        { "value": "deep ruby", "label": "Deep Ruby" },
-        { "value": "bright orange", "label": "Bright Orange" },
-        { "value": "golden yellow", "label": "Golden Yellow" },
-        { "value": "emerald green", "label": "Emerald Green" },
-        { "value": "ocean blue", "label": "Ocean Blue" },
-        { "value": "royal purple", "label": "Royal Purple" },
-        { "value": "crystal clear", "label": "Crystal Clear" },
-        { "value": "rose pink", "label": "Rose Pink" },
-        { "value": "amber", "label": "Amber" },
-        { "value": "turquoise", "label": "Turquoise" },
-        { "value": "rainbow gradient", "label": "Rainbow Gradient" }
+        {
+          "value": "vivid red",
+          "label": "Vivid Red"
+        },
+        {
+          "value": "deep ruby",
+          "label": "Deep Ruby"
+        },
+        {
+          "value": "bright orange",
+          "label": "Bright Orange"
+        },
+        {
+          "value": "golden yellow",
+          "label": "Golden Yellow"
+        },
+        {
+          "value": "emerald green",
+          "label": "Emerald Green"
+        },
+        {
+          "value": "ocean blue",
+          "label": "Ocean Blue"
+        },
+        {
+          "value": "royal purple",
+          "label": "Royal Purple"
+        },
+        {
+          "value": "crystal clear",
+          "label": "Crystal Clear"
+        },
+        {
+          "value": "rose pink",
+          "label": "Rose Pink"
+        },
+        {
+          "value": "amber",
+          "label": "Amber"
+        },
+        {
+          "value": "turquoise",
+          "label": "Turquoise"
+        },
+        {
+          "value": "rainbow gradient",
+          "label": "Rainbow Gradient"
+        }
       ]
     },
     "material": {
@@ -56,16 +131,46 @@
       "required": true,
       "default": "glass",
       "options": [
-        { "value": "glass", "label": "Translucent Glass" },
-        { "value": "crystal", "label": "Crystal" },
-        { "value": "diamond", "label": "Diamond" },
-        { "value": "frosted glass", "label": "Frosted Glass" },
-        { "value": "jade", "label": "Jade" },
-        { "value": "ice", "label": "Ice" },
-        { "value": "soap", "label": "Soap" },
-        { "value": "wax", "label": "Wax" },
-        { "value": "jelly", "label": "Jelly" },
-        { "value": "hard candy", "label": "Hard Candy" }
+        {
+          "value": "glass",
+          "label": "Translucent Glass"
+        },
+        {
+          "value": "crystal",
+          "label": "Crystal"
+        },
+        {
+          "value": "diamond",
+          "label": "Diamond"
+        },
+        {
+          "value": "frosted glass",
+          "label": "Frosted Glass"
+        },
+        {
+          "value": "jade",
+          "label": "Jade"
+        },
+        {
+          "value": "ice",
+          "label": "Ice"
+        },
+        {
+          "value": "soap",
+          "label": "Soap"
+        },
+        {
+          "value": "wax",
+          "label": "Wax"
+        },
+        {
+          "value": "jelly",
+          "label": "Jelly"
+        },
+        {
+          "value": "hard candy",
+          "label": "Hard Candy"
+        }
       ]
     },
     "knife_type": {
@@ -73,11 +178,26 @@
       "label": "Knife Type",
       "default": "stainless steel kitchen",
       "options": [
-        { "value": "stainless steel kitchen", "label": "Stainless Steel Kitchen" },
-        { "value": "matte black blade", "label": "Matte Black Blade" },
-        { "value": "white ceramic", "label": "White Ceramic" },
-        { "value": "damascus steel", "label": "Damascus Steel" },
-        { "value": "Japanese santoku", "label": "Japanese Santoku" }
+        {
+          "value": "stainless steel kitchen",
+          "label": "Stainless Steel Kitchen"
+        },
+        {
+          "value": "matte black blade",
+          "label": "Matte Black Blade"
+        },
+        {
+          "value": "white ceramic",
+          "label": "White Ceramic"
+        },
+        {
+          "value": "damascus steel",
+          "label": "Damascus Steel"
+        },
+        {
+          "value": "Japanese santoku",
+          "label": "Japanese Santoku"
+        }
       ]
     },
     "cutting_style": {
@@ -85,10 +205,22 @@
       "label": "Cutting Style",
       "default": "multiple thin slices",
       "options": [
-        { "value": "a single clean slice", "label": "Single Clean Slice" },
-        { "value": "multiple thin slices", "label": "Multiple Thin Slices" },
-        { "value": "a halving cut", "label": "Cut in Half" },
-        { "value": "quarter cuts", "label": "Cut in Quarters" }
+        {
+          "value": "a single clean slice",
+          "label": "Single Clean Slice"
+        },
+        {
+          "value": "multiple thin slices",
+          "label": "Multiple Thin Slices"
+        },
+        {
+          "value": "a halving cut",
+          "label": "Cut in Half"
+        },
+        {
+          "value": "quarter cuts",
+          "label": "Cut in Quarters"
+        }
       ]
     },
     "lighting": {
@@ -96,10 +228,22 @@
       "label": "Lighting",
       "default": "soft diffuse",
       "options": [
-        { "value": "soft diffuse", "label": "Soft Diffuse" },
-        { "value": "dramatic side", "label": "Dramatic Side Light" },
-        { "value": "backlit", "label": "Backlight" },
-        { "value": "studio", "label": "Studio Lighting" }
+        {
+          "value": "soft diffuse",
+          "label": "Soft Diffuse"
+        },
+        {
+          "value": "dramatic side",
+          "label": "Dramatic Side Light"
+        },
+        {
+          "value": "backlit",
+          "label": "Backlight"
+        },
+        {
+          "value": "studio",
+          "label": "Studio Lighting"
+        }
       ]
     },
     "surface": {
@@ -107,10 +251,22 @@
       "label": "Surface",
       "default": "neutral marble countertop",
       "options": [
-        { "value": "neutral marble countertop", "label": "Marble Countertop" },
-        { "value": "wooden cutting board", "label": "Wooden Board" },
-        { "value": "black slate surface", "label": "Black Slate" },
-        { "value": "white ceramic plate", "label": "White Ceramic" }
+        {
+          "value": "neutral marble countertop",
+          "label": "Marble Countertop"
+        },
+        {
+          "value": "wooden cutting board",
+          "label": "Wooden Board"
+        },
+        {
+          "value": "black slate surface",
+          "label": "Black Slate"
+        },
+        {
+          "value": "white ceramic plate",
+          "label": "White Ceramic"
+        }
       ]
     },
     "slice_thickness": {
@@ -126,5 +282,7 @@
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/glass-cutting-asmr-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/glass-cutting-asmr-thumbnail-blur.jpg"
 }

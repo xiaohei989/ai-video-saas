@@ -197,7 +197,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE FUNCTION generate_bulk_invitations(
   p_inviter_id UUID,
   p_count INTEGER,
-  p_reward_credits INTEGER DEFAULT 50,
+  p_reward_credits INTEGER DEFAULT 20,
   p_expiry_days INTEGER DEFAULT 30
 ) RETURNS TABLE (
   invitation_code VARCHAR(20),

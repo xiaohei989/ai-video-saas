@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>缩略图修复验证</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-result {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .test-result.success {
+            border-left: 4px solid #22c55e;
+        }
+        .test-result.error {
+            border-left: 4px solid #ef4444;
+        }
+        .test-result.warning {
+            border-left: 4px solid #f59e0b;
+        }
+        .console-log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .thumbnail-test {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .thumbnail-test img {
+            width: 150px;
+            height: 85px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 缩略图修复验证</h1>
+        <p>测试缩略图优化修复是否成功</p>
+
+        <div id="results"></div>
+
+        <div class="test-result">
+            <h3>📋 控制台日志</h3>
+            <div id="console-logs" class="console-log">等待日志输出...</div>
+        </div>
+    </div>
+
+    <script>
+        const results = document.getElementById('results');
+        const consoleLogs = document.getElementById('console-logs');
+        const logs = [];
+
+        // 拦截控制台日志
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const originalError = console.error;
+
+        function addLog(type, message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logs.push(`[${timestamp}] [${type.toUpperCase()}] ${message}`);
+            updateConsoleDisplay();
+        }
+
+        function updateConsoleDisplay() {
+            consoleLogs.innerHTML = logs.slice(-20).join('<br>'); // 只显示最近20条日志
+            consoleLogs.scrollTop = consoleLogs.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            addLog('log', args.join(' '));
+            originalLog.apply(console, args);
+        };
+
+        console.warn = function(...args) {
+            addLog('warn', args.join(' '));
+            originalWarn.apply(console, args);
+        };
+
+        console.error = function(...args) {
+            addLog('error', args.join(' '));
+            originalError.apply(console, args);
+        };
+
+        // 测试结果添加函数
+        function addResult(title, status, message, details) {
+            const result = document.createElement('div');
+            result.className = `test-result ${status}`;
+            result.innerHTML = `
+                <h3>${title}</h3>
+                <p>${message}</p>
+                ${details ? `<div class="console-log">${details}</div>` : ''}
+            `;
+            results.appendChild(result);
+        }
+
+        // 测试1: 缩略图文件可访问性
+        async function testThumbnailAccess() {
+            const testThumbnails = [
+                '/templates/thumbnails/animal-skateboarding-street-thumbnail.jpg',
+                '/templates/thumbnails/art-coffee-machine-thumbnail.jpg',
+                '/templates/thumbnails/asmr-surreal-toast-spread-thumbnail.jpg'
+            ];
+
+            let successCount = 0;
+            const details = [];
+
+            for (const thumbnail of testThumbnails) {
+                try {
+                    const response = await fetch(thumbnail, { method: 'HEAD' });
+                    if (response.ok) {
+                        successCount++;
+                        details.push(`✅ ${thumbnail} - OK`);
+                    } else {
+                        details.push(`❌ ${thumbnail} - ${response.status}`);
+                    }
+                } catch (error) {
+                    details.push(`❌ ${thumbnail} - 错误: ${error.message}`);
+                }
+            }
+
+            const status = successCount === testThumbnails.length ? 'success' : 'warning';
+            addResult(
+                '📁 缩略图文件可访问性测试', 
+                status,
+                `${successCount}/${testThumbnails.length} 个缩略图文件可访问`,
+                details.join('<br>')
+            );
+        }
+
+        // 测试2: 模拟LazyVideoPlayer缩略图服务调用
+        async function testThumbnailGenerator() {
+            // 模拟缩略图生成器服务的逻辑
+            function generateThumbnailPath(videoSrc) {
+                const videoName = videoSrc.split('/').pop()?.replace('.mp4', '') || 'video';
+                return {
+                    normal: `/templates/thumbnails/${videoName}-thumbnail.jpg`,
+                    blur: `/templates/thumbnails/${videoName}-thumbnail-blur.jpg`
+                };
+            }
+
+            async function checkThumbnailExists(thumbnailPath) {
+                try {
+                    const response = await fetch(thumbnailPath, { method: 'HEAD' });
+                    return response.ok;
+                } catch {
+                    return false;
+                }
+            }
+
+            async function getBestThumbnail(videoSrc, fallbackImage) {
+                console.log(`[ThumbnailGenerator] 检查缩略图路径:`, generateThumbnailPath(videoSrc));
+                
+                const thumbnailPaths = generateThumbnailPath(videoSrc);
+                const normalExists = await checkThumbnailExists(thumbnailPaths.normal);
+                const blurExists = await checkThumbnailExists(thumbnailPaths.blur);
+                
+                console.log(`[ThumbnailGenerator] 缩略图存在状态: normal=${normalExists}, blur=${blurExists}`);
+                
+                if (normalExists && blurExists) {
+                    console.log(`[ThumbnailGenerator] ✅ 使用生成的缩略图: ${thumbnailPaths.normal}`);
+                    return thumbnailPaths;
+                }
+                
+                const fallback = fallbackImage || '/logo.png';
+                console.log(`[ThumbnailGenerator] ⚠️ 缩略图不存在，使用fallback: ${fallback}`);
+                return {
+                    normal: fallback,
+                    blur: fallback
+                };
+            }
+
+            // 测试几个模板
+            const testVideos = [
+                '/templates/videos/animal-skateboarding-street.mp4',
+                '/templates/videos/art-coffee-machine.mp4',
+                '/templates/videos/asmr-surreal-toast-spread.mp4'
+            ];
+
+            let successCount = 0;
+            for (const video of testVideos) {
+                const result = await getBestThumbnail(video);
+                if (result.normal.includes('templates/thumbnails')) {
+                    successCount++;
+                }
+            }
+
+            const status = successCount === testVideos.length ? 'success' : 'warning';
+            addResult(
+                '🖼️ 缩略图生成器服务测试',
+                status,
+                `${successCount}/${testVideos.length} 个视频成功获取到缩略图`,
+                '查看控制台日志了解详细过程'
+            );
+        }
+
+        // 测试3: 显示实际的缩略图
+        function testThumbnailDisplay() {
+            const thumbnails = [
+                '/templates/thumbnails/animal-skateboarding-street-thumbnail.jpg',
+                '/templates/thumbnails/art-coffee-machine-thumbnail.jpg',
+                '/templates/thumbnails/asmr-surreal-toast-spread-thumbnail.jpg'
+            ];
+
+            let thumbnailHtml = '<div class="thumbnail-test">';
+            thumbnails.forEach(thumb => {
+                thumbnailHtml += `<img src="${thumb}" alt="缩略图测试" onload="this.style.border='2px solid #22c55e'" onerror="this.style.border='2px solid #ef4444'">`;
+            });
+            thumbnailHtml += '</div>';
+
+            addResult(
+                '🎨 缩略图显示测试',
+                'success',
+                '绿色边框表示加载成功，红色边框表示加载失败',
+                thumbnailHtml
+            );
+        }
+
+        // 运行所有测试
+        async function runTests() {
+            console.log('🧪 开始缩略图修复验证测试...');
+            
+            await testThumbnailAccess();
+            await testThumbnailGenerator();
+            testThumbnailDisplay();
+            
+            console.log('✅ 所有测试完成');
+        }
+
+        // 页面加载完成后运行测试
+        document.addEventListener('DOMContentLoaded', runTests);
+    </script>
+</body>
+</html>

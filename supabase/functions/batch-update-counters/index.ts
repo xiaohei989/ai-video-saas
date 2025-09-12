@@ -1,7 +1,7 @@
 // supabase/functions/batch-update-counters/index.ts
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { Redis } from 'https://deno.land/x/upstash_redis@v1.31.6/mod.ts'
+import { Redis } from 'https://deno.land/x/upstash_redis@v1.22.1/mod.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -46,20 +46,48 @@ serve(async (req: Request) => {
       }
     )
 
-    const redis = new Redis({
-      url: Deno.env.get('UPSTASH_REDIS_REST_URL')!,
-      token: Deno.env.get('UPSTASH_REDIS_REST_TOKEN')!,
-    })
+    // Redis配置 - 可选，如果不存在则使用fallback逻辑
+    let redis: Redis | null = null;
+    const redisUrl = Deno.env.get('UPSTASH_REDIS_REST_URL');
+    const redisToken = Deno.env.get('UPSTASH_REDIS_REST_TOKEN');
+    
+    if (redisUrl && redisToken) {
+      try {
+        redis = new Redis({
+          url: redisUrl,
+          token: redisToken,
+        });
+      } catch (error) {
+        console.warn('[COUNTER EDGE] Redis初始化失败，将使用直接数据库更新:', error.message);
+      }
+    } else {
+      console.warn('[COUNTER EDGE] Redis配置不完整，将使用直接数据库更新');
+    }
 
     if (req.method === 'POST') {
       const body = await req.json()
       
       if (body.action === 'publish_event') {
-        // 发布计数器事件到Redis Stream
-        return await publishCounterEvent(redis, body.event)
+        // 发布计数器事件到Redis Stream或直接处理
+        if (redis) {
+          return await publishCounterEvent(redis, body.event)
+        } else {
+          return await processEventDirectly(supabaseAdmin, body.event)
+        }
       } else if (body.action === 'process_batch') {
         // 批量处理计数器事件
-        return await processBatchCounters(redis, supabaseAdmin)
+        if (redis) {
+          return await processBatchCounters(redis, supabaseAdmin)
+        } else {
+          return new Response(
+            JSON.stringify({ 
+              success: true,
+              message: 'Redis不可用，事件直接处理', 
+              data: { processed: 0 }
+            }),
+            { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          )
+        }
       }
     }
 
@@ -91,6 +119,67 @@ serve(async (req: Request) => {
     )
   }
 })
+
+/**
+ * 直接处理计数器事件（Redis不可用时的fallback）
+ */
+async function processEventDirectly(supabaseAdmin: any, event: CounterEvent) {
+  try {
+    console.log(`[COUNTER EDGE] 直接处理事件: ${event.type} for template ${event.template_id}`)
+    
+    // 根据事件类型更新计数器
+    const deltas = {
+      like_delta: event.type === 'template_like' ? event.delta : 0,
+      comment_delta: event.type === 'template_comment' ? event.delta : 0,
+      view_delta: event.type === 'template_view' ? event.delta : 0,
+      usage_delta: event.type === 'template_usage' ? event.delta : 0,
+      share_delta: event.type === 'template_share' ? event.delta : 0,
+    }
+    
+    // 直接更新数据库
+    const { error } = await supabaseAdmin.rpc('update_template_counters_atomic', {
+      p_template_id: event.template_id,
+      p_like_delta: deltas.like_delta,
+      p_comment_delta: deltas.comment_delta,
+      p_view_delta: deltas.view_delta,
+      p_usage_delta: deltas.usage_delta,
+      p_share_delta: deltas.share_delta
+    })
+
+    if (error) {
+      throw error
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        data: { 
+          event_type: event.type,
+          template_id: event.template_id,
+          delta: event.delta,
+          processed: 'directly'
+        },
+        timestamp: new Date().toISOString()
+      }),
+      { 
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    )
+  } catch (error) {
+    console.error('[COUNTER EDGE] 直接处理事件失败:', error)
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message
+      }),
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    )
+  }
+}
 
 /**
  * 发布计数器事件到Redis Stream
@@ -244,21 +333,56 @@ async function processBatchCounters(redis: Redis, supabaseAdmin: any) {
 /**
  * 获取计数器处理状态
  */
-async function getCounterProcessingStatus(redis: Redis) {
+async function getCounterProcessingStatus(redis: Redis | null) {
   try {
-    const streamKey = 'counter_events'
-    const consumerGroup = 'counter_processors'
+    if (!redis) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            mode: 'direct_processing',
+            redis_available: false,
+            message: 'Using direct database updates'
+          },
+          timestamp: new Date().toISOString()
+        }),
+        { 
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
     
-    const streamLength = await redis.xlen(streamKey)
-    const pendingInfo = await redis.xpending(streamKey, consumerGroup)
+    // 测试Redis基础连接而不是Stream功能
+    try {
+      await redis.ping()
+      console.log('[BATCH COUNTER] Redis连接测试成功')
+    } catch (error) {
+      console.warn('[BATCH COUNTER] Redis连接测试失败，使用fallback模式:', error.message)
+      return new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            mode: 'direct_processing',
+            redis_available: false,
+            message: 'Redis connection failed, using direct database updates'
+          },
+          timestamp: new Date().toISOString()
+        }),
+        { 
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
     
     return new Response(
       JSON.stringify({
         success: true,
         data: {
-          stream_length: streamLength,
-          pending_messages: Array.isArray(pendingInfo) ? pendingInfo[0] : 0,
-          consumer_group: consumerGroup
+          mode: 'redis_basic_cache',
+          redis_available: true,
+          message: 'Redis connected successfully - basic caching enabled'
         },
         timestamp: new Date().toISOString()
       }),

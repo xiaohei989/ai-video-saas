@@ -5,9 +5,18 @@
   "icon": "✨",
   "description": "Use a magic pen to trigger 3D bloom effects on book pages for ASMR videos",
   "previewUrl": "/templates/videos/magic-pen-3d-bloom.mp4",
-
   "category": "Art/ASMR",
-  "tags": ["asmr", "magic", "3d", "art", "bloom", "creative", "surreal", "pen", "drawing"],
+  "tags": [
+    "asmr",
+    "magic",
+    "3d",
+    "art",
+    "bloom",
+    "creative",
+    "surreal",
+    "pen",
+    "drawing"
+  ],
   "createdAt": "2025-01-24T11:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-29T04:30:00Z",
@@ -19,13 +28,34 @@
       "required": true,
       "default": "transparent pen containing colored particles",
       "options": [
-        {"value": "transparent pen containing colored particles", "label": "Transparent Particle Pen ✨"},
-        {"value": "crystal wand with glowing core", "label": "Crystal Wand 🔮"},
-        {"value": "wooden paintbrush with magic bristles", "label": "Magic Paintbrush 🖌️"},
-        {"value": "metallic calligraphy pen", "label": "Metallic Calligraphy Pen 🖋️"},
-        {"value": "glass fountain pen with liquid ink", "label": "Glass Fountain Pen ✒️"},
-        {"value": "feather quill with shimmering tip", "label": "Feather Quill 🪶"},
-        {"value": "bamboo brush with ink", "label": "Bamboo Brush 🖌️"}
+        {
+          "value": "transparent pen containing colored particles",
+          "label": "Transparent Particle Pen ✨"
+        },
+        {
+          "value": "crystal wand with glowing core",
+          "label": "Crystal Wand 🔮"
+        },
+        {
+          "value": "wooden paintbrush with magic bristles",
+          "label": "Magic Paintbrush 🖌️"
+        },
+        {
+          "value": "metallic calligraphy pen",
+          "label": "Metallic Calligraphy Pen 🖋️"
+        },
+        {
+          "value": "glass fountain pen with liquid ink",
+          "label": "Glass Fountain Pen ✒️"
+        },
+        {
+          "value": "feather quill with shimmering tip",
+          "label": "Feather Quill 🪶"
+        },
+        {
+          "value": "bamboo brush with ink",
+          "label": "Bamboo Brush 🖌️"
+        }
       ]
     },
     "base_sketch": {
@@ -34,15 +64,42 @@
       "required": true,
       "default": "cracked earth",
       "options": [
-        {"value": "cracked earth", "label": "Cracked Earth 🏜️"},
-        {"value": "desert dunes", "label": "Desert Dunes 🏖️"},
-        {"value": "ocean waves", "label": "Ocean Waves 🌊"},
-        {"value": "mountain landscape", "label": "Mountain Landscape 🏔️"},
-        {"value": "abstract patterns", "label": "Abstract Patterns 🎨"},
-        {"value": "geometric shapes", "label": "Geometric Shapes 📐"},
-        {"value": "tree branches", "label": "Tree Branches 🌳"},
-        {"value": "city skyline", "label": "City Skyline 🏙️"},
-        {"value": "spiral galaxy", "label": "Spiral Galaxy 🌌"}
+        {
+          "value": "cracked earth",
+          "label": "Cracked Earth 🏜️"
+        },
+        {
+          "value": "desert dunes",
+          "label": "Desert Dunes 🏖️"
+        },
+        {
+          "value": "ocean waves",
+          "label": "Ocean Waves 🌊"
+        },
+        {
+          "value": "mountain landscape",
+          "label": "Mountain Landscape 🏔️"
+        },
+        {
+          "value": "abstract patterns",
+          "label": "Abstract Patterns 🎨"
+        },
+        {
+          "value": "geometric shapes",
+          "label": "Geometric Shapes 📐"
+        },
+        {
+          "value": "tree branches",
+          "label": "Tree Branches 🌳"
+        },
+        {
+          "value": "city skyline",
+          "label": "City Skyline 🏙️"
+        },
+        {
+          "value": "spiral galaxy",
+          "label": "Spiral Galaxy 🌌"
+        }
       ]
     },
     "creation_type": {
@@ -51,16 +108,46 @@
       "required": true,
       "default": "colorful flowers with petals unfolding and stamens popping out",
       "options": [
-        {"value": "colorful flowers with petals unfolding and stamens popping out", "label": "Blooming Flowers 🌸"},
-        {"value": "butterflies emerging and flying", "label": "Flying Butterflies 🦋"},
-        {"value": "birds taking flight", "label": "Flying Birds 🐦"},
-        {"value": "crystals growing and sparkling", "label": "Growing Crystals 💎"},
-        {"value": "stars and galaxies swirling", "label": "Swirling Stars ⭐"},
-        {"value": "coral reef blooming", "label": "Coral Reef Blooming 🪸"},
-        {"value": "mushrooms sprouting", "label": "Mushrooms Sprouting 🍄"},
-        {"value": "vines and leaves growing", "label": "Vines Growing 🌿"},
-        {"value": "fireworks exploding", "label": "Fireworks Exploding 🎆"},
-        {"value": "bubbles floating up", "label": "Bubbles Floating 🫧"}
+        {
+          "value": "colorful flowers with petals unfolding and stamens popping out",
+          "label": "Blooming Flowers 🌸"
+        },
+        {
+          "value": "butterflies emerging and flying",
+          "label": "Flying Butterflies 🦋"
+        },
+        {
+          "value": "birds taking flight",
+          "label": "Flying Birds 🐦"
+        },
+        {
+          "value": "crystals growing and sparkling",
+          "label": "Growing Crystals 💎"
+        },
+        {
+          "value": "stars and galaxies swirling",
+          "label": "Swirling Stars ⭐"
+        },
+        {
+          "value": "coral reef blooming",
+          "label": "Coral Reef Blooming 🪸"
+        },
+        {
+          "value": "mushrooms sprouting",
+          "label": "Mushrooms Sprouting 🍄"
+        },
+        {
+          "value": "vines and leaves growing",
+          "label": "Vines Growing 🌿"
+        },
+        {
+          "value": "fireworks exploding",
+          "label": "Fireworks Exploding 🎆"
+        },
+        {
+          "value": "bubbles floating up",
+          "label": "Bubbles Floating 🫧"
+        }
       ]
     },
     "color_palette": {
@@ -69,15 +156,42 @@
       "required": true,
       "default": "red, yellow, pink, and blue",
       "options": [
-        {"value": "red, yellow, pink, and blue", "label": "Red Yellow Pink Blue 🌈"},
-        {"value": "soft pastel rainbow", "label": "Soft Pastel Rainbow 🎨"},
-        {"value": "autumn orange, red, and brown", "label": "Autumn Warm Colors 🍂"},
-        {"value": "ocean blues and greens", "label": "Ocean Blues Greens 🌊"},
-        {"value": "sunset orange, purple, and pink", "label": "Sunset Colors 🌅"},
-        {"value": "monochrome black to white gradient", "label": "Black White Gradient ⚫⚪"},
-        {"value": "neon vibrant colors", "label": "Neon Vibrant Colors 💫"},
-        {"value": "gold and silver metallic", "label": "Gold Silver Metallic ✨"},
-        {"value": "purple and teal mystical", "label": "Purple Teal Mystical 🔮"}
+        {
+          "value": "red, yellow, pink, and blue",
+          "label": "Red Yellow Pink Blue 🌈"
+        },
+        {
+          "value": "soft pastel rainbow",
+          "label": "Soft Pastel Rainbow 🎨"
+        },
+        {
+          "value": "autumn orange, red, and brown",
+          "label": "Autumn Warm Colors 🍂"
+        },
+        {
+          "value": "ocean blues and greens",
+          "label": "Ocean Blues Greens 🌊"
+        },
+        {
+          "value": "sunset orange, purple, and pink",
+          "label": "Sunset Colors 🌅"
+        },
+        {
+          "value": "monochrome black to white gradient",
+          "label": "Black White Gradient ⚫⚪"
+        },
+        {
+          "value": "neon vibrant colors",
+          "label": "Neon Vibrant Colors 💫"
+        },
+        {
+          "value": "gold and silver metallic",
+          "label": "Gold Silver Metallic ✨"
+        },
+        {
+          "value": "purple and teal mystical",
+          "label": "Purple Teal Mystical 🔮"
+        }
       ]
     },
     "sound_effect": {
@@ -85,12 +199,29 @@
       "label": "Sound Effects",
       "default": "flowers blooming",
       "options": [
-        {"value": "flowers blooming", "label": "Flowers Blooming"},
-        {"value": "crystals chiming", "label": "Crystals Chiming"},
-        {"value": "paper crinkling", "label": "Paper Crinkling"},
-        {"value": "magical sparkles", "label": "Magical Sparkles"},
-        {"value": "gentle whoosh", "label": "Gentle Whoosh"}
+        {
+          "value": "flowers blooming",
+          "label": "Flowers Blooming"
+        },
+        {
+          "value": "crystals chiming",
+          "label": "Crystals Chiming"
+        },
+        {
+          "value": "paper crinkling",
+          "label": "Paper Crinkling"
+        },
+        {
+          "value": "magical sparkles",
+          "label": "Magical Sparkles"
+        },
+        {
+          "value": "gentle whoosh",
+          "label": "Gentle Whoosh"
+        }
       ]
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/magic-pen-3d-bloom-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/magic-pen-3d-bloom-thumbnail-blur.jpg"
 }

@@ -6,23 +6,27 @@
   "description": "A book page transforms into famous city landmarks rising in miniature",
   "previewUrl": "/templates/videos/city-landmarks-book.mp4",
   "credits": 10,
-
-  "tags": ["city", "landmarks", "architecture", "book", "miniature", "travel", "urban"],
+  "tags": [
+    "city",
+    "landmarks",
+    "architecture",
+    "book",
+    "miniature",
+    "travel",
+    "urban"
+  ],
   "createdAt": "2025-01-30T16:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-30T16:00:00Z",
-
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
     "aspect_ratio": "16:9",
-    
     "product": {
       "name": "City Landmarks from Book",
       "type": "Architectural Miniature Effect",
       "brand_style": "cinematic, detailed miniature, urban diorama"
     },
-    
     "visual_core": {
       "description": "A book page turns, revealing {opening_sketch} that grows into {landmarks_description} contained entirely within the pages",
       "style": "{architectural_style}, cinematic diorama, detailed miniature",
@@ -30,20 +34,17 @@
       "lighting": "{lighting_style}",
       "environment": "dark library table, the book as a glowing {city_atmosphere} diorama"
     },
-    
     "elements": [
       "sketch transforming into miniature landmarks",
       "{city_elements}",
       "pages reflecting city atmosphere",
       "tiny details bringing the city to life"
     ],
-    
     "audio": {
       "sfx": "page flip + {transformation_sounds}",
       "ambience": "{ambient_sounds}",
       "music": "{music_style}"
     },
-    
     "timeline": [
       {
         "time": "0-2s",
@@ -70,13 +71,11 @@
         "audio": "mystical chime with city ambience fading"
       }
     ],
-    
     "cta": {
       "motion": "{final_effect}",
       "text": "{cta_text}",
       "style": "{text_style}"
     },
-    
     "keywords": [
       "cinematic",
       "miniature architecture",
@@ -87,7 +86,6 @@
       "{style_keyword}"
     ]
   },
-
   "params": {
     "city": {
       "type": "select",
@@ -522,7 +520,6 @@
         }
       ]
     },
-
     "cta_text": {
       "type": "text",
       "label": "Ending Text",
@@ -530,31 +527,107 @@
       "required": true,
       "default": "Explore the World"
     },
-
-    "opening_sketch": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "landmarks_description": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "architectural_style": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "lighting_style": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "city_atmosphere": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "city_elements": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "transformation_sounds": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "ambient_sounds": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "music_style": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "opening_action": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "opening_audio": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "transformation_action": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "transformation_audio": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "finale_action": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "finale_audio": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "final_effect": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "text_style": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "style_keyword": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-    "city_name": {"type": "hidden", "linkedTo": "city", "linkType": "metadata"},
-
+    "opening_sketch": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "landmarks_description": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "architectural_style": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "lighting_style": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "city_atmosphere": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "city_elements": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "transformation_sounds": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "ambient_sounds": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "music_style": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "opening_action": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "opening_audio": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "transformation_action": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "transformation_audio": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "finale_action": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "finale_audio": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "final_effect": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "text_style": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "style_keyword": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
+    "city_name": {
+      "type": "hidden",
+      "linkedTo": "city",
+      "linkType": "metadata"
+    },
     "makePublic": {
       "type": "toggle",
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/city-landmarks-book-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/city-landmarks-book-thumbnail-blur.jpg"
 }

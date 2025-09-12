@@ -76,9 +76,9 @@ class AnalyticsService {
   initialize(measurementId?: string) {
     if (this.isInitialized) return
 
-    // 开发环境下跳过GA初始化，避免网络错误
-    if (import.meta.env.DEV) {
-      console.log('[Analytics] 开发环境，跳过Google Analytics初始化')
+    // 仅在本地开发时跳过GA初始化，生产环境正常加载
+    if (import.meta.env.DEV && window.location.hostname === 'localhost') {
+      console.log('[Analytics] 本地开发环境，跳过Google Analytics初始化')
       this.isInitialized = true
       return
     }
@@ -234,7 +234,7 @@ class AnalyticsService {
   /**
    * 跟踪用户注册
    */
-  trackSignUp(method: 'google' | 'email', userId: string) {
+  trackSignUp(method: 'google' | 'apple' | 'email', userId: string) {
     this.trackEvent({
       action: 'sign_up',
       category: 'user_engagement',
@@ -249,7 +249,7 @@ class AnalyticsService {
   /**
    * 跟踪用户登录
    */
-  trackLogin(method: 'google' | 'email', userId: string) {
+  trackLogin(method: 'google' | 'apple' | 'email', userId: string) {
     this.trackEvent({
       action: 'login',
       category: 'user_engagement',

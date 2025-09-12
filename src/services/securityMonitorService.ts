@@ -9,7 +9,8 @@ import {
   ThreatType, 
   SECURITY_CONFIG 
 } from '../config/security';
-import { supabase } from '../lib/supabase';
+// 避免循环依赖，延迟导入 Supabase
+// import { supabase } from '../lib/supabase';
 
 export interface AlertConfig {
   email?: string;
@@ -47,8 +48,8 @@ export class SecurityMonitorService {
       return;
     }
 
-    // 使用共享的Supabase客户端
-    this.supabase = supabase;
+    // 延迟初始化Supabase客户端，避免循环依赖
+    this.initializeSupabase();
 
     // 启动定期处理
     this.startPeriodicProcessing();
@@ -58,6 +59,27 @@ export class SecurityMonitorService {
       window.addEventListener('beforeunload', () => {
         this.flushEventBuffer();
       });
+    }
+  }
+
+  /**
+   * 延迟初始化Supabase客户端
+   */
+  private async initializeSupabase(): Promise<void> {
+    try {
+      // 动态导入避免循环依赖
+      const { supabase } = await import('../lib/supabase');
+      this.supabase = supabase;
+      
+      if (!this.supabase) {
+        console.warn('[SecurityMonitor] Supabase客户端未初始化，禁用安全监控');
+        this.isEnabled = false;
+        return;
+      }
+    } catch (error) {
+      console.warn('[SecurityMonitor] 初始化失败，禁用安全监控:', error);
+      this.isEnabled = false;
+      return;
     }
   }
 

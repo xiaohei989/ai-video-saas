@@ -6,17 +6,24 @@
   "description": "Transform technical blueprints into fully assembled products with stunning 3D effects",
   "previewUrl": "/templates/videos/blueprint-to-product.mp4",
   "credits": 20,
-  
-  "tags": ["blueprint", "3d", "assembly", "product", "luxury", "tech", "transformer", "cinematic", "engineering"],
+  "tags": [
+    "blueprint",
+    "3d",
+    "assembly",
+    "product",
+    "luxury",
+    "tech",
+    "transformer",
+    "cinematic",
+    "engineering"
+  ],
   "createdAt": "2025-01-31T10:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-31T10:00:00Z",
-  
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
     "aspect_ratio": "16:9",
-
     "visual_core": {
       "description": "{visual_description}",
       "style": "{style}",
@@ -24,15 +31,12 @@
       "lighting": "{lighting}",
       "environment": "{environment}"
     },
-
     "elements": "{elements}",
-
     "audio": {
       "sfx": "{sfx}",
       "ambience": "{ambience}",
       "music": "{music}"
     },
-
     "timeline": [
       {
         "time": "0-2s",
@@ -53,14 +57,12 @@
         "audio": "{audio_5_8s}"
       }
     ],
-
     "cta": {
       "motion": "{cta_motion}",
       "text": "{brand_text}",
       "style": "{cta_style}"
     }
   },
-  
   "params": {
     "product_type": {
       "type": "select",
@@ -77,7 +79,12 @@
             "camera_movement": "macro close-up on gears → orbit as they assemble → hero shot of complete timepiece",
             "lighting": "dramatic golden highlights, metallic reflections, deep shadows",
             "environment": "dim mahogany desk, glowing gears floating in mid-air",
-            "elements": ["ancient leather book with pocket watch sketch", "gears, cogs, springs assembling in the air", "gold and steel watch case forming", "light glinting across polished metal"],
+            "elements": [
+              "ancient leather book with pocket watch sketch",
+              "gears, cogs, springs assembling in the air",
+              "gold and steel watch case forming",
+              "light glinting across polished metal"
+            ],
             "sfx": "metallic ticks, gear clicks, winding spring",
             "ambience": "low mechanical hum",
             "music": "luxury orchestral score with deep strings and brass",
@@ -103,7 +110,13 @@
             "camera_movement": "macro close-up on blueprints → orbit around assembling engine → hero shot of complete supercar",
             "lighting": "dramatic studio lighting, chrome reflections, blue accent lights",
             "environment": "engineer's desk with illuminated blueprints, parts floating with precision",
-            "elements": ["technical automotive blueprints", "carbon fiber body panels assembling", "V12 engine block with chrome finish", "headlights flaring to life", "tire smoke and exhaust flames"],
+            "elements": [
+              "technical automotive blueprints",
+              "carbon fiber body panels assembling",
+              "V12 engine block with chrome finish",
+              "headlights flaring to life",
+              "tire smoke and exhaust flames"
+            ],
             "sfx": "engine roar, hydraulic assembly, metal snapping",
             "ambience": "garage atmosphere with mechanical hum",
             "music": "aggressive orchestral with powerful brass and percussion",
@@ -129,7 +142,13 @@
             "camera_movement": "macro close-up on circuits → orbit around assembling components → hero shot of complete phone",
             "lighting": "clean white lighting with cyan accents, holographic glow",
             "environment": "clean tech lab table, holographic displays, components floating with precision",
-            "elements": ["holographic circuit schematics", "nano-scale processors assembling", "curved OLED display layers", "titanium frame formation", "holographic UI projecting"],
+            "elements": [
+              "holographic circuit schematics",
+              "nano-scale processors assembling",
+              "curved OLED display layers",
+              "titanium frame formation",
+              "holographic UI projecting"
+            ],
             "sfx": "electronic beeps, magnetic snaps, capacitor charging",
             "ambience": "high-tech lab atmosphere with subtle electric hum",
             "music": "minimalist electronic score with digital textures",
@@ -155,7 +174,13 @@
             "camera_movement": "macro close-up on alien symbols → orbit around transforming parts → hero shot of battle-ready robot",
             "lighting": "dramatic lighting with blue energy accents, energon core glow",
             "environment": "metallic tablet with ancient symbols, parts transforming with energy crackling",
-            "elements": ["ancient Cybertronian tablet with glowing symbols", "transforming armor plates", "energon core igniting with blue flame", "servo motors and weapon systems", "optical sensors flashing blue"],
+            "elements": [
+              "ancient Cybertronian tablet with glowing symbols",
+              "transforming armor plates",
+              "energon core igniting with blue flame",
+              "servo motors and weapon systems",
+              "optical sensors flashing blue"
+            ],
             "sfx": "metallic transformation, servo whirs, energon humming, weapon charging",
             "ambience": "alien technology atmosphere with energy crackling",
             "music": "epic orchestral with electronic elements and robotic themes",
@@ -181,7 +206,13 @@
             "camera_movement": "macro close-up on da Vinci sketches → orbit around floating clockwork → hero shot of completed time machine",
             "lighting": "warm candlelight with blue temporal energy, brass reflections, swirling time distortions",
             "environment": "Renaissance workshop with ancient manuscripts, floating gears casting shadows, temporal ripples in air",
-            "elements": ["Leonardo da Vinci mechanical sketches", "bronze clockwork gears floating", "crystal temporal core glowing blue", "ornate time dial with moving hands", "swirling temporal energy vortex"],
+            "elements": [
+              "Leonardo da Vinci mechanical sketches",
+              "bronze clockwork gears floating",
+              "crystal temporal core glowing blue",
+              "ornate time dial with moving hands",
+              "swirling temporal energy vortex"
+            ],
             "sfx": "clockwork ticking, gear mechanisms, temporal energy humming, crystal resonance",
             "ambience": "ancient workshop atmosphere with mystical energy",
             "music": "orchestral with clockwork rhythm and mystical themes",
@@ -207,7 +238,13 @@
             "camera_movement": "macro close-up on DNA diagrams → dive into molecular level → pullback to reveal nano robot",
             "lighting": "clean laboratory lighting with bioluminescent DNA glow, laser precision beams",
             "environment": "high-tech medical laboratory, holographic displays, molecular diagrams floating in air",
-            "elements": ["scientific DNA helix charts", "glowing genetic base pairs separating", "nano mechanical components assembling", "microscopic precision tools extending", "bioluminescent energy patterns"],
+            "elements": [
+              "scientific DNA helix charts",
+              "glowing genetic base pairs separating",
+              "nano mechanical components assembling",
+              "microscopic precision tools extending",
+              "bioluminescent energy patterns"
+            ],
             "sfx": "molecular assembly sounds, precision micro-mechanics, electronic beeps, DNA strand separation",
             "ambience": "sterile laboratory with subtle electronic hum",
             "music": "minimalist electronic with biological rhythm patterns",
@@ -233,7 +270,13 @@
             "camera_movement": "macro close-up on bestiary drawings → orbit around assembling steel dragon → epic wide shot of complete mechanical beast",
             "lighting": "forge fire lighting with steel reflections, glowing mechanical eyes, flame illumination",
             "environment": "medieval forge workshop, ancient manuscripts, floating steel plates with sparks flying",
-            "elements": ["medieval bestiary dragon illustrations", "steel armor plates interlocking", "hydraulic joint mechanisms", "glowing mechanical eyes", "fire-breathing apparatus with flames"],
+            "elements": [
+              "medieval bestiary dragon illustrations",
+              "steel armor plates interlocking",
+              "hydraulic joint mechanisms",
+              "glowing mechanical eyes",
+              "fire-breathing apparatus with flames"
+            ],
             "sfx": "heavy metal assembly, hydraulic mechanisms, mechanical roars, forge fire crackling",
             "ambience": "medieval forge atmosphere with dragon mechanical sounds",
             "music": "epic orchestral with medieval themes and mechanical rhythms",
@@ -252,127 +295,106 @@
         }
       ]
     },
-    
     "visual_description": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "style": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "camera_movement": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "lighting": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "environment": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "elements": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "sfx": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "ambience": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "music": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "timeline_0_2s": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "camera_0_2s": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "audio_0_2s": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "timeline_2_5s": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "camera_2_5s": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "audio_2_5s": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "timeline_5_8s": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "camera_5_8s": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "audio_5_8s": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "cta_motion": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "cta_style": {
       "type": "hidden",
       "linkedTo": "product_type",
       "linkType": "metadata"
     },
-    
     "brand_text": {
       "type": "text",
       "label": "Custom Text",
@@ -381,11 +403,12 @@
       "default": "Engineered to Perfection",
       "maxLength": 50
     },
-    
     "makePublic": {
       "type": "toggle",
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/blueprint-to-product-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/blueprint-to-product-thumbnail-blur.jpg"
 }

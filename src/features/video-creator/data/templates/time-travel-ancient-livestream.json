@@ -6,13 +6,20 @@
   "credits": 10,
   "description": "Time-traveling streamers broadcasting live from ancient historical scenes with modern equipment",
   "previewUrl": "/templates/videos/time-travel-ancient-livestream.mp4",
-
-  "tags": ["comedy", "time-travel", "history", "livestream", "first-person", "ancient", "streamer", "realistic"],
+  "tags": [
+    "comedy",
+    "time-travel",
+    "history",
+    "livestream",
+    "first-person",
+    "ancient",
+    "streamer",
+    "realistic"
+  ],
   "createdAt": "2025-01-30T10:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-30T10:00:00Z",
   "promptTemplate": "A first-person perspective selfie: {character_description}, moving through {ancient_scene_description}. With focused expression, {pronoun_subject} explains the unfolding scene. {pronoun_subject} reacts with {voice_tone}, exclaiming '{scene_dialogue}' The camera, at a dynamic low angle, vibrates with the action, creating a jittery first-person view as the streamer navigates through the historical chaos. Cinema-quality realistic visuals with dramatic lighting and immersive atmosphere, emphasizing the striking contrast between modern streaming technology and the ancient world.",
-
   "params": {
     "character_description": {
       "type": "select",
@@ -154,7 +161,7 @@
       "linkType": "metadata"
     },
     "pronoun_object": {
-      "type": "hidden", 
+      "type": "hidden",
       "default": "her",
       "linkedTo": "character_description",
       "linkType": "metadata"
@@ -164,5 +171,7 @@
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/time-travel-ancient-livestream-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/time-travel-ancient-livestream-thumbnail-blur.jpg"
 }

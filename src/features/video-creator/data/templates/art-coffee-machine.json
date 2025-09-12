@@ -5,34 +5,87 @@
   "icon": "☕",
   "description": "Transform classic artworks into fluid art in a cup through a magical coffee machine",
   "previewUrl": "/templates/videos/art-coffee-machine.mp4",
-
   "category": "Art/Creative",
-  "tags": ["coffee", "art", "magic", "creative", "asmr", "liquid", "painting"],
+  "tags": [
+    "coffee",
+    "art",
+    "magic",
+    "creative",
+    "asmr",
+    "liquid",
+    "painting"
+  ],
   "createdAt": "2025-01-22T11:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-29T04:30:00Z",
-  "promptTemplate": "A hand wearing a black glove inserts a card printed with {artwork} into a silver, metallic machine. The brand name \"veo3video.me\" is printed on the front of the machine. After the card is fully inserted, the camera pans down. The outlet of the machine is directly aligned with a {cup_style} cup. Then, a stream of liquid in a mix of colors as coffee flows out of the nozzle, as if multiple pigments are being squeezed out simultaneously. Once the liquid is poured into the cup, it quickly forms a rotating vortex at the bottom. The various colors dynamically interweave and blend with the vortex. As more liquid is poured, these colors eventually perfectly replicate the {artwork}, like a magical piece of artistic latte art. ASMR sound effects.",  "params": {
+  "promptTemplate": "A hand wearing a black glove inserts a card printed with {artwork} into a silver, metallic machine. The brand name \"veo3video.me\" is printed on the front of the machine. After the card is fully inserted, the camera pans down. The outlet of the machine is directly aligned with a {cup_style} cup. Then, a stream of liquid in a mix of colors as coffee flows out of the nozzle, as if multiple pigments are being squeezed out simultaneously. Once the liquid is poured into the cup, it quickly forms a rotating vortex at the bottom. The various colors dynamically interweave and blend with the vortex. As more liquid is poured, these colors eventually perfectly replicate the {artwork}, like a magical piece of artistic latte art. ASMR sound effects.",
+  "params": {
     "artwork": {
       "type": "select",
       "label": "Artwork",
       "required": true,
       "default": "Van Gogh's famous painting The Starry Night",
       "options": [
-        {"value": "Van Gogh's famous painting The Starry Night", "label": "Van Gogh's Starry Night"},
-        {"value": "Monet's Water Lilies", "label": "Monet's Water Lilies"},
-        {"value": "Leonardo da Vinci's Mona Lisa", "label": "Da Vinci's Mona Lisa"},
-        {"value": "Hokusai's The Great Wave", "label": "Hokusai's Great Wave"},
-        {"value": "Mondrian's Composition", "label": "Mondrian's Composition"},
-        {"value": "Picasso's Guernica", "label": "Picasso's Guernica"},
-        {"value": "Klimt's The Kiss", "label": "Klimt's The Kiss"},
-        {"value": "Munch's The Scream", "label": "Munch's The Scream"},
-        {"value": "Vermeer's Girl with a Pearl Earring", "label": "Vermeer's Girl with Pearl Earring"},
-        {"value": "Botticelli's The Birth of Venus", "label": "Botticelli's Birth of Venus"},
-        {"value": "Dali's The Persistence of Memory", "label": "Dali's Persistence of Memory"},
-        {"value": "Kandinsky's Composition VII", "label": "Kandinsky's Composition VII"},
-        {"value": "Rembrandt's The Night Watch", "label": "Rembrandt's Night Watch"},
-        {"value": "Michelangelo's The Creation of Adam", "label": "Michelangelo's Creation of Adam"},
-        {"value": "Banksy's Girl With Balloon", "label": "Banksy's Girl With Balloon"}
+        {
+          "value": "Van Gogh's famous painting The Starry Night",
+          "label": "Van Gogh's Starry Night"
+        },
+        {
+          "value": "Monet's Water Lilies",
+          "label": "Monet's Water Lilies"
+        },
+        {
+          "value": "Leonardo da Vinci's Mona Lisa",
+          "label": "Da Vinci's Mona Lisa"
+        },
+        {
+          "value": "Hokusai's The Great Wave",
+          "label": "Hokusai's Great Wave"
+        },
+        {
+          "value": "Mondrian's Composition",
+          "label": "Mondrian's Composition"
+        },
+        {
+          "value": "Picasso's Guernica",
+          "label": "Picasso's Guernica"
+        },
+        {
+          "value": "Klimt's The Kiss",
+          "label": "Klimt's The Kiss"
+        },
+        {
+          "value": "Munch's The Scream",
+          "label": "Munch's The Scream"
+        },
+        {
+          "value": "Vermeer's Girl with a Pearl Earring",
+          "label": "Vermeer's Girl with Pearl Earring"
+        },
+        {
+          "value": "Botticelli's The Birth of Venus",
+          "label": "Botticelli's Birth of Venus"
+        },
+        {
+          "value": "Dali's The Persistence of Memory",
+          "label": "Dali's Persistence of Memory"
+        },
+        {
+          "value": "Kandinsky's Composition VII",
+          "label": "Kandinsky's Composition VII"
+        },
+        {
+          "value": "Rembrandt's The Night Watch",
+          "label": "Rembrandt's Night Watch"
+        },
+        {
+          "value": "Michelangelo's The Creation of Adam",
+          "label": "Michelangelo's Creation of Adam"
+        },
+        {
+          "value": "Banksy's Girl With Balloon",
+          "label": "Banksy's Girl With Balloon"
+        }
       ]
     },
     "cup_style": {
@@ -40,15 +93,41 @@
       "label": "Cup Style",
       "default": "European-style retro white",
       "options": [
-        {"value": "European-style retro white", "label": "European Retro White Porcelain"},
-        {"value": "modern minimalist glass", "label": "Modern Minimalist Glass"},
-        {"value": "Japanese ceramic", "label": "Japanese Ceramic"},
-        {"value": "Nordic wood-textured", "label": "Nordic Wood Texture"},
-        {"value": "industrial metal", "label": "Industrial Metal"},
-        {"value": "crystal clear glass", "label": "Crystal Glass"},
-        {"value": "vintage porcelain with gold rim", "label": "Gold-rimmed Vintage Porcelain"},
-        {"value": "handmade pottery", "label": "Handmade Pottery"}
+        {
+          "value": "European-style retro white",
+          "label": "European Retro White Porcelain"
+        },
+        {
+          "value": "modern minimalist glass",
+          "label": "Modern Minimalist Glass"
+        },
+        {
+          "value": "Japanese ceramic",
+          "label": "Japanese Ceramic"
+        },
+        {
+          "value": "Nordic wood-textured",
+          "label": "Nordic Wood Texture"
+        },
+        {
+          "value": "industrial metal",
+          "label": "Industrial Metal"
+        },
+        {
+          "value": "crystal clear glass",
+          "label": "Crystal Glass"
+        },
+        {
+          "value": "vintage porcelain with gold rim",
+          "label": "Gold-rimmed Vintage Porcelain"
+        },
+        {
+          "value": "handmade pottery",
+          "label": "Handmade Pottery"
+        }
       ]
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/art-coffee-machine-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/art-coffee-machine-thumbnail-blur.jpg"
 }

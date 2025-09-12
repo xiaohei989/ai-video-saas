@@ -118,8 +118,8 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   website TEXT,
   social_links JSONB DEFAULT '{}',
   language VARCHAR(10) DEFAULT 'en',
-  credits INTEGER DEFAULT 100,
-  total_credits_earned INTEGER DEFAULT 100,
+  credits INTEGER DEFAULT 50,
+  total_credits_earned INTEGER DEFAULT 50,
   total_credits_spent INTEGER DEFAULT 0,
   referral_code VARCHAR(20) UNIQUE,
   referred_by UUID REFERENCES public.profiles(id),
@@ -284,7 +284,7 @@ CREATE TABLE IF NOT EXISTS public.invitations (
   invitee_id UUID REFERENCES public.profiles(id),
   invitation_code VARCHAR(20) UNIQUE NOT NULL,
   status VARCHAR(20) DEFAULT 'pending',
-  reward_credits INTEGER DEFAULT 50,
+  reward_credits INTEGER DEFAULT 20,
   invitee_email TEXT,
   accepted_at TIMESTAMPTZ,
   expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '30 days'),
@@ -1682,8 +1682,8 @@ ON CONFLICT (domain) DO NOTHING;
 -- 插入基本系统配置
 INSERT INTO public.system_settings (setting_key, setting_value, description, category, is_public) VALUES
 ('max_concurrent_videos_per_user', '3', 'Maximum number of concurrent video processing jobs per user', 'limits', false),
-('default_user_credits', '100', 'Default credits given to new users', 'credits', false),
-('referral_reward_credits', '50', 'Credits awarded for successful referrals', 'referrals', false),
+('default_user_credits', '50', 'Default credits given to new users', 'credits', false),
+('referral_reward_credits', '20', 'Credits awarded for successful referrals', 'referrals', false),
 ('max_video_queue_size', '1000', 'Maximum size of the video processing queue', 'limits', false),
 ('site_maintenance_mode', 'false', 'Enable maintenance mode', 'system', true),
 ('registration_enabled', 'true', 'Enable user registration', 'system', true)

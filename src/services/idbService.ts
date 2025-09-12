@@ -32,6 +32,7 @@ interface CacheDBSchema extends DBSchema {
   metadata: {
     key: string
     value: {
+      key: string
       totalSize: number
       itemCount: number
       lastCleanup: number
@@ -532,10 +533,11 @@ class IDBCacheService {
       const existing = await this.db.get('metadata', 'stats')
       if (!existing) {
         await this.db.put('metadata', {
+          key: 'stats',
           totalSize: 0,
           itemCount: 0,
           lastCleanup: Date.now()
-        }, 'stats')
+        })
       }
     } catch (error) {
       console.error('[IDBCache] 初始化元数据失败:', error)
@@ -587,10 +589,11 @@ class IDBCacheService {
 
     try {
       await this.db.put('metadata', {
+        key: 'stats',
         totalSize: 0,
         itemCount: 0,
         lastCleanup: Date.now()
-      }, 'stats')
+      })
     } catch (error) {
       console.error('[IDBCache] 重置元数据失败:', error)
     }

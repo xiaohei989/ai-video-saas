@@ -6,23 +6,27 @@
   "description": "Two anthropomorphic animals having a casual conversation in selfie-style video format",
   "previewUrl": "/templates/videos/selfie-vlog-animals.mp4",
   "credits": 20,
-
-  "tags": ["animals", "selfie", "vlog", "conversation", "anthropomorphic", "casual", "forest"],
+  "tags": [
+    "animals",
+    "selfie",
+    "vlog",
+    "conversation",
+    "anthropomorphic",
+    "casual",
+    "forest"
+  ],
   "createdAt": "2025-01-21T12:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-21T12:00:00Z",
-
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
     "aspect_ratio": "16:9",
-    
     "product": {
       "name": "Selfie Vlog Animals",
       "type": "Anthropomorphic Animal Conversation",
       "brand_style": "Realistic, casual, friendly vlog style"
     },
-
     "visual_core": {
       "description": "An anthropomorphic {main_character} and an anthropomorphic {side_character} filming themselves in selfie style, having a natural conversation in a forest setting.",
       "style": "photorealistic anthropomorphic {main_character} and {side_character}, casual vlog aesthetic",
@@ -30,7 +34,6 @@
       "lighting": "warm natural daylight with dynamic forest shadows",
       "environment": "sunlit forest clearing with moving light patterns and shimmering river background"
     },
-
     "elements": [
       "{main_character_description} holding camera in selfie position",
       "{side_character_description} occasionally leaning into frame",
@@ -39,13 +42,11 @@
       "shimmering river visible in background",
       "casual conversational gestures and expressions"
     ],
-
     "audio": {
       "dialogue": "natural conversation between {main_character} and {side_character}",
       "ambience": "gentle forest sounds, rustling leaves",
       "tone": "casual, friendly, playful vlog atmosphere"
     },
-
     "shots": [
       {
         "time": "0-3s",
@@ -66,21 +67,18 @@
         "audio": "enthusiastic dialogue with gradual ambient fade"
       }
     ],
-
     "camera": {
       "movement": "noticeable but smooth handheld shake, slight sway and natural micro-adjustments, no visible device",
       "fov": "medium close-up selfie framing for two characters"
     },
-
     "style": {
       "lighting": "warm daylight with dynamic shadows",
       "color_grade": "cinematic and vibrant",
       "frame_rate": "high FPS for smooth realism"
     },
-
     "keywords": [
       "selfie vlog",
-      "anthropomorphic animals", 
+      "anthropomorphic animals",
       "{main_character}",
       "{side_character}",
       "handheld camera",
@@ -89,7 +87,6 @@
       "casual friendly"
     ]
   },
-
   "params": {
     "main_character": {
       "type": "select",
@@ -190,7 +187,6 @@
         }
       ]
     },
-
     "side_character": {
       "type": "select",
       "label": "Side Character",
@@ -290,7 +286,6 @@
         }
       ]
     },
-
     "dialogue_main_1": {
       "type": "text",
       "label": "Main Character Line 1",
@@ -298,7 +293,6 @@
       "required": true,
       "default": "I told him we're jogging today, guess what he brought?"
     },
-
     "dialogue_main_2": {
       "type": "text",
       "label": "Main Character Line 2",
@@ -306,7 +300,6 @@
       "required": true,
       "default": "That's our gym today!"
     },
-
     "dialogue_side_1": {
       "type": "text",
       "label": "Side Character Line 1",
@@ -314,7 +307,6 @@
       "required": true,
       "default": "Snacks, of course!"
     },
-
     "dialogue_side_2": {
       "type": "text",
       "label": "Side Character Line 2",
@@ -322,23 +314,22 @@
       "required": true,
       "default": "And that's my post-workout meal!"
     },
-
     "main_character_description": {
       "type": "hidden",
       "linkedTo": "main_character",
       "linkType": "metadata"
     },
-
     "side_character_description": {
       "type": "hidden",
-      "linkedTo": "side_character", 
+      "linkedTo": "side_character",
       "linkType": "metadata"
     },
-
     "makePublic": {
       "type": "toggle",
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/selfie-vlog-animals-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/selfie-vlog-animals-thumbnail-blur.jpg"
 }

@@ -1,5 +1,6 @@
 // supabase/functions/get-cached-data/index.ts
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { Redis } from 'https://deno.land/x/upstash_redis@v1.22.1/mod.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -29,8 +30,24 @@ serve(async (req: Request) => {
   }
 
   try {
-    // 暂时禁用Redis缓存，直接返回空响应
-    console.log('[CACHE EDGE FUNCTION] Redis缓存暂时禁用，返回空数据')
+    // 初始化Redis连接
+    let redis: Redis | null = null;
+    const redisUrl = Deno.env.get('UPSTASH_REDIS_REST_URL');
+    const redisToken = Deno.env.get('UPSTASH_REDIS_REST_TOKEN');
+    
+    if (redisUrl && redisToken) {
+      try {
+        redis = new Redis({
+          url: redisUrl,
+          token: redisToken,
+        });
+        console.log('[CACHE EDGE FUNCTION] Redis初始化成功');
+      } catch (error) {
+        console.warn('[CACHE EDGE FUNCTION] Redis初始化失败，使用fallback模式:', error.message);
+      }
+    } else {
+      console.warn('[CACHE EDGE FUNCTION] Redis配置不完整，使用fallback模式');
+    }
 
     if (req.method !== 'POST') {
       return new Response(
@@ -43,16 +60,151 @@ serve(async (req: Request) => {
     }
 
     const body: CacheRequest = await req.json()
-    const { action, key } = body
+    const { action, key, value, ttl } = body
 
-    console.log(`[CACHE EDGE FUNCTION] ${action.toUpperCase()} operation for key: ${key} (缓存暂时禁用)`)
+    console.log(`[CACHE EDGE FUNCTION] ${action.toUpperCase()} operation for key: ${key}`)
 
-    // 暂时返回空响应以修复CORS问题
     let result: CacheResponse = {
-      success: true,
-      data: null,
-      cache_hit: false,
+      success: false,
       timestamp: new Date().toISOString()
+    }
+
+    if (redis) {
+      // Redis可用 - 执行正常缓存操作
+      switch (action) {
+        case 'get':
+          try {
+            const data = await redis.get(key)
+            let parsedData = null
+            if (data !== null && data !== undefined) {
+              try {
+                parsedData = JSON.parse(data as string)
+              } catch (parseError) {
+                // 如果不是有效JSON，直接返回字符串值
+                parsedData = data
+              }
+            }
+            result = {
+              success: true,
+              data: parsedData,
+              cache_hit: data !== null,
+              timestamp: new Date().toISOString()
+            }
+          } catch (error) {
+            console.error(`[CACHE EDGE FUNCTION] GET错误:`, error)
+            result = {
+              success: false,
+              error: error.message,
+              timestamp: new Date().toISOString()
+            }
+          }
+          break
+
+        case 'set':
+          try {
+            const serializedValue = JSON.stringify(value)
+            if (ttl && ttl > 0) {
+              await redis.set(key, serializedValue, { ex: ttl })
+            } else {
+              await redis.set(key, serializedValue)
+            }
+            result = {
+              success: true,
+              timestamp: new Date().toISOString()
+            }
+          } catch (error) {
+            console.error(`[CACHE EDGE FUNCTION] SET错误:`, error)
+            result = {
+              success: false,
+              error: error.message,
+              timestamp: new Date().toISOString()
+            }
+          }
+          break
+
+        case 'delete':
+          try {
+            const deleted = await redis.del(key)
+            result = {
+              success: true,
+              data: { deleted: deleted > 0 },
+              timestamp: new Date().toISOString()
+            }
+          } catch (error) {
+            console.error(`[CACHE EDGE FUNCTION] DELETE错误:`, error)
+            result = {
+              success: false,
+              error: error.message,
+              timestamp: new Date().toISOString()
+            }
+          }
+          break
+
+        case 'exists':
+          try {
+            const exists = await redis.exists(key)
+            result = {
+              success: true,
+              data: { exists: exists > 0 },
+              timestamp: new Date().toISOString()
+            }
+          } catch (error) {
+            console.error(`[CACHE EDGE FUNCTION] EXISTS错误:`, error)
+            result = {
+              success: false,
+              error: error.message,
+              timestamp: new Date().toISOString()
+            }
+          }
+          break
+
+        default:
+          result = {
+            success: false,
+            error: 'Invalid action',
+            timestamp: new Date().toISOString()
+          }
+      }
+    } else {
+      // Redis不可用 - 返回fallback响应
+      console.log(`[CACHE EDGE FUNCTION] Redis不可用，返回fallback响应 for ${action}`)
+      
+      switch (action) {
+        case 'get':
+          result = {
+            success: true,
+            data: null,
+            cache_hit: false,
+            timestamp: new Date().toISOString()
+          }
+          break
+        case 'set':
+          result = {
+            success: true,
+            timestamp: new Date().toISOString()
+          }
+          break
+        case 'delete':
+          result = {
+            success: true,
+            data: { deleted: false },
+            timestamp: new Date().toISOString()
+          }
+          break
+        case 'exists':
+          result = {
+            success: true,
+            data: { exists: false },
+            timestamp: new Date().toISOString()
+          }
+          break
+        default:
+          result = {
+            success: false,
+            error: 'Invalid action',
+            timestamp: new Date().toISOString()
+          }
+      }
     }
 
     return new Response(

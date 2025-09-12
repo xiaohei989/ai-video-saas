@@ -18,6 +18,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, metadata?: SignUpMetadata) => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signInWithGoogle: () => Promise<void>
+  signInWithApple: () => Promise<void>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<void>
   updatePassword: (newPassword: string) => Promise<void>
@@ -137,8 +138,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     website: null,
     social_links: {},
     language: 'en',
-    credits: 100,
-    total_credits_earned: 100,
+    credits: parseInt(import.meta.env.VITE_DEFAULT_USER_CREDITS || '50'),
+    total_credits_earned: parseInt(import.meta.env.VITE_DEFAULT_USER_CREDITS || '50'),
     total_credits_spent: 0,
     referral_code: null,
     follower_count: 0,
@@ -688,6 +689,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // Apple OAuth 登录
+  const signInWithApple = async () => {
+    try {
+      setError(null)
+      setLoading(true)
+
+      // 标记当前使用Apple OAuth，供AuthCallback识别
+      localStorage.setItem('oauth_provider', 'apple')
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          // 移除response_mode配置，让Supabase使用Apple OAuth的默认form_post模式
+          // Apple OAuth需要使用form_post模式来正确传递用户信息
+        },
+      })
+
+      if (error) {
+        localStorage.removeItem('oauth_provider') // 清理标记
+        throw error
+      }
+    } catch (err) {
+      setError(err as AuthError)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
   // 登出
   const signOut = async () => {
     console.log('AuthContext: signOut called')
@@ -878,6 +910,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signIn,
     signInWithGoogle,
+    signInWithApple,
     signOut,
     resetPassword,
     updatePassword,

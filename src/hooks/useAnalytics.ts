@@ -51,13 +51,13 @@ export const useAnalytics = () => {
   }, [])
 
   // 用户认证事件
-  const trackSignUp = useCallback((method: 'google' | 'email') => {
+  const trackSignUp = useCallback((method: 'google' | 'apple' | 'email') => {
     if (user) {
       analyticsService.trackSignUp(method, user.id)
     }
   }, [user])
 
-  const trackLogin = useCallback((method: 'google' | 'email') => {
+  const trackLogin = useCallback((method: 'google' | 'apple' | 'email') => {
     if (user) {
       analyticsService.trackLogin(method, user.id)
     }

@@ -86,19 +86,11 @@ class FontLoader {
    * 预加载手写体字体（用户交互后）
    */
   async preloadHandwritingFonts(): Promise<void> {
+    // 使用更稳定的字体回退，不指定特定URL让浏览器自动解析
     const fonts = [
-      {
-        family: 'Dancing Script',
-        url: 'https://fonts.gstatic.com/s/dancingscript/v25/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7BMSo3Sup8.woff2'
-      },
-      {
-        family: 'Kalam',
-        url: 'https://fonts.gstatic.com/s/kalam/v16/YA9dr0Wd4kDdMtD6GgLI.woff2'
-      },
-      {
-        family: 'Caveat',
-        url: 'https://fonts.gstatic.com/s/caveat/v18/WnznHAc5bAfYB2QRah7pcpNvOx-pjfJ9eIWpZw.woff2'
-      }
+      { family: 'Dancing Script' },
+      { family: 'Kalam' },
+      { family: 'Caveat' }
     ]
 
     await this.loadFonts(fonts)

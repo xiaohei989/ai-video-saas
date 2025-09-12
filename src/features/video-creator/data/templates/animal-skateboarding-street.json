@@ -5,13 +5,19 @@
   "icon": "🛹",
   "description": "Documentary-style footage of various small animals performing skateboard tricks on city streets",
   "previewUrl": "/templates/videos/animal-skateboarding-street.mp4",
-
-  "tags": ["skateboarding", "animals", "street", "documentary", "cute", "urban", "tricks"],
+  "tags": [
+    "skateboarding",
+    "animals",
+    "street",
+    "documentary",
+    "cute",
+    "urban",
+    "tricks"
+  ],
   "createdAt": "2025-01-29T16:30:00Z",
   "version": "1.0.0",
   "lastModified": "2025-01-29T16:30:00Z",
   "promptTemplate": "This video (shot with a handheld camera and a documentary-style zoom lens) captures a {animal} skateboarding on a city sidewalk from a low-angle, eye-level perspective. The lighting suggests that it is midday. The shot is from the driver's seat of a car, and we can see part of the car in the frame. The car is driving on the sidewalk, and the {animal} is skateboarding, parallel to the car. Off-camera, a person yells, \"Do a kickflip!\", and the {animal} attempts a kickflip at normal speed.",
-
   "params": {
     "animal": {
       "type": "select",
@@ -19,26 +25,86 @@
       "required": true,
       "default": "pigeon",
       "options": [
-        { "value": "pigeon", "label": "Pigeon 🕊️" },
-        { "value": "squirrel", "label": "Squirrel 🐿️" },
-        { "value": "cat", "label": "Cat 🐱" },
-        { "value": "dog", "label": "Dog 🐶" },
-        { "value": "raccoon", "label": "Raccoon 🦝" },
-        { "value": "rabbit", "label": "Rabbit 🐰" },
-        { "value": "duck", "label": "Duck 🦆" },
-        { "value": "rat", "label": "Rat 🐀" },
-        { "value": "hamster", "label": "Hamster 🐹" },
-        { "value": "hedgehog", "label": "Hedgehog 🦔" },
-        { "value": "frog", "label": "Frog 🐸" },
-        { "value": "turtle", "label": "Turtle 🐢" },
-        { "value": "lizard", "label": "Lizard 🦎" },
-        { "value": "small bird", "label": "Small Bird 🐦" },
-        { "value": "parrot", "label": "Parrot 🦜" },
-        { "value": "penguin", "label": "Penguin 🐧" },
-        { "value": "piglet", "label": "Piglet 🐷" },
-        { "value": "chick", "label": "Chick 🐣" },
-        { "value": "duckling", "label": "Duckling 🐥" },
-        { "value": "lamb", "label": "Lamb 🐑" }
+        {
+          "value": "pigeon",
+          "label": "Pigeon 🕊️"
+        },
+        {
+          "value": "squirrel",
+          "label": "Squirrel 🐿️"
+        },
+        {
+          "value": "cat",
+          "label": "Cat 🐱"
+        },
+        {
+          "value": "dog",
+          "label": "Dog 🐶"
+        },
+        {
+          "value": "raccoon",
+          "label": "Raccoon 🦝"
+        },
+        {
+          "value": "rabbit",
+          "label": "Rabbit 🐰"
+        },
+        {
+          "value": "duck",
+          "label": "Duck 🦆"
+        },
+        {
+          "value": "rat",
+          "label": "Rat 🐀"
+        },
+        {
+          "value": "hamster",
+          "label": "Hamster 🐹"
+        },
+        {
+          "value": "hedgehog",
+          "label": "Hedgehog 🦔"
+        },
+        {
+          "value": "frog",
+          "label": "Frog 🐸"
+        },
+        {
+          "value": "turtle",
+          "label": "Turtle 🐢"
+        },
+        {
+          "value": "lizard",
+          "label": "Lizard 🦎"
+        },
+        {
+          "value": "small bird",
+          "label": "Small Bird 🐦"
+        },
+        {
+          "value": "parrot",
+          "label": "Parrot 🦜"
+        },
+        {
+          "value": "penguin",
+          "label": "Penguin 🐧"
+        },
+        {
+          "value": "piglet",
+          "label": "Piglet 🐷"
+        },
+        {
+          "value": "chick",
+          "label": "Chick 🐣"
+        },
+        {
+          "value": "duckling",
+          "label": "Duckling 🐥"
+        },
+        {
+          "value": "lamb",
+          "label": "Lamb 🐑"
+        }
       ]
     },
     "makePublic": {
@@ -46,5 +112,7 @@
       "label": "Make video public",
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "/templates/thumbnails/animal-skateboarding-street-thumbnail.jpg",
+  "blurThumbnailUrl": "/templates/thumbnails/animal-skateboarding-street-thumbnail-blur.jpg"
 }

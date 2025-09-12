@@ -116,6 +116,14 @@ class TemplateHotReload {
    */
   private async initializeTemplateHashes(): Promise<void> {
     try {
+      // 清除可能存在的错误缓存（用于修复ID不一致问题）
+      const shouldClearCache = this.detector.isFirstLoad
+      if (shouldClearCache) {
+        console.log('🧹 首次初始化，清除可能存在的错误缓存...')
+        localStorage.removeItem('templateHashes')
+        this.detector.templateHashes.clear()
+      }
+
       // 如果不是首次加载且已有缓存，跳过初始化
       if (!this.detector.isFirstLoad && this.detector.templateHashes.size > 0) {
         console.log(`📋 使用缓存的${this.detector.templateHashes.size}个模板哈希值`)
@@ -127,8 +135,9 @@ class TemplateHotReload {
       
       // 基于模板内容计算哈希值
       templateList.forEach((template: any) => {
+        const templateId = template.slug || template.id  // 使用一致的ID识别逻辑
         const contentHash = this.calculateTemplateHash(template)
-        this.detector.templateHashes.set(template.id, contentHash)
+        this.detector.templateHashes.set(templateId, contentHash)
       })
 
       // 保存到localStorage
@@ -155,8 +164,9 @@ class TemplateHotReload {
       
       // 基于模板内容计算哈希值
       templateList.forEach((template: any) => {
+        const templateId = template.slug || template.id  // 使用一致的ID识别逻辑
         const contentHash = this.calculateTemplateHash(template)
-        this.detector.templateHashes.set(template.id, contentHash)
+        this.detector.templateHashes.set(templateId, contentHash)
       })
 
       console.log(`🎯 强制重新初始化了${this.detector.templateHashes.size}个模板的哈希值`)
@@ -183,11 +193,26 @@ class TemplateHotReload {
       const currentTemplateCount = templateList.length
       const cachedTemplateCount = this.detector.templateHashes.size
 
-      // 检查模板数量变化
+      // 检查模板数量变化（但要避免首次加载后的误判）
       if (currentTemplateCount !== cachedTemplateCount) {
-        console.log(`🆕 检测到模板数量变化: ${cachedTemplateCount} → ${currentTemplateCount}`)
-        await this.handleTemplateChange('模板数量变化')
-        return
+        // 如果缓存中没有任何哈希，可能是缓存被清理了，重新初始化而不是触发变化
+        if (cachedTemplateCount === 0) {
+          console.log('🔄 检测到缓存为空，重新初始化哈希...')
+          await this.forceInitializeTemplateHashes()
+          return
+        }
+        
+        // 数量变化超过阈值才认为是真实变化（避免轻微的缓存不一致问题）
+        const countDifference = Math.abs(currentTemplateCount - cachedTemplateCount)
+        if (countDifference > 5) { // 只有变化超过5个模板才认为是真实的变化
+          console.log(`🆕 检测到重大模板数量变化: ${cachedTemplateCount} → ${currentTemplateCount}`)
+          await this.handleTemplateChange('模板数量变化')
+          return
+        } else {
+          console.log(`⚠️ 检测到轻微数量差异: ${cachedTemplateCount} → ${currentTemplateCount}，可能是缓存不一致，重新同步...`)
+          await this.forceInitializeTemplateHashes()
+          return
+        }
       }
 
       // 检查模板内容变化
@@ -215,12 +240,28 @@ class TemplateHotReload {
         }
       }
 
-      // 检查是否有模板被删除
+      // 检查是否有模板被删除（但要避免大量的误判）
+      let deletedCount = 0
+      const deletedTemplates: string[] = []
+      
       for (const [templateId] of this.detector.templateHashes) {
         if (!currentHashes.has(templateId)) {
-          console.log(`🗑️ 检测到模板被删除: ${templateId}`)
-          hasChanges = true
+          deletedTemplates.push(templateId)
+          deletedCount++
         }
+      }
+      
+      // 如果删除的模板数量过多，很可能是缓存不一致，不是真实的删除
+      if (deletedCount > 10) {
+        console.log(`⚠️ 检测到大量模板"删除"(${deletedCount}个)，可能是缓存不一致，重新同步而非触发变化`)
+        await this.forceInitializeTemplateHashes()
+        return
+      } else if (deletedCount > 0) {
+        // 只有少量删除才认为是真实的删除
+        deletedTemplates.forEach(templateId => {
+          console.log(`🗑️ 检测到模板被删除: ${templateId}`)
+        })
+        hasChanges = true
       }
 
       if (hasChanges) {
@@ -245,12 +286,14 @@ class TemplateHotReload {
    * 计算模板内容哈希值
    */
   private calculateTemplateHash(template: any): string {
-    // 基于关键字段生成哈希
+    // 基于关键字段生成哈希（排除缩略图字段，避免缩略图更新触发误判）
     const key = [
       template.name,
       template.promptTemplate,
       template.lastModified,
-      JSON.stringify(template.params)
+      JSON.stringify(template.params),
+      template.description,
+      template.category
     ].join('|')
     
     // 简单哈希算法

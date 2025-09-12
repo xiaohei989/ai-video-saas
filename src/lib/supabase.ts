@@ -19,8 +19,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true,
     storageKey: 'sb-hvkzwrnvxsleeonqqrzq-auth-token',
     storage: localStorage,
-    // 移除 flowType: 'pkce' 以避免登出问题
-    // 使用默认的 implicit 流
+    flowType: 'pkce', // 恢复PKCE流程 - Apple OAuth需要PKCE
   },
   global: {
     headers: {
@@ -31,10 +30,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 })
 
-// 创建安全增强版本的客户端
+// 创建安全增强版本的客户端（使用现有的supabase实例避免多实例警告）
 export const secureSupabase = createSecureSupabaseClient(
-  supabaseUrl,
-  supabaseAnonKey,
+  supabase, // 传入现有的客户端实例而不是URL和KEY
+  undefined,
   {
     enableCSRF: true,
     enableRateLimit: true,
