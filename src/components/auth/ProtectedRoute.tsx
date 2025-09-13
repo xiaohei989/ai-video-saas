@@ -66,35 +66,6 @@ export default function ProtectedRoute({
     return true
   }, [loading])
 
-  // 🚀 性能优化：只在真正需要时显示loading界面
-  if (shouldShowLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-        <div className="text-center">
-          {/* Logo */}
-          <div className="mb-6">
-            <img 
-              src="/logo.png" 
-              alt="Logo" 
-              className="h-12 w-12 mx-auto mb-4"
-            />
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
-              AI Video SaaS
-            </h2>
-          </div>
-          
-          {/* Loading spinner */}
-          <div className="relative">
-            <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              正在初始化应用...
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   // 🚀 关键修复：智能认证检查，避免误判已登录用户
   const shouldRedirectToLogin = React.useMemo(() => {
     if (!requireAuth) return false
@@ -132,6 +103,35 @@ export default function ProtectedRoute({
     // 没有user，没有loading，没有缓存，且缓冲期已结束，才重定向
     return true
   }, [requireAuth, user, loading, authBuffer, forceRedirect])
+
+  // 🚀 性能优化：只在真正需要时显示loading界面
+  if (shouldShowLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+        <div className="text-center">
+          {/* Logo */}
+          <div className="mb-6">
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              className="h-12 w-12 mx-auto mb-4"
+            />
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
+              AI Video SaaS
+            </h2>
+          </div>
+          
+          {/* Loading spinner */}
+          <div className="relative">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              正在初始化应用...
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
   
   // 检查认证要求
   if (shouldRedirectToLogin) {
