@@ -9,6 +9,56 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, DELETE',
 }
 
+// 多语言翻译映射
+const translations = {
+  en: {
+    credits: 'Credits',
+    creditsDescription: 'Purchase {credits} credits for AI video generation'
+  },
+  zh: {
+    credits: '积分',
+    creditsDescription: '购买 {credits} 个积分用于生成AI视频'
+  },
+  ja: {
+    credits: 'クレジット',
+    creditsDescription: 'AI動画生成用の{credits}クレジットを購入'
+  },
+  ko: {
+    credits: '크레딧',
+    creditsDescription: 'AI 비디오 생성을 위한 {credits} 크레딧 구매'
+  },
+  es: {
+    credits: 'Créditos',
+    creditsDescription: 'Comprar {credits} créditos para generación de videos con IA'
+  },
+  fr: {
+    credits: 'Crédits',
+    creditsDescription: 'Acheter {credits} crédits pour la génération de vidéos IA'
+  },
+  de: {
+    credits: 'Credits',
+    creditsDescription: '{credits} Credits für KI-Videogenerierung kaufen'
+  },
+  ar: {
+    credits: 'نقاط',
+    creditsDescription: 'شراء {credits} نقطة لإنتاج فيديوهات الذكاء الاصطناعي'
+  }
+}
+
+// 获取翻译文本
+function getTranslation(language: string, key: string, params?: Record<string, any>): string {
+  const lang = translations[language as keyof typeof translations] || translations.en
+  let text = lang[key as keyof typeof lang] || translations.en[key as keyof typeof translations.en]
+  
+  if (params) {
+    Object.entries(params).forEach(([paramKey, value]) => {
+      text = text.replace(`{${paramKey}}`, value.toString())
+    })
+  }
+  
+  return text
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -56,14 +106,11 @@ serve(async (req) => {
       successUrl, 
       cancelUrl, 
       mode = 'subscription',
-      type = 'subscription'
+      type = 'subscription',
+      language = 'en'  // 添加语言参数，默认英语
     } = requestBody
     
-    // 验证必要参数
-    if (!priceId) {
-      console.error('[CHECKOUT] ❌ 缺少 priceId 参数')
-      throw new Error('Missing required parameter: priceId')
-    }
+    // 验证通用必要参数
     if (!userId) {
       console.error('[CHECKOUT] ❌ 缺少 userId 参数')
       throw new Error('Missing required parameter: userId')
@@ -77,7 +124,49 @@ serve(async (req) => {
       throw new Error('Missing required parameter: cancelUrl')
     }
     
-    console.log(`[CHECKOUT] ✅ 参数验证通过: priceId=${priceId}, userId=${userId}, mode=${mode}`)
+    // 根据模式验证特定参数
+    if (mode === 'subscription') {
+      if (!priceId) {
+        console.error('[CHECKOUT] ❌ 订阅模式缺少 priceId 参数')
+        throw new Error('Missing required parameter: priceId for subscription mode')
+      }
+      if (!planId) {
+        console.error('[CHECKOUT] ❌ 订阅模式缺少 planId 参数')
+        throw new Error('Missing required parameter: planId for subscription mode')
+      }
+    } else if (mode === 'payment') {
+      if (!amount || amount <= 0) {
+        console.error('[CHECKOUT] ❌ 积分购买模式缺少 amount 参数或金额无效')
+        throw new Error('Missing or invalid parameter: amount for payment mode')
+      }
+      if (!credits || credits <= 0) {
+        console.error('[CHECKOUT] ❌ 积分购买模式缺少 credits 参数或积分无效')
+        throw new Error('Missing or invalid parameter: credits for payment mode')
+      }
+    }
+    
+    console.log(`[CHECKOUT] ✅ 参数验证通过: mode=${mode}, userId=${userId}, language=${language}${mode === 'subscription' ? `, priceId=${priceId}, planId=${planId}` : `, amount=${amount}, credits=${credits}`}`)
+    
+    // 多语言调试信息
+    if (mode === 'payment') {
+      console.log(`[CHECKOUT] 🌍 积分购买多语言信息:`, {
+        originalLanguage: language,
+        detectedLang: translations[language as keyof typeof translations] ? language : 'fallback-to-en',
+        productName: `${credits} ${getTranslation(language, 'credits')}`,
+        description: getTranslation(language, 'creditsDescription', { credits }),
+        availableLanguages: Object.keys(translations)
+      })
+      
+      // 特别调试日语
+      if (language === 'ja') {
+        console.log(`[CHECKOUT] 🇯🇵 日语特别调试:`, {
+          jaCredits: translations.ja.credits,
+          jaDescription: translations.ja.creditsDescription,
+          finalProductName: `${credits} ${getTranslation('ja', 'credits')}`,
+          finalDescription: getTranslation('ja', 'creditsDescription', { credits })
+        })
+      }
+    }
 
     // 获取或创建Stripe客户
     let customer
@@ -143,8 +232,8 @@ serve(async (req) => {
             price_data: {
               currency,
               product_data: {
-                name: `${credits} 积分`,
-                description: `购买 ${credits} 个积分用于生成AI视频`,
+                name: `${credits} ${getTranslation(language, 'credits')}`,
+                description: getTranslation(language, 'creditsDescription', { credits }),
               },
               unit_amount: amount,
             },

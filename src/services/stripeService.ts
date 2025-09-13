@@ -208,7 +208,8 @@ class StripeService {
     planId: string,
     userId: string,
     successUrl: string,
-    cancelUrl: string
+    cancelUrl: string,
+    language?: string
   ): Promise<{ url: string } | null> {
     try {
       // 记录支付尝试
@@ -251,6 +252,20 @@ class StripeService {
         throw new Error(`Missing Stripe price ID for plan: ${plan.id}`)
       }
 
+      // 🔧 修复：强化语言检测逻辑，优先使用preferred_language
+      const preferredLang = typeof window !== 'undefined' ? localStorage.getItem('preferred_language') : null;
+      const i18nLang = typeof window !== 'undefined' ? localStorage.getItem('i18nextLng') : null;
+      
+      const currentLanguage = language || preferredLang || i18nLang || 'en';
+      
+      console.log('🌍 订阅购买语言检测详情:', {
+        inputLanguage: language,
+        preferredLanguage: preferredLang,
+        i18nextLanguage: i18nLang,
+        finalLanguage: currentLanguage,
+        isJapanese: currentLanguage === 'ja'
+      });
+
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: {
           priceId: plan.stripePriceId,
@@ -258,7 +273,8 @@ class StripeService {
           planId,
           successUrl,
           cancelUrl,
-          mode: 'subscription'
+          mode: 'subscription',
+          language: currentLanguage
         }
       })
 
@@ -327,9 +343,24 @@ class StripeService {
     credits: number,
     userId: string,
     successUrl: string,
-    cancelUrl: string
+    cancelUrl: string,
+    language?: string
   ): Promise<{ url: string } | null> {
     try {
+      // 🔧 修复：强化语言检测逻辑，优先使用preferred_language
+      const preferredLang = typeof window !== 'undefined' ? localStorage.getItem('preferred_language') : null;
+      const i18nLang = typeof window !== 'undefined' ? localStorage.getItem('i18nextLng') : null;
+      
+      const currentLanguage = language || preferredLang || i18nLang || 'en';
+      
+      console.log('🌍 积分购买语言检测详情:', {
+        inputLanguage: language,
+        preferredLanguage: preferredLang,
+        i18nextLanguage: i18nLang,
+        finalLanguage: currentLanguage,
+        isJapanese: currentLanguage === 'ja'
+      });
+        
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: {
           amount: Math.round(amount * 100),
@@ -339,7 +370,8 @@ class StripeService {
           successUrl,
           cancelUrl,
           mode: 'payment',
-          type: 'credit_purchase'
+          type: 'credit_purchase',
+          language: currentLanguage
         }
       })
 

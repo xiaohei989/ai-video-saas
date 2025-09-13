@@ -56,7 +56,7 @@ const packageColors = {
 export function CreditsPurchase({ 
   className = '' 
 }: CreditsPurchaseProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { user } = useAuthContext()
   const [loadingPackage, setLoadingPackage] = useState<string | null>(null)
 
@@ -70,12 +70,22 @@ export function CreditsPurchase({
     setLoadingPackage(pkg.id)
     
     try {
+      console.log('💰 发起积分购买请求:', {
+        language: i18n.language,
+        pkg: pkg.id,
+        credits: pkg.credits,
+        i18nextLng: localStorage.getItem('i18nextLng'),
+        preferredLanguage: localStorage.getItem('preferred_language'),
+        detectedLanguage: i18n.language || localStorage.getItem('i18nextLng') || localStorage.getItem('preferred_language') || 'en'
+      });
+      
       const result = await stripeService.createCreditsPurchaseCheckout(
         pkg.price,
         pkg.credits + (pkg.bonus || 0),
         user.id,
         `${window.location.origin}/pricing?purchase=success`,
-        `${window.location.origin}/pricing?purchase=cancelled`
+        `${window.location.origin}/pricing?purchase=cancelled`,
+        i18n.language
       )
 
       if (result?.url) {
