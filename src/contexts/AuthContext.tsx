@@ -4,6 +4,7 @@ import { supabase, ensureValidSession } from '@/lib/supabase'
 import { useNavigate } from 'react-router-dom'
 import { referralService } from '@/services/referralService'
 import { edgeCacheClient } from '@/services/EdgeFunctionCacheClient'
+import i18n from '@/i18n/config'
 
 // 认证上下文类型定义
 interface AuthContextType {
@@ -669,6 +670,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(null)
       setLoading(true)
 
+      // 🚀 保护当前语言设置 - 在OAuth前保存当前语言状态
+      const preserveLanguageSettings = () => {
+        try {
+          const currentLanguage = i18n.language
+          const preferredLanguage = localStorage.getItem('preferred_language')
+          
+          console.log('[AuthContext] Google OAuth前语言状态保护:', {
+            currentLanguage,
+            preferredLanguage,
+            navigatorLanguage: navigator.language
+          })
+          
+          // 保存当前语言到临时存储，供回调时恢复
+          if (currentLanguage && currentLanguage !== 'ar') {
+            localStorage.setItem('pre_oauth_language', currentLanguage)
+            console.log('[AuthContext] 已保存OAuth前语言设置:', currentLanguage)
+          }
+          
+          // 确保preferred_language存在并且不是阿拉伯语（除非用户明确选择）
+          if (!preferredLanguage || (preferredLanguage === 'ar' && currentLanguage !== 'ar')) {
+            const safeLanguage = navigator.language.startsWith('zh') ? 'zh' : 'en'
+            localStorage.setItem('preferred_language', safeLanguage)
+            console.log('[AuthContext] 设置安全的偏好语言:', safeLanguage)
+          }
+          
+        } catch (error) {
+          console.error('[AuthContext] 语言设置保护失败:', error)
+        }
+      }
+      
+      // 执行语言保护
+      preserveLanguageSettings()
+
+      // 标记当前使用Google OAuth
+      localStorage.setItem('oauth_provider', 'google')
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -680,7 +717,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       })
 
-      if (error) throw error
+      if (error) {
+        localStorage.removeItem('oauth_provider') // 清理标记
+        localStorage.removeItem('pre_oauth_language') // 清理语言保护
+        throw error
+      }
     } catch (err) {
       setError(err as AuthError)
       throw err
@@ -694,6 +735,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setError(null)
       setLoading(true)
+
+      // 🚀 保护当前语言设置 - 在OAuth前保存当前语言状态
+      const preserveLanguageSettings = () => {
+        try {
+          const currentLanguage = i18n.language
+          const preferredLanguage = localStorage.getItem('preferred_language')
+          
+          console.log('[AuthContext] Apple OAuth前语言状态保护:', {
+            currentLanguage,
+            preferredLanguage,
+            navigatorLanguage: navigator.language
+          })
+          
+          // 保存当前语言到临时存储，供回调时恢复
+          if (currentLanguage && currentLanguage !== 'ar') {
+            localStorage.setItem('pre_oauth_language', currentLanguage)
+            console.log('[AuthContext] 已保存OAuth前语言设置:', currentLanguage)
+          }
+          
+          // 确保preferred_language存在并且不是阿拉伯语（除非用户明确选择）
+          if (!preferredLanguage || (preferredLanguage === 'ar' && currentLanguage !== 'ar')) {
+            const safeLanguage = navigator.language.startsWith('zh') ? 'zh' : 'en'
+            localStorage.setItem('preferred_language', safeLanguage)
+            console.log('[AuthContext] 设置安全的偏好语言:', safeLanguage)
+          }
+          
+        } catch (error) {
+          console.error('[AuthContext] 语言设置保护失败:', error)
+        }
+      }
+      
+      // 执行语言保护
+      preserveLanguageSettings()
 
       // 标记当前使用Apple OAuth，供AuthCallback识别
       localStorage.setItem('oauth_provider', 'apple')
@@ -709,6 +783,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) {
         localStorage.removeItem('oauth_provider') // 清理标记
+        localStorage.removeItem('pre_oauth_language') // 清理语言保护
         throw error
       }
     } catch (err) {

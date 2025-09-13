@@ -140,6 +140,10 @@ export type Database = {
           veo3_job_id: string | null
           video_url: string | null
           thumbnail_url: string | null
+          thumbnail_blur_url: string | null
+          thumbnail_generated_at: string | null
+          thumbnail_generation_status: 'pending' | 'processing' | 'completed' | 'failed'
+          thumbnail_metadata: Record<string, any>
           duration: number | null
           resolution: string | null
           file_size: number | null
@@ -156,6 +160,7 @@ export type Database = {
           download_count: number
           like_count: number
           comment_count: number
+          share_count: number
           last_viewed_at: string | null
           version: number
           parent_video_id: string | null

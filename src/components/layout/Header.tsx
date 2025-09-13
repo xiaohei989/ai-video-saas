@@ -172,9 +172,44 @@ export function Header({ className = "" }: HeaderProps = {}) {
   }, [])
 
   const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng)
-    localStorage.setItem('preferred_language', lng)
-    setLangDropdownOpen(false)
+    try {
+      console.log('[Header] 用户主动切换语言:', {
+        from: i18n.language,
+        to: lng,
+        timestamp: new Date().toISOString()
+      })
+      
+      // 🚀 语言切换验证 - 确保切换的语言是有效的
+      const supportedLanguages = ['en', 'zh', 'ja', 'ko', 'es', 'de', 'fr', 'ar']
+      if (!supportedLanguages.includes(lng)) {
+        console.warn('[Header] 无效的语言代码:', lng, '，使用默认英语')
+        lng = 'en'
+      }
+      
+      // 特殊检查：如果用户选择阿拉伯语，记录此次选择
+      if (lng === 'ar') {
+        console.log('[Header] 用户明确选择阿拉伯语，记录偏好')
+        localStorage.setItem('user_explicitly_chose_arabic', 'true')
+      } else {
+        // 如果选择其他语言，清除阿拉伯语选择标记
+        localStorage.removeItem('user_explicitly_chose_arabic')
+      }
+      
+      // 清理OAuth修复标记
+      localStorage.removeItem('language_fixed_after_oauth')
+      
+      // 执行语言切换
+      i18n.changeLanguage(lng)
+      localStorage.setItem('preferred_language', lng)
+      setLangDropdownOpen(false)
+      
+      console.log('[Header] 语言切换完成:', lng)
+      
+    } catch (error) {
+      console.error('[Header] 语言切换失败:', error)
+      // 失败时确保关闭下拉菜单
+      setLangDropdownOpen(false)
+    }
   }
 
   const languages = [

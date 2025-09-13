@@ -29,7 +29,7 @@ export function PricingPlans({
   className = '',
   billingInterval = 'month'
 }: PricingPlansProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { user } = useAuthContext()
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
   
@@ -60,7 +60,8 @@ export function PricingPlans({
           planId,
           user.id,
           `${window.location.origin}/pricing?success=true`,
-          `${window.location.origin}/pricing?cancelled=true`
+          `${window.location.origin}/pricing?cancelled=true`,
+          i18n.language
         )
 
         if (result?.url) {

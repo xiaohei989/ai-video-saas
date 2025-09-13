@@ -2,6 +2,7 @@ import { getQingyunApiService } from './veo/QingyunApiService'
 import { getApicoreApiService } from './veo/ApicoreApiService'
 import supabaseVideoService from './supabaseVideoService'
 import { progressManager } from './progressManager'
+import { thumbnailGenerationService } from './ThumbnailGenerationService'
 import i18n from '@/i18n/config'
 import { detectApiProvider, getApiProviderDisplayName } from '@/utils/apiProviderDetector'
 
@@ -347,6 +348,18 @@ class Veo3Service {
               videoUrlMatches: updateResult.video_url === result.video_url,
               completedAt: updateResult.processing_completed_at
             })
+
+            // 🎬 触发缩略图生成
+            if (updateResult.video_url) {
+              console.log('[VEO3 SERVICE] 🖼️ 触发缩略图生成...')
+              try {
+                await thumbnailGenerationService.onVideoCompleted(updateResult.id, updateResult.video_url)
+                console.log('[VEO3 SERVICE] ✅ 缩略图生成任务已启动')
+              } catch (thumbnailError) {
+                console.error('[VEO3 SERVICE] ❌ 缩略图生成启动失败:', thumbnailError)
+                // 不影响主流程，缩略图可以稍后重新生成
+              }
+            }
           } else {
             console.error('[VEO3 SERVICE] ❌ Failed to update video status, but video was generated:', result.video_url)
             console.error('[VEO3 SERVICE] ❌ updateResult is null/undefined')
@@ -607,6 +620,16 @@ class Veo3Service {
           
           if (updateResult) {
             console.log('[VEO3 SERVICE] ✅ Successfully updated video status to completed')
+            
+            // 🎬 触发缩略图生成
+            console.log('[VEO3 SERVICE] 🖼️ 触发缩略图生成...')
+            try {
+              await thumbnailGenerationService.onVideoCompleted(updateResult.id, videoUrl)
+              console.log('[VEO3 SERVICE] ✅ 缩略图生成任务已启动')
+            } catch (thumbnailError) {
+              console.error('[VEO3 SERVICE] ❌ 缩略图生成启动失败:', thumbnailError)
+              // 不影响主流程，缩略图可以稍后重新生成
+            }
           } else {
             console.error('[VEO3 SERVICE] ❌ Failed to update video status, but video was generated:', videoUrl)
           }

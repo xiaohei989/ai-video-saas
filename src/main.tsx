@@ -18,6 +18,11 @@ try {
   throw error
 }
 import './styles/index.css'
+
+// 开发环境下引入调试测试
+if (import.meta.env.DEV) {
+  import('./test-debug-url-params')
+}
 import './styles/fonts.css'
 import './i18n/config'
 import { initCloudflareOptimizations } from './utils/cloudflare'

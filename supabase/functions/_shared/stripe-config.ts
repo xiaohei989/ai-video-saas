@@ -62,17 +62,15 @@ function getEnvironmentEdgeConfig(mode: 'test' | 'production'): EdgeStripeConfig
   // 优先使用环境变量中的配置（支持动态切换）
   const secretKey = Deno.env.get('STRIPE_SECRET_KEY');
   
-  // 🔧 修复：根据模式获取正确的环境变量名
-  const envPrefix = mode === 'test' ? 'VITE_STRIPE_TEST_' : 'VITE_STRIPE_PROD_';
+  // 🔧 修复：在生产模式下直接使用标准环境变量名
+  const basicPrice = Deno.env.get('VITE_STRIPE_BASIC_PRICE_ID');
+  const proPrice = Deno.env.get('VITE_STRIPE_PRO_PRICE_ID');
+  const enterprisePrice = Deno.env.get('VITE_STRIPE_ENTERPRISE_PRICE_ID');
   
-  const basicPrice = Deno.env.get('VITE_STRIPE_BASIC_PRICE_ID') || Deno.env.get(`${envPrefix}BASIC_PRICE_ID`);
-  const proPrice = Deno.env.get('VITE_STRIPE_PRO_PRICE_ID') || Deno.env.get(`${envPrefix}PRO_PRICE_ID`);
-  const enterprisePrice = Deno.env.get('VITE_STRIPE_ENTERPRISE_PRICE_ID') || Deno.env.get(`${envPrefix}ENTERPRISE_PRICE_ID`);
-  
-  // 🔧 修复：添加年度价格ID获取
-  const basicAnnualPrice = Deno.env.get('VITE_STRIPE_BASIC_ANNUAL_PRICE_ID') || Deno.env.get(`${envPrefix}BASIC_ANNUAL_PRICE_ID`);
-  const proAnnualPrice = Deno.env.get('VITE_STRIPE_PRO_ANNUAL_PRICE_ID') || Deno.env.get(`${envPrefix}PRO_ANNUAL_PRICE_ID`);
-  const enterpriseAnnualPrice = Deno.env.get('VITE_STRIPE_ENTERPRISE_ANNUAL_PRICE_ID') || Deno.env.get(`${envPrefix}ENTERPRISE_ANNUAL_PRICE_ID`);
+  // 🔧 修复：年度价格ID获取
+  const basicAnnualPrice = Deno.env.get('VITE_STRIPE_BASIC_ANNUAL_PRICE_ID');
+  const proAnnualPrice = Deno.env.get('VITE_STRIPE_PRO_ANNUAL_PRICE_ID');
+  const enterpriseAnnualPrice = Deno.env.get('VITE_STRIPE_ENTERPRISE_ANNUAL_PRICE_ID');
   
   console.log(`[EDGE_CONFIG] 🔍 Environment variables for ${mode}:`, {
     secretKey: secretKey ? '✅' : '❌',

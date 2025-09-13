@@ -1,0 +1,697 @@
+/**
+ * 增强版视频卡片组件
+ * 
+ * 特性：
+ * 1. 智能缩略图显示
+ * 2. 悬浮时懒加载视频预览
+ * 3. 网络自适应加载策略
+ * 4. 流畅的交互动画
+ * 5. 错误回退机制
+ */
+
+import React, { useState, useEffect, useCallback, useRef } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { 
+  Play, 
+  Download, 
+  Share2, 
+  Eye, 
+  Clock, 
+  Gem,
+  CheckCircle,
+  XCircle,
+  Loader2,
+  Pause,
+  Volume2,
+  VolumeX
+} from 'lucide-react'
+import { cn } from '@/utils/cn'
+import { useTranslation } from 'react-i18next'
+import { thumbnailCacheService } from '@/services/ThumbnailCacheService'
+import { videoPreloadManager } from '@/services/VideoPreloadManager'
+import type { Database } from '@/lib/supabase'
+
+type VideoRecord = Database['public']['Tables']['videos']['Row']
+
+interface EnhancedVideoCardProps {
+  video: VideoRecord
+  onPlay?: () => void
+  onDownload?: () => void
+  onShare?: () => void
+  onSelect?: () => void
+  className?: string
+  enableHoverPreview?: boolean
+  preloadDelay?: number
+  showStats?: boolean
+  compact?: boolean
+}
+
+export default function EnhancedVideoCard({
+  video,
+  onPlay,
+  onDownload,
+  onShare,
+  onSelect,
+  className,
+  enableHoverPreview = true,
+  preloadDelay = 500,
+  showStats = true,
+  compact = false
+}: EnhancedVideoCardProps) {
+  // 🚨 强制测试日志 - 这个日志无论什么情况都应该出现
+  console.log(`🚨 [FORCE-LOG] EnhancedVideoCard渲染开始`, {
+    videoId: video.id,
+    videoTitle: video.title,
+    videoStatus: video.status,
+    hasThumbnail: !!video.thumbnail_url,
+    timestamp: new Date().toISOString()
+  })
+  
+  const { t } = useTranslation()
+  const cardRef = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  
+  // 状态管理
+  const [isHovering, setIsHovering] = useState(false)
+  const [thumbnailState, setThumbnailState] = useState<{
+    loading: boolean
+    normal?: string
+    blur?: string
+    error?: string
+  }>(() => {
+    // 智能初始化：如果有现成的缩略图，直接设置为可用状态
+    if (video.thumbnail_url) {
+      console.log(`🖼️ [${video.id}] 初始化：直接使用数据库缩略图`, {
+        thumbnail_url: video.thumbnail_url,
+        blur_url: video.thumbnail_blur_url,
+        video_status: video.status
+      })
+      return {
+        loading: false,
+        normal: video.thumbnail_url,
+        blur: video.thumbnail_blur_url || video.thumbnail_url
+      }
+    }
+    // 只有在没有缩略图时才显示loading状态
+    console.log(`⏳ [${video.id}] 初始化：无缩略图，显示loading状态`, {
+      video_status: video.status,
+      has_video_url: !!video.video_url
+    })
+    return { loading: true }
+  })
+  const [previewState, setPreviewState] = useState<{
+    loading: boolean
+    loaded: boolean
+    playing: boolean
+    error?: string
+  }>({ loading: false, loaded: false, playing: false })
+  const [isMuted, setIsMuted] = useState(true)
+
+  // 初始化缩略图（智能检测是否需要立即生成）
+  useEffect(() => {
+    initializeThumbnail()
+  }, [video.id, video.video_url, video.thumbnail_url, video.status])
+
+  // 监听视频状态变化，当状态变为completed时立即尝试生成缩略图
+  useEffect(() => {
+    if (video.status === 'completed' && video.video_url && !thumbnailState.normal) {
+      console.log(`[EnhancedVideoCard] 视频刚完成，触发缩略图检查: ${video.id}`)
+      // 延迟一小段时间，确保缩略图生成服务已经处理
+      setTimeout(() => {
+        initializeThumbnail()
+      }, 1000)
+    }
+  }, [video.status, video.video_url])
+
+  // 监听真实缩略图提取完成事件
+  useEffect(() => {
+    const handleThumbnailReady = (event: CustomEvent) => {
+      if (event.detail.videoId === video.id) {
+        console.log(`[EnhancedVideoCard] 收到真实缩略图: ${video.id}`)
+        setThumbnailState({
+          loading: false,
+          normal: event.detail.thumbnails.normal,
+          blur: event.detail.thumbnails.blur
+        })
+      }
+    }
+
+    const handleThumbnailExtracted = (event: CustomEvent) => {
+      if (event.detail.videoId === video.id) {
+        console.log(`[EnhancedVideoCard] 收到提取的缩略图: ${video.id}`)
+        setThumbnailState({
+          loading: false,
+          normal: event.detail.thumbnails.normal,
+          blur: event.detail.thumbnails.blur
+        })
+      }
+    }
+
+    window.addEventListener('thumbnailReady', handleThumbnailReady as EventListener)
+    window.addEventListener('thumbnailExtracted', handleThumbnailExtracted as EventListener)
+
+    return () => {
+      window.removeEventListener('thumbnailReady', handleThumbnailReady as EventListener)
+      window.removeEventListener('thumbnailExtracted', handleThumbnailExtracted as EventListener)
+    }
+  }, [video.id])
+
+  /**
+   * 初始化缩略图（智能检查，避免不必要的loading状态）
+   */
+  const initializeThumbnail = async () => {
+    const startTime = performance.now()
+    try {
+      // 如果已经有缩略图显示，先启动后台优化任务，不打断当前显示
+      if (video.thumbnail_url) {
+        console.log(`🚀 [${video.id}] initializeThumbnail: 已有数据库缩略图，启动后台优化`, {
+          current_thumbnail: video.thumbnail_url,
+          execution_time: 0
+        })
+        // 后台异步检查是否有更好的真实缩略图
+        optimizeThumbnailInBackground()
+        return
+      }
+
+      // 只有在没有缩略图时才显示loading状态
+      console.log(`⏳ [${video.id}] 设置loading状态，开始缩略图检查流程`)
+      setThumbnailState(prev => ({ ...prev, loading: true }))
+
+      // 1. 优先检查本地缓存的真实缩略图
+      if (video.status === 'completed' && video.video_url) {
+        console.log(`🔍 [${video.id}] 检查本地缓存的真实缩略图...`)
+        const realThumbnail = await thumbnailCacheService.getRealThumbnailFirst(video.id, video.video_url)
+        if (realThumbnail) {
+          const elapsedTime = performance.now() - startTime
+          console.log(`✅ [${video.id}] 找到本地真实缩略图`, {
+            execution_time: `${elapsedTime.toFixed(2)}ms`,
+            thumbnail_size: realThumbnail.normal.length
+          })
+          setThumbnailState({
+            loading: false,
+            normal: realThumbnail.normal,
+            blur: realThumbnail.blur
+          })
+          return
+        }
+
+        // 2. 如果没有真实缩略图，尝试生成一个
+        console.log(`🎬 [${video.id}] 本地无缓存，开始实时生成真实缩略图...`)
+        try {
+          const generatedThumbnail = await thumbnailCacheService.extractAndCacheRealThumbnail(video.id, video.video_url)
+          if (generatedThumbnail) {
+            const elapsedTime = performance.now() - startTime
+            console.log(`✅ [${video.id}] 实时生成真实缩略图成功`, {
+              execution_time: `${elapsedTime.toFixed(2)}ms`,
+              thumbnail_size: generatedThumbnail.normal.length
+            })
+            setThumbnailState({
+              loading: false,
+              normal: generatedThumbnail.normal,
+              blur: generatedThumbnail.blur
+            })
+            return
+          }
+        } catch (extractError) {
+          const elapsedTime = performance.now() - startTime
+          console.warn(`❌ [${video.id}] 实时生成真实缩略图失败`, {
+            execution_time: `${elapsedTime.toFixed(2)}ms`,
+            error: extractError
+          })
+          // 继续执行后续逻辑
+        }
+      }
+
+      // 3. 最后使用状态占位图（非完成状态的视频）
+      if (video.status !== 'completed') {
+        console.log(`[EnhancedVideoCard] 视频未完成，显示状态占位图: ${video.id}`)
+        setThumbnailState({ loading: false })
+      } else {
+        // 完成的视频如果到这里，说明所有方法都失败了
+        console.warn(`[EnhancedVideoCard] 完成的视频无法生成缩略图: ${video.id}`)
+        setThumbnailState({
+          loading: false,
+          error: '无法生成缩略图'
+        })
+      }
+    } catch (error) {
+      console.error(`[EnhancedVideoCard] 缩略图初始化失败:`, error)
+      setThumbnailState({
+        loading: false,
+        error: error instanceof Error ? error.message : '未知错误'
+      })
+    }
+  }
+
+  /**
+   * 后台异步优化缩略图（不影响当前显示）
+   */
+  const optimizeThumbnailInBackground = async () => {
+    const startTime = performance.now()
+    try {
+      if (video.status !== 'completed' || !video.video_url) {
+        console.log(`⏭️ [${video.id}] 后台优化跳过：视频未完成或无视频URL`)
+        return
+      }
+
+      console.log(`🔄 [${video.id}] 开始后台缩略图优化检查...`)
+      
+      // 检查是否已有真实缩略图
+      const realThumbnail = await thumbnailCacheService.getRealThumbnailFirst(video.id, video.video_url)
+      if (realThumbnail) {
+        const elapsedTime = performance.now() - startTime
+        // 静默更新为更好的真实缩略图
+        console.log(`🔄✅ [${video.id}] 后台找到更好的真实缩略图，静默更新`, {
+          execution_time: `${elapsedTime.toFixed(2)}ms`,
+          new_thumbnail_size: realThumbnail.normal.length
+        })
+        setThumbnailState(prev => ({
+          ...prev,
+          normal: realThumbnail.normal,
+          blur: realThumbnail.blur
+        }))
+        return
+      }
+
+      // 如果没有真实缩略图，后台静默生成
+      console.log(`🔄🎬 [${video.id}] 后台开始静默生成真实缩略图...`)
+      const generatedThumbnail = await thumbnailCacheService.extractAndCacheRealThumbnail(video.id, video.video_url)
+      if (generatedThumbnail) {
+        const elapsedTime = performance.now() - startTime
+        console.log(`🔄✅ [${video.id}] 后台生成真实缩略图成功，静默更新`, {
+          execution_time: `${elapsedTime.toFixed(2)}ms`,
+          new_thumbnail_size: generatedThumbnail.normal.length
+        })
+        setThumbnailState(prev => ({
+          ...prev,
+          normal: generatedThumbnail.normal,
+          blur: generatedThumbnail.blur
+        }))
+      }
+    } catch (error) {
+      const elapsedTime = performance.now() - startTime
+      console.warn(`🔄❌ [${video.id}] 后台缩略图优化失败`, {
+        execution_time: `${elapsedTime.toFixed(2)}ms`,
+        error: error
+      })
+      // 后台任务失败不影响用户体验，只记录日志
+    }
+  }
+
+  /**
+   * 处理鼠标悬浮
+   */
+  const handleMouseEnter = useCallback(() => {
+    setIsHovering(true)
+
+    // 如果启用悬浮预览且视频可播放
+    if (enableHoverPreview && video.status === 'completed' && video.video_url) {
+      setPreviewState(prev => ({ ...prev, loading: true }))
+      
+      // 开始预加载
+      videoPreloadManager.startPreload(video.id, video.video_url, {
+        delay: preloadDelay,
+        priority: 'medium',
+        preloadStrategy: 'partial'
+      })
+
+      // 延迟检查预加载结果
+      setTimeout(() => {
+        const preloadedVideo = videoPreloadManager.getPreloadedVideo(video.id)
+        if (preloadedVideo && isHovering) {
+          videoRef.current = preloadedVideo
+          setPreviewState({
+            loading: false,
+            loaded: true,
+            playing: true
+          })
+          
+          // 开始播放预览
+          preloadedVideo.currentTime = 0
+          preloadedVideo.muted = true
+          preloadedVideo.loop = true
+          preloadedVideo.play().catch(console.error)
+        } else {
+          setPreviewState(prev => ({ ...prev, loading: false }))
+        }
+      }, preloadDelay + 100)
+    }
+  }, [enableHoverPreview, video.id, video.video_url, video.status, preloadDelay, isHovering])
+
+  /**
+   * 处理鼠标离开
+   */
+  const handleMouseLeave = useCallback(() => {
+    setIsHovering(false)
+    
+    // 取消预加载
+    videoPreloadManager.cancelPreload(video.id)
+    
+    // 停止预览播放
+    if (videoRef.current) {
+      videoRef.current.pause()
+      videoRef.current.currentTime = 0
+    }
+    
+    setPreviewState({
+      loading: false,
+      loaded: false,
+      playing: false
+    })
+  }, [video.id])
+
+  /**
+   * 处理播放按钮点击
+   */
+  const handlePlayClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    onPlay?.()
+  }, [onPlay])
+
+  /**
+   * 处理音频切换
+   */
+  const handleVolumeToggle = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (videoRef.current) {
+      const newMuted = !isMuted
+      videoRef.current.muted = newMuted
+      setIsMuted(newMuted)
+    }
+  }, [isMuted])
+
+  /**
+   * 获取状态图标
+   */
+  const getStatusIcon = () => {
+    switch (video.status) {
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 text-green-500" />
+      case 'failed':
+        return <XCircle className="h-4 w-4 text-red-500" />
+      case 'processing':
+        return <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+      default:
+        return <Clock className="h-4 w-4 text-yellow-500" />
+    }
+  }
+
+  /**
+   * 获取状态文本
+   */
+  const getStatusText = () => {
+    switch (video.status) {
+      case 'completed':
+        return t('video.status.completed')
+      case 'failed':
+        return t('video.status.failed')
+      case 'processing':
+        return t('video.status.processing')
+      default:
+        return t('video.status.pending')
+    }
+  }
+
+  /**
+   * 格式化时间
+   */
+  const formatDate = (dateString: string) => {
+    return new Intl.DateTimeFormat('zh-CN', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(new Date(dateString))
+  }
+
+  /**
+   * 格式化持续时间
+   */
+  const formatDuration = (seconds?: number) => {
+    if (!seconds) return 'N/A'
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  /**
+   * 渲染缩略图/预览区域
+   */
+  const renderMediaArea = () => {
+    const aspectRatio = compact ? 'aspect-video' : 'aspect-video'
+    
+    // 记录渲染状态
+    console.log(`🎨 [${video.id}] 渲染媒体区域`, {
+      has_normal: !!thumbnailState.normal,
+      has_blur: !!thumbnailState.blur,
+      is_loading: thumbnailState.loading,
+      is_playing: previewState.playing,
+      has_error: !!thumbnailState.error
+    })
+    
+    return (
+      <div className={cn("relative bg-muted overflow-hidden", aspectRatio)}>
+        {/* 缩略图层 */}
+        {thumbnailState.normal && !previewState.playing && (
+          <img
+            src={thumbnailState.normal}
+            alt={video.title || 'Video thumbnail'}
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+            onLoad={() => {
+              console.log(`🖼️✅ [${video.id}] 缩略图加载成功`)
+            }}
+            onError={(e) => {
+              console.warn(`🖼️❌ [${video.id}] 缩略图加载失败，尝试fallback`, {
+                failed_src: (e.target as HTMLImageElement).src,
+                has_blur_fallback: !!thumbnailState.blur
+              })
+              // 回退到模糊版本或默认占位符
+              const target = e.target as HTMLImageElement
+              if (thumbnailState.blur && target.src !== thumbnailState.blur) {
+                target.src = thumbnailState.blur
+              }
+            }}
+          />
+        )}
+
+        {/* 模糊占位符 */}
+        {thumbnailState.blur && thumbnailState.loading && (
+          <img
+            src={thumbnailState.blur}
+            alt="Thumbnail placeholder"
+            className="absolute inset-0 w-full h-full object-cover blur-md opacity-50"
+          />
+        )}
+
+        {/* 视频预览层 */}
+        {previewState.loaded && videoRef.current && (
+          <div className="absolute inset-0">
+            {/* 这里我们会在DOM中插入预加载的video元素 */}
+            <div 
+              ref={(el) => {
+                if (el && videoRef.current && !el.contains(videoRef.current)) {
+                  videoRef.current.className = "w-full h-full object-cover"
+                  el.appendChild(videoRef.current)
+                }
+              }}
+              className="w-full h-full"
+            />
+          </div>
+        )}
+
+        {/* 智能占位符（仅用于非完成状态或错误情况） */}
+        {!thumbnailState.normal && !thumbnailState.loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
+            {thumbnailState.error ? (
+              <div className="text-center p-4">
+                <XCircle className="h-8 w-8 text-red-400 mx-auto mb-2" />
+                <div className="text-xs text-red-500 break-words max-w-[200px]">
+                  {thumbnailState.error}
+                </div>
+              </div>
+            ) : video.status === 'completed' ? (
+              // 已完成的视频显示"正在生成缩略图"
+              <div className="text-center p-4">
+                <Loader2 className="h-8 w-8 text-blue-400 mx-auto mb-2 animate-spin" />
+                <div className="text-xs text-blue-600 dark:text-blue-400">
+                  正在生成缩略图...
+                </div>
+              </div>
+            ) : (
+              // 其他状态显示播放图标
+              <Play className="h-12 w-12 text-muted-foreground" />
+            )}
+          </div>
+        )}
+
+        {/* 加载状态覆盖层（仅在确实需要等待且没有可显示缩略图时） */}
+        {thumbnailState.loading && video.status === 'completed' && !thumbnailState.normal && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+            <div className="text-center">
+              <Loader2 className="h-8 w-8 text-white animate-spin mx-auto mb-2" />
+              <div className="text-xs text-white opacity-90">
+                生成缩略图...
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 视频预览加载状态 */}
+        {previewState.loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+            <Loader2 className="h-6 w-6 text-white animate-spin" />
+          </div>
+        )}
+
+        {/* 交互控制层 */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/30 transition-colors group">
+          {/* 播放按钮 */}
+          {video.status === 'completed' && (
+            <Button
+              variant="secondary"
+              size="lg"
+              className={cn(
+                "w-16 h-16 rounded-full bg-black/70 hover:bg-black/90 border-0 transition-all duration-200",
+                "opacity-0 group-hover:opacity-100 hover:scale-110",
+                previewState.playing && "opacity-0"
+              )}
+              onClick={handlePlayClick}
+            >
+              <Play className="h-8 w-8 text-white ml-1" />
+            </Button>
+          )}
+
+          {/* 视频控制按钮 */}
+          {previewState.playing && (
+            <div className="absolute bottom-2 right-2 flex gap-1">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="h-8 w-8 rounded-full bg-black/70 hover:bg-black/90 border-0 p-0"
+                onClick={handleVolumeToggle}
+              >
+                {isMuted ? (
+                  <VolumeX className="h-3 w-3 text-white" />
+                ) : (
+                  <Volume2 className="h-3 w-3 text-white" />
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* 状态标识 */}
+        <div className="absolute top-2 left-2">
+          <Badge variant="secondary" className="bg-black/70 text-white border-0">
+            {getStatusIcon()}
+            <span className="ml-1 text-xs">{getStatusText()}</span>
+          </Badge>
+        </div>
+
+        {/* 时长标识 */}
+        {video.duration && (
+          <div className="absolute bottom-2 left-2">
+            <Badge variant="secondary" className="bg-black/70 text-white border-0 text-xs">
+              {formatDuration(video.duration)}
+            </Badge>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <Card 
+      ref={cardRef}
+      className={cn(
+        "overflow-hidden cursor-pointer transition-all duration-200",
+        "hover:shadow-lg hover:scale-[1.02]",
+        isHovering && "ring-2 ring-primary/20",
+        className
+      )}
+      onClick={onSelect}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* 媒体区域 */}
+      {renderMediaArea()}
+
+      {/* 卡片内容 */}
+      <CardContent className={cn("p-4", compact && "p-3")}>
+        <div className="space-y-2">
+          {/* 标题和描述 */}
+          <div>
+            <h3 className={cn(
+              "font-semibold leading-tight line-clamp-2",
+              compact ? "text-sm" : "text-base"
+            )}>
+              {video.title || `视频 ${formatDate(video.created_at)}`}
+            </h3>
+            {video.description && !compact && (
+              <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                {video.description}
+              </p>
+            )}
+          </div>
+
+          {/* 统计信息 */}
+          {showStats && (
+            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <Eye className="h-3 w-3" />
+                <span>{video.view_count || 0}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Download className="h-3 w-3" />
+                <span>{video.download_count || 0}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Gem className="h-3 w-3" />
+                <span>{video.credits_used}</span>
+              </div>
+            </div>
+          )}
+
+          {/* 操作按钮 */}
+          <div className="flex items-center justify-between pt-2">
+            <div className="text-xs text-muted-foreground">
+              {formatDate(video.created_at)}
+            </div>
+            
+            <div className="flex items-center gap-1">
+              {video.status === 'completed' && onDownload && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onDownload()
+                  }}
+                >
+                  <Download className="h-3 w-3" />
+                </Button>
+              )}
+              
+              {video.status === 'completed' && onShare && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onShare()
+                  }}
+                >
+                  <Share2 className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}

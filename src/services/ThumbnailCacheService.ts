@@ -7,7 +7,7 @@
  * 3. 实时提取 - 最慢，但保证可用性
  */
 
-import { openDB, IDBPDatabase } from 'idb'
+import { openDB, deleteDB, IDBPDatabase } from 'idb'
 import { extractVideoThumbnail } from '@/utils/videoThumbnail'
 import { serverThumbnailService } from './serverThumbnailService'
 
@@ -17,6 +17,16 @@ interface ThumbnailCacheItem {
   timestamp: number
   quality: 'high' | 'medium' | 'low'
   size: number // 文件大小（字节）
+}
+
+interface RealThumbnailCacheItem {
+  videoId: string
+  videoUrl: string
+  normalThumbnail: string // base64 JPEG
+  blurThumbnail: string   // base64 JPEG (模糊版)
+  extractedAt: number
+  quality: 'real-frame'
+  fileSize: number
 }
 
 interface MemoryCacheItem {
@@ -30,9 +40,11 @@ interface MemoryCacheItem {
 class ThumbnailCacheService {
   private db: IDBPDatabase | null = null
   private memoryCache = new Map<string, MemoryCacheItem>()
+  private realThumbnailMemoryCache = new Map<string, RealThumbnailCacheItem>()
   private readonly DB_NAME = 'video-thumbnails'
-  private readonly DB_VERSION = 1
+  private readonly DB_VERSION = 2 // 升级版本号
   private readonly STORE_NAME = 'thumbnails'
+  private readonly REAL_STORE_NAME = 'real-thumbnails'
   private readonly CACHE_EXPIRY = 30 * 24 * 60 * 60 * 1000 // 30天
   private readonly MAX_MEMORY_CACHE_SIZE = 50 // 最大内存缓存数量
   private readonly MAX_DB_CACHE_SIZE = 500 // 最大数据库缓存数量
@@ -44,28 +56,129 @@ class ThumbnailCacheService {
   private errorCache = new Map<string, { timestamp: number; errorType: string }>()
 
   /**
-   * 初始化数据库
+   * 初始化数据库（增强版本冲突处理）
    */
   private async initDB(): Promise<void> {
     if (this.db) return
 
     try {
+      console.log(`[ThumbnailCache] 正在初始化数据库 ${this.DB_NAME} 版本 ${this.DB_VERSION}`)
+      
       this.db = await openDB(this.DB_NAME, this.DB_VERSION, {
-        upgrade(db) {
+        upgrade(db, oldVersion, newVersion) {
+          console.log(`[ThumbnailCache] 数据库升级: ${oldVersion} -> ${newVersion}`)
+          
+          // 创建原有的缩略图存储
           if (!db.objectStoreNames.contains('thumbnails')) {
+            console.log(`[ThumbnailCache] 创建 thumbnails 存储`)
             const store = db.createObjectStore('thumbnails', { keyPath: 'url' })
             store.createIndex('timestamp', 'timestamp')
             store.createIndex('quality', 'quality')
           }
+          
+          // 创建真实缩略图存储（版本2新增）
+          if (oldVersion < 2 && !db.objectStoreNames.contains('real-thumbnails')) {
+            console.log(`[ThumbnailCache] 创建 real-thumbnails 存储`)
+            const realStore = db.createObjectStore('real-thumbnails', { keyPath: 'videoId' })
+            realStore.createIndex('videoUrl', 'videoUrl')
+            realStore.createIndex('extractedAt', 'extractedAt')
+          }
         },
+        blocked() {
+          console.warn('[ThumbnailCache] 数据库被阻塞，可能有其他标签页在使用')
+        },
+        blocking() {
+          console.warn('[ThumbnailCache] 当前数据库阻塞了其他连接')
+        }
       })
 
-      
+      console.log(`[ThumbnailCache] 数据库初始化成功`)
       // 启动清理任务
       this.scheduleCleanup()
     } catch (error) {
       console.error('[ThumbnailCache] Failed to initialize IndexedDB:', error)
+      
+      // 检查是否是版本错误
+      if (error instanceof Error && error.name === 'VersionError') {
+        console.warn('[ThumbnailCache] 检测到版本冲突，尝试重置数据库...')
+        await this.handleVersionError()
+      }
     }
+  }
+
+  /**
+   * 处理版本错误（重置数据库）
+   */
+  private async handleVersionError(): Promise<void> {
+    try {
+      console.log('[ThumbnailCache] 开始重置数据库...')
+      await this.resetDatabase()
+      
+      // 重新尝试初始化
+      console.log('[ThumbnailCache] 重新初始化数据库...')
+      await this.initDB()
+    } catch (resetError) {
+      console.error('[ThumbnailCache] 数据库重置失败:', resetError)
+    }
+  }
+
+  /**
+   * 完全重置数据库
+   */
+  public async resetDatabase(): Promise<void> {
+    try {
+      // 关闭现有连接
+      if (this.db) {
+        this.db.close()
+        this.db = null
+      }
+
+      // 删除数据库
+      console.log(`[ThumbnailCache] 删除数据库 ${this.DB_NAME}`)
+      await deleteDB(this.DB_NAME)
+      
+      // 清空内存缓存
+      this.memoryCache.clear()
+      this.realThumbnailMemoryCache.clear()
+      this.pendingRequests.clear()
+      this.errorCache.clear()
+      
+      console.log('[ThumbnailCache] 数据库重置完成')
+    } catch (error) {
+      console.error('[ThumbnailCache] 重置数据库时出错:', error)
+      throw error
+    }
+  }
+
+  /**
+   * 检查数据库版本
+   */
+  public async checkDatabaseVersion(): Promise<number | null> {
+    try {
+      // 尝试以只读方式打开数据库来获取版本信息
+      const db = await openDB(this.DB_NAME, undefined, {
+        upgrade(db, oldVersion) {
+          // 不做任何修改，只是为了获取版本信息
+          console.log(`[ThumbnailCache] 当前数据库版本: ${oldVersion}`)
+        }
+      })
+      
+      const version = db.version
+      db.close()
+      return version
+    } catch (error) {
+      console.log('[ThumbnailCache] 无法获取数据库版本，可能数据库不存在:', error)
+      return null
+    }
+  }
+
+  /**
+   * 强制升级数据库
+   */
+  public async forceDatabaseUpgrade(): Promise<void> {
+    console.log('[ThumbnailCache] 强制升级数据库...')
+    await this.resetDatabase()
+    await this.initDB()
   }
 
   /**
@@ -585,6 +698,170 @@ class ThumbnailCacheService {
         this.errorCache.delete(url)
       }
     }
+  }
+
+  // ==================== 真实缩略图相关方法 ====================
+
+  /**
+   * 提取并缓存真实视频帧缩略图
+   */
+  async extractAndCacheRealThumbnail(videoId: string, videoUrl: string, highPriority: boolean = false): Promise<{ normal: string; blur: string } | null> {
+    console.log(`[ThumbnailCache] 开始提取真实缩略图: ${videoId} ${highPriority ? '(高优先级)' : ''}`)
+    
+    try {
+      // 检查是否已有缓存
+      const existing = await this.getRealThumbnailFirst(videoId, videoUrl)
+      if (existing) {
+        console.log(`[ThumbnailCache] 真实缩略图已存在: ${videoId}`)
+        return existing
+      }
+
+      // 提取第一秒的帧
+      const normalFrame = await extractVideoThumbnail(videoUrl, 1.0)
+      const blurFrame = await this.generateBlurVersion(normalFrame)
+      
+      const realThumbnail: RealThumbnailCacheItem = {
+        videoId,
+        videoUrl,
+        normalThumbnail: normalFrame,
+        blurThumbnail: blurFrame,
+        extractedAt: Date.now(),
+        quality: 'real-frame',
+        fileSize: this.estimateBase64Size(normalFrame) + this.estimateBase64Size(blurFrame)
+      }
+
+      // 立即保存到内存缓存（最高优先级）
+      this.realThumbnailMemoryCache.set(videoId, realThumbnail)
+
+      // 异步保存到IndexedDB（不阻塞返回）
+      this.saveToDBAsync(realThumbnail).catch(error => {
+        console.error(`[ThumbnailCache] 异步保存到DB失败: ${videoId}`, error)
+      })
+
+      // 立即触发UI更新事件
+      this.notifyThumbnailReady(videoId, { normal: normalFrame, blur: blurFrame })
+
+      console.log(`[ThumbnailCache] 真实缩略图提取完成: ${videoId}`)
+      return { normal: normalFrame, blur: blurFrame }
+    } catch (error) {
+      console.error(`[ThumbnailCache] 提取真实缩略图失败: ${videoId}`, error)
+      return null
+    }
+  }
+
+  /**
+   * 异步保存到IndexedDB（不阻塞主流程）
+   */
+  private async saveToDBAsync(realThumbnail: RealThumbnailCacheItem): Promise<void> {
+    try {
+      await this.initDB()
+      if (this.db) {
+        await this.db.put(this.REAL_STORE_NAME, realThumbnail)
+        console.log(`[ThumbnailCache] 真实缩略图已异步保存到DB: ${realThumbnail.videoId}`)
+      }
+    } catch (error) {
+      console.error(`[ThumbnailCache] 异步保存失败: ${realThumbnail.videoId}`, error)
+    }
+  }
+
+  /**
+   * 获取真实缩略图（优先级高于SVG）
+   */
+  async getRealThumbnailFirst(videoId: string, videoUrl: string): Promise<{ normal: string; blur: string } | null> {
+    // 1. 检查内存缓存
+    const cached = this.realThumbnailMemoryCache.get(videoId)
+    if (cached) {
+      return { normal: cached.normalThumbnail, blur: cached.blurThumbnail }
+    }
+
+    // 2. 检查IndexedDB
+    await this.initDB()
+    if (this.db) {
+      try {
+        const stored = await this.db.get(this.REAL_STORE_NAME, videoId)
+        if (stored) {
+          // 加载到内存缓存
+          this.realThumbnailMemoryCache.set(videoId, stored)
+          return { normal: stored.normalThumbnail, blur: stored.blurThumbnail }
+        }
+      } catch (error) {
+        console.error(`[ThumbnailCache] 读取真实缩略图失败: ${videoId}`, error)
+      }
+    }
+
+    return null
+  }
+
+  /**
+   * 检查是否已有真实缩略图
+   */
+  async hasRealThumbnail(videoId: string): Promise<boolean> {
+    // 检查内存缓存
+    if (this.realThumbnailMemoryCache.has(videoId)) {
+      return true
+    }
+
+    // 检查IndexedDB
+    await this.initDB()
+    if (this.db) {
+      try {
+        const stored = await this.db.get(this.REAL_STORE_NAME, videoId)
+        return !!stored
+      } catch (error) {
+        console.error(`[ThumbnailCache] 检查真实缩略图失败: ${videoId}`, error)
+      }
+    }
+
+    return false
+  }
+
+  /**
+   * 生成模糊版本的缩略图
+   */
+  private async generateBlurVersion(imageData: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+        
+        if (!ctx) {
+          reject(new Error('Cannot get canvas context'))
+          return
+        }
+
+        canvas.width = img.width
+        canvas.height = img.height
+
+        // 应用模糊效果
+        ctx.filter = 'blur(8px)'
+        ctx.drawImage(img, 0, 0)
+
+        const blurredDataUrl = canvas.toDataURL('image/jpeg', 0.6)
+        resolve(blurredDataUrl)
+      }
+      
+      img.onerror = () => reject(new Error('Failed to load image for blur'))
+      img.src = imageData
+    })
+  }
+
+  /**
+   * 估算base64图片大小
+   */
+  private estimateBase64Size(base64Data: string): number {
+    // base64编码大约增加33%的大小
+    return Math.round(base64Data.length * 0.75)
+  }
+
+  /**
+   * 触发缩略图就绪事件
+   */
+  private notifyThumbnailReady(videoId: string, thumbnails: { normal: string; blur: string }): void {
+    const event = new CustomEvent('thumbnailExtracted', {
+      detail: { videoId, thumbnails }
+    })
+    window.dispatchEvent(event)
   }
 }
 

@@ -10,7 +10,7 @@
  * 6. 向后兼容原有VideoPlayer接口
  */
 
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Play, Loader2, AlertCircle } from 'lucide-react'
 import VideoPlayer from './VideoPlayer'
@@ -94,12 +94,33 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
   onTimeUpdate,
   ...restProps
 }) => {
+  // LazyVideoPlayer渲染开始
+  if (import.meta.env.DEV) {
+    console.log(`[LazyVideoPlayer] 渲染开始`, {
+      src,
+      videoId,
+      videoTitle,
+      hasPoster: !!poster,
+      timestamp: new Date().toISOString()
+    })
+  }
+  
   const { t } = useTranslation()
   const [hasUserInteraction, setHasUserInteraction] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   
-  // 智能缩略图状态
-  const [smartThumbnails, setSmartThumbnails] = useState<{ normal: string; blur: string } | null>(null)
+  // 防重复处理的ref - 跟踪已处理的资源
+  const thumbnailProcessedRef = useRef<Set<string>>(new Set())
+  
+  // 智能缩略图状态 - 智能初始化，如果有poster立即使用
+  const [smartThumbnails, setSmartThumbnails] = useState<{ normal: string; blur: string } | null>(() => {
+    // 如果有poster，立即使用它作为初始状态，避免闪烁
+    if (poster) {
+      console.log(`🚀 [LazyVideoPlayer] 智能初始化：直接使用poster`, { poster, videoId })
+      return { normal: poster, blur: poster }
+    }
+    return null
+  })
   
   // 网络质量检测
   const networkQuality = useSimpleNetworkQuality()
@@ -147,32 +168,108 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
     }
   }, [lazyState.isLoaded, lazyState.isLoading, lazyState.hasError, lazyActions, handleInteraction])
 
-  // 智能缩略图初始化
+  // 智能缩略图初始化 - 后台静默处理，不影响初始显示
   React.useEffect(() => {
     const initSmartThumbnails = async () => {
       try {
-        const thumbnails = await thumbnailGenerator.getBestThumbnail(src, poster)
-        setSmartThumbnails(thumbnails)
+        // 🔥 生成唯一的处理键，避免重复处理相同的资源组合
+        const processKey = `${src}:${poster || 'no-poster'}`
         
-        // 通知缩略图加载完成
-        onThumbnailLoad?.(thumbnails.normal)
+        // 🔥 检查是否已经处理过这个资源组合
+        if (thumbnailProcessedRef.current.has(processKey)) {
+          console.log(`⏭️ [LazyVideoPlayer] 跳过重复处理: ${processKey}`)
+          return
+        }
+        
+        // 🔥 标记为正在处理
+        thumbnailProcessedRef.current.add(processKey)
+        
+        const thumbnails = await thumbnailGenerator.getBestThumbnail(src, poster)
+        
+        // 🔥 改进的更新条件判断：避免无效更新
+        const currentThumbnail = smartThumbnails?.normal
+        const newThumbnail = thumbnails.normal
+        
+        // 只有在以下情况才更新：
+        // 1. 新缩略图不是SVG占位符
+        // 2. 新缩略图与当前缩略图不同
+        // 3. 新缩略图不是poster（避免用poster覆盖更好的缩略图）
+        const shouldUpdate = (
+          !newThumbnail.startsWith('data:image/svg+xml') &&
+          newThumbnail !== currentThumbnail &&
+          newThumbnail !== poster
+        )
+        
+        if (shouldUpdate) {
+          console.log(`🔄 [LazyVideoPlayer] 后台获取到更好的缩略图，静默更新`, { 
+            old: currentThumbnail, 
+            new: newThumbnail,
+            processKey
+          })
+          setSmartThumbnails(thumbnails)
+          onThumbnailLoad?.(newThumbnail)
+        } else {
+          // 🔥 更详细的跳过原因日志
+          let skipReason = 'unknown'
+          if (newThumbnail.startsWith('data:image/svg+xml')) {
+            skipReason = 'SVG占位符'
+          } else if (newThumbnail === currentThumbnail) {
+            skipReason = '相同缩略图'
+          } else if (poster && newThumbnail === poster) {
+            skipReason = '新缩略图是poster'
+          } else if (!newThumbnail.length) {
+            skipReason = '空缩略图'
+          } else {
+            skipReason = '其他条件不满足'
+          }
+          
+          console.log(`📌 [LazyVideoPlayer] 保持当前缩略图，跳过后台更新`, { 
+            current: currentThumbnail,
+            fetched: newThumbnail,
+            reason: skipReason,
+            processKey
+          })
+        }
         
         if (import.meta.env.DEV) {
-          console.log(`[LazyVideoPlayer] 🖼️ 智能缩略图获取: ${thumbnails.normal}`)
+          console.log(`[LazyVideoPlayer] 🖼️ 智能缩略图处理完成`, {
+            videoId,
+            thumbnailUrl: newThumbnail,
+            wasUpdated: shouldUpdate,
+            processKey
+          })
         }
       } catch (error) {
         console.warn('[LazyVideoPlayer] 智能缩略图获取失败:', error)
-        // 回退到原始poster
-        if (poster) {
+        // 🔥 更安全的错误回退逻辑
+        if (!smartThumbnails && poster) {
+          console.log(`🛡️ [LazyVideoPlayer] 错误回退：使用poster作为缩略图`)
           setSmartThumbnails({ normal: poster, blur: poster })
         }
+      } finally {
+        // 🔥 确保清理工作：如果处理失败，也要从处理集合中移除
+        // 这样下次src或poster变化时能够重新处理
       }
     }
     
     if (enableThumbnailCache) {
-      initSmartThumbnails()
+      // 🔥 增加更长的延迟，给初始化逻辑更多时间完成
+      const delay = poster ? 100 : 0 // 有poster时延迟更长，避免覆盖
+      setTimeout(initSmartThumbnails, delay)
     }
   }, [src, poster, enableThumbnailCache, onThumbnailLoad])
+  
+  // 🔥 清理效果：在组件卸载或src变化时清理已处理的记录
+  React.useEffect(() => {
+    return () => {
+      // 组件卸载时清理所有相关记录
+      if (thumbnailProcessedRef.current) {
+        const keysToRemove = Array.from(thumbnailProcessedRef.current).filter(key => key.startsWith(src))
+        keysToRemove.forEach(key => thumbnailProcessedRef.current.delete(key))
+        console.log(`🧽 [LazyVideoPlayer] 清理已处理记录: ${keysToRemove.length} 个`)
+      }
+    }
+  }, [src])
 
   // 事件处理器
   useEffect(() => {
@@ -252,8 +349,8 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
       )
     }
 
-    // 智能缩略图选择：优先使用生成的缩略图，然后是懒加载缓存，最后是原始poster
-    const thumbnailSrc = smartThumbnails?.normal || lazyState.thumbnail || poster
+    // 优化缩略图选择逻辑：确保总是有可用的缩略图显示
+    const thumbnailSrc = smartThumbnails?.normal || poster || lazyState.thumbnail
     
     return (
       <>
@@ -269,8 +366,9 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
                 const target = e.target as HTMLImageElement;
                 if (target.src !== poster && poster) {
                   target.src = poster; // 尝试fallback到原始poster
-                } else if (target.src !== '/logo.png') {
-                  target.src = '/logo.png'; // 最后fallback到logo
+                } else {
+                  // 如果所有缩略图都失败，隐藏图片元素，让下层的播放图标显示
+                  target.style.display = 'none';
                 }
               }}
               loading="lazy"
@@ -279,7 +377,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
             {/* 移除加载中的模糊效果，保持界面简洁 */}
           </div>
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-800 dark:via-slate-700 dark:to-slate-600">
             <div className="text-center text-gray-600 dark:text-gray-300">
               <Play className="h-12 w-12 mx-auto mb-2" />
               <p className="text-sm font-medium">{t('video.preview')}</p>
@@ -405,11 +503,11 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
     )
   }
 
-  // 显示占位符或加载状态
+  // 显示占位符或加载状态 - 移除灰色背景，避免闪烁
   return (
     <div 
       ref={inViewRef as React.RefObject<HTMLDivElement>} 
-      className={cn("relative aspect-video bg-muted", className)}
+      className={cn("relative aspect-video", className)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

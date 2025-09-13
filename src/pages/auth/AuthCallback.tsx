@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { Loader2, CheckCircle, AlertTriangle } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { log } from '@/utils/logger'
+import i18n from '@/i18n/config'
 
 export default function AuthCallback() {
   const { t } = useTranslation()
@@ -17,6 +18,51 @@ export default function AuthCallback() {
     const handleCallback = async () => {
       try {
         console.log('[AuthCallback] 开始处理OAuth回调')
+        
+        // 🚀 保护语言设置 - 在OAuth回调开始时立即检查和保护当前语言
+        const protectLanguageSetting = () => {
+          try {
+            const currentLanguage = i18n.language
+            const preferredLanguage = localStorage.getItem('preferred_language')
+            
+            console.log('[AuthCallback] 语言保护检查:', {
+              currentI18nLanguage: currentLanguage,
+              preferredLanguage,
+              navigatorLanguage: navigator.language
+            })
+            
+            // 如果当前语言是阿拉伯语但用户之前没有选择阿拉伯语，可能是bug
+            if (currentLanguage === 'ar' && preferredLanguage !== 'ar') {
+              const userChoseArabic = localStorage.getItem('user_explicitly_chose_arabic') === 'true'
+              
+              if (!userChoseArabic) {
+                console.warn('[AuthCallback] 检测到异常的阿拉伯语设置（用户未明确选择），尝试恢复')
+                
+                // 尝试从多个来源恢复正确的语言
+                const fallbackLanguage = preferredLanguage || 
+                                         localStorage.getItem('pre_oauth_language') ||
+                                         (navigator.language.startsWith('zh') ? 'zh' : 'en')
+                
+                console.log('[AuthCallback] 恢复语言设置为:', fallbackLanguage)
+                i18n.changeLanguage(fallbackLanguage)
+                localStorage.setItem('preferred_language', fallbackLanguage)
+              } else {
+                console.log('[AuthCallback] 用户之前明确选择了阿拉伯语，保留设置')
+              }
+            }
+            
+            // 确保语言设置一致性
+            if (preferredLanguage && preferredLanguage !== currentLanguage) {
+              console.log('[AuthCallback] 同步语言设置:', preferredLanguage)
+              i18n.changeLanguage(preferredLanguage)
+            }
+          } catch (error) {
+            console.error('[AuthCallback] 语言保护失败:', error)
+          }
+        }
+        
+        // 立即执行语言保护
+        protectLanguageSetting()
         
         const currentUrl = new URL(window.location.href)
         const urlParams = new URLSearchParams(window.location.search)
@@ -158,6 +204,42 @@ export default function AuthCallback() {
       console.log('[AuthCallback] 处理成功认证，用户:', userEmail)
       setSuccess(true)
       setIsProcessing(false)
+      
+      // 🚀 最终语言设置确认 - 确保认证成功后语言设置正确
+      try {
+        const currentLanguage = i18n.language
+        const preferredLanguage = localStorage.getItem('preferred_language')
+        
+        console.log('[AuthCallback] 认证成功后语言检查:', {
+          currentLanguage,
+          preferredLanguage,
+          userEmail
+        })
+        
+        // 如果仍然是阿拉伯语且用户没有明确选择，强制重置为英语或浏览器语言
+        if (currentLanguage === 'ar' && preferredLanguage !== 'ar') {
+          const userChoseArabic = localStorage.getItem('user_explicitly_chose_arabic') === 'true'
+          
+          if (!userChoseArabic) {
+            const safeLanguage = navigator.language.startsWith('zh') ? 'zh' : 'en'
+            console.warn('[AuthCallback] 认证后仍检测到异常阿拉伯语（用户未明确选择），最终重置为:', safeLanguage)
+            
+            await i18n.changeLanguage(safeLanguage)
+            localStorage.setItem('preferred_language', safeLanguage)
+            
+            // 设置一个标记，让应用知道语言被修复了
+            localStorage.setItem('language_fixed_after_oauth', 'true')
+          } else {
+            console.log('[AuthCallback] 认证成功，用户之前明确选择了阿拉伯语，保留设置')
+          }
+        }
+        
+        // 清理OAuth相关的临时语言设置
+        localStorage.removeItem('pre_oauth_language')
+        
+      } catch (error) {
+        console.error('[AuthCallback] 最终语言设置检查失败:', error)
+      }
       
       // 清理URL参数
       if (window.location.search || window.location.hash) {

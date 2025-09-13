@@ -31,6 +31,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import LazyVideoPlayer from '@/components/video/LazyVideoPlayer'
+import EnhancedVideoCard from '@/components/video/EnhancedVideoCard'
 import supabaseVideoService from '@/services/supabaseVideoService'
 import videoShareService from '@/services/videoShareService'
 import { progressManager } from '@/services/progressManager'
@@ -1262,12 +1263,30 @@ export default function VideosPage() {
               // Get template ID from metadata if not in template_id field
               const templateId = video.template_id || (video.metadata as any)?.templateId
               
-              
               return (
-              <Card 
-                key={video.id} 
-                className="overflow-hidden hover:shadow-lg transition-all duration-300"
-              >
+                <EnhancedVideoCard
+                  key={video.id}
+                  video={video}
+                  enableHoverPreview={true}
+                  preloadDelay={500}
+                  showStats={true}
+                  compact={uiState.viewMode === 'list'}
+                  onPlay={() => handlePlayVideo(video)}
+                  onDownload={() => handleDownloadVideo(video)}
+                  onShare={() => handleShareVideo(video)}
+                  onSelect={() => handlePlayVideo(video)}
+                  className="transition-all duration-300"
+                />
+              )
+            })}
+          </div>
+        </>
+      )}
+    </TooltipProvider>
+    
+    {/* 保留现有的模态框代码 */}
+    {/* Video Player Modal */}
+    {modals.videoPlayer.open && modals.videoPlayer.video?.video_url && (
                 <div className="aspect-video bg-muted relative group cursor-pointer" onClick={() => handlePlayVideo(video)}>
                   {video.status === 'completed' && video.video_url ? (
                     <LazyVideoPlayer
