@@ -5,10 +5,28 @@
  */
 
 import { localThumbnailExtractor, type ThumbnailSet } from './LocalThumbnailExtractor'
-import { thumbnailCacheService } from './ThumbnailCacheService'
+import thumbnailGenerator from './thumbnailGeneratorService'
+import { supabaseVideoService } from './supabaseVideoService'
 import type { Database } from '@/lib/supabase'
 
 type Video = Database['public']['Tables']['videos']['Row']
+
+interface ThumbnailGenerationResult {
+  success: boolean
+  thumbnails?: {
+    normal: string
+    blur: string
+    metadata: {
+      width: number
+      height: number
+      format: string
+      fileSize: number
+      generationMethod: 'real-frame' | 'svg-placeholder'
+      timestamp: number
+    }
+  }
+  fallbackUsed?: boolean
+}
 
 interface ThumbnailGenerationTask {
   videoId: string
@@ -32,7 +50,7 @@ class ThumbnailGenerationService {
     
     try {
       // 检查是否已有真实缩略图
-      const hasRealThumbnail = await thumbnailCacheService.hasRealThumbnail(videoId)
+      const hasRealThumbnail = thumbnailGenerator.getFromMemoryCache(videoUrl)
       if (hasRealThumbnail) {
         console.log(`[ThumbnailGeneration] 视频已有真实缩略图，跳过: ${videoId}`)
         return
@@ -62,8 +80,8 @@ class ThumbnailGenerationService {
     console.log(`[ThumbnailGeneration] 高优先级立即提取: ${videoId}`)
     
     try {
-      // 直接使用ThumbnailCacheService进行提取，它内部有优化
-      const result = await thumbnailCacheService.extractAndCacheRealThumbnail(videoId, videoUrl)
+      // 直接使用thumbnailGenerator进行提取
+      const result = await thumbnailGenerator.ensureThumbnailCached(videoUrl, videoId)
       
       if (result) {
         // 标记任务完成
@@ -76,7 +94,7 @@ class ThumbnailGenerationService {
         console.log(`[ThumbnailGeneration] 立即提取真实缩略图成功: ${videoId}`)
         
         // 触发缩略图就绪事件
-        this.notifyThumbnailReady(videoId, result)
+        this.notifyThumbnailReady(videoId, { normal: result, blur: result })
       } else {
         throw new Error('立即提取失败，返回null')
       }
@@ -108,8 +126,8 @@ class ThumbnailGenerationService {
       )
 
       if (thumbnailSet) {
-        // 使用ThumbnailCacheService保存到本地缓存
-        const result = await thumbnailCacheService.extractAndCacheRealThumbnail(videoId, videoUrl)
+        // 使用thumbnailGenerator保存到本地缓存
+        const result = await thumbnailGenerator.ensureThumbnailCached(videoUrl, videoId)
         
         if (result) {
           // 标记任务完成
@@ -122,7 +140,7 @@ class ThumbnailGenerationService {
           console.log(`[ThumbnailGeneration] 本地缩略图提取成功: ${videoId}`)
           
           // 触发缩略图就绪事件
-          this.notifyThumbnailReady(videoId, result)
+          this.notifyThumbnailReady(videoId, { normal: result, blur: result })
         } else {
           throw new Error('保存到本地缓存失败')
         }
@@ -205,16 +223,16 @@ class ThumbnailGenerationService {
     console.log(`[ThumbnailGeneration] 开始生成缩略图: ${videoId}`)
     
     try {
-      // 直接使用ThumbnailCacheService生成真实缩略图，避免fallback到logo
-      const result = await thumbnailCacheService.extractAndCacheRealThumbnail(videoId, videoUrl)
+      // 直接使用thumbnailGenerator生成真实缩略图
+      const result = await thumbnailGenerator.ensureThumbnailCached(videoUrl, videoId)
 
       if (result) {
         // 构建兼容的结果格式用于保存到数据库
         const compatibleResult = {
           success: true,
           thumbnails: {
-            normal: result.normal,
-            blur: result.blur,
+            normal: result,
+            blur: result,
             metadata: {
               width: 640,
               height: 360,
@@ -236,7 +254,7 @@ class ThumbnailGenerationService {
         console.log(`[ThumbnailGeneration] 真实缩略图生成成功: ${videoId}`)
         
         // 触发缩略图就绪事件
-        this.notifyThumbnailReady(videoId, result)
+        this.notifyThumbnailReady(videoId, { normal: result, blur: result })
       } else {
         throw new Error('真实缩略图提取失败')
       }

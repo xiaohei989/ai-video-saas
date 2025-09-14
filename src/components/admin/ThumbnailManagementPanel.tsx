@@ -19,7 +19,7 @@ import {
   XCircle,
   Clock
 } from 'lucide-react'
-import { thumbnailCacheService } from '@/services/ThumbnailCacheService'
+import thumbnailGenerator from '@/services/thumbnailGeneratorService'
 import { localThumbnailExtractor } from '@/services/LocalThumbnailExtractor'
 import { useTranslation } from 'react-i18next'
 

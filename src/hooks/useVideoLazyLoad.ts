@@ -11,7 +11,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useInView } from 'react-intersection-observer'
-import thumbnailCacheService from '@/services/ThumbnailCacheService'
+import thumbnailGenerator from '@/services/thumbnailGeneratorService'
 import videoLoaderService, { type VideoLoadOptions, type LoadProgress } from '@/services/VideoLoaderService'
 
 export interface LazyLoadOptions {
@@ -140,10 +140,7 @@ export function useVideoLazyLoad(
 
     setState(prev => ({ ...prev, thumbnailLoading: true }))
 
-    const thumbnailPromise = thumbnailCacheService.getThumbnail(videoUrl, {
-      quality: thumbnailQuality,
-      frameTime: 0.33
-    })
+    const thumbnailPromise = thumbnailGenerator.ensureThumbnailCached(videoUrl)
 
     thumbnailPromiseRef.current = thumbnailPromise
 
@@ -446,10 +443,8 @@ export function useBatchLazyLoad(
   useEffect(() => {
     if (options.enableThumbnailCache && visibleVideos.size > 0) {
       const visibleUrls = Array.from(visibleVideos)
-      thumbnailCacheService.preloadThumbnails(visibleUrls, options.thumbnailQuality)
-        .catch(error => {
-          console.error('[BatchLazyLoad] Thumbnail preload failed:', error)
-        })
+      // 批量预加载已简化 - 现在由LazyVideoPlayer按需生成
+      console.log('[BatchLazyLoad] 跳过批量预加载，使用按需生成策略')
     }
   }, [visibleVideos, options.enableThumbnailCache, options.thumbnailQuality])
 

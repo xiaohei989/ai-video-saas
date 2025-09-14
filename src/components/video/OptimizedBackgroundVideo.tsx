@@ -31,6 +31,9 @@ export interface OptimizedBackgroundVideoProps {
   fallbackImage: string
   fallbackBlurImage?: string // 模糊版本用于加载过渡
   
+  // 视频标识（用于缩略图生成）
+  videoId?: string // 视频ID，用于缓存和日志
+  
   // 播放控制
   autoPlay?: boolean
   loop?: boolean

@@ -4,7 +4,7 @@
  */
 
 import { extractVideoThumbnail } from '@/utils/videoThumbnail'
-import { thumbnailCacheService } from './ThumbnailCacheService'
+import thumbnailGenerator from './thumbnailGeneratorService'
 
 export interface ThumbnailSet {
   normal: string
@@ -305,7 +305,7 @@ class LocalThumbnailExtractor {
     for (const video of videos) {
       try {
         // 检查是否已有缓存
-        const hasCache = await thumbnailCacheService.hasRealThumbnail(video.id)
+        const hasCache = thumbnailGenerator.getFromMemoryCache(video.url)
         if (hasCache) {
           console.log(`[LocalThumbnailExtractor] 跳过已有缓存的视频: ${video.id}`)
           continue
@@ -314,7 +314,7 @@ class LocalThumbnailExtractor {
         // 提取并缓存
         const thumbnails = await this.extractFirstSecondFrame(video.id, video.url, options)
         if (thumbnails) {
-          await thumbnailCacheService.extractAndCacheRealThumbnail(video.id, video.url)
+          await thumbnailGenerator.ensureThumbnailCached(video.url, video.id)
         }
 
         // 添加间隔避免过载

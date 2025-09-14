@@ -315,11 +315,18 @@
     "generate": "Generar",
     "creditCost": "{{cost}} créditos",
     "preview": "Vista previa",
+    "filterConditions": "Condiciones de filtro:",
+    "removeTagAria": "Eliminar etiqueta {{tag}}",
+    "countDisplay": "({{count}} plantillas)",
     "sortBy": {
       "popular": "Más Popular",
       "latest": "Más Reciente",
       "placeholder": "Ordenar por"
     }
+  },
+  "audio": {
+    "mute": "Silenciar",
+    "unmute": "Activar sonido"
   },
   "pagination": {
     "showing": "Mostrando {{start}}-{{end}} de {{total}} elementos",

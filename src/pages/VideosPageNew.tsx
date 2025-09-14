@@ -4,7 +4,7 @@
  * 简化状态管理，提升可靠性
  */
 
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -83,6 +83,20 @@ export default function VideosPageNew() {
 
   // 分页常量
   const ITEMS_PER_PAGE = 10
+  
+  // LazyVideoPlayer 常量配置 - 避免每次渲染创建新对象
+  const lazyVideoPlayerConfig = useMemo(() => ({
+    className: "w-full h-full",
+    objectFit: "cover" as const,
+    showPlayButton: true,
+    showVolumeControl: true,
+    autoPlayOnHover: true,
+    enableDownloadProtection: true,
+    enableLazyLoad: false,
+    enableThumbnailCache: true,
+    enableNetworkAdaptive: false,
+    enableProgressiveLoading: true
+  }), [])
 
   // 通知状态（已移除，改用toast）
 
@@ -112,6 +126,8 @@ export default function VideosPageNew() {
           videoTaskManager.initialize(user.id),
           SubscriptionService.getCurrentSubscription(user.id)
         ])
+        
+        // 移除复杂的缓存重建机制 - 改为按需生成
         
         // 设置订阅状态
         setIsPaidUser(subscription?.status === 'active' || false)
@@ -218,6 +234,8 @@ export default function VideosPageNew() {
       subscriptions.forEach(unsub => unsub())
     }
   }, [videos, user])
+
+  // 移除复杂的缓存初始化逻辑 - 改为LazyVideoPlayer按需生成
 
   /**
    * 加载视频列表
@@ -636,6 +654,12 @@ export default function VideosPageNew() {
           'space-y-4'
         }>
           {paginatedVideos.map((video) => {
+            // 加强验证video数据完整性，跳过无效记录
+            if (!video?.id || typeof video.id !== 'string' || !video.id.trim()) {
+              console.warn('[VideosPage] 跳过无效视频记录:', video)
+              return null
+            }
+            
             const task = getVideoTask(video.id)
             return (
               <Card 
@@ -643,26 +667,17 @@ export default function VideosPageNew() {
                 className="overflow-hidden hover:shadow-lg transition-all duration-300"
               >
                 <div className="aspect-video relative bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-800 dark:via-slate-700 dark:to-slate-600">
-                  {/* 视频渲染逻辑 - 简化且清晰 */}
-                  {video.video_url ? (
+                  {/* 视频渲染逻辑 - 添加额外的ID验证 */}
+                  {video.video_url && video.id ? (
                     // 有视频URL - 显示视频播放器
                     <LazyVideoPlayer
+                      {...lazyVideoPlayerConfig}
                       src={video.video_url}
                       poster={video.thumbnail_url || undefined}
-                      className="w-full h-full"
-                      objectFit="cover"
-                      showPlayButton={false} // 桌面端隐藏播放按钮，移动端会自动显示
-                      showVolumeControl={true}
-                      autoPlayOnHover={true} // 启用悬浮自动播放
                       userId={user?.id}
                       videoId={video.id}
                       videoTitle={video.title || 'video'}
-                      enableDownloadProtection={true}
                       alt={video.title || 'Video preview'}
-                      enableLazyLoad={false}
-                      enableThumbnailCache={true}
-                      enableNetworkAdaptive={false}
-                      enableProgressiveLoading={true}
                     />
                   ) : task && (task.status === 'processing' || task.status === 'pending') ? (
                     // 正在处理 - 显示进度（流体背景）

@@ -6,6 +6,7 @@ import { Loader2, CheckCircle, AlertTriangle } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { log } from '@/utils/logger'
 import i18n from '@/i18n/config'
+import { languageDebugger } from '@/utils/languageDebugger'
 
 export default function AuthCallback() {
   const { t } = useTranslation()
@@ -90,6 +91,16 @@ export default function AuthCallback() {
           currentUrl: currentUrl.href
         })
 
+        // 🚀 记录OAuth回调开始
+        languageDebugger.log('oauth_callback_start', 'OAuth callback processing started', {
+          provider: oauthProvider,
+          isAppleOAuth,
+          hasCode: urlParams.has('code'),
+          hasState: urlParams.has('state'),
+          currentLanguage: i18n.language,
+          referrer: document.referrer
+        })
+
         // 清理OAuth提供商标记
         if (oauthProvider) {
           localStorage.removeItem('oauth_provider')
@@ -143,10 +154,18 @@ export default function AuthCallback() {
           
           if (data?.session) {
             console.log('[AuthCallback] 会话交换成功，用户:', data.session.user.email)
+            
+            // 🚀 记录OAuth成功
+            languageDebugger.logOAuthCallback(oauthProvider || 'unknown', true)
+            
             await handleSuccessfulAuth(data.session.user.email || 'unknown')
             return
           } else {
             console.error('[AuthCallback] 代码交换成功但没有返回会话')
+            
+            // 🚀 记录OAuth失败
+            languageDebugger.logOAuthCallback(oauthProvider || 'unknown', false)
+            
             throw new Error('会话建立失败，请重试')
           }
         }
@@ -234,8 +253,11 @@ export default function AuthCallback() {
           }
         }
         
-        // 清理OAuth相关的临时语言设置
-        localStorage.removeItem('pre_oauth_language')
+        // 延迟清理OAuth相关的临时语言设置 - 确保修复逻辑能够获取到保存的语言
+        setTimeout(() => {
+          localStorage.removeItem('pre_oauth_language')
+          console.log('[AuthCallback] 延迟清理OAuth前语言设置')
+        }, 1000)
         
       } catch (error) {
         console.error('[AuthCallback] 最终语言设置检查失败:', error)

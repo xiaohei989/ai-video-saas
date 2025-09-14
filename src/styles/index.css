@@ -620,3 +620,109 @@ html.dark {
   -webkit-line-clamp: 4;
   line-clamp: 4;
 }
+
+/* Mobile Navigation Styles */
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  color: var(--muted-foreground);
+  min-width: 48px;
+  min-height: 44px;
+  gap: 2px;
+}
+
+.mobile-nav-item:hover {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+  transform: scale(1.05);
+}
+
+.mobile-nav-active {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  transform: scale(1.1);
+}
+
+.mobile-nav-active:hover {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* 移动端视频播放按钮样式 */
+.mobile-video-play-overlay {
+  /* 移动端常显，桌面端悬浮显示 */
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-video-play-button {
+  width: 48px;
+  height: 48px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  
+  /* 桌面端样式 */
+  @media (min-width: 768px) {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.mobile-video-play-button:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+  transform: scale(1.1);
+}
+
+.mobile-video-play-button:active {
+  transform: scale(0.95);
+}
+
+/* 桌面端：仅在悬浮时显示播放按钮 */
+@media (min-width: 768px) {
+  .group:not(:hover) .mobile-video-play-overlay {
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .group:hover .mobile-video-play-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* 移动端积分显示紧凑样式 */
+@media (max-width: 768px) {
+  .mobile-nav-item span {
+    font-size: 10px;
+    font-weight: 500;
+    white-space: nowrap;
+    line-height: 1;
+  }
+  
+  /* 积分显示在移动端的样式调整 */
+  .flex.items-center.gap-2 {
+    gap: 4px;
+  }
+  
+  /* 紧凑的积分按钮样式 */
+  .flex.items-center.gap-2 .bg-gradient-to-r {
+    padding: 2px 6px;
+    font-size: 10px;
+    height: 20px;
+  }
+  
+  .flex.items-center.gap-2 .bg-gradient-to-r .h-2\.5 {
+    width: 10px;
+    height: 10px;
+  }
+}

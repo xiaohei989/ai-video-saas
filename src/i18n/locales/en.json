@@ -332,11 +332,18 @@
     "generate": "Generate",
     "creditCost": "{{cost}} credits",
     "preview": "Preview",
+    "filterConditions": "Filters:",
+    "removeTagAria": "Remove {{tag}} tag",
+    "countDisplay": "({{count}} templates)",
     "sortBy": {
       "popular": "Popular",
       "latest": "Latest",
       "placeholder": "Sort by"
     }
+  },
+  "audio": {
+    "mute": "Mute",
+    "unmute": "Unmute"
   },
   "pagination": {
     "showing": "Showing {{start}}-{{end}} of {{total}} items",

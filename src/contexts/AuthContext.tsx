@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { referralService } from '@/services/referralService'
 import { edgeCacheClient } from '@/services/EdgeFunctionCacheClient'
 import i18n from '@/i18n/config'
+import { languageDebugger } from '@/utils/languageDebugger'
 
 // 认证上下文类型定义
 interface AuthContextType {
@@ -703,6 +704,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // 执行语言保护
       preserveLanguageSettings()
 
+      // 🚀 记录OAuth开始
+      languageDebugger.logOAuthStart('google')
+
       // 标记当前使用Google OAuth
       localStorage.setItem('oauth_provider', 'google')
 
@@ -768,6 +772,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // 执行语言保护
       preserveLanguageSettings()
+
+      // 🚀 记录OAuth开始
+      languageDebugger.logOAuthStart('apple')
 
       // 标记当前使用Apple OAuth，供AuthCallback识别
       localStorage.setItem('oauth_provider', 'apple')

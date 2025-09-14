@@ -280,32 +280,13 @@ export default function TemplatesPage() {
   return (
     <div className="space-y-4">
       {/* 标签筛选区域 */}
-      <div className="space-y-2">
-        {/* 热门标签展示区域 - 2排，右上角是排序选择器 */}
-        <div className="space-y-2">
-          {/* 第一排标签和排序选择器 */}
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex flex-wrap gap-2">
-              {popularTags.slice(0, 6).map((tag) => (
-                <Badge
-                  key={tag}
-                  variant={selectedTags.includes(tag) ? "default" : "secondary"}
-                  className={`cursor-pointer transition-all duration-200 hover:scale-105 ${
-                    selectedTags.includes(tag) 
-                      ? 'bg-primary text-primary-foreground shadow-md' 
-                      : 'hover:bg-primary/10 hover:border-primary/20'
-                  }`}
-                  onClick={() => handleTagClick(tag)}
-                >
-                  <Hash className="h-3 w-3 mr-1" />
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-            
-            {/* 排序选择器 */}
+      <div className="space-y-3">
+        {/* 移动端：排序选择器独占一行，桌面端：与第一排标签同行 */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+          {/* 排序选择器 - 移动端在上方独占一行 */}
+          <div className="order-1 md:order-2 flex justify-end">
             <Select value={sortBy} onValueChange={handleSortChange}>
-              <SelectTrigger className="w-[180px] flex-shrink-0">
+              <SelectTrigger className="w-full max-w-[180px] md:w-[180px] flex-shrink-0">
                 <SelectValue placeholder={t('template.sortBy.placeholder')} />
               </SelectTrigger>
               <SelectContent>
@@ -324,47 +305,67 @@ export default function TemplatesPage() {
               </SelectContent>
             </Select>
           </div>
-          {/* 第二排标签 */}
-          <div className="flex flex-wrap gap-2">
-            {popularTags.slice(6, 16).map((tag) => (
+          
+          {/* 第一排标签 - 移动端在下方占满宽度 */}
+          <div className="order-2 md:order-1 flex flex-wrap gap-1.5 md:gap-2 flex-1 md:flex-none">
+            {popularTags.slice(0, 6).map((tag) => (
               <Badge
                 key={tag}
                 variant={selectedTags.includes(tag) ? "default" : "secondary"}
-                className={`cursor-pointer transition-all duration-200 hover:scale-105 ${
+                className={`cursor-pointer transition-all duration-200 hover:scale-105 text-xs md:text-sm px-2 md:px-3 py-1 ${
                   selectedTags.includes(tag) 
                     ? 'bg-primary text-primary-foreground shadow-md' 
                     : 'hover:bg-primary/10 hover:border-primary/20'
                 }`}
                 onClick={() => handleTagClick(tag)}
               >
-                <Hash className="h-3 w-3 mr-1" />
+                <Hash className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1" />
                 {tag}
               </Badge>
             ))}
           </div>
-          
-          {/* 筛选结果提示 */}
-          {selectedTags.length > 0 && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>筛选条件:</span>
-              {selectedTags.map((tag) => (
-                <Badge key={tag} variant="outline" className="text-xs">
-                  {tag}
-                  <button
-                    onClick={() => handleTagClick(tag)}
-                    className="ml-1 hover:text-destructive"
-                    aria-label={`移除 ${tag} 标签`}
-                  >
-                    ×
-                  </button>
-                </Badge>
-              ))}
-              <span className="text-primary font-medium">
-                ({totalItems} 个模板)
-              </span>
-            </div>
-          )}
         </div>
+        
+        {/* 第二排标签 - 紧凑布局 */}
+        <div className="flex flex-wrap gap-1.5 md:gap-2">
+          {popularTags.slice(6, 16).map((tag) => (
+            <Badge
+              key={tag}
+              variant={selectedTags.includes(tag) ? "default" : "secondary"}
+              className={`cursor-pointer transition-all duration-200 hover:scale-105 text-xs md:text-sm px-2 md:px-3 py-1 ${
+                selectedTags.includes(tag) 
+                  ? 'bg-primary text-primary-foreground shadow-md' 
+                  : 'hover:bg-primary/10 hover:border-primary/20'
+              }`}
+              onClick={() => handleTagClick(tag)}
+            >
+              <Hash className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1" />
+              {tag}
+            </Badge>
+          ))}
+        </div>
+        
+        {/* 筛选结果提示 */}
+        {selectedTags.length > 0 && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span>{t('template.filterConditions')}</span>
+            {selectedTags.map((tag) => (
+              <Badge key={tag} variant="outline" className="text-xs">
+                {tag}
+                <button
+                  onClick={() => handleTagClick(tag)}
+                  className="ml-1 hover:text-destructive"
+                  aria-label={t('template.removeTagAria', { tag })}
+                >
+                  ×
+                </button>
+              </Badge>
+            ))}
+            <span className="text-primary font-medium">
+              {t('template.countDisplay', { count: totalItems })}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -381,7 +382,7 @@ export default function TemplatesPage() {
                   poster={template.thumbnailUrl}
                   className="w-full h-full"
                   objectFit="cover"
-                  showPlayButton={false}
+                  showPlayButton={true}
                   showVolumeControl={true}
                   autoPlayOnHover={true}
                   alt={template.name}

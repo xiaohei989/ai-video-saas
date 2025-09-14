@@ -13,7 +13,7 @@
 
 import { multiLevelCache, CACHE_PREFIX, TTL_STRATEGY } from './MultiLevelCacheService'
 import videoLoaderService, { NetworkQuality } from './VideoLoaderService'
-import thumbnailCacheService from './ThumbnailCacheService'
+import thumbnailGenerator from './thumbnailGeneratorService'
 
 export interface PreloadStrategy {
   viewport: {
@@ -489,10 +489,7 @@ class SmartVideoPreloadService {
     if (cached) return
     
     // 从视频提取缩略图
-    const thumbnail = await thumbnailCacheService.getThumbnail(
-      `/videos/${videoId}`,
-      { quality: 'medium', frameTime: 0.1 }
-    )
+    const thumbnail = await thumbnailGenerator.ensureThumbnailCached(`/videos/${videoId}`, videoId)
     
     // 缓存缩略图
     await multiLevelCache.set(cacheKey, thumbnail, {

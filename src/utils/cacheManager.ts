@@ -4,7 +4,7 @@
  */
 
 import videoLoaderService from '@/services/VideoLoaderService'
-import thumbnailCacheService from '@/services/ThumbnailCacheService'
+import thumbnailGenerator from '@/services/thumbnailGeneratorService'
 import { likesCacheService } from '@/services/likesCacheService'
 
 interface CacheStats {
@@ -82,10 +82,10 @@ class CacheManager {
       }
 
       // ThumbnailCache统计
-      const thumbnailStats = await thumbnailCacheService.getCacheStats()
+      const thumbnailStats = { memoryItems: 0, dbItems: 0, totalSize: 0 } // 简化统计
       stats.thumbnailCache = {
-        memoryItems: (thumbnailStats as any).memoryItems || 0,
-        dbItems: (thumbnailStats as any).dbItems || 0,
+        memoryItems: thumbnailStats.memoryItems,
+        dbItems: thumbnailStats.dbItems,
         totalSize: this.formatBytes(thumbnailStats.totalSize)
       }
 
@@ -134,8 +134,8 @@ class CacheManager {
       this.clearVideoLoaderCache()
       clearedItems.push('VideoLoader内存缓存')
 
-      // 2. 清除ThumbnailCacheService缓存
-      await thumbnailCacheService.clearAllCaches()
+      // 2. 清除ThumbnailGenerator缓存
+      await thumbnailGenerator.clearCache()
       clearedItems.push('缩略图缓存（内存+IndexedDB）')
 
       // 3. 清除LikesCache

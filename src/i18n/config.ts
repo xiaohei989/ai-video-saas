@@ -18,6 +18,25 @@ function getInitialLanguage(): string {
     // 1. 优先使用用户明确设置的语言
     const preferredLanguage = localStorage.getItem('preferred_language')
     if (preferredLanguage && SUPPORTED_LANGUAGES.includes(preferredLanguage)) {
+      // 🚀 特殊检查：如果设置为阿拉伯语，但用户没有明确选择，则可能是bug
+      if (preferredLanguage === 'ar') {
+        const userExplicitlyChoseArabic = localStorage.getItem('user_explicitly_chose_arabic') === 'true'
+        if (!userExplicitlyChoseArabic) {
+          console.warn('[i18n] 检测到异常的阿拉伯语设置（用户未明确选择），尝试修复')
+          
+          // 尝试从OAuth前保存的语言或浏览器语言恢复
+          const preOAuthLanguage = localStorage.getItem('pre_oauth_language')
+          const fallbackLanguage = preOAuthLanguage || 
+                                   (navigator.language.startsWith('zh') ? 'zh' : 'en')
+          
+          console.log('[i18n] 修复语言设置为:', fallbackLanguage)
+          localStorage.setItem('preferred_language', fallbackLanguage)
+          localStorage.setItem('language_fixed_after_oauth', 'true')
+          
+          return fallbackLanguage
+        }
+      }
+      
       console.log('[i18n] 使用用户偏好语言:', preferredLanguage)
       return preferredLanguage
     }
@@ -105,8 +124,57 @@ i18n.on('languageChanged', (lng) => {
   if (typeof localStorage !== 'undefined') {
     const validatedLng = validateAndFixLanguage(lng)
     localStorage.setItem('preferred_language', validatedLng)
-    console.log('[i18n] 语言已更改并保存:', validatedLng)
+    
+    // 🚀 增强调试日志 - 详细记录语言变化
+    console.log('[i18n] 语言已更改并保存:', {
+      newLanguage: validatedLng,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent.substring(0, 50),
+      url: window.location.href,
+      referrer: document.referrer || 'none',
+      localStorageState: {
+        preferred_language: localStorage.getItem('preferred_language'),
+        pre_oauth_language: localStorage.getItem('pre_oauth_language'),
+        user_explicitly_chose_arabic: localStorage.getItem('user_explicitly_chose_arabic'),
+        oauth_provider: localStorage.getItem('oauth_provider'),
+        language_fixed_after_oauth: localStorage.getItem('language_fixed_after_oauth')
+      }
+    })
+    
+    // 特殊监控阿拉伯语切换
+    if (validatedLng === 'ar') {
+      console.warn('[i18n] 🚨 语言切换到阿拉伯语 - 详细信息:', {
+        stackTrace: new Error().stack?.split('\n').slice(1, 5) || 'unknown',
+        isExplicitChoice: localStorage.getItem('user_explicitly_chose_arabic') === 'true',
+        browserLanguage: navigator.language,
+        availableLanguages: navigator.languages
+      })
+    }
   }
 })
+
+// 🚀 添加页面加载时的语言状态诊断
+if (typeof window !== 'undefined') {
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      console.log('[i18n] 页面加载完成后的语言状态诊断:', {
+        currentLanguage: i18n.language,
+        timestamp: new Date().toISOString(),
+        localStorage: {
+          preferred_language: localStorage.getItem('preferred_language'),
+          pre_oauth_language: localStorage.getItem('pre_oauth_language'),
+          user_explicitly_chose_arabic: localStorage.getItem('user_explicitly_chose_arabic'),
+          language_fixed_after_oauth: localStorage.getItem('language_fixed_after_oauth')
+        },
+        browser: {
+          language: navigator.language,
+          languages: navigator.languages,
+          userAgent: navigator.userAgent.substring(0, 100)
+        },
+        url: window.location.href
+      })
+    }, 1000) // 延迟1秒确保所有初始化完成
+  })
+}
 
 export default i18n

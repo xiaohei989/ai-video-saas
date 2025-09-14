@@ -4,7 +4,7 @@
  */
 
 import videoLoaderService from '@/services/VideoLoaderService'
-import thumbnailCacheService from '@/services/ThumbnailCacheService'
+import thumbnailGenerator from '@/services/thumbnailGeneratorService'
 import { resetApicoreApiService } from '@/services/veo/ApicoreApiService'
 
 /**
@@ -19,9 +19,9 @@ export async function clearAllVideoCache(): Promise<void> {
     videoLoaderService.cleanup()
     console.log('✅ VideoLoader缓存已清除')
 
-    // 2. 清除ThumbnailCacheService缓存
+    // 2. 清除简化的缩略图缓存
     console.log('🖼️ 清除缩略图缓存...')
-    await thumbnailCacheService.clearAllCaches()
+    thumbnailGenerator.clearCache()
     console.log('✅ 缩略图缓存已清除')
 
     // 3. 重置APICore服务实例
@@ -76,7 +76,7 @@ export async function clearAllVideoCache(): Promise<void> {
     try {
       // 如果有其他IndexedDB，也清除
       if ('indexedDB' in window) {
-        // 一般来说，重新初始化thumbnailCacheService已经清除了
+        // IndexedDB由thumbnailGenerator管理
         console.log('✅ IndexedDB缓存已清除')
       }
     } catch (error) {
@@ -158,7 +158,7 @@ export async function clearTemplateCache(): Promise<void> {
 
     // 3. 清除缩略图缓存
     console.log('🖼️ 清除缩略图缓存...')
-    await thumbnailCacheService.clearAllCaches()
+    thumbnailGenerator.clearCache()
 
     // 4. 清除浏览器中模板相关的Service Worker缓存
     console.log('🌐 清除模板相关浏览器缓存...')

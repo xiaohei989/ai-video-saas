@@ -104,7 +104,7 @@ export default function HomePage() {
         <button
           onClick={handleMuteToggle}
           className="bg-black/50 hover:bg-black/70 text-white p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white/50"
-          aria-label={isMuted ? "取消静音" : "静音"}
+          aria-label={isMuted ? t('audio.unmute') : t('audio.mute')}
         >
           {isMuted ? (
             <VolumeX className="h-6 w-6" />

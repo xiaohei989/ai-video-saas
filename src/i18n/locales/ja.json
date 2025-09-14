@@ -321,11 +321,18 @@
     "generate": "生成",
     "creditCost": "{{cost}} クレジット",
     "preview": "プレビュー",
+    "filterConditions": "フィルター条件:",
+    "removeTagAria": "{{tag}} タグを削除",
+    "countDisplay": "({{count}} テンプレート)",
     "sortBy": {
       "popular": "人気順",
       "latest": "最新順",
       "placeholder": "並び順"
     }
+  },
+  "audio": {
+    "mute": "ミュート",
+    "unmute": "ミュート解除"
   },
   "pagination": {
     "showing": "{{start}}-{{end}} 件を表示（全{{total}}件）",

@@ -48,6 +48,7 @@ import MembershipBadge from '@/components/subscription/MembershipBadge'
 import { useTheme } from '@/hooks/useTheme'
 import { Moon, Sun, Monitor } from 'lucide-react'
 import { CreditDisplay } from './CreditDisplay'
+import { languageDebugger } from '@/utils/languageDebugger'
 
 interface HeaderProps {
   className?: string
@@ -199,9 +200,13 @@ export function Header({ className = "" }: HeaderProps = {}) {
       localStorage.removeItem('language_fixed_after_oauth')
       
       // 执行语言切换
+      const oldLanguage = i18n.language
       i18n.changeLanguage(lng)
       localStorage.setItem('preferred_language', lng)
       setLangDropdownOpen(false)
+      
+      // 🚀 记录语言切换
+      languageDebugger.logLanguageChange(oldLanguage, lng, 'user_manual_selection')
       
       console.log('[Header] 语言切换完成:', lng)
       
@@ -269,8 +274,8 @@ export function Header({ className = "" }: HeaderProps = {}) {
     <header className={`sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 ${className}`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo with Slogan */}
-          <Link to="/" className="flex items-center gap-3 group">
+          {/* Left side - Logo (Desktop only) */}
+          <Link to="/" className="hidden md:flex items-center gap-3 group">
             <img 
               src="/logo.png" 
               alt="Logo" 
@@ -289,6 +294,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
             </div>
           </Link>
 
+          {/* Center - Navigation */}
           {/* Desktop Navigation with dynamic background frame */}
           <nav className="hidden md:flex items-center gap-2 relative p-1 bg-accent/20 rounded-lg">
             {/* Dynamic background indicator */}
@@ -326,24 +332,28 @@ export function Header({ className = "" }: HeaderProps = {}) {
             </Link>
           </nav>
 
-          {/* Mobile Navigation Icons */}
-          <nav className="md:hidden flex items-center gap-4">
-            <Link to="/" className={`p-2 rounded-md transition-all duration-300 ${location.pathname === '/' ? 'bg-accent text-accent-foreground scale-110' : 'hover:bg-accent/50 hover:scale-105'}`}>
-              <Home className="h-5 w-5" />
+          {/* Mobile Navigation with Icons and Text - 占据中央大部分空间 */}
+          <nav className="md:hidden flex items-center justify-center flex-1 gap-1">
+            <Link to="/" className={`mobile-nav-item ${location.pathname === '/' ? 'mobile-nav-active' : ''}`}>
+              <Home className="h-4 w-4" />
+              <span className="text-xs">{t('nav.home')}</span>
             </Link>
-            <Link to="/templates" className={`p-2 rounded-md transition-all duration-300 ${location.pathname === '/templates' ? 'bg-accent text-accent-foreground scale-110' : 'hover:bg-accent/50 hover:scale-105'}`}>
-              <TrendingUp className="h-5 w-5" />
+            <Link to="/templates" className={`mobile-nav-item ${location.pathname === '/templates' ? 'mobile-nav-active' : ''}`}>
+              <TrendingUp className="h-4 w-4" />
+              <span className="text-xs">{t('nav.templates')}</span>
             </Link>
-            <Link to="/videos" className={`p-2 rounded-md transition-all duration-300 ${location.pathname === '/videos' ? 'bg-accent text-accent-foreground scale-110' : 'hover:bg-accent/50 hover:scale-105'}`}>
-              <Video className="h-5 w-5" />
+            <Link to="/videos" className={`mobile-nav-item ${location.pathname === '/videos' ? 'mobile-nav-active' : ''}`}>
+              <Video className="h-4 w-4" />
+              <span className="text-xs">{t('nav.videos')}</span>
             </Link>
-            <Link to="/pricing" className={`p-2 rounded-md transition-all duration-300 ${location.pathname === '/pricing' ? 'bg-accent text-accent-foreground scale-110' : 'hover:bg-accent/50 hover:scale-105'}`}>
-              <DollarSign className="h-5 w-5" />
+            <Link to="/pricing" className={`mobile-nav-item ${location.pathname === '/pricing' ? 'mobile-nav-active' : ''}`}>
+              <DollarSign className="h-4 w-4" />
+              <span className="text-xs">{t('nav.pricing')}</span>
             </Link>
           </nav>
 
-          {/* Right side actions with enhanced animations */}
-          <div className="flex items-center gap-4">
+          {/* Right side actions */}
+          <div className="flex items-center gap-2 md:gap-4">
             {/* Language Dropdown (Desktop) */}
             <div className="hidden md:block relative" ref={dropdownRef}>
               <button
@@ -377,13 +387,13 @@ export function Header({ className = "" }: HeaderProps = {}) {
               )}
             </div>
 
-            {/* 积分显示和升级按钮 */}
-            <CreditDisplay className="hidden md:flex" />
+            {/* 积分显示和升级按钮 - 移动端也显示但样式更紧凑 */}
+            <CreditDisplay className="flex" />
 
             {/* User Menu / Auth Buttons */}
             {user ? (
-              // 已登录 - 显示用户菜单 (桌面端和移动端)
-              <div className="relative" ref={userMenuRef}>
+              // 已登录 - 桌面端显示用户菜单
+              <div className="relative hidden md:block" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent"
@@ -399,7 +409,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
                       <User className="h-4 w-4" />
                     </div>
                   )}
-                  <ChevronDown className={`h-4 w-4 transition-transform duration-200 md:block hidden ${userMenuOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* User Dropdown Menu */}
@@ -518,37 +528,6 @@ export function Header({ className = "" }: HeaderProps = {}) {
                       {t('auth.signUp')}
                     </Button>
                   </Link>
-                </div>
-                <div className="md:hidden relative" ref={userMenuRef}>
-                  <button
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="p-2 rounded-md hover:bg-accent transition-colors"
-                  >
-                    <User className="h-5 w-5" />
-                  </button>
-                  
-                  {/* Mobile Auth Menu */}
-                  {userMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-md shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
-                      <div className="py-2">
-                        <Link
-                          to="/signin"
-                          className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-accent transition-colors duration-200"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
-                          <LogIn className="h-4 w-4" />
-                          <span>{t('auth.signIn')}</span>
-                        </Link>
-                        <Link
-                          to="/signup"
-                          className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-accent transition-colors duration-200"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
-                          <span>{t('auth.signUp')}</span>
-                        </Link>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </>
             )}

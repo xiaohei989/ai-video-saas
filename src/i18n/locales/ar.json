@@ -326,11 +326,18 @@
     "generate": "إنتاج",
     "creditCost": "{{cost}} نقطة",
     "preview": "معاينة",
+    "filterConditions": "شروط التصفية:",
+    "removeTagAria": "إزالة علامة {{tag}}",
+    "countDisplay": "({{count}} قالب)",
     "sortBy": {
       "popular": "الشائع",
       "latest": "الأحدث",
       "placeholder": "ترتيب حسب"
     }
+  },
+  "audio": {
+    "mute": "كتم الصوت",
+    "unmute": "إلغاء كتم الصوت"
   },
   "pagination": {
     "showing": "عرض {{start}}-{{end}} من {{total}} عنصر",

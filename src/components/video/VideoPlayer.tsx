@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/utils/cn'
 import { extractVideoThumbnail } from '@/utils/videoThumbnail'
 import videoLoaderService, { type LoadProgress } from '@/services/VideoLoaderService'
-import thumbnailCacheService from '@/services/ThumbnailCacheService'
+import thumbnailGenerator from '@/services/thumbnailGeneratorService'
 import ProtectedDownloadService from '@/services/protectedDownloadService'
 import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 
@@ -87,10 +87,13 @@ export default function VideoPlayer({
   // Extract thumbnail if no poster provided (with cache support)
   useEffect(() => {
     if (src && !poster && enableThumbnailCache) {
-      thumbnailCacheService.getThumbnail(src, {
-        quality: quality === 'low' ? 'low' : 'medium',
-        frameTime: 0.33
-      })
+      // 验证参数有效性
+      if (!videoId) {
+        console.warn(`[VideoPlayer] 跳过缩略图提取，缺少videoId:`, { src })
+        return
+      }
+      
+      thumbnailGenerator.ensureThumbnailCached(src, videoId)
         .then(thumbnail => {
           setExtractedPoster(thumbnail)
         })
@@ -350,14 +353,14 @@ export default function VideoPlayer({
         </div>
       )}
       
-      {/* 播放按钮覆盖层 */}
+      {/* 播放按钮覆盖层 - 移动端常显，桌面端悬浮显示 */}
       {showPlayButton && !isPlaying && !isLoading && !hasLoadError && (
         <div 
-          className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-100 transition-opacity cursor-pointer"
+          className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer mobile-video-play-overlay"
           onClick={togglePlay}
         >
-          <div className="w-16 h-16 bg-black/70 hover:bg-black/90 rounded-full flex items-center justify-center hover:scale-110 transition-transform">
-            <Play className="h-8 w-8 text-white ml-1" strokeWidth={1.5} />
+          <div className="mobile-video-play-button">
+            <Play className="h-6 w-6 md:h-8 md:w-8 text-white ml-0.5 md:ml-1" strokeWidth={1.5} />
           </div>
         </div>
       )}

@@ -326,11 +326,18 @@
     "generate": "Generieren",
     "creditCost": "{{cost}} Credits",
     "preview": "Vorschau",
+    "filterConditions": "Filter-Bedingungen:",
+    "removeTagAria": "{{tag}} Tag entfernen",
+    "countDisplay": "({{count}} Vorlagen)",
     "sortBy": {
       "popular": "Beliebt",
       "latest": "Neueste",
       "placeholder": "Sortieren nach"
     }
+  },
+  "audio": {
+    "mute": "Stumm schalten",
+    "unmute": "Ton einschalten"
   },
   "pagination": {
     "showing": "Zeige {{start}}-{{end}} von {{total}} Elementen",

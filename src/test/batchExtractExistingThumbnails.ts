@@ -5,7 +5,7 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { localThumbnailExtractor } from '../services/LocalThumbnailExtractor'
-import { thumbnailCacheService } from '../services/ThumbnailCacheService'
+import thumbnailGenerator from '../services/thumbnailGeneratorService'
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL!
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY!
@@ -57,7 +57,7 @@ async function batchExtractExistingThumbnails() {
 
       try {
         // 检查是否已有真实缩略图
-        const hasRealThumbnail = await thumbnailCacheService.hasRealThumbnail(video.id)
+        const hasRealThumbnail = thumbnailGenerator.getFromMemoryCache(video.video_url)
         if (hasRealThumbnail) {
           console.log(`⏭️ 跳过，已有真实缩略图: ${video.id}`)
           stats.skipped++
@@ -79,9 +79,9 @@ async function batchExtractExistingThumbnails() {
 
         if (thumbnailSet) {
           // 保存到缓存
-          const result = await thumbnailCacheService.extractAndCacheRealThumbnail(
-            video.id,
-            video.video_url
+          const result = await thumbnailGenerator.ensureThumbnailCached(
+            video.video_url,
+            video.id
           )
 
           if (result) {
@@ -122,7 +122,7 @@ async function batchExtractExistingThumbnails() {
     console.log('\n🔍 验证缓存状态...')
     let cachedCount = 0
     for (const video of videos as VideoToProcess[]) {
-      const hasCache = await thumbnailCacheService.hasRealThumbnail(video.id)
+      const hasCache = thumbnailGenerator.getFromMemoryCache(video.video_url)
       if (hasCache) cachedCount++
     }
     console.log(`✅ 已缓存真实缩略图的视频: ${cachedCount}/${videos.length}`)

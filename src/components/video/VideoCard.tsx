@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { VideoRecord } from '@/services/videoHistoryService'
-import thumbnailCacheService from '@/services/ThumbnailCacheService'
+import thumbnailGenerator from '@/services/thumbnailGeneratorService'
 import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 
 interface VideoCardProps {
@@ -41,26 +41,31 @@ export default function VideoCard({
 
   // Extract thumbnail if not provided using cache service and proxy
   useEffect(() => {
-    if (video.videoUrl && !video.thumbnailUrl && video.status === 'completed') {
-      const proxyUrl = getProxyVideoUrl(video.videoUrl)
-      console.log(`[VideoCard] 开始提取缩略图: ${video.videoUrl} -> ${proxyUrl}`)
-      
-      thumbnailCacheService.getThumbnail(proxyUrl, {
-        quality: 'medium',
-        frameTime: 0.33,
-        forceRefresh: false
-      })
-        .then(thumbnail => {
-          console.log(`[VideoCard] 缩略图提取成功: ${video.id}`)
-          setExtractedThumbnail(thumbnail)
-        })
-        .catch(error => {
-          console.error(`[VideoCard] 缩略图提取失败 ${video.id}:`, error)
-          setThumbnailError(error.message)
-          // 即使失败也设置为null，触发重新渲染显示占位图
-          setExtractedThumbnail(null)
-        })
+    // 参数验证 - 确保必要的参数存在
+    if (!video.id || !video.videoUrl || video.thumbnailUrl || video.status !== 'completed') {
+      return
     }
+    
+    // 验证video.id不是空字符串
+    if (!video.id.trim()) {
+      console.warn(`[VideoCard] 跳过缩略图提取，video.id为空:`, video)
+      return
+    }
+    
+    const proxyUrl = getProxyVideoUrl(video.videoUrl)
+    console.log(`[VideoCard] 开始提取缩略图: ${video.videoUrl} -> ${proxyUrl}`)
+    
+    thumbnailGenerator.ensureThumbnailCached(proxyUrl, video.id)
+      .then(thumbnail => {
+        console.log(`[VideoCard] 缩略图提取成功: ${video.id}`)
+        setExtractedThumbnail(thumbnail)
+      })
+      .catch(error => {
+        console.error(`[VideoCard] 缩略图提取失败 ${video.id}:`, error)
+        setThumbnailError(error.message)
+        // 即使失败也设置为null，触发重新渲染显示占位图
+        setExtractedThumbnail(null)
+      })
   }, [video.videoUrl, video.thumbnailUrl, video.status, video.id])
 
   // Removed hover video preview - now only plays on click

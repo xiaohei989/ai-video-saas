@@ -264,8 +264,9 @@ function getEnhancedDefaultThumbnail(): string {
       <rect width="320" height="180" fill="url(#bg)"/>
       <circle cx="160" cy="90" r="25" fill="rgba(255,255,255,0.9)"/>
       <polygon points="150,75 150,105 175,90" fill="#667eea"/>
-      <text x="160" y="130" font-family="Arial, sans-serif" font-size="12" fill="white" text-anchor="middle">AI视频</text>
+      <text x="160" y="130" font-family="Arial, sans-serif" font-size="12" fill="white" text-anchor="middle">Video</text>
     </svg>
   `
-  return `data:image/svg+xml;base64,${btoa(svg)}`
+  // 使用安全的 base64 编码方法处理 Unicode 字符
+  return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`
 }

@@ -1,533 +1,267 @@
 /**
- * 增强版视频缩略图生成服务
- * 支持服务端生成、客户端提取、多层缓存和智能回退
+ * 简化的视频缩略图生成服务
+ * 实现：内存缓存 + IndexedDB持久化 + 客户端视频帧提取
+ * 目标：组件初始化时有缓存直接显示，无缓存生成并立即更新显示
  */
 
-export interface ThumbnailOptions {
-  timestamp?: number // 截图时间点（秒）
-  quality?: 'high' | 'medium' | 'low' // 质量等级
-  width?: number // 输出宽度
-  height?: number // 输出高度
-  blurRadius?: number // 模糊半径
-  format?: 'jpeg' | 'webp' | 'png' // 输出格式
-  forceServerGeneration?: boolean // 强制使用服务端生成
-  enableMultiFrame?: boolean // 是否生成多帧缩略图
-}
+import { openDB, IDBPDatabase } from 'idb'
 
-export interface VideoThumbnail {
-  originalUrl: string
-  blurredUrl: string
-  width: number
-  height: number
-  fileSize: number
-  format: string
-  generatedAt: Date
-  generationMethod: 'server' | 'client' | 'cached'
-}
-
-export interface ThumbnailGenerationResult {
-  success: boolean
-  thumbnails?: {
-    normal: string
-    blur: string
-    metadata: {
-      width: number
-      height: number
-      format: string
-      fileSize: number
-      generationMethod: 'server' | 'client'
-      timestamp: number
-    }
-  }
-  error?: string
-  fallbackUsed?: boolean
+interface ThumbnailCacheItem {
+  videoUrl: string
+  thumbnail: string // base64 JPEG
+  generatedAt: number
+  quality: 'real-frame'
 }
 
 class ThumbnailGeneratorService {
-  private readonly SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
-  private readonly SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
-  private readonly STORAGE_BUCKET = 'thumbnails'
+  // 内存缓存 - 快速访问
+  private memoryCache = new Map<string, string>()
+  private readonly MAX_MEMORY_CACHE = 50
   
-  // 缓存配置
-  private thumbnailCache = new Map<string, VideoThumbnail>()
-  private readonly CACHE_EXPIRY = 24 * 60 * 60 * 1000 // 24小时
-  private readonly MAX_CACHE_SIZE = 100
+  // IndexedDB 配置
+  private db: IDBPDatabase | null = null
+  private readonly DB_NAME = 'video-thumbnails-simple'
+  private readonly DB_VERSION = 1
+  private readonly STORE_NAME = 'thumbnails'
+  private readonly CACHE_EXPIRY = 30 * 24 * 60 * 60 * 1000 // 30天
+  
+  // 并发控制
+  private generatingThumbnails = new Set<string>()
   
   /**
-   * 生成视频缩略图（主入口方法）
+   * 初始化 IndexedDB
    */
-  async generateVideoThumbnail(
-    videoId: string, 
-    videoUrl: string, 
-    options: ThumbnailOptions = {}
-  ): Promise<ThumbnailGenerationResult> {
+  private async initDB(): Promise<void> {
+    if (this.db) return
+    
     try {
-      console.log(`[ThumbnailGenerator] 开始生成缩略图: ${videoId}`)
-      
-      // 1. 检查缓存
-      const cached = this.getCachedThumbnail(videoUrl)
-      if (cached) {
-        console.log(`[ThumbnailGenerator] 使用缓存缩略图: ${videoId}`)
-        return {
-          success: true,
-          thumbnails: {
-            normal: cached.originalUrl,
-            blur: cached.blurredUrl,
-            metadata: {
-              width: cached.width,
-              height: cached.height,
-              format: cached.format,
-              fileSize: cached.fileSize,
-              generationMethod: cached.generationMethod,
-              timestamp: cached.generatedAt.getTime()
-            }
+      this.db = await openDB(this.DB_NAME, this.DB_VERSION, {
+        upgrade(db) {
+          if (!db.objectStoreNames.contains('thumbnails')) {
+            const store = db.createObjectStore('thumbnails', { keyPath: 'videoUrl' })
+            store.createIndex('generatedAt', 'generatedAt')
           }
         }
-      }
-      
-      // 2. 尝试服务端生成
-      if (!options.forceServerGeneration) {
-        const serverResult = await this.generateServerThumbnail(videoId, videoUrl, options)
-        if (serverResult.success) {
-          return serverResult
-        }
-        console.warn(`[ThumbnailGenerator] 服务端生成失败，回退到客户端: ${serverResult.error}`)
-      }
-      
-      // 3. 客户端生成备选方案
-      const clientResult = await this.generateClientThumbnail(videoUrl, options)
-      if (clientResult.success) {
-        return clientResult
-      }
-      
-      // 4. 使用静态回退
-      return this.getFallbackThumbnail(videoUrl)
-      
-    } catch (error) {
-      console.error(`[ThumbnailGenerator] 生成缩略图失败: ${videoId}`, error)
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : '未知错误',
-        fallbackUsed: true,
-        ...this.getFallbackThumbnail(videoUrl)
-      }
-    }
-  }
-
-  /**
-   * 服务端缩略图生成
-   */
-  private async generateServerThumbnail(
-    videoId: string, 
-    videoUrl: string, 
-    options: ThumbnailOptions
-  ): Promise<ThumbnailGenerationResult> {
-    try {
-      const response = await fetch(`${this.SUPABASE_URL}/functions/v1/generate-thumbnail`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          videoId,
-          videoUrl,
-          options: {
-            timestamp: options.timestamp || 1,
-            quality: options.quality || 'medium',
-            width: options.width || 640,
-            height: options.height || 360,
-            format: options.format || 'jpeg',
-            blurRadius: options.blurRadius || 20
-          }
-        })
       })
-
-      if (!response.ok) {
-        throw new Error(`服务端生成失败: ${response.status} ${response.statusText}`)
-      }
-
-      const result = await response.json()
-      
-      if (result.success && result.thumbnails) {
-        // 缓存结果
-        this.setCachedThumbnail(videoUrl, {
-          originalUrl: result.thumbnails.normal,
-          blurredUrl: result.thumbnails.blur,
-          width: result.metadata.width,
-          height: result.metadata.height,
-          fileSize: result.metadata.fileSize,
-          format: result.metadata.format,
-          generatedAt: new Date(),
-          generationMethod: 'server'
-        })
-        
-        return {
-          success: true,
-          thumbnails: result.thumbnails
-        }
-      }
-      
-      throw new Error(result.error || '服务端返回失败')
-      
+      console.log('[ThumbnailGenerator] IndexedDB 初始化成功')
     } catch (error) {
-      console.error(`[ThumbnailGenerator] 服务端生成失败:`, error)
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : '服务端生成失败'
-      }
+      console.error('[ThumbnailGenerator] IndexedDB 初始化失败:', error)
     }
   }
-
+  
   /**
-   * 客户端缩略图生成
+   * 从内存缓存获取缩略图（同步）
    */
-  private async generateClientThumbnail(
-    videoUrl: string, 
-    options: ThumbnailOptions
-  ): Promise<ThumbnailGenerationResult> {
-    return new Promise((resolve) => {
+  getFromMemoryCache(videoUrl: string): string | null {
+    return this.memoryCache.get(videoUrl) || null
+  }
+  
+  /**
+   * 保存到内存缓存
+   */
+  private saveToMemoryCache(videoUrl: string, thumbnail: string): void {
+    // LRU策略：如果超出限制，删除最旧的
+    if (this.memoryCache.size >= this.MAX_MEMORY_CACHE) {
+      const firstKey = this.memoryCache.keys().next().value
+      if (firstKey) this.memoryCache.delete(firstKey)
+    }
+    this.memoryCache.set(videoUrl, thumbnail)
+  }
+  
+  /**
+   * 从 IndexedDB 获取缓存（异步）
+   */
+  private async getFromIndexedDB(videoUrl: string): Promise<string | null> {
+    await this.initDB()
+    if (!this.db) return null
+    
+    try {
+      const item = await this.db.get(this.STORE_NAME, videoUrl) as ThumbnailCacheItem
+      if (!item) return null
+      
+      // 检查过期
+      const age = Date.now() - item.generatedAt
+      if (age > this.CACHE_EXPIRY) {
+        await this.db.delete(this.STORE_NAME, videoUrl)
+        return null
+      }
+      
+      return item.thumbnail
+    } catch (error) {
+      console.error('[ThumbnailGenerator] IndexedDB 读取失败:', error)
+      return null
+    }
+  }
+  
+  /**
+   * 保存到 IndexedDB
+   */
+  private async saveToIndexedDB(videoUrl: string, thumbnail: string): Promise<void> {
+    await this.initDB()
+    if (!this.db) return
+    
+    try {
+      const item: ThumbnailCacheItem = {
+        videoUrl,
+        thumbnail,
+        generatedAt: Date.now(),
+        quality: 'real-frame'
+      }
+      await this.db.put(this.STORE_NAME, item)
+    } catch (error) {
+      console.error('[ThumbnailGenerator] IndexedDB 保存失败:', error)
+    }
+  }
+  
+  /**
+   * 客户端视频帧提取
+   */
+  private async extractVideoThumbnail(videoUrl: string): Promise<string> {
+    return new Promise((resolve, reject) => {
       const video = document.createElement('video')
       video.crossOrigin = 'anonymous'
-      video.muted = true
+      video.preload = 'metadata'
       
-      const cleanup = () => {
-        video.removeEventListener('loadedmetadata', onLoadedMetadata)
-        video.removeEventListener('error', onError)
-        video.remove()
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      
+      if (!ctx) {
+        reject(new Error('Canvas context not supported'))
+        return
       }
-
-      const onError = () => {
-        cleanup()
-        resolve({
-          success: false,
-          error: '视频加载失败或CORS限制'
-        })
+      
+      video.onloadedmetadata = () => {
+        // 设置画布尺寸
+        canvas.width = 640
+        canvas.height = 360
+        
+        // 跳转到第1秒位置
+        video.currentTime = Math.min(1.0, video.duration - 0.1)
       }
-
-      const onLoadedMetadata = () => {
+      
+      video.onseeked = () => {
         try {
-          const timestamp = options.timestamp || Math.min(1, video.duration * 0.1)
-          video.currentTime = timestamp
+          // 绘制视频帧到画布
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
           
-          video.addEventListener('seeked', () => {
-            try {
-              const canvas = document.createElement('canvas')
-              const ctx = canvas.getContext('2d')
-              
-              if (!ctx) {
-                throw new Error('Canvas context 不支持')
-              }
-              
-              // 设置canvas尺寸
-              canvas.width = options.width || video.videoWidth
-              canvas.height = options.height || video.videoHeight
-              
-              // 绘制视频帧
-              ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-              
-              // 生成普通版本
-              const normalDataUrl = canvas.toDataURL('image/jpeg', 0.8)
-              
-              // 生成模糊版本
-              ctx.filter = `blur(${options.blurRadius || 20}px)`
-              ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-              const blurDataUrl = canvas.toDataURL('image/jpeg', 0.6)
-              
-              // 缓存结果
-              this.setCachedThumbnail(videoUrl, {
-                originalUrl: normalDataUrl,
-                blurredUrl: blurDataUrl,
-                width: canvas.width,
-                height: canvas.height,
-                fileSize: normalDataUrl.length + blurDataUrl.length,
-                format: 'jpeg',
-                generatedAt: new Date(),
-                generationMethod: 'client'
-              })
-              
-              cleanup()
-              resolve({
-                success: true,
-                thumbnails: {
-                  normal: normalDataUrl,
-                  blur: blurDataUrl,
-                  metadata: {
-                    width: canvas.width,
-                    height: canvas.height,
-                    format: 'jpeg',
-                    fileSize: normalDataUrl.length + blurDataUrl.length,
-                    generationMethod: 'client',
-                    timestamp: Date.now()
-                  }
-                }
-              })
-            } catch (error) {
-              cleanup()
-              resolve({
-                success: false,
-                error: error instanceof Error ? error.message : '客户端生成失败'
-              })
-            }
-          })
+          // 转换为 base64 JPEG
+          const thumbnail = canvas.toDataURL('image/jpeg', 0.8)
+          
+          // 清理
+          video.remove()
+          canvas.remove()
+          
+          resolve(thumbnail)
         } catch (error) {
-          cleanup()
-          resolve({
-            success: false,
-            error: error instanceof Error ? error.message : 'seek失败'
-          })
+          reject(error)
         }
       }
-
-      video.addEventListener('loadedmetadata', onLoadedMetadata)
-      video.addEventListener('error', onError)
+      
+      video.onerror = () => {
+        reject(new Error('Video loading failed'))
+      }
+      
       video.src = videoUrl
       video.load()
-      
-      // 超时处理
-      setTimeout(() => {
-        cleanup()
-        resolve({
-          success: false,
-          error: '客户端生成超时'
-        })
-      }, 10000) // 10秒超时
     })
   }
-
+  
   /**
-   * 获取回退缩略图（使用SVG占位符而不是logo）
+   * 核心方法：确保缩略图已缓存，返回缩略图供立即显示
    */
-  private getFallbackThumbnail(videoUrl: string): ThumbnailGenerationResult {
-    // 首先尝试从视频路径生成静态缩略图路径（模板系统的逻辑）
-    const videoName = videoUrl.split('/').pop()?.replace('.mp4', '') || 'video'
-    const fallbackNormal = `/templates/thumbnails/${videoName}-thumbnail.jpg`
-    const fallbackBlur = `/templates/thumbnails/${videoName}-thumbnail-blur.jpg`
-    
-    // TODO: 可以在这里检查静态文件是否存在，如果不存在则使用SVG
-    // 目前直接返回静态路径，让UI层处理fallback
-    
-    return {
-      success: true,
-      thumbnails: {
-        normal: fallbackNormal,
-        blur: fallbackBlur,
-        metadata: {
-          width: 640,
-          height: 360,
-          format: 'jpeg',
-          fileSize: 0,
-          generationMethod: 'server', // 静态文件视为服务端提供
-          timestamp: Date.now()
+  async ensureThumbnailCached(videoUrl: string, videoId?: string): Promise<string | null> {
+    try {
+      // 0. 参数验证 - 避免无效调用
+      if (!videoUrl || !videoUrl.trim()) {
+        console.warn(`[ThumbnailGenerator] ❌ 无效的videoUrl: ${videoUrl}`)
+        return null
+      }
+      
+      if (!videoId || typeof videoId !== 'string' || !videoId.trim()) {
+        // 在开发环境下使用debug级别，生产环境保持warn
+        if (process.env.NODE_ENV === 'development' && !videoId) {
+          console.debug(`[ThumbnailGenerator] ⚠️ 跳过无效的videoId（可能是组件初始化中）: ${videoId}`)
+        } else {
+          console.warn(`[ThumbnailGenerator] ❌ 无效的videoId: ${videoId}`)
         }
-      },
-      fallbackUsed: true
+        return null
+      }
+      
+      // 1. 检查内存缓存
+      const memoryCached = this.getFromMemoryCache(videoUrl)
+      if (memoryCached) {
+        console.log(`[ThumbnailGenerator] ✅ 内存缓存命中: ${videoId}`)
+        return memoryCached
+      }
+      
+      // 2. 检查 IndexedDB
+      const dbCached = await this.getFromIndexedDB(videoUrl)
+      if (dbCached) {
+        console.log(`[ThumbnailGenerator] ✅ IndexedDB缓存命中: ${videoId}`)
+        // 加载到内存缓存
+        this.saveToMemoryCache(videoUrl, dbCached)
+        return dbCached
+      }
+      
+      // 3. 避免重复生成
+      if (this.generatingThumbnails.has(videoUrl)) {
+        console.log(`[ThumbnailGenerator] ⏳ 正在生成中: ${videoId}`)
+        return null
+      }
+      
+      // 4. 生成新缩略图
+      console.log(`[ThumbnailGenerator] 🔄 开始生成缩略图: ${videoId}`)
+      this.generatingThumbnails.add(videoUrl)
+      
+      try {
+        const thumbnail = await this.extractVideoThumbnail(videoUrl)
+        
+        // 5. 保存到缓存
+        this.saveToMemoryCache(videoUrl, thumbnail)
+        await this.saveToIndexedDB(videoUrl, thumbnail)
+        
+        console.log(`[ThumbnailGenerator] ✅ 缩略图生成完成: ${videoId}`)
+        return thumbnail
+        
+      } finally {
+        this.generatingThumbnails.delete(videoUrl)
+      }
+      
+    } catch (error) {
+      console.error(`[ThumbnailGenerator] ❌ 缩略图生成失败: ${videoId}`, error)
+      this.generatingThumbnails.delete(videoUrl)
+      return null
     }
   }
-
+  
   /**
-   * 从视频URL生成缩略图路径（保持向后兼容）
+   * 检查是否为 SVG 占位符
    */
-  generateThumbnailPath(videoSrc: string, options: ThumbnailOptions = {}): { normal: string; blur: string } {
-    // 从视频路径生成缩略图路径
-    const videoName = videoSrc.split('/').pop()?.replace('.mp4', '') || 'video'
-    
+  isSVGPlaceholder(thumbnailUrl: string): boolean {
+    return thumbnailUrl?.startsWith('data:image/svg+xml') || false
+  }
+  
+  /**
+   * 获取缓存统计
+   */
+  getCacheStats() {
     return {
-      normal: `/templates/thumbnails/${videoName}-thumbnail.jpg`,
-      blur: `/templates/thumbnails/${videoName}-thumbnail-blur.jpg`
+      memoryCache: this.memoryCache.size,
+      maxMemoryCache: this.MAX_MEMORY_CACHE,
+      generatingCount: this.generatingThumbnails.size
     }
   }
-
-  /**
-   * 缓存管理方法
-   */
-  private getCachedThumbnail(videoUrl: string): VideoThumbnail | null {
-    const cached = this.thumbnailCache.get(videoUrl)
-    if (cached) {
-      const age = Date.now() - cached.generatedAt.getTime()
-      if (age < this.CACHE_EXPIRY) {
-        return cached
-      } else {
-        this.thumbnailCache.delete(videoUrl)
-      }
-    }
-    return null
-  }
-
-  private setCachedThumbnail(videoUrl: string, thumbnail: VideoThumbnail): void {
-    // 如果缓存已满，删除最旧的条目
-    if (this.thumbnailCache.size >= this.MAX_CACHE_SIZE) {
-      const oldestKey = this.thumbnailCache.keys().next().value
-      if (oldestKey) {
-        this.thumbnailCache.delete(oldestKey)
-      }
-    }
-    
-    this.thumbnailCache.set(videoUrl, thumbnail)
-  }
-
+  
   /**
    * 清理缓存
    */
   clearCache(): void {
-    this.thumbnailCache.clear()
-  }
-
-  /**
-   * 获取缓存统计信息
-   */
-  getCacheStats(): { size: number; maxSize: number; hitRate?: number } {
-    return {
-      size: this.thumbnailCache.size,
-      maxSize: this.MAX_CACHE_SIZE
-    }
-  }
-
-  /**
-   * 检查缩略图是否存在（向后兼容）
-   */
-  async checkThumbnailExists(thumbnailPath: string): Promise<boolean> {
-    try {
-      const response = await fetch(thumbnailPath, { 
-        method: 'HEAD',
-        signal: AbortSignal.timeout(5000) // 5秒超时
-      })
-      return response.ok
-    } catch (error) {
-      // 静默处理HTTP/2协议错误和网络错误
-      if (import.meta.env.DEV && !(error instanceof Error && error.name === 'AbortError')) {
-        console.warn(`[ThumbnailGenerator] 缩略图检查失败: ${thumbnailPath}`, error)
-      }
-      return false
-    }
-  }
-
-  /**
-   * 获取视频的最佳缩略图配置
-   */
-  async getBestThumbnail(videoSrc: string, fallbackImage?: string): Promise<{ normal: string; blur: string }> {
-    const thumbnailPaths = this.generateThumbnailPath(videoSrc)
-    
-    if (import.meta.env.DEV) {
-      console.log(`[ThumbnailGenerator] 检查缩略图路径:`, thumbnailPaths)
-    }
-    
-    // 检查缩略图是否存在
-    const normalExists = await this.checkThumbnailExists(thumbnailPaths.normal)
-    const blurExists = await this.checkThumbnailExists(thumbnailPaths.blur)
-    
-    if (import.meta.env.DEV) {
-      console.log(`[ThumbnailGenerator] 缩略图存在状态: normal=${normalExists}, blur=${blurExists}`)
-    }
-    
-    if (normalExists && blurExists) {
-      if (import.meta.env.DEV) {
-        console.log(`[ThumbnailGenerator] ✅ 使用生成的缩略图: ${thumbnailPaths.normal}`)
-      }
-      return thumbnailPaths
-    }
-    
-    // 如果缩略图不存在，生成SVG占位符而不是显示logo
-    if (import.meta.env.DEV) {
-      console.log(`[ThumbnailGenerator] ⚠️ 缩略图不存在，生成SVG占位符`)
-    }
-    
-    // 生成高质量的SVG占位符
-    const svgPlaceholder = this.generateSVGPlaceholder()
-    return {
-      normal: svgPlaceholder,
-      blur: svgPlaceholder
-    }
-  }
-
-  /**
-   * 生成SVG占位符
-   */
-  private generateSVGPlaceholder(): string {
-    const svg = `
-      <svg width="640" height="360" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="placeholderBg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
-            <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
-          </linearGradient>
-          <radialGradient id="playBg" cx="50%" cy="50%" r="25%">
-            <stop offset="0%" style="stop-color:rgba(255,255,255,0.9);stop-opacity:1" />
-            <stop offset="100%" style="stop-color:rgba(255,255,255,0.7);stop-opacity:1" />
-          </radialGradient>
-        </defs>
-        <rect width="640" height="360" fill="url(#placeholderBg)"/>
-        <circle cx="320" cy="180" r="60" fill="url(#playBg)"/>
-        <polygon points="300,160 300,200 340,180" fill="#4f46e5"/>
-        <text x="320" y="250" font-family="Arial, sans-serif" font-size="16" fill="rgba(255,255,255,0.9)" text-anchor="middle" font-weight="500">Video Preview</text>
-      </svg>
-    `
-    
-    // 转换为 base64 data URL
-    const encoded = btoa(svg.trim())
-    return `data:image/svg+xml;base64,${encoded}`
-  }
-
-  /**
-   * 从Canvas生成缩略图（客户端）
-   */
-  generateThumbnailFromVideo(video: HTMLVideoElement, options: ThumbnailOptions = {}): Promise<{ normal: string; blur: string }> {
-    return new Promise((resolve, reject) => {
-      try {
-        const canvas = document.createElement('canvas')
-        const ctx = canvas.getContext('2d')
-        
-        if (!ctx) {
-          reject(new Error('Canvas context not supported'))
-          return
-        }
-        
-        // 设置canvas尺寸
-        canvas.width = options.width || video.videoWidth
-        canvas.height = options.height || video.videoHeight
-        
-        // 绘制视频帧
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-        
-        // 生成普通版本
-        const normalDataUrl = canvas.toDataURL('image/jpeg', 0.8)
-        
-        // 生成模糊版本
-        ctx.filter = `blur(${options.blurRadius || 20}px)`
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-        const blurDataUrl = canvas.toDataURL('image/jpeg', 0.6)
-        
-        resolve({
-          normal: normalDataUrl,
-          blur: blurDataUrl
-        })
-      } catch (error) {
-        reject(error)
-      }
-    })
-  }
-
-  /**
-   * 预加载缩略图
-   */
-  preloadThumbnail(thumbnailPath: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const img = new Image()
-      img.onload = () => resolve()
-      img.onerror = reject
-      img.src = thumbnailPath
-    })
-  }
-
-  /**
-   * 批量预加载多个缩略图
-   */
-  async preloadThumbnails(thumbnailPaths: string[]): Promise<void> {
-    const promises = thumbnailPaths.map(path => this.preloadThumbnail(path))
-    await Promise.allSettled(promises)
+    this.memoryCache.clear()
+    this.generatingThumbnails.clear()
+    console.log('[ThumbnailGenerator] 缓存已清理')
   }
 }
 
+// 导出单例实例
 export const thumbnailGenerator = new ThumbnailGeneratorService()
 export default thumbnailGenerator

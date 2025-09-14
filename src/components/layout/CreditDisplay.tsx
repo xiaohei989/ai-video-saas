@@ -97,34 +97,35 @@ export function CreditDisplay({ className }: CreditDisplayProps) {
   }
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      {/* 积分显示 */}
-      <div className="flex items-center gap-1 px-2 py-1 bg-secondary/50 rounded-md">
-        <Gem className="h-4 w-4 text-purple-600" />
-        <span className="text-sm font-medium relative">
+    <div className={`flex items-center gap-1 md:gap-2 ${className}`}>
+      {/* 积分显示 - 移动端紧凑样式 */}
+      <div className="flex items-center gap-1 px-1.5 py-0.5 md:px-2 md:py-1 bg-secondary/50 rounded-md">
+        <Gem className="h-3 w-3 md:h-4 md:w-4 text-purple-600" />
+        <span className="text-xs md:text-sm font-medium relative">
           {loading ? (
-            <Loader2 className="h-3 w-3 animate-spin" />
+            <Loader2 className="h-2.5 w-2.5 md:h-3 md:w-3 animate-spin" />
           ) : (
             <>
               {formatCredits(credits || 0)}
               {isRefreshing && (
-                <Loader2 className="h-2 w-2 animate-spin absolute -top-1 -right-1 text-purple-400" />
+                <Loader2 className="h-1.5 w-1.5 md:h-2 md:w-2 animate-spin absolute -top-0.5 -right-0.5 md:-top-1 md:-right-1 text-purple-400" />
               )}
             </>
           )}
         </span>
       </div>
 
-      {/* 升级按钮 - 仅对免费用户显示，企业用户不显示 */}
+      {/* 升级按钮 - 仅对免费用户显示，企业用户不显示，移动端更紧凑 */}
       {isFreeUser && !isEnterpriseUser && (
         <Button
           onClick={() => navigate('/pricing')}
           size="sm"
           variant="default"
-          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-all duration-200 shadow-sm hover:shadow-md px-1.5 py-0.5 text-xs h-6 text-[10px]"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-all duration-200 shadow-sm hover:shadow-md px-1 py-0.5 md:px-1.5 md:py-0.5 text-[9px] md:text-xs h-5 md:h-6"
         >
-          <ArrowUpRight className="h-2.5 w-2.5 mr-0.5" />
-          {t('upgradeDialog.upgrade')}
+          <ArrowUpRight className="h-2 w-2 md:h-2.5 md:w-2.5 mr-0.5" />
+          <span className="hidden md:inline">{t('upgradeDialog.upgrade')}</span>
+          <span className="md:hidden">升级</span>
         </Button>
       )}
     </div>
