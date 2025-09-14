@@ -548,38 +548,10 @@ export function Header({ className = "" }: HeaderProps = {}) {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t animate-in slide-in-from-top-2 duration-300">
             <nav className="flex flex-col gap-2">
-              <Link
-                to="/"
-                className={`inline-block text-sm font-medium px-3 py-2 rounded-md transition-all duration-300 ${location.pathname === '/' ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'}`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t('nav.home')}
-              </Link>
-              <Link
-                to="/templates"
-                className={`inline-block text-sm font-medium px-3 py-2 rounded-md transition-all duration-300 ${location.pathname === '/templates' ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'}`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t('nav.templates')}
-              </Link>
-              <Link
-                to="/videos"
-                className={`inline-block text-sm font-medium px-3 py-2 rounded-md transition-all duration-300 ${location.pathname === '/videos' ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'}`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t('nav.videos')}
-              </Link>
-              <Link
-                to="/pricing"
-                className={`inline-block text-sm font-medium px-3 py-2 rounded-md transition-all duration-300 ${location.pathname === '/pricing' ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'}`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t('nav.pricing')}
-              </Link>
               
               {/* User Menu (Mobile) */}
               {user ? (
-                <div className="pt-4 border-t">
+                <div className="pt-2">
                   <div className="flex items-center gap-3 mb-4">
                     {profile?.avatar_url ? (
                       <img 
@@ -682,7 +654,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
                   </div>
                 </div>
               ) : (
-                <div className="pt-4 border-t flex flex-col gap-2">
+                <div className="pt-2 flex flex-col gap-2">
                   <Link
                     to="/signin"
                     className="flex items-center justify-center gap-2 px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200"

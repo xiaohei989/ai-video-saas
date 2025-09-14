@@ -159,17 +159,18 @@ export default function CompactUserInfo({
     <div className={className}>
       <Card className="overflow-hidden bg-gradient-to-r from-blue-50/50 to-indigo-50/50 dark:from-blue-950/10 dark:to-indigo-950/10 border-blue-200/50 dark:border-blue-800/50">
         <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            {/* 左侧：订阅等级和徽章 */}
-            <div className="flex items-center gap-4">
+          {/* 移动端垂直布局，桌面端水平布局 */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
+            {/* 订阅等级和徽章 */}
+            <div className="flex items-center gap-3 sm:gap-4">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
                 <Gem className="h-5 w-5 text-white" />
               </div>
               
-              <div className="space-y-1">
+              <div className="space-y-1 flex-1">
                 {subscription && subscription.status === 'active' && planDetails ? (
                   <>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                       <span className="text-sm font-medium text-foreground">{t('subscription.currentPlan')}</span>
                       {getPlanBadge()}
                     </div>
@@ -189,23 +190,25 @@ export default function CompactUserInfo({
               </div>
             </div>
 
-            {/* 右侧：积分余额和续费信息 */}
-            <div className="flex items-center gap-8">
+            {/* 积分余额和续费信息 */}
+            <div className="flex items-center justify-between sm:justify-end gap-6 sm:gap-8">
               {/* 当前积分 */}
-              <div className="flex flex-col justify-center text-center min-w-[90px]">
-                <div className="text-xl font-bold text-foreground leading-tight">{formatCredits(credits)}</div>
+              <div className="flex flex-col justify-center text-center min-w-[70px] sm:min-w-[90px]">
+                <div className="text-lg sm:text-xl font-bold text-foreground leading-tight">{formatCredits(credits)}</div>
                 <div className="text-xs text-muted-foreground mt-1">{t('subscription.currentCredits')}</div>
               </div>
               
               {/* 续费时间 */}
               {subscription && subscription.status === 'active' && (
-                <div className="flex flex-col justify-center text-center min-w-[90px]">
-                  <div className="text-lg font-medium text-foreground leading-tight flex items-center justify-center gap-1">
-                    <CalendarDays className="h-4 w-4" />
-                    {subscription.currentPeriodEnd.getFullYear() > 1970 
-                      ? format(subscription.currentPeriodEnd, getDateFormat(), { locale: getDateLocale() })
-                      : t('subscription.toBeUpdated')
-                    }
+                <div className="flex flex-col justify-center text-center min-w-[70px] sm:min-w-[90px]">
+                  <div className="text-sm sm:text-lg font-medium text-foreground leading-tight flex items-center justify-center gap-1">
+                    <CalendarDays className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="text-xs sm:text-base">
+                      {subscription.currentPeriodEnd.getFullYear() > 1970 
+                        ? format(subscription.currentPeriodEnd, i18n.language === 'zh' ? 'MM/dd' : 'MMM dd', { locale: getDateLocale() })
+                        : t('subscription.toBeUpdated')
+                      }
+                    </span>
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
                     {t('subscription.nextRenewal')}

@@ -418,7 +418,7 @@
     "title": "需要付费订阅",
     "description": "9:16 竖屏格式是付费用户专享功能。升级到任意付费计划即可解锁此功能，享受更多创作可能性。",
     "cancel": "取消",
-    "upgrade": "立即升级",
+    "upgrade": "升级",
     "aspectRatioRestriction": "9:16 格式需要付费订阅"
   },
   "videoCreator": {

@@ -124,8 +124,7 @@ export function CreditDisplay({ className }: CreditDisplayProps) {
           className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-all duration-200 shadow-sm hover:shadow-md px-1 py-0.5 md:px-1.5 md:py-0.5 text-[9px] md:text-xs h-5 md:h-6"
         >
           <ArrowUpRight className="h-2 w-2 md:h-2.5 md:w-2.5 mr-0.5" />
-          <span className="hidden md:inline">{t('upgradeDialog.upgrade')}</span>
-          <span className="md:hidden">升级</span>
+          {t('upgradeDialog.upgrade')}
         </Button>
       )}
     </div>
