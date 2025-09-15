@@ -290,19 +290,6 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
                               </p>
                             )}
                             
-                            {/* 最后活跃时间 */}
-                            {invitation.invitee?.last_active_at && (
-                              <p className="flex items-center space-x-1">
-                                <span className="text-gray-400">👤</span>
-                                <span>最后活跃: {formatPreciseDateTime(invitation.invitee.last_active_at)}</span>
-                              </p>
-                            )}
-                            
-                            {/* 账户创建来源 */}
-                            <p className="flex items-center space-x-1">
-                              <span className="text-gray-400">🎁</span>
-                              <span>通过邀请注册</span>
-                            </p>
                           </div>
                         </div>
                       </div>
