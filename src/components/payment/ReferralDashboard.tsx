@@ -279,8 +279,7 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
                     
                     <div className="flex flex-col items-end space-y-2 ml-3">
                       {invitation.status === 'accepted' && (
-                        <div className="flex items-center space-x-1 text-green-600 bg-green-50 px-2 py-1 rounded-md">
-                          <span className="text-xs">奖励</span>
+                        <div className="flex items-center text-green-600 bg-green-50 px-2 py-1 rounded-md">
                           <span className="font-medium">+{invitation.reward_credits}</span>
                         </div>
                       )}

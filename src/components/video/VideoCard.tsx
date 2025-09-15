@@ -74,10 +74,11 @@ export default function VideoCard({
     return statusLabels[video.migration_status as keyof typeof statusLabels] || video.migration_status
   }
 
-  // 🚀 Media Fragments + 客户端生成策略
+  // 🚀 智能缩略图策略 - 支持R2和Media Fragments
   useEffect(() => {
     // 参数验证
-    if (!video.id || !video.videoUrl || video.status !== 'completed') {
+    const bestVideoUrl = getBestVideoUrl()
+    if (!video.id || !bestVideoUrl || video.status !== 'completed') {
       return
     }
     
@@ -95,20 +96,19 @@ export default function VideoCard({
     
     const generateThumbnail = async () => {
       try {
-        // 🚀 移动端：优先尝试Media Fragments（让浏览器自动显示第一帧）
-        if (shouldUseMediaFragments()) {
-          console.log(`[VideoCard] 移动端检测，跳过客户端生成，使用Media Fragments: ${video.id}`)
+        // 🚀 移动端或R2视频：使用Media Fragments
+        if (shouldUseMediaFragments() || video.r2_url) {
+          console.log(`[VideoCard] 使用Media Fragments策略: ${video.id}, R2: ${!!video.r2_url}`)
           // 移动端不设置extractedThumbnail，让video元素使用Media Fragments
           setExtractedThumbnail(null)
           setThumbnailError(null)
           return
         }
         
-        // 🚀 桌面端：继续使用客户端生成
+        // 🚀 桌面端非R2视频：继续使用客户端生成
         console.log(`[VideoCard] 桌面端使用客户端生成策略: ${video.id}`)
         
-        const proxyUrl = getProxyVideoUrl(video.videoUrl)
-        const clientThumbnail = await thumbnailGenerator.ensureThumbnailCached(proxyUrl, video.id)
+        const clientThumbnail = await thumbnailGenerator.ensureThumbnailCached(bestVideoUrl, video.id)
         
         if (clientThumbnail) {
           console.log(`[VideoCard] 客户端缩略图生成成功: ${video.id}`)
@@ -125,7 +125,7 @@ export default function VideoCard({
     }
     
     generateThumbnail()
-  }, [video.id, video.videoUrl, video.status, video.thumbnailUrl])
+  }, [video.id, video.videoUrl, video.r2_url, video.status, video.thumbnailUrl])
 
   // Removed hover video preview - now only plays on click
 
@@ -198,12 +198,12 @@ export default function VideoCard({
             alt={video.templateName}
             className="w-full h-full object-cover"
           />
-        ) : shouldUseMediaFragments() && video.videoUrl ? (
-          // 🚀 移动端智能缩略图方案
+        ) : (shouldUseMediaFragments() || video.r2_url) && getBestVideoUrl() ? (
+          // 🚀 智能缩略图方案 - Media Fragments
           <div className="w-full h-full relative overflow-hidden">
-            {/* 尝试视频预览 */}
+            {/* 视频预览 - 优先使用R2，支持Media Fragments */}
             <video 
-              src={`${getCompatibleVideoURL(getProxyVideoUrl(video.videoUrl))}#t=2.0`}
+              src={`${getBestVideoUrl()}#t=2.0`}
               preload="metadata"
               muted
               playsInline
@@ -276,9 +276,29 @@ export default function VideoCard({
         )}
         
         {/* 状态标签 */}
-        <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-background/90 rounded-md text-xs">
-          {getStatusIcon()}
-          <span>{getStatusText()}</span>
+        <div className="absolute top-2 right-2 flex flex-col gap-1">
+          <div className="flex items-center gap-1 px-2 py-1 bg-background/90 rounded-md text-xs">
+            {getStatusIcon()}
+            <span>{getStatusText()}</span>
+          </div>
+          
+          {/* R2迁移状态 */}
+          {showMigrationStatus() && (
+            <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/90 text-white rounded-md text-xs">
+              {video.migration_status === 'downloading' && <Loader2 className="h-3 w-3 animate-spin" />}
+              {video.migration_status === 'uploading' && <Loader2 className="h-3 w-3 animate-spin" />}
+              {video.migration_status === 'failed' && <XCircle className="h-3 w-3" />}
+              <span>{showMigrationStatus()}</span>
+            </div>
+          )}
+          
+          {/* R2存储标识 */}
+          {video.r2_url && (
+            <div className="flex items-center gap-1 px-2 py-1 bg-green-500/90 text-white rounded-md text-xs">
+              <CheckCircle className="h-3 w-3" />
+              <span>R2</span>
+            </div>
+          )}
         </div>
         
         {/* 时长标签 */}
