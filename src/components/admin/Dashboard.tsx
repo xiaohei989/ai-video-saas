@@ -78,9 +78,50 @@ export const Dashboard: React.FC = () => {
       setLoading(true)
       setError(null)
       console.log('[Dashboard] Loading stats...')
-      const data = await getAdminStats(period)
-      console.log('[Dashboard] Stats loaded:', data)
-      setStats(data)
+      const rawData = await getAdminStats(period)
+      console.log('[Dashboard] Raw stats data:', rawData)
+      
+      // 后端现在直接返回展平的数据结构
+      const processedData = {
+        // 核心统计数据 - 直接从顶级字段获取
+        total_users: rawData.total_users || 0,
+        new_users_today: rawData.new_users_today || 0,
+        new_users_this_week: rawData.new_users_this_week || 0,
+        new_users_this_month: rawData.new_users_this_month || 0,
+        total_revenue: rawData.total_revenue || 0,
+        revenue_today: rawData.revenue_today || 0,
+        revenue_this_week: rawData.revenue_this_week || 0,
+        revenue_this_month: rawData.revenue_this_month || 0,
+        active_subscriptions: rawData.active_subscriptions || 0,
+        total_videos: rawData.total_videos || 0,
+        videos_today: rawData.videos_today || 0,
+        pending_tickets: rawData.pending_tickets || 0,
+        banned_users: rawData.banned_users || 0,
+        
+        // 趋势数据
+        trends: rawData.trends || {
+          user_growth: {},
+          sales_growth: {},
+          video_generation: {}
+        },
+        
+        // 地理分布
+        geo_distribution: rawData.geo_distribution || {
+          countries: {}
+        },
+        
+        // 订阅分布
+        subscription_breakdown: rawData.subscription_breakdown || {},
+        
+        // 安全警告
+        security_alerts: rawData.security_alerts || {
+          suspicious_ips: [],
+          credit_anomalies: []
+        }
+      }
+      
+      console.log('[Dashboard] Processed stats:', processedData)
+      setStats(processedData)
     } catch (err) {
       console.error('[Dashboard] Load stats error:', err)
       setError(err instanceof Error ? err.message : '加载统计数据失败')

@@ -124,10 +124,28 @@ serve(async (req) => {
         min_reward_amount: 1000
       })
 
+    const baseDashboardStats = dashboardStats?.[0] || {}
+    
     const response = {
       success: true,
       data: {
-        dashboard_stats: dashboardStats?.[0] || {},
+        // 直接展平核心统计数据，便于前端访问
+        total_users: baseDashboardStats.total_users || 0,
+        new_users_today: baseDashboardStats.new_users_today || 0,
+        new_users_this_week: baseDashboardStats.new_users_this_week || 0,
+        new_users_this_month: baseDashboardStats.new_users_this_month || 0,
+        total_revenue: parseFloat(baseDashboardStats.total_revenue?.toString() || '0'),
+        revenue_today: parseFloat(baseDashboardStats.revenue_today?.toString() || '0'),
+        revenue_this_week: parseFloat(baseDashboardStats.revenue_this_week?.toString() || '0'),
+        revenue_this_month: parseFloat(baseDashboardStats.revenue_this_month?.toString() || '0'),
+        active_subscriptions: baseDashboardStats.active_subscriptions || 0,
+        total_videos: baseDashboardStats.total_videos || 0,
+        videos_today: baseDashboardStats.videos_today || 0,
+        pending_tickets: baseDashboardStats.pending_tickets || 0,
+        banned_users: baseDashboardStats.banned_users || 0,
+        
+        // 保持原有的嵌套结构用于图表数据
+        dashboard_stats: baseDashboardStats,
         trends: {
           user_growth: userGrowthTrend,
           sales_growth: salesGrowthTrend,
