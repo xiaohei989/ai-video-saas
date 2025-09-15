@@ -81,10 +81,19 @@ class CreditService {
     description: string,
     referenceId?: string,
     referenceType?: string
-  ): Promise<{ success: boolean; newBalance?: number; error?: string }> {
+  ): Promise<{ success: boolean; newBalance?: number; error?: string; refreshProfile?: () => void }> {
     try {
       // 统一通过Edge Function调用
-      return await this.consumeCreditsViaEdgeFunction(userId, amount, description, referenceId, referenceType)
+      const result = await this.consumeCreditsViaEdgeFunction(userId, amount, description, referenceId, referenceType)
+      
+      // 🚀 简化：返回一个刷新函数让调用方决定何时刷新
+      return {
+        ...result,
+        refreshProfile: () => {
+          // 触发自定义事件通知需要刷新
+          window.dispatchEvent(new CustomEvent('credits-changed', { detail: { userId } }))
+        }
+      }
     } catch (error) {
       console.error('Error in consumeCredits:', error)
       return { success: false, error: i18n.t('errors.credit.consumeFailed') }
@@ -149,10 +158,19 @@ class CreditService {
     description: string,
     referenceId?: string,
     referenceType?: string
-  ): Promise<{ success: boolean; newBalance?: number; error?: string }> {
+  ): Promise<{ success: boolean; newBalance?: number; error?: string; refreshProfile?: () => void }> {
     try {
       // 统一通过Edge Function调用
-      return await this.addCreditsViaEdgeFunction(userId, amount, type, description, referenceId, referenceType)
+      const result = await this.addCreditsViaEdgeFunction(userId, amount, type, description, referenceId, referenceType)
+      
+      // 🚀 简化：返回一个刷新函数让调用方决定何时刷新
+      return {
+        ...result,
+        refreshProfile: () => {
+          // 触发自定义事件通知需要刷新
+          window.dispatchEvent(new CustomEvent('credits-changed', { detail: { userId } }))
+        }
+      }
     } catch (error) {
       console.error('Error in addCredits:', error)
       return { success: false, error: i18n.t('errors.credit.addFailed') }

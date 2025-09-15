@@ -72,90 +72,31 @@ class ReferralService {
   }
 
   /**
-   * 创建邀请（增强版，包含速率限制检查）
+   * 获取邀请链接（简化版本，使用referral_code）
    */
   async createInvitation(
-    inviterId: string, 
-    inviteeEmail?: string,
-    rewardCredits: number = this.DEFAULT_REWARD
+    inviterId: string
   ): Promise<{ success: boolean; invitationCode?: string; error?: string }> {
     try {
-      // 检查邀请速率限制
-      const { data: rateLimitCheck, error: rateLimitError } = await supabase.rpc('check_invitation_rate_limit', {
-        p_user_id: inviterId
-      })
-
-      if (rateLimitError) {
-        console.error('Error checking invitation rate limit:', rateLimitError)
-        return { success: false, error: i18n.t('referral.errors.checkLimitFailed') }
+      // 直接获取用户的referral_code
+      const referralCode = await this.getUserReferralCode(inviterId)
+      
+      if (!referralCode) {
+        return { success: false, error: '获取邀请码失败' }
       }
 
-      if (rateLimitCheck && rateLimitCheck.length > 0) {
-        const limitResult = rateLimitCheck[0]
-        if (!limitResult.can_invite) {
-          return { success: false, error: limitResult.reason }
-        }
-      }
-
-      // 验证邀请者邮箱（如果提供）
-      if (inviteeEmail) {
-        const emailValidation = await validateEmailAsync(inviteeEmail)
-        if (!emailValidation.isValid) {
-          return { success: false, error: emailValidation.error }
-        }
-      }
-
-      const invitationCode = this.generateInvitationCode()
-      const expiresAt = new Date()
-      expiresAt.setDate(expiresAt.getDate() + this.INVITATION_EXPIRY_DAYS)
-
-      const { data, error } = await supabase
-        .from('invitations')
-        .insert({
-          inviter_id: inviterId,
-          invitation_code: invitationCode,
-          invitee_email: inviteeEmail,
-          reward_credits: rewardCredits,
-          expires_at: expiresAt.toISOString()
-        })
-        .select()
-        .single()
-
-      if (error) {
-        console.error('Error creating invitation:', error)
-        return { success: false, error: error.message }
-      }
-
-      // 更新邀请速率限制记录
-      try {
-        const currentIP = await getClientIPAddress()
-        await supabase
-          .from('invitation_rate_limits')
-          .upsert({
-            user_id: inviterId,
-            ip_address: currentIP,
-            invitations_created: 1,
-            last_invitation_at: new Date().toISOString()
-          }, {
-            onConflict: 'user_id,created_at',
-            ignoreDuplicates: false
-          })
-      } catch (rateLimitUpdateError) {
-        console.warn('Failed to update invitation rate limit:', rateLimitUpdateError)
-      }
-
-      return { success: true, invitationCode }
+      return { success: true, invitationCode: referralCode }
     } catch (error) {
       console.error('Error in createInvitation:', error)
-      return { success: false, error: i18n.t('referral.errors.createInvitationFailed') }
+      return { success: false, error: '获取邀请码失败' }
     }
   }
 
   /**
-   * 接受邀请（增强版，包含防刷检测）
+   * 接受邀请码（统一版本，使用referral_code）
    */
   async acceptInvitation(
-    invitationCode: string, 
+    referralCode: string, 
     inviteeId: string,
     inviteeEmail: string,
     deviceFingerprint?: any,
@@ -177,9 +118,9 @@ class ReferralService {
         }
       }
 
-      // 使用增强版的邀请接受函数（新版本，避免函数名冲突）
-      const { data: result, error: processError } = await supabase.rpc('accept_invitation_secure', {
-        invitation_code: invitationCode,
+      // 使用统一的邀请码接受函数
+      const { data: result, error: processError } = await supabase.rpc('accept_referral_code', {
+        referral_code: referralCode,
         invitee_id: inviteeId,
         invitee_email: inviteeEmail,
         ip_addr: ipAddress || null,
@@ -187,43 +128,56 @@ class ReferralService {
       })
 
       if (processError) {
-        console.error('Error processing invitation:', processError)
-        
-        // 根据错误信息返回更友好的错误提示
-        const errorMsg = processError.message || ''
-        
-        if (errorMsg.includes('临时邮箱') || errorMsg.includes('Temporary email')) {
-          return { success: false, error: i18n.t('auth.temporaryEmailNotAllowed') }
-        } else if (errorMsg.includes('maximum invitation limit') || errorMsg.includes('邀请限制')) {
-          return { success: false, error: '邀请者已达到最大邀请限制' }
-        } else if (errorMsg.includes('Too many registrations') || errorMsg.includes('注册次数过多')) {
-          return { success: false, error: '该IP地址24小时内注册次数过多' }
-        } else if (errorMsg.includes('Cannot use own invitation') || errorMsg.includes('不能使用自己')) {
-          return { success: false, error: '不能使用自己的邀请码' }
-        } else if (errorMsg.includes('already has a referrer') || errorMsg.includes('已经使用过')) {
-          return { success: false, error: '您已经使用过邀请码了' }
-        } else if (errorMsg.includes('Invalid or expired') || errorMsg.includes('无效或已过期')) {
-          return { success: false, error: i18n.t('referral.errors.invalidOrExpired') }
-        } else if (errorMsg.includes('设备') || errorMsg.includes('device')) {
-          return { success: false, error: '该设备注册次数过多，请稍后再试' }
-        } else {
-          return { success: false, error: i18n.t('referral.errors.processingFailed') + '：' + errorMsg }
-        }
+        console.error('Error processing referral code:', processError)
+        return { success: false, error: processError.message || '处理邀请码时发生错误' }
       }
 
-      // 处理新的JSONB返回格式
+      // 处理JSONB返回格式
       if (result) {
+        if (!result.success) {
+          return { success: false, error: result.error }
+        }
+        
+        // 🔧 立即清理缓存并通知前端
+        if (result.success) {
+          console.log('[REFERRAL] 积分更新成功，开始清理缓存和通知前端')
+          
+          // 1. 立即清理Edge Function缓存
+          this.clearUserCache([inviteeId, result.inviter_id], 'referral_reward').catch(err => {
+            console.warn('[REFERRAL] 缓存清理失败，但不影响主流程:', err)
+          })
+          
+          // 2. 触发全局积分变更事件（多个用户）
+          const affectedUsers = [
+            { userId: inviteeId, newCredits: result.invitee_credits_after },
+            { userId: result.inviter_id, newCredits: result.inviter_credits_after }
+          ]
+          
+          affectedUsers.forEach(user => {
+            window.dispatchEvent(new CustomEvent('credits-changed', {
+              detail: { 
+                userId: user.userId,
+                newCredits: user.newCredits,
+                reason: 'referral_reward',
+                timestamp: Date.now()
+              }
+            }))
+          })
+          
+          console.log('[REFERRAL] 积分变更通知已发送给前端')
+        }
+        
         return { 
-          success: result.success, 
+          success: true, 
           reward: result.reward_credits || 20,
-          error: result.success ? undefined : result.error
+          error: undefined
         }
       }
 
-      return { success: true, reward: 20 }
+      return { success: false, error: '未知错误' }
     } catch (error) {
       console.error('Error in acceptInvitation:', error)
-      return { success: false, error: i18n.t('referral.errors.acceptFailed') }
+      return { success: false, error: '处理邀请码时发生错误' }
     }
   }
 
@@ -278,25 +232,47 @@ class ReferralService {
   }
 
   /**
-   * 获取用户邀请列表
+   * 获取用户邀请列表（简化版本，基于referral关系）
    */
-  async getUserInvitations(userId: string): Promise<Invitation[]> {
+  async getUserInvitations(userId: string): Promise<any[]> {
     try {
       const { data, error } = await supabase
-        .from('invitations')
+        .from('profiles')
         .select(`
-          *,
-          invitee:profiles!invitations_invitee_id_fkey(username, email, avatar_url)
+          id,
+          username,
+          email,
+          avatar_url,
+          created_at,
+          credits,
+          subscription_status,
+          last_login_at
         `)
-        .eq('inviter_id', userId)
+        .eq('referred_by', userId)
         .order('created_at', { ascending: false })
 
       if (error) {
-        console.error('Error fetching invitations:', error)
+        console.error('Error fetching referred users:', error)
         return []
       }
 
-      return data || []
+      // 转换为兼容格式
+      return (data || []).map(user => ({
+        id: user.id,
+        invitee_id: user.id,
+        invitee: {
+          username: user.username,
+          email: user.email,
+          avatar_url: user.avatar_url,
+          credits: user.credits,
+          subscription_status: user.subscription_status,
+          last_login_at: user.last_login_at
+        },
+        status: 'accepted',
+        reward_credits: 20,
+        accepted_at: user.created_at,
+        created_at: user.created_at
+      }))
     } catch (error) {
       console.error('Error in getUserInvitations:', error)
       return []
@@ -304,20 +280,32 @@ class ReferralService {
   }
 
   /**
-   * 获取邀请统计
+   * 获取邀请统计（简化版本，基于referral关系）
    */
   async getReferralStats(userId: string): Promise<ReferralStats | null> {
     try {
-      const { data, error } = await supabase.rpc('get_referral_stats', {
-        p_user_id: userId
-      })
+      // 查询被该用户邀请的用户数量
+      const { data: referredUsers, error } = await supabase
+        .from('profiles')
+        .select('id, created_at')
+        .eq('referred_by', userId)
 
       if (error) {
         console.error('Error fetching referral stats:', error)
         return null
       }
 
-      return data
+      const totalInvitations = referredUsers?.length || 0
+      const successfulInvitations = totalInvitations // 所有referral关系都是成功的
+      const totalRewards = successfulInvitations * 20 // 每个邀请20积分
+
+      return {
+        total_invitations: totalInvitations,
+        successful_invitations: successfulInvitations,
+        pending_invitations: 0, // 新系统没有pending状态
+        total_rewards_earned: totalRewards,
+        success_rate: totalInvitations > 0 ? 100 : 0 // 所有邀请都成功
+      }
     } catch (error) {
       console.error('Error in getReferralStats:', error)
       return null
@@ -325,44 +313,44 @@ class ReferralService {
   }
 
   /**
-   * 验证邀请码
+   * 验证邀请码（统一版本，检查referral_code）
    */
-  async validateInvitationCode(invitationCode: string): Promise<{
+  async validateInvitationCode(referralCode: string): Promise<{
     valid: boolean
-    invitation?: Invitation
+    invitation?: any
     error?: string
   }> {
     try {
       const { data, error } = await supabase
-        .from('invitations')
-        .select(`
-          *,
-          inviter:profiles!invitations_inviter_id_fkey(username, avatar_url)
-        `)
-        .eq('invitation_code', invitationCode)
+        .from('profiles')
+        .select('id, username, avatar_url, email')
+        .eq('referral_code', referralCode)
         .single()
 
       if (error) {
         if (error.code === 'PGRST116') {
-          return { valid: false, error: i18n.t('referral.errors.codeNotFound') }
+          return { valid: false, error: '邀请码不存在' }
         }
-        return { valid: false, error: i18n.t('referral.errors.validationFailed') }
+        return { valid: false, error: '验证邀请码失败' }
       }
 
-      // 检查邀请状态
-      if (data.status !== 'pending') {
-        return { valid: false, error: '邀请码已被使用' }
+      // 返回邀请人信息
+      return { 
+        valid: true, 
+        invitation: {
+          inviter_id: data.id,
+          inviter: {
+            username: data.username,
+            avatar_url: data.avatar_url,
+            email: data.email
+          },
+          reward_credits: 20,
+          status: 'pending' // 兼容性
+        }
       }
-
-      // 检查是否过期
-      if (new Date(data.expires_at) < new Date()) {
-        return { valid: false, error: '邀请码已过期' }
-      }
-
-      return { valid: true, invitation: data }
     } catch (error) {
       console.error('Error in validateInvitationCode:', error)
-      return { valid: false, error: i18n.t('referral.errors.validationFailed') }
+      return { valid: false, error: '验证邀请码失败' }
     }
   }
 
@@ -447,6 +435,43 @@ class ReferralService {
       return true
     } catch (error) {
       console.error('Failed to copy to clipboard:', error)
+      return false
+    }
+  }
+
+  /**
+   * 清理用户缓存
+   */
+  private async clearUserCache(userIds: string[], reason: string = 'manual'): Promise<boolean> {
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://hvkzwrnvxsleeonqqrzq.supabase.co'
+      const clearCacheUrl = `${supabaseUrl}/functions/v1/clear-user-cache`
+      
+      const { data: session } = await supabase.auth.getSession()
+      
+      const response = await fetch(clearCacheUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.session?.access_token || ''}`
+        },
+        body: JSON.stringify({
+          user_ids: userIds,
+          reason: reason
+        })
+      })
+
+      const result = await response.json()
+      
+      if (result.success) {
+        console.log(`[REFERRAL] 缓存清理成功，清理了 ${result.cleared_keys?.length || 0} 个缓存键`)
+        return true
+      } else {
+        console.warn('[REFERRAL] 缓存清理失败:', result.error)
+        return false
+      }
+    } catch (error) {
+      console.error('[REFERRAL] 清理缓存时发生错误:', error)
       return false
     }
   }

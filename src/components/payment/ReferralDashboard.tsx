@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { formatFullDate } from '@/utils/dateFormat'
+import { formatFullDate, formatPreciseDateTime } from '@/utils/dateFormat'
 import { 
   Users, 
   Share2, 
@@ -230,48 +230,95 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
               <p className="text-sm">{t('referral.startInviting')}</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {invitations.slice(0, 5).map((invitation: any) => (
                 <div
                   key={invitation.id}
-                  className="flex items-center justify-between p-3 border border-gray-200 rounded-lg"
+                  className="p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
                 >
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                        {invitation.invitee?.avatar_url ? (
-                          <img
-                            src={invitation.invitee.avatar_url}
-                            alt=""
-                            className="w-8 h-8 rounded-full"
-                          />
-                        ) : (
-                          <Users className="w-4 h-4 text-gray-500" />
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-medium">
-                          {invitation.invitee?.username || 
-                           invitation.invitee_email || 
-                           invitation.invitation_code}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {formatFullDate(invitation.created_at)}
-                        </p>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          {invitation.invitee?.avatar_url ? (
+                            <img
+                              src={invitation.invitee.avatar_url}
+                              alt=""
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                          ) : (
+                            <Users className="w-5 h-5 text-gray-500" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <p className="font-medium text-gray-900 truncate">
+                              {invitation.invitee?.username || invitation.invitee?.email?.split('@')[0] || '未知用户'}
+                            </p>
+                            <Badge
+                              className={`text-xs ${referralService.getInvitationStatusColor(invitation.status)}`}
+                            >
+                              {t(`referral.status.${invitation.status}`, invitation.status) || invitation.status}
+                            </Badge>
+                          </div>
+                          
+                          {/* 详细账户信息 */}
+                          <div className="space-y-1 text-sm text-gray-600">
+                            {invitation.invitee?.email && (
+                              <p className="flex items-center space-x-1 truncate">
+                                <span className="text-gray-400">📧</span>
+                                <span className="truncate">{invitation.invitee.email}</span>
+                              </p>
+                            )}
+                            
+                            {/* 注册时间（精确到小时分钟） */}
+                            <p className="flex items-center space-x-1">
+                              <span className="text-gray-400">⏰</span>
+                              <span>注册于 {formatPreciseDateTime(invitation.created_at)}</span>
+                            </p>
+                            
+                            {/* 当前积分 */}
+                            {invitation.invitee?.credits !== undefined && (
+                              <p className="flex items-center space-x-1">
+                                <span className="text-gray-400">💰</span>
+                                <span>当前积分: {invitation.invitee.credits}</span>
+                              </p>
+                            )}
+                            
+                            {/* 订阅状态 */}
+                            {invitation.invitee?.subscription_status && (
+                              <p className="flex items-center space-x-1">
+                                <span className="text-gray-400">💳</span>
+                                <span>订阅: {invitation.invitee.subscription_status === 'active' ? '已激活' : '未订阅'}</span>
+                              </p>
+                            )}
+                            
+                            {/* 最后登录时间 */}
+                            {invitation.invitee?.last_login_at && (
+                              <p className="flex items-center space-x-1">
+                                <span className="text-gray-400">👤</span>
+                                <span>最后登录: {formatPreciseDateTime(invitation.invitee.last_login_at)}</span>
+                              </p>
+                            )}
+                            
+                            {/* 账户创建来源 */}
+                            <p className="flex items-center space-x-1">
+                              <span className="text-gray-400">🎁</span>
+                              <span>通过邀请注册</span>
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Badge
-                      className={referralService.getInvitationStatusColor(invitation.status)}
-                    >
-                      {t(`referral.status.${invitation.status}`, invitation.status) || invitation.status}
-                    </Badge>
-                    {invitation.status === 'accepted' && (
-                      <span className="text-sm text-blue-600 font-medium">
-                        +{invitation.reward_credits}
-                      </span>
-                    )}
+                    
+                    <div className="flex flex-col items-end space-y-2 ml-3">
+                      {invitation.status === 'accepted' && (
+                        <div className="flex items-center space-x-1 text-green-600 bg-green-50 px-2 py-1 rounded-md">
+                          <span className="text-xs">奖励</span>
+                          <span className="font-medium">+{invitation.reward_credits}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

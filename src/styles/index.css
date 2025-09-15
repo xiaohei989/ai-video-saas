@@ -296,12 +296,14 @@ html.dark {
   .mobile-video-play-button {
     width: 48px !important;
     height: 48px !important;
-    background: rgba(255, 255, 255, 0.9) !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 2px solid rgba(255, 255, 255, 0.8) !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(4px) !important;
   }
   
   /* 移动端减少不必要的动画 */
@@ -732,11 +734,13 @@ html.dark {
   width: 48px;
   height: 48px;
   background-color: rgba(0, 0, 0, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.8);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
   
   /* 桌面端样式 */
   @media (min-width: 768px) {

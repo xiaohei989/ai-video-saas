@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { Gem, ArrowUpRight, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/AuthContext'
-import { edgeCacheClient } from '@/services/EdgeFunctionCacheClient'
 import stripeService from '@/services/stripeService'
 
 interface CreditDisplayProps {
@@ -14,70 +13,27 @@ interface CreditDisplayProps {
 export function CreditDisplay({ className }: CreditDisplayProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { user, profile } = useAuth()
-  const [credits, setCredits] = useState<number | null>(null)
-  const [loading, setLoading] = useState(false)
+  const { user, profile, loading: authLoading } = useAuth()
   const [subscription, setSubscription] = useState<any>(null)
-  const [isRefreshing, setIsRefreshing] = useState(false)
 
-  // 初始化积分数据 - 优先使用AuthContext中的数据
-  useEffect(() => {
-    if (profile?.credits !== undefined) {
-      setCredits(profile.credits)
-    }
-  }, [profile?.credits])
+  // 🚀 简化：直接使用 AuthContext 中的积分数据
+  const credits = profile?.credits || 0
 
-  // 获取用户积分和订阅状态 - 使用统一缓存系统
+  // 获取订阅状态
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchSubscription = async () => {
       if (!user?.id) return
 
-      // 如果已有profile数据，不显示loading状态，而是后台静默更新
-      const shouldShowLoading = !profile?.credits
-      if (shouldShowLoading) {
-        setLoading(true)
-      } else {
-        setIsRefreshing(true)
-      }
-
       try {
-        // 🚀 使用EdgeFunctionCacheClient统一获取积分（移除重复的localStorage缓存）
-        const userCredits = await edgeCacheClient.getUserCredits(user.id)
-        if (userCredits > 0) {
-          setCredits(userCredits)
-        }
-
-        // 🚀 使用缓存获取订阅状态
-        const subscriptionTier = await edgeCacheClient.getUserSubscription(user.id)
-        
-        // 构建简化的订阅对象用于UI显示
-        if (subscriptionTier && subscriptionTier !== 'free') {
-          setSubscription({
-            plan: { tier: subscriptionTier },
-            status: 'active'
-          })
-        } else {
-          // 免费用户或获取失败时，尝试原方法作为后备
-          const userSubscription = await stripeService.getUserSubscription(user.id)
-          setSubscription(userSubscription)
-        }
+        const userSubscription = await stripeService.getUserSubscription(user.id)
+        setSubscription(userSubscription)
       } catch (error) {
-        console.error('[CreditDisplay] 获取用户数据失败:', error)
-        // 错误时尝试原方法作为后备
-        try {
-          const userSubscription = await stripeService.getUserSubscription(user.id)
-          setSubscription(userSubscription)
-        } catch (fallbackError) {
-          console.error('[CreditDisplay] 后备方法也失败:', fallbackError)
-        }
-      } finally {
-        setLoading(false)
-        setIsRefreshing(false)
+        console.error('[CreditDisplay] 获取订阅信息失败:', error)
       }
     }
 
-    fetchUserData()
-  }, [user?.id, profile?.credits])
+    fetchSubscription()
+  }, [user?.id])
 
   // 检查用户订阅状态
   const isFreeUser = !subscription || !subscription.plan || subscription.status !== 'active'
@@ -102,15 +58,10 @@ export function CreditDisplay({ className }: CreditDisplayProps) {
       <div className="flex items-center gap-1 px-1.5 py-0.5 md:px-2 md:py-1 bg-secondary/50 rounded-md">
         <Gem className="h-3 w-3 md:h-4 md:w-4 text-purple-600" />
         <span className="text-xs md:text-sm font-medium relative">
-          {loading ? (
+          {authLoading ? (
             <Loader2 className="h-2.5 w-2.5 md:h-3 md:w-3 animate-spin" />
           ) : (
-            <>
-              {formatCredits(credits || 0)}
-              {isRefreshing && (
-                <Loader2 className="h-1.5 w-1.5 md:h-2 md:w-2 animate-spin absolute -top-0.5 -right-0.5 md:-top-1 md:-right-1 text-purple-400" />
-              )}
-            </>
+            formatCredits(credits)
           )}
         </span>
       </div>

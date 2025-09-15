@@ -1,129 +1,116 @@
 /**
  * 服务端缩略图生成服务
- * 当客户端缩略图提取失败时使用
+ * 调用Supabase Edge Function生成缩略图，并更新数据库
  */
 
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
+import { VideoRecord } from '@/services/videoHistoryService'
 
-interface ServerThumbnailResponse {
+interface ThumbnailResponse {
   success: boolean
-  thumbnail?: string
-  cacheKey?: string
+  thumbnailUrl?: string
   error?: string
-  fallback?: string
+  message?: string
+  videoId?: string
 }
 
 class ServerThumbnailService {
-  private readonly FUNCTION_NAME = 'generate-thumbnail'
+  private supabase
+  private generatingVideos = new Set<string>()
   
+  constructor() {
+    this.supabase = createClient(
+      import.meta.env.VITE_SUPABASE_URL || '',
+      import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+    )
+  }
+
   /**
-   * 请求服务端生成缩略图
+   * 生成单个视频的缩略图（主要方法）
    */
-  async generateThumbnail(
-    videoUrl: string,
-    options: {
-      frameTime?: number
-      quality?: 'high' | 'medium' | 'low'
-    } = {}
-  ): Promise<string> {
-    const { frameTime = 0.33, quality = 'medium' } = options
-    
+  async generateThumbnail(videoId: string, videoUrl: string): Promise<string | null> {
     try {
-      console.log(`[SERVER THUMBNAIL] 请求服务端生成缩略图: ${videoUrl}`)
-      
-      const { data, error } = await supabase.functions.invoke(this.FUNCTION_NAME, {
+      // 防止重复生成
+      if (this.generatingVideos.has(videoId)) {
+        console.log(`[ServerThumbnail] 正在生成中，跳过重复请求: ${videoId}`)
+        return null
+      }
+
+      this.generatingVideos.add(videoId)
+      console.log(`[ServerThumbnail] 开始服务端缩略图生成: ${videoId}`)
+
+      const { data, error } = await this.supabase.functions.invoke('generate-thumbnail', {
         body: {
           videoUrl,
-          frameTime,
-          quality
+          videoId
         }
       })
 
       if (error) {
-        console.error('[SERVER THUMBNAIL] Edge Function调用失败:', error)
-        throw new Error(`Server thumbnail generation failed: ${error.message}`)
+        console.error(`[ServerThumbnail] Edge Function调用失败:`, error)
+        return null
       }
 
-      const response: ServerThumbnailResponse = data
-
-      if (response.success && response.thumbnail) {
-        console.log(`[SERVER THUMBNAIL] 服务端缩略图生成成功`)
-        return response.thumbnail
+      const response = data as ThumbnailResponse
+      if (response.success && response.thumbnailUrl) {
+        console.log(`[ServerThumbnail] 缩略图生成成功: ${videoId} -> ${response.thumbnailUrl}`)
+        return response.thumbnailUrl
       } else {
-        console.warn(`[SERVER THUMBNAIL] 服务端生成失败，使用fallback: ${response.error}`)
-        return response.fallback || this.getDefaultServerThumbnail(quality)
+        console.error(`[ServerThumbnail] 缩略图生成失败: ${videoId}`, response.error)
+        return null
       }
+
     } catch (error) {
-      console.error('[SERVER THUMBNAIL] 服务端缩略图请求失败:', error)
-      return this.getDefaultServerThumbnail(quality)
+      console.error(`[ServerThumbnail] 服务端缩略图生成异常: ${videoId}`, error)
+      return null
+    } finally {
+      this.generatingVideos.delete(videoId)
     }
   }
 
   /**
    * 批量生成缩略图
    */
-  async generateBatchThumbnails(
-    videoUrls: string[],
-    quality: 'high' | 'medium' | 'low' = 'medium'
-  ): Promise<Map<string, string>> {
-    const results = new Map<string, string>()
-    
-    const promises = videoUrls.map(async (url) => {
-      try {
-        const thumbnail = await this.generateThumbnail(url, { quality })
-        results.set(url, thumbnail)
-      } catch (error) {
-        console.error(`[SERVER THUMBNAIL] 批量生成失败 ${url}:`, error)
-        results.set(url, this.getDefaultServerThumbnail(quality))
-      }
-    })
+  async generateBatch(videos: VideoRecord[]): Promise<void> {
+    console.log(`[ServerThumbnail] 开始批量生成缩略图: ${videos.length}个视频`)
 
-    await Promise.allSettled(promises)
-    return results
+    const promises = videos.map(video => 
+      this.generateThumbnail(video.id, video.videoUrl)
+        .catch(error => {
+          console.error(`[ServerThumbnail] 批量生成失败 ${video.id}:`, error)
+          return null
+        })
+    )
+
+    const results = await Promise.allSettled(promises)
+    const successful = results.filter(r => r.status === 'fulfilled' && r.value).length
+    
+    console.log(`[ServerThumbnail] 批量生成完成: ${successful}/${videos.length} 成功`)
   }
 
   /**
-   * 默认服务端缩略图
+   * 检查视频是否正在生成缩略图
    */
-  private getDefaultServerThumbnail(quality: 'high' | 'medium' | 'low'): string {
-    const dimensions = {
-      high: { width: 480, height: 270 },
-      medium: { width: 320, height: 180 },
-      low: { width: 240, height: 135 }
-    }
-    
-    const { width, height } = dimensions[quality]
-    
-    const svg = `
-      <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="fallbackBg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
-          </linearGradient>
-        </defs>
-        <rect width="${width}" height="${height}" fill="url(#fallbackBg)"/>
-        <circle cx="${width/2}" cy="${height/2}" r="${Math.min(width, height) * 0.12}" fill="rgba(255,255,255,0.9)"/>
-        <polygon points="${width/2-8},${height/2-6} ${width/2-8},${height/2+6} ${width/2+6},${height/2}" fill="#6366f1"/>
-        <text x="${width/2}" y="${height*0.85}" font-family="Arial, sans-serif" font-size="${Math.max(9, width/30)}" fill="rgba(255,255,255,0.8)" text-anchor="middle">视频缩略图</text>
-      </svg>
-    `
-    return `data:image/svg+xml;base64,${btoa(svg)}`
+  isGenerating(videoId: string): boolean {
+    return this.generatingVideos.has(videoId)
   }
 
   /**
-   * 检查服务是否可用
+   * 获取生成状态统计
    */
-  async isServiceAvailable(): Promise<boolean> {
-    try {
-      const { data, error } = await supabase.functions.invoke(this.FUNCTION_NAME, {
-        body: { videoUrl: 'test' }
-      })
-      
-      return !error
-    } catch {
-      return false
+  getStats() {
+    return {
+      generatingCount: this.generatingVideos.size,
+      generatingVideos: Array.from(this.generatingVideos)
     }
+  }
+
+  /**
+   * 取消所有正在进行的生成任务
+   */
+  cancelAll(): void {
+    this.generatingVideos.clear()
+    console.log('[ServerThumbnail] 已取消所有生成任务')
   }
 }
 

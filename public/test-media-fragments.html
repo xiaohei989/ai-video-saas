@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Fragments 测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .video-test {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .video-test h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        video {
+            width: 300px;
+            height: 200px;
+            border: 2px solid #007cba;
+            border-radius: 4px;
+        }
+        
+        .info {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f4f8;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .device-info {
+            background: #f0f8f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>📱 Media Fragments 缩略图测试</h1>
+        
+        <div class="device-info">
+            <h3>🔍 设备检测结果</h3>
+            <div id="deviceInfo"></div>
+        </div>
+        
+        <div class="video-test">
+            <h3>📹 测试1: 普通视频 (无Media Fragments)</h3>
+            <video 
+                src="https://filesystem.site/cdn/sample/video.mp4" 
+                preload="metadata"
+                muted
+                controls
+            ></video>
+            <div class="info">
+                <strong>说明:</strong> 普通视频元素，移动端可能不显示预览帧
+            </div>
+        </div>
+        
+        <div class="video-test">
+            <h3>🚀 测试2: Media Fragments (#t=1.0)</h3>
+            <video 
+                id="video2"
+                src="https://filesystem.site/cdn/sample/video.mp4#t=1.0" 
+                preload="metadata"
+                muted
+                controls
+                poster=""
+                playsinline
+            ></video>
+            <div class="info">
+                <strong>说明:</strong> 使用Media Fragments跳到1秒位置
+            </div>
+            <div id="debug2" class="info" style="background: #fff8e1; font-family: monospace; font-size: 12px;">等待加载...</div>
+        </div>
+        
+        <div class="video-test">
+            <h3>⚡ 测试3: JavaScript强制跳转</h3>
+            <video 
+                id="video3"
+                src="https://filesystem.site/cdn/sample/video.mp4" 
+                preload="metadata"
+                muted
+                poster=""
+                playsinline
+                style="pointer-events: none;"
+            ></video>
+            <div class="info">
+                <strong>说明:</strong> 使用JavaScript手动设置currentTime
+            </div>
+            <div id="debug3" class="info" style="background: #fff8e1; font-family: monospace; font-size: 12px;">等待加载...</div>
+        </div>
+
+        <div class="video-test">
+            <h3>🎬 测试4: 不同视频源</h3>
+            <video 
+                id="video4"
+                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4#t=2.0" 
+                preload="metadata"
+                muted
+                poster=""
+                playsinline
+                controls
+            ></video>
+            <div class="info">
+                <strong>说明:</strong> 测试不同视频源的Media Fragments支持
+            </div>
+            <div id="debug4" class="info" style="background: #fff8e1; font-family: monospace; font-size: 12px;">等待加载...</div>
+        </div>
+
+        <div class="video-test">
+            <h3>🌟 测试5: 完全兼容方案</h3>
+            <div id="container5" style="width: 300px; height: 200px; border: 2px solid #007cba; border-radius: 4px; position: relative; overflow: hidden;">
+                <div id="fallback5" style="position: absolute; inset: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; text-align: center;">
+                    <div>
+                        <div style="font-size: 48px; margin-bottom: 8px;">🎬</div>
+                        <div style="font-size: 14px; font-weight: bold;">AI生成视频</div>
+                        <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">点击播放</div>
+                    </div>
+                </div>
+            </div>
+            <div class="info">
+                <strong>说明:</strong> 如果所有方案都失败，显示这个美观的占位图
+            </div>
+            <div id="debug5" class="info" style="background: #fff8e1; font-family: monospace; font-size: 12px;">智能fallback方案</div>
+        </div>
+        
+        <div class="video-test">
+            <h3>📊 测试结果</h3>
+            <div id="testResults">
+                <p>请检查上方的视频是否显示了预览帧...</p>
+                <ul>
+                    <li><strong>iPhone Safari:</strong> 测试2和3应该显示视频第一帧</li>
+                    <li><strong>iPhone Chrome:</strong> 测试2和3应该显示视频第一帧</li>
+                    <li><strong>Android Chrome:</strong> 测试2和3应该显示视频第一帧</li>
+                    <li><strong>桌面浏览器:</strong> 所有测试都应该正常显示</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 检测设备和浏览器信息
+        function detectDevice() {
+            const ua = navigator.userAgent;
+            const info = [];
+            
+            // 设备类型
+            if (/iPhone/i.test(ua)) info.push('📱 iPhone');
+            else if (/iPad/i.test(ua)) info.push('📱 iPad');
+            else if (/Android/i.test(ua)) info.push('📱 Android');
+            else info.push('💻 桌面设备');
+            
+            // 浏览器类型
+            if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) info.push('🧭 Safari');
+            else if (/Chrome/i.test(ua)) info.push('🌐 Chrome');
+            else if (/Firefox/i.test(ua)) info.push('🦊 Firefox');
+            else info.push('❓ 其他浏览器');
+            
+            // 触摸支持
+            const touchSupport = 'ontouchstart' in window ? '✅' : '❌';
+            info.push(`触摸支持: ${touchSupport}`);
+            
+            // 屏幕尺寸
+            info.push(`屏幕: ${window.screen.width}x${window.screen.height}`);
+            info.push(`窗口: ${window.innerWidth}x${window.innerHeight}`);
+            
+            return info;
+        }
+        
+        // 显示设备信息
+        document.getElementById('deviceInfo').innerHTML = detectDevice()
+            .map(info => `<div>• ${info}</div>`)
+            .join('');
+            
+        // 测试Media Fragments支持
+        function testMediaFragments() {
+            const video = document.createElement('video');
+            const hasCurrentTime = 'currentTime' in video;
+            const hasCanPlayType = 'canPlayType' in video;
+            
+            console.log('Media Fragments支持检测:');
+            console.log('- currentTime属性:', hasCurrentTime);
+            console.log('- canPlayType方法:', hasCanPlayType);
+            console.log('- 综合支持:', hasCurrentTime && hasCanPlayType);
+        }
+        
+        testMediaFragments();
+        
+        // 测试2: Media Fragments调试
+        const video2 = document.getElementById('video2');
+        const debug2 = document.getElementById('debug2');
+        
+        video2.addEventListener('loadstart', () => {
+            debug2.innerHTML = '🔄 开始加载...';
+        });
+        
+        video2.addEventListener('loadedmetadata', () => {
+            debug2.innerHTML = `📊 元数据完成 | 时长: ${video2.duration.toFixed(1)}s | 当前: ${video2.currentTime.toFixed(1)}s`;
+        });
+        
+        video2.addEventListener('canplay', () => {
+            debug2.innerHTML += '<br>✅ 可以播放';
+        });
+        
+        video2.addEventListener('error', (e) => {
+            debug2.innerHTML = `❌ 错误: ${e.type}`;
+        });
+
+        // 测试3: JavaScript强制跳转
+        const video3 = document.getElementById('video3');
+        const debug3 = document.getElementById('debug3');
+        
+        video3.addEventListener('loadedmetadata', () => {
+            debug3.innerHTML = '📊 元数据完成，尝试跳转到1秒...';
+            setTimeout(() => {
+                video3.currentTime = 1.0;
+            }, 100);
+        });
+        
+        video3.addEventListener('seeked', () => {
+            debug3.innerHTML += `<br>🎯 跳转完成: ${video3.currentTime.toFixed(1)}s`;
+        });
+        
+        video3.addEventListener('timeupdate', () => {
+            debug3.innerHTML = `⏱️ 时间更新: ${video3.currentTime.toFixed(1)}s`;
+        });
+        
+        video3.addEventListener('error', (e) => {
+            debug3.innerHTML = `❌ 错误: ${e.type}`;
+        });
+
+        // 测试4: 不同视频源
+        const video4 = document.getElementById('video4');
+        const debug4 = document.getElementById('debug4');
+        
+        video4.addEventListener('loadedmetadata', () => {
+            debug4.innerHTML = `📊 BigBuckBunny | 时长: ${video4.duration.toFixed(1)}s | 当前: ${video4.currentTime.toFixed(1)}s`;
+        });
+        
+        video4.addEventListener('canplay', () => {
+            debug4.innerHTML += '<br>✅ 可以播放';
+        });
+        
+        video4.addEventListener('error', (e) => {
+            debug4.innerHTML = `❌ BigBuckBunny错误: ${e.type}`;
+        });
+
+        // 测试5: 尝试动态加载视频
+        setTimeout(() => {
+            const container5 = document.getElementById('container5');
+            const fallback5 = document.getElementById('fallback5');
+            const debug5 = document.getElementById('debug5');
+            
+            // 尝试创建video元素
+            const testVideo = document.createElement('video');
+            testVideo.src = 'https://filesystem.site/cdn/sample/video.mp4#t=1.0';
+            testVideo.preload = 'metadata';
+            testVideo.muted = true;
+            testVideo.setAttribute('playsinline', '');
+            testVideo.setAttribute('poster', '');
+            testVideo.style.width = '100%';
+            testVideo.style.height = '100%';
+            testVideo.style.objectFit = 'cover';
+            
+            let loadAttempts = 0;
+            const maxAttempts = 3;
+            
+            function attemptLoad() {
+                loadAttempts++;
+                debug5.innerHTML = `尝试 ${loadAttempts}/${maxAttempts} - 动态加载视频...`;
+                
+                testVideo.addEventListener('loadedmetadata', () => {
+                    debug5.innerHTML = `✅ 动态加载成功 | 时长: ${testVideo.duration.toFixed(1)}s`;
+                    fallback5.style.opacity = '0';
+                    container5.appendChild(testVideo);
+                    
+                    // 尝试跳转
+                    setTimeout(() => {
+                        testVideo.currentTime = 1.0;
+                    }, 200);
+                });
+                
+                testVideo.addEventListener('error', () => {
+                    if (loadAttempts < maxAttempts) {
+                        setTimeout(attemptLoad, 1000);
+                    } else {
+                        debug5.innerHTML = '🎨 所有方案失败，使用美观占位图';
+                        fallback5.style.opacity = '1';
+                    }
+                });
+            }
+            
+            attemptLoad();
+        }, 2000);
+    </script>
+</body>
+</html>

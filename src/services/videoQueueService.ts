@@ -570,6 +570,11 @@ class VideoQueueService {
       throw new Error(creditResult.error || '积分扣除失败')
     }
 
+    // 🚀 积分扣除成功后立即刷新profile，确保UI一致性
+    if (creditResult.refreshProfile) {
+      creditResult.refreshProfile()
+    }
+
     console.log(`[QUEUE SERVICE] Credits consumed successfully: ${request.videoData.creditsUsed}, new balance: ${creditResult.newBalance}`)
 
     // 🎯 新增：在创建视频记录前先生成AI标题和简介

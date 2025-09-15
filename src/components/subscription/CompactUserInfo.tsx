@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CreditCard, Gem, CalendarDays } from 'lucide-react'
 import { SubscriptionService } from '@/services/subscriptionService'
-import { creditService } from '@/services/creditService'
+import { useAuth } from '@/contexts/AuthContext'
 import type { Subscription } from '@/types'
 import { format } from 'date-fns'
 import { zhCN, enUS, ja, ko, es } from 'date-fns/locale'
@@ -19,9 +19,12 @@ export default function CompactUserInfo({
   className = '' 
 }: CompactUserInfoProps) {
   const { t, i18n } = useTranslation()
+  const { profile } = useAuth()
   const [subscription, setSubscription] = useState<Subscription | null>(null)
-  const [credits, setCredits] = useState<number>(0)
   const [loading, setLoading] = useState(true)
+
+  // 🚀 简化：直接使用 AuthContext 中的积分数据
+  const credits = profile?.credits || 0
 
   useEffect(() => {
     loadUserInfo()
@@ -31,16 +34,12 @@ export default function CompactUserInfo({
     try {
       setLoading(true)
       
-      // 只加载必要的订阅信息和积分信息
-      const [subscriptionData, creditsData] = await Promise.all([
-        SubscriptionService.getCurrentSubscription(userId).catch(() => null),
-        creditService.getUserCredits(userId).catch(() => ({ credits: 0 }))
-      ])
-      
+      // 只获取订阅信息
+      const subscriptionData = await SubscriptionService.getCurrentSubscription(userId).catch(() => null)
       setSubscription(subscriptionData)
-      setCredits(creditsData?.credits || 0)
+      
     } catch (error) {
-      console.error('Failed to load user info:', error)
+      console.error('[CompactUserInfo] Failed to load user info:', error)
     } finally {
       setLoading(false)
     }

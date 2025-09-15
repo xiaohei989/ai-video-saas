@@ -55,3 +55,16 @@ export const formatFullDate = (date: Date | string, language?: string): string =
     day: 'numeric' 
   }, language)
 }
+
+/**
+ * 格式化日期为精确时间（年-月-日 时:分）
+ */
+export const formatPreciseDateTime = (date: Date | string, language?: string): string => {
+  return formatDate(date, {
+    year: 'numeric',
+    month: 'short', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }, language)
+}

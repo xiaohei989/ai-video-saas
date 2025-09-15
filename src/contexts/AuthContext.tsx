@@ -123,6 +123,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   
   // 🚀 性能优化：使用ref跟踪loading状态，确保原子性
   const loadingRef = useRef(loading)
+
+  // 🚀 监听积分变更事件，立即更新并刷新profile
+  useEffect(() => {
+    const handleCreditsChanged = (event: CustomEvent) => {
+      const { userId, newCredits, reason, timestamp } = event.detail
+      if (user?.id === userId) {
+        console.log(`[AUTH] 收到积分变更通知 - 用户:${userId}, 新积分:${newCredits}, 原因:${reason}`)
+        
+        // 🔧 立即更新本地profile状态（避免等待API响应）
+        if (profile && newCredits !== undefined) {
+          const updatedProfile = { ...profile, credits: newCredits }
+          setProfile(updatedProfile)
+          console.log(`[AUTH] 积分已立即更新: ${profile.credits} → ${newCredits}`)
+        }
+        
+        // 🔧 后台强制刷新确保数据一致性（积分变更是关键操作）
+        refreshProfile(true).catch(err => {
+          console.warn('[AUTH] 后台强制刷新失败，尝试普通刷新:', err)
+          refreshProfile(false).catch(fallbackErr => {
+            console.error('[AUTH] 所有刷新方式都失败:', fallbackErr)
+          })
+        })
+      }
+    }
+
+    window.addEventListener('credits-changed', handleCreditsChanged as EventListener)
+    
+    return () => {
+      window.removeEventListener('credits-changed', handleCreditsChanged as EventListener)
+    }
+  }, [user?.id, profile])
   
   // 每次loading状态变化时同步更新ref
   useEffect(() => {
@@ -234,11 +265,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log('[AUTH] ✅ 数据库查询成功，已加载用户profile')
           setProfile(data)
           
-          // 后台更新缓存，将新数据存入缓存系统
+          // 🔧 修复缓存逻辑：正确更新缓存而不是重新获取
           try {
-            await edgeCacheClient.getUserProfile(userId)
+            await edgeCacheClient.updateUserProfileCache(userId, data)
+            console.log('[AUTH] 缓存已更新为最新数据')
           } catch (err) {
-            // 静默处理缓存更新失败，不影响用户体验
+            console.warn('[AUTH] 缓存更新失败，但不影响用户体验:', err)
           }
           
           return data
@@ -986,15 +1018,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   // 刷新用户资料
-  const refreshProfile = async () => {
+  const refreshProfile = async (forceFresh: boolean = false) => {
     if (!user) return
     
-    // 🚀 清除缓存后重新获取，确保获取最新数据
-    edgeCacheClient.invalidateUserCache(user.id).catch(err => {
-      console.warn('[AUTH] 清除用户缓存失败:', err)
-    })
+    console.log('[AUTH] 开始刷新用户profile数据', forceFresh ? '(强制刷新)' : '')
     
-    await fetchProfile(user.id)
+    try {
+      if (forceFresh) {
+        // 🔧 强制刷新：跳过所有缓存，直接从数据库获取
+        console.log('[AUTH] 强制刷新模式：直接从数据库获取最新数据')
+        
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+        
+        if (error) {
+          console.error('[AUTH] 强制刷新失败:', error)
+          return
+        }
+        
+        if (data) {
+          setProfile(data)
+          console.log('[AUTH] 强制刷新成功，最新积分:', data.credits)
+          
+          // 更新缓存为最新数据
+          try {
+            await edgeCacheClient.updateUserProfileCache(user.id, data)
+          } catch (cacheErr) {
+            console.warn('[AUTH] 缓存更新失败:', cacheErr)
+          }
+        }
+      } else {
+        // 🚀 正常刷新：清除缓存后重新获取
+        await edgeCacheClient.invalidateUserCache(user.id)
+        console.log('[AUTH] 用户缓存已清除')
+        
+        // 重新获取profile数据
+        const freshProfile = await fetchProfile(user.id, user.email || '')
+        
+        if (freshProfile) {
+          console.log('[AUTH] Profile数据刷新成功，新的积分余额:', freshProfile.credits)
+        }
+      }
+    } catch (error) {
+      console.error('[AUTH] 刷新profile失败:', error)
+      // 即使清除缓存失败，也尝试重新获取数据
+      await fetchProfile(user.id, user.email || '')
+    }
   }
 
   const value: AuthContextType = {

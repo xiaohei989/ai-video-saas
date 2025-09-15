@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iOS缩略图调试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .video-test {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        video {
+            width: 280px;
+            height: 180px;
+            border: 2px solid #007cba;
+            border-radius: 4px;
+            background: #000;
+        }
+        
+        .info {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f4f8;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .debug {
+            background: #fff8e1;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🐞 iOS缩略图调试工具</h1>
+        
+        <div class="video-test">
+            <h3>📊 设备信息</h3>
+            <div id="deviceInfo" class="info"></div>
+        </div>
+
+        <div class="video-test">
+            <h3>🎯 方案1: Media Fragments + poster清空</h3>
+            <video 
+                id="video1"
+                src="https://filesystem.site/cdn/sample/video.mp4#t=0.5" 
+                preload="metadata"
+                muted
+                poster=""
+                playsinline
+            ></video>
+            <div id="debug1" class="debug">等待加载...</div>
+        </div>
+
+        <div class="video-test">
+            <h3>⚡ 方案2: JavaScript强制跳转</h3>
+            <video 
+                id="video2"
+                src="https://filesystem.site/cdn/sample/video.mp4" 
+                preload="auto"
+                muted
+                poster=""
+                playsinline
+            ></video>
+            <div id="debug2" class="debug">等待加载...</div>
+        </div>
+
+        <div class="video-test">
+            <h3>🔄 方案3: Canvas提取 + iOS兼容</h3>
+            <div style="position: relative;">
+                <video 
+                    id="video3"
+                    src="https://filesystem.site/cdn/sample/video.mp4" 
+                    preload="metadata"
+                    muted
+                    poster=""
+                    playsinline
+                    style="display: none;"
+                ></video>
+                <canvas 
+                    id="canvas3"
+                    width="280" 
+                    height="180"
+                    style="border: 2px solid #007cba; border-radius: 4px; background: #000;"
+                ></canvas>
+            </div>
+            <div id="debug3" class="debug">等待加载...</div>
+        </div>
+
+        <div class="video-test">
+            <h3>🌟 方案4: 多重fallback</h3>
+            <div id="container4" style="width: 280px; height: 180px; border: 2px solid #007cba; border-radius: 4px; background: #000; position: relative; display: flex; align-items: center; justify-content: center;">
+                <div style="color: white; text-align: center;">
+                    <div style="font-size: 48px;">▶️</div>
+                    <div style="font-size: 14px;">AI视频</div>
+                </div>
+            </div>
+            <div id="debug4" class="debug">智能fallback方案</div>
+        </div>
+    </div>
+
+    <script>
+        // 设备检测
+        function detectDevice() {
+            const ua = navigator.userAgent;
+            const info = [];
+            
+            info.push(`UserAgent: ${ua.substring(0, 100)}...`);
+            info.push(`Platform: ${navigator.platform}`);
+            info.push(`Screen: ${screen.width}x${screen.height}`);
+            info.push(`Window: ${window.innerWidth}x${window.innerHeight}`);
+            info.push(`Touch: ${'ontouchstart' in window}`);
+            info.push(`MaxTouchPoints: ${navigator.maxTouchPoints || 0}`);
+            
+            // 设备类型
+            if (/iPhone/i.test(ua)) info.push('Device: iPhone');
+            else if (/iPad/i.test(ua)) info.push('Device: iPad');
+            else if (/Android/i.test(ua)) info.push('Device: Android');
+            else info.push('Device: Desktop');
+            
+            // 浏览器类型
+            if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) info.push('Browser: Safari');
+            else if (/CriOS/i.test(ua)) info.push('Browser: Chrome iOS');
+            else if (/Chrome/i.test(ua)) info.push('Browser: Chrome');
+            else if (/Firefox/i.test(ua)) info.push('Browser: Firefox');
+            else info.push('Browser: Other');
+            
+            return info.join('<br>');
+        }
+        
+        document.getElementById('deviceInfo').innerHTML = detectDevice();
+
+        // 方案1: Media Fragments
+        const video1 = document.getElementById('video1');
+        const debug1 = document.getElementById('debug1');
+        
+        video1.addEventListener('loadstart', () => {
+            debug1.innerHTML = '🔄 开始加载...';
+        });
+        
+        video1.addEventListener('loadedmetadata', () => {
+            debug1.innerHTML = `📊 元数据加载完成<br>Duration: ${video1.duration}s<br>CurrentTime: ${video1.currentTime}s`;
+        });
+        
+        video1.addEventListener('canplay', () => {
+            debug1.innerHTML += '<br>✅ 可以播放';
+        });
+        
+        video1.addEventListener('error', (e) => {
+            debug1.innerHTML = `❌ 错误: ${e.type}`;
+        });
+
+        // 方案2: JavaScript强制跳转
+        const video2 = document.getElementById('video2');
+        const debug2 = document.getElementById('debug2');
+        
+        video2.addEventListener('loadedmetadata', () => {
+            debug2.innerHTML = '📊 元数据加载，尝试跳转到0.5秒...';
+            video2.currentTime = 0.5;
+        });
+        
+        video2.addEventListener('seeked', () => {
+            debug2.innerHTML += `<br>🎯 跳转完成，当前时间: ${video2.currentTime}s`;
+        });
+        
+        video2.addEventListener('error', (e) => {
+            debug2.innerHTML = `❌ 错误: ${e.type}`;
+        });
+
+        // 方案3: Canvas提取
+        const video3 = document.getElementById('video3');
+        const canvas3 = document.getElementById('canvas3');
+        const debug3 = document.getElementById('debug3');
+        
+        video3.addEventListener('loadedmetadata', () => {
+            debug3.innerHTML = '📊 元数据加载，尝试Canvas提取...';
+            video3.currentTime = 1.0;
+        });
+        
+        video3.addEventListener('seeked', () => {
+            try {
+                const ctx = canvas3.getContext('2d');
+                ctx.drawImage(video3, 0, 0, 280, 180);
+                debug3.innerHTML = '✅ Canvas提取成功';
+            } catch (error) {
+                debug3.innerHTML = `❌ Canvas提取失败: ${error.message}`;
+            }
+        });
+        
+        video3.addEventListener('error', (e) => {
+            debug3.innerHTML = `❌ 视频错误: ${e.type}`;
+        });
+
+        // 方案4: 多重fallback尝试
+        const container4 = document.getElementById('container4');
+        const debug4 = document.getElementById('debug4');
+        
+        // 尝试所有方案
+        function attemptThumbnailGeneration() {
+            const testVideo = document.createElement('video');
+            testVideo.src = 'https://filesystem.site/cdn/sample/video.mp4#t=1.0';
+            testVideo.preload = 'metadata';
+            testVideo.muted = true;
+            testVideo.playsInline = true;
+            
+            let attempts = 0;
+            const maxAttempts = 3;
+            
+            function tryMethod() {
+                attempts++;
+                debug4.innerHTML = `尝试方案 ${attempts}/${maxAttempts}...`;
+                
+                if (attempts === 1) {
+                    // 方法1: Media Fragments
+                    testVideo.style.width = '280px';
+                    testVideo.style.height = '180px';
+                    testVideo.style.objectFit = 'cover';
+                    container4.innerHTML = '';
+                    container4.appendChild(testVideo);
+                    
+                    setTimeout(() => {
+                        if (testVideo.readyState >= 1) {
+                            debug4.innerHTML = '✅ Media Fragments成功';
+                        } else {
+                            tryMethod();
+                        }
+                    }, 2000);
+                    
+                } else if (attempts === 2) {
+                    // 方法2: 强制currentTime
+                    testVideo.addEventListener('loadedmetadata', () => {
+                        testVideo.currentTime = 1.0;
+                        setTimeout(() => {
+                            debug4.innerHTML = '✅ CurrentTime方法';
+                        }, 1000);
+                    });
+                    
+                } else {
+                    // 方法3: 优雅fallback
+                    container4.innerHTML = `
+                        <div style="color: white; text-align: center;">
+                            <div style="font-size: 48px;">🎬</div>
+                            <div style="font-size: 14px; margin-top: 8px;">AI生成视频</div>
+                            <div style="font-size: 10px; margin-top: 4px; opacity: 0.8;">点击播放</div>
+                        </div>
+                    `;
+                    debug4.innerHTML = '🎨 使用优雅占位图';
+                }
+            }
+            
+            tryMethod();
+        }
+        
+        // 延迟执行避免阻塞
+        setTimeout(attemptThumbnailGeneration, 1000);
+    </script>
+</body>
+</html>
