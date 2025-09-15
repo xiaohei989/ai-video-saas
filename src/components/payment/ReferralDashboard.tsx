@@ -271,24 +271,6 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
                               </p>
                             )}
                             
-                            {/* 注册时间（精确到小时分钟） */}
-                            <p className="flex items-center space-x-1">
-                              <span className="text-gray-400">⏰</span>
-                              <span>注册于 {formatPreciseDateTime(invitation.created_at)}</span>
-                            </p>
-                            
-                            {/* 订阅状态 */}
-                            {invitation.invitee?.subscription_status && (
-                              <p className="flex items-center space-x-1">
-                                <span className="text-gray-400">💳</span>
-                                <span>订阅: {invitation.invitee.subscription_status === 'active' ? '已激活' : '未订阅'}</span>
-                                {invitation.invitee?.subscription_tier && (
-                                  <span className="text-xs bg-blue-100 text-blue-800 px-1 rounded">
-                                    {invitation.invitee.subscription_tier}
-                                  </span>
-                                )}
-                              </p>
-                            )}
                             
                           </div>
                         </div>

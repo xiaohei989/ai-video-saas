@@ -19,7 +19,10 @@ import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 import { isMobile, shouldUseMediaFragments, getCompatibleVideoURL } from '@/utils/thumbnailStrategy'
 
 interface VideoCardProps {
-  video: VideoRecord
+  video: VideoRecord & {
+    r2_url?: string | null
+    migration_status?: string | null
+  }
   onPlay?: () => void
   onDownload?: () => void
   onShare?: () => void
@@ -37,8 +40,39 @@ export default function VideoCard({
 }: VideoCardProps) {
   const [extractedThumbnail, setExtractedThumbnail] = useState<string | null>(null)
   const [thumbnailError, setThumbnailError] = useState<string | null>(null)
-  // const videoRef = useRef<HTMLVideoElement>(null) // 暂时未使用
-  // const [videoLoaded] = useState(false) // setVideoLoaded暂时未使用
+  
+  // 🚀 获取最佳视频URL - 优先使用R2存储
+  const getBestVideoUrl = (): string | null => {
+    // 1. 优先使用R2 URL（支持Media Fragments）
+    if (video.r2_url) {
+      console.log(`[VideoCard] 使用R2 URL: ${video.id}`)
+      return video.r2_url
+    }
+    
+    // 2. 降级到原始URL
+    if (video.videoUrl) {
+      console.log(`[VideoCard] 使用原始URL: ${video.id}`)
+      return getCompatibleVideoURL(getProxyVideoUrl(video.videoUrl))
+    }
+    
+    return null
+  }
+  
+  // 🚀 检查是否应该显示迁移状态
+  const showMigrationStatus = () => {
+    if (!video.migration_status || video.migration_status === 'completed') {
+      return null
+    }
+    
+    const statusLabels = {
+      pending: '待迁移',
+      downloading: '下载中',
+      uploading: '上传中',
+      failed: '迁移失败'
+    }
+    
+    return statusLabels[video.migration_status as keyof typeof statusLabels] || video.migration_status
+  }
 
   // 🚀 Media Fragments + 客户端生成策略
   useEffect(() => {
