@@ -277,27 +277,11 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
                               <span>注册于 {formatPreciseDateTime(invitation.created_at)}</span>
                             </p>
                             
-                            {/* 当前积分 */}
-                            {invitation.invitee?.credits !== undefined && (
-                              <p className="flex items-center space-x-1">
-                                <span className="text-gray-400">💰</span>
-                                <span>当前积分: {invitation.invitee.credits}</span>
-                              </p>
-                            )}
-                            
                             {/* 订阅状态 */}
                             {invitation.invitee?.subscription_status && (
                               <p className="flex items-center space-x-1">
                                 <span className="text-gray-400">💳</span>
                                 <span>订阅: {invitation.invitee.subscription_status === 'active' ? '已激活' : '未订阅'}</span>
-                              </p>
-                            )}
-                            
-                            {/* 最后登录时间 */}
-                            {invitation.invitee?.last_login_at && (
-                              <p className="flex items-center space-x-1">
-                                <span className="text-gray-400">👤</span>
-                                <span>最后登录: {formatPreciseDateTime(invitation.invitee.last_login_at)}</span>
                               </p>
                             )}
                             

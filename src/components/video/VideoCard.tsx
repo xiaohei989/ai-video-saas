@@ -16,7 +16,7 @@ import { cn } from '@/utils/cn'
 import { VideoRecord } from '@/services/videoHistoryService'
 import thumbnailGenerator from '@/services/thumbnailGeneratorService'
 import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
-import { isMobile, shouldUseMediaFragments } from '@/utils/thumbnailStrategy'
+import { isMobile, shouldUseMediaFragments, getCompatibleVideoURL } from '@/utils/thumbnailStrategy'
 
 interface VideoCardProps {
   video: VideoRecord
@@ -169,7 +169,7 @@ export default function VideoCard({
           <div className="w-full h-full relative overflow-hidden">
             {/* 尝试视频预览 */}
             <video 
-              src={`${getProxyVideoUrl(video.videoUrl)}#t=2.0`}
+              src={`${getCompatibleVideoURL(getProxyVideoUrl(video.videoUrl))}#t=2.0`}
               preload="metadata"
               muted
               playsInline

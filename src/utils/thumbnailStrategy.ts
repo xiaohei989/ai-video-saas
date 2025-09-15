@@ -75,6 +75,38 @@ export function shouldUseMediaFragments(): boolean {
 }
 
 /**
+ * 检测视频URL是否兼容iOS播放
+ */
+export function isVideoURLCompatibleWithiOS(videoUrl: string): boolean {
+  if (typeof videoUrl !== 'string') return false
+  
+  // 已知不兼容的域名/路径
+  const incompatiblePatterns = [
+    /filesystem\.site/i,
+    /sample\/video\.mp4/i
+  ]
+  
+  const isIncompatible = incompatiblePatterns.some(pattern => pattern.test(videoUrl))
+  
+  console.log(`[VideoStrategy] URL兼容性检查: ${videoUrl} -> ${!isIncompatible ? '兼容' : '不兼容'}`)
+  
+  return !isIncompatible
+}
+
+/**
+ * 为iOS获取兼容的备用视频URL（如果需要）
+ */
+export function getCompatibleVideoURL(originalUrl: string): string {
+  if (!isiOS() || isVideoURLCompatibleWithiOS(originalUrl)) {
+    return originalUrl
+  }
+  
+  // 如果原URL不兼容iOS，返回一个兼容的测试视频
+  console.log(`[VideoStrategy] 为iOS使用兼容的备用视频URL`)
+  return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+}
+
+/**
  * iOS专用：创建一个增强的视频预览元素
  */
 export function createIOSVideoPreview(videoUrl: string): HTMLVideoElement | null {
