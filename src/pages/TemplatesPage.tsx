@@ -373,6 +373,10 @@ export default function TemplatesPage() {
           // 所有视频都使用懒加载，优先显示缩略图
           const enableLazy = true // 启用懒加载，静默后台加载视频
           
+          // 检测移动端，禁用autoPlayOnHover以节省资源
+          const isMobile = typeof window !== 'undefined' && 
+            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+          
           return (
           <Card key={template.id} className="overflow-hidden shadow-md flex flex-col">
             <div className="aspect-video bg-muted relative group">
@@ -384,12 +388,12 @@ export default function TemplatesPage() {
                   objectFit="cover"
                   showPlayButton={true}
                   showVolumeControl={true}
-                  autoPlayOnHover={true}
+                  autoPlayOnHover={!isMobile} // 移动端禁用自动播放
                   alt={template.name}
                   enableLazyLoad={enableLazy}
                   enableThumbnailCache={true}
                   enableNetworkAdaptive={true}
-                  enableProgressiveLoading={true}
+                  enableProgressiveLoading={!isMobile} // 移动端禁用渐进式加载
                 />
               ) : template.thumbnailUrl ? (
                 <img 

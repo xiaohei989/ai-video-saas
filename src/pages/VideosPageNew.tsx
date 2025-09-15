@@ -84,19 +84,24 @@ export default function VideosPageNew() {
   // 分页常量
   const ITEMS_PER_PAGE = 10
   
-  // LazyVideoPlayer 常量配置 - 避免每次渲染创建新对象
-  const lazyVideoPlayerConfig = useMemo(() => ({
-    className: "w-full h-full",
-    objectFit: "cover" as const,
-    showPlayButton: true,
-    showVolumeControl: true,
-    autoPlayOnHover: true,
-    enableDownloadProtection: true,
-    enableLazyLoad: false,
-    enableThumbnailCache: true,
-    enableNetworkAdaptive: false,
-    enableProgressiveLoading: true
-  }), [])
+  // LazyVideoPlayer 常量配置 - 避免每次渲染创建新对象，针对移动端优化
+  const lazyVideoPlayerConfig = useMemo(() => {
+    const isMobile = typeof window !== 'undefined' && 
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      
+    return {
+      className: "w-full h-full",
+      objectFit: "cover" as const,
+      showPlayButton: true,
+      showVolumeControl: true,
+      autoPlayOnHover: !isMobile, // 移动端禁用自动播放
+      enableDownloadProtection: true,
+      enableLazyLoad: false,
+      enableThumbnailCache: true,
+      enableNetworkAdaptive: !isMobile, // 移动端禁用网络自适应
+      enableProgressiveLoading: !isMobile // 移动端禁用渐进式加载
+    }
+  }, [])
 
   // 通知状态（已移除，改用toast）
 
@@ -189,15 +194,36 @@ export default function VideosPageNew() {
     }
   }, [user])
 
-  // 实时更新定时器 - 每秒更新一次用于显示耗时
+  // 智能实时更新定时器 - 根据设备性能和页面可见性优化
   useEffect(() => {
     // 只有当有活跃任务时才启动定时器
     if (activeTasks.size > 0) {
-      const timer = setInterval(() => {
-        setCurrentTime(Date.now())
-      }, 1000) // 每秒更新一次
+      // 检测设备类型和性能
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      const isLowPerformance = navigator.hardwareConcurrency <= 4 // CPU核心数少于等于4的设备
       
-      return () => clearInterval(timer)
+      // 根据设备性能调整更新频率：移动端10秒，低性能设备8秒，正常设备5秒
+      const updateInterval = isMobile ? 10000 : (isLowPerformance ? 8000 : 5000)
+      
+      let isPageVisible = !document.hidden
+      
+      // 页面可见性监听
+      const handleVisibilityChange = () => {
+        isPageVisible = !document.hidden
+      }
+      document.addEventListener('visibilitychange', handleVisibilityChange)
+      
+      const timer = setInterval(() => {
+        // 只在页面可见时更新，节省资源
+        if (isPageVisible) {
+          setCurrentTime(Date.now())
+        }
+      }, updateInterval)
+      
+      return () => {
+        clearInterval(timer)
+        document.removeEventListener('visibilitychange', handleVisibilityChange)
+      }
     }
   }, [activeTasks.size])
 

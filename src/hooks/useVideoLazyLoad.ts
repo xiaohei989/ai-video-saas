@@ -13,6 +13,8 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useInView } from 'react-intersection-observer'
 import thumbnailGenerator from '@/services/thumbnailGeneratorService'
 import videoLoaderService, { type VideoLoadOptions, type LoadProgress } from '@/services/VideoLoaderService'
+import { addTimeout, clearTimer } from '@/utils/timerManager'
+import { log } from '@/utils/logger'
 
 export interface LazyLoadOptions {
   // 视口检测选项
@@ -332,17 +334,33 @@ export function useVideoLazyLoad(
     })()
 
     if (shouldLoad && !state.isLoaded && !state.isLoading && !state.hasError) {
-      // 添加随机延迟(500-1500ms)来避免同时加载多个视频
-      const delay = 500 + Math.random() * 1000
-      const timer = setTimeout(() => {
+      // 使用定时器管理器，避免创建过多setTimeout
+      const timerId = `video-load-${videoUrl}-${Date.now()}`
+      
+      // 检测移动端并调整延迟策略
+      const isMobile = typeof window !== 'undefined' && 
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      
+      // 移动端使用更长延迟，减少并发
+      const baseDelay = isMobile ? 2000 : 1000
+      const randomDelay = Math.random() * (isMobile ? 3000 : 1000)
+      const delay = baseDelay + randomDelay
+      
+      // 根据策略设置优先级
+      let priority = 0
+      if (loadStrategy === 'immediate') priority = 10
+      else if (loadStrategy === 'onVisible') priority = 5
+      else if (loadStrategy === 'onInteraction') priority = 1
+      
+      addTimeout(timerId, () => {
         if (!state.isLoaded && !state.isLoading && !state.hasError) {
           load().catch(error => {
-            console.error('[LazyLoad] Auto load failed:', error)
+            log.warn('自动懒加载失败', { videoUrl, error: error.message })
           })
         }
-      }, delay)
+      }, delay, priority)
 
-      return () => clearTimeout(timer)
+      return () => clearTimer(timerId)
     }
   }, [loadStrategy, state.isVisible, state.hasInteracted, state.isLoaded, state.isLoading, state.hasError, load])
 

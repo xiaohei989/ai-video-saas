@@ -38,7 +38,7 @@ class RedisCacheIntegrationService {
       const healthStatus = await edgeCacheClient.getHealthStatus()
       
       if (healthStatus.redis_connected) {
-        console.log('[REDIS CACHE] ✅ Redis连接成功，启用完整多级缓存')
+        // Redis连接成功，启用完整多级缓存
         
         // 预热常用数据
         this.warmupCache()
@@ -47,7 +47,7 @@ class RedisCacheIntegrationService {
       }
       
       this.initialized = true
-      console.log('[REDIS CACHE] 多级缓存服务初始化完成')
+      // 多级缓存服务初始化完成
     } catch (error) {
       console.error('[REDIS CACHE] 初始化失败:', error)
       this.initialized = true
@@ -61,7 +61,7 @@ class RedisCacheIntegrationService {
     if (this.warmupCompleted) return
     
     try {
-      console.log('[REDIS CACHE] 🔥 开始预热缓存...')
+      // 开始预热缓存
       
       // 预热热门模板数据
       const { data: templates } = await supabase
@@ -77,7 +77,7 @@ class RedisCacheIntegrationService {
             ttl: TTL_STRATEGY.STATIC 
           })
         }
-        console.log(`[REDIS CACHE] 预热了 ${templates.length} 个热门模板`)
+        // 预热了热门模板
       }
       
       this.warmupCompleted = true

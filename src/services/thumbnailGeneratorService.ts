@@ -1,10 +1,12 @@
 /**
  * 简化的视频缩略图生成服务
- * 实现：内存缓存 + IndexedDB持久化 + 客户端视频帧提取
+ * 实现：LRU内存缓存 + IndexedDB持久化 + 客户端视频帧提取
  * 目标：组件初始化时有缓存直接显示，无缓存生成并立即更新显示
  */
 
 import { openDB, IDBPDatabase } from 'idb'
+import { createMobileLRUCache, type LRUCache } from '@/utils/LRUCache'
+import { log } from '@/utils/logger'
 
 interface ThumbnailCacheItem {
   videoUrl: string
@@ -14,9 +16,8 @@ interface ThumbnailCacheItem {
 }
 
 class ThumbnailGeneratorService {
-  // 内存缓存 - 快速访问
-  private memoryCache = new Map<string, string>()
-  private readonly MAX_MEMORY_CACHE = 50
+  // LRU内存缓存 - 智能内存管理
+  private memoryCache: LRUCache<string>
   
   // IndexedDB 配置
   private db: IDBPDatabase | null = null
@@ -27,6 +28,18 @@ class ThumbnailGeneratorService {
   
   // 并发控制
   private generatingThumbnails = new Set<string>()
+
+  constructor() {
+    // 初始化LRU缓存
+    this.memoryCache = createMobileLRUCache<string>({
+      onEvict: (key, thumbnail) => {
+        log.debug('缩略图从内存缓存中驱逐', { key, size: thumbnail.length })
+      }
+    })
+
+    // 初始化数据库
+    this.initDB()
+  }
   
   /**
    * 初始化 IndexedDB
@@ -60,12 +73,8 @@ class ThumbnailGeneratorService {
    * 保存到内存缓存
    */
   private saveToMemoryCache(videoUrl: string, thumbnail: string): void {
-    // LRU策略：如果超出限制，删除最旧的
-    if (this.memoryCache.size >= this.MAX_MEMORY_CACHE) {
-      const firstKey = this.memoryCache.keys().next().value
-      if (firstKey) this.memoryCache.delete(firstKey)
-    }
-    this.memoryCache.set(videoUrl, thumbnail)
+    // LRU缓存会自动管理内存和数量限制
+    this.memoryCache.set(videoUrl, thumbnail, thumbnail.length)
   }
   
   /**
@@ -245,10 +254,15 @@ class ThumbnailGeneratorService {
    * 获取缓存统计
    */
   getCacheStats() {
+    const lruStats = this.memoryCache.getStats()
     return {
-      memoryCache: this.memoryCache.size,
-      maxMemoryCache: this.MAX_MEMORY_CACHE,
-      generatingCount: this.generatingThumbnails.size
+      memoryCache: lruStats.size,
+      maxMemoryCache: lruStats.capacity,
+      memoryUsage: lruStats.memoryUsage,
+      maxMemory: lruStats.maxMemory,
+      hitRate: lruStats.hitRate,
+      generatingCount: this.generatingThumbnails.size,
+      cacheStats: lruStats
     }
   }
   

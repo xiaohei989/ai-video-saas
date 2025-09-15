@@ -45,7 +45,7 @@ class TemplateHotReload {
           this.detector.templateHashes = new Map(data.hashes)
           this.detector.lastCheck = data.lastCheck || Date.now()
           
-          console.log(`🔄 从缓存恢复了${this.detector.templateHashes.size}个模板哈希值`)
+          // 从缓存恢复了模板哈希值
           
           // 标记为非首次加载
           this.detector.isFirstLoad = false
@@ -87,7 +87,7 @@ class TemplateHotReload {
       return
     }
 
-    console.log('🔥 启动模板热重载监听器...')
+    // 启动模板热重载监听器
     
     // 初始化模板哈希
     this.initializeTemplateHashes()
@@ -97,7 +97,7 @@ class TemplateHotReload {
       this.checkForTemplateChanges()
     }, this.detector.checkInterval)
 
-    console.log('✅ 模板热重载已启动，每2秒检查文件变化')
+    // 模板热重载已启动
   }
 
   /**
@@ -126,7 +126,7 @@ class TemplateHotReload {
 
       // 如果不是首次加载且已有缓存，跳过初始化
       if (!this.detector.isFirstLoad && this.detector.templateHashes.size > 0) {
-        console.log(`📋 使用缓存的${this.detector.templateHashes.size}个模板哈希值`)
+        // 使用缓存的模板哈希值
         return
       }
 

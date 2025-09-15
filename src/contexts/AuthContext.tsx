@@ -671,6 +671,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(null)
       setLoading(true)
 
+      // 🆕 保存邀请码到localStorage，供OAuth回调使用
+      const inviteCode = new URLSearchParams(window.location.search).get('invite');
+      if (inviteCode) {
+        localStorage.setItem('pending_invite_code', inviteCode);
+        console.log('[AUTH] 保存Google OAuth邀请码:', inviteCode);
+      }
+
       // 🚀 保护当前语言设置 - 在OAuth前保存当前语言状态
       const preserveLanguageSettings = () => {
         try {
@@ -739,6 +746,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setError(null)
       setLoading(true)
+
+      // 🆕 保存邀请码到localStorage，供OAuth回调使用
+      const inviteCode = new URLSearchParams(window.location.search).get('invite');
+      if (inviteCode) {
+        localStorage.setItem('pending_invite_code', inviteCode);
+        console.log('[AUTH] 保存Apple OAuth邀请码:', inviteCode);
+      }
 
       // 🚀 保护当前语言设置 - 在OAuth前保存当前语言状态
       const preserveLanguageSettings = () => {

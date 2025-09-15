@@ -101,7 +101,7 @@ function App() {
       // 初始化多级缓存服务
       try {
         await redisCacheIntegrationService.initialize()
-        console.log('[App] 多级缓存服务初始化完成')
+        // 多级缓存服务初始化完成
       } catch (error) {
         console.error('[App] 缓存服务初始化失败:', error)
       }

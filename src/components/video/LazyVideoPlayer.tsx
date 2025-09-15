@@ -20,6 +20,7 @@ import { cn } from '@/utils/cn'
 import { useVideoLazyLoad, type LazyLoadOptions } from '@/hooks/useVideoLazyLoad'
 import { useSimpleNetworkQuality } from '@/hooks/useNetworkQuality'
 import thumbnailGenerator from '@/services/thumbnailGeneratorService'
+import { log } from '@/utils/logger'
 
 export interface LazyVideoPlayerProps {
   // 基本视频属性
@@ -105,17 +106,17 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
     if (enableThumbnailCache) {
       const memoryCached = thumbnailGenerator.getFromMemoryCache(src)
       if (memoryCached) {
-        console.log(`🎯 [LazyVideoPlayer] 同步初始化：使用内存缓存`, { videoId })
+        log.debug('同步初始化：使用内存缓存', { videoId })
         return { normal: memoryCached, blur: memoryCached }
       }
     }
     
     if (poster) {
-      console.log(`🎯 [LazyVideoPlayer] 同步初始化：使用poster`, { videoId })
+      log.debug('同步初始化：使用poster', { videoId })
       return { normal: poster, blur: poster }
     }
     
-    console.log(`🎯 [LazyVideoPlayer] 同步初始化：使用默认占位符`, { videoId })
+    log.debug('同步初始化：使用默认占位符', { videoId })
     return null
   })
   
@@ -142,7 +143,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
         if (isCancelled) return // 防止组件卸载后的状态更新
         
         if (thumbnail && thumbnail !== smartThumbnails?.normal) {
-          console.log(`🔄 [LazyVideoPlayer] 实时更新缩略图`, { 
+          log.debug('实时更新缩略图', { 
             videoId, 
             old: smartThumbnails?.normal ? '有缩略图' : '无缩略图',
             new: '真实缩略图' 
@@ -152,7 +153,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
         }
       } catch (error) {
         if (!isCancelled) {
-          console.warn(`[LazyVideoPlayer] 缩略图更新失败: ${videoId}`, error)
+          log.warn('缩略图更新失败', { videoId, error })
         }
       }
     }
@@ -211,7 +212,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
     
     if (!lazyState.isLoaded && !lazyState.isLoading && !lazyState.hasError) {
       lazyActions.load().catch(error => {
-        console.error('[LazyVideoPlayer] Manual load failed:', error)
+        log.warn('手动加载失败', { error })
         // 对于CORS等网络错误，直接标记为已加载，使用原始VideoPlayer
       })
     }
@@ -433,7 +434,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
        lazyState.error.includes('Failed to fetch') || 
        lazyState.error.includes('Network Error') ||
        lazyState.error.includes('HEAD request failed'))) {
-    console.log('[LazyVideoPlayer] Network error detected, falling back to standard VideoPlayer:', lazyState.error)
+    log.info('网络错误检测，降级到标准VideoPlayer', { error: lazyState.error })
     return (
       <div 
         ref={inViewRef as React.RefObject<HTMLDivElement>} 

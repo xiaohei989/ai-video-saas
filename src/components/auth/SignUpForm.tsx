@@ -12,6 +12,8 @@ import { collectDeviceEnvironment, type DeviceFingerprint } from '@/utils/device
 import { supabase } from '@/lib/supabase'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useSEO } from '@/hooks/useSEO'
+import type { IPRegistrationLimitCheck, DeviceFingerprintLimitCheck, SupabaseRPCResult } from '@/types/antifraud'
+import { toast } from 'sonner'
 
 // Google 图标组件
 const GoogleIcon = ({ className }: { className?: string }) => (
@@ -62,50 +64,132 @@ export default function SignUpForm() {
     const initSecurity = async () => {
       try {
         setSecurityChecking(true)
-        const deviceEnv = await collectDeviceEnvironment()
+        console.log('[SecurityCheck] 开始安全检查...')
+        
+        // 设置超时机制，8秒后自动完成检查（增加时间避免过早超时）
+        const timeoutId = setTimeout(() => {
+          console.log('[SecurityCheck] 安全检查超时，自动启用注册按钮')
+          setSecurityChecking(false)
+          setSecurityBlocked(null) // 清除任何阻止状态
+        }, 8000)
+        
+        let deviceEnv
+        try {
+          deviceEnv = await collectDeviceEnvironment()
+          console.log('[SecurityCheck] 设备环境信息收集完成')
+        } catch (envError) {
+          console.warn('[SecurityCheck] 设备环境收集失败，使用基础检查:', envError)
+          // 设备环境收集失败时，仍然允许注册但跳过高级检查
+          clearTimeout(timeoutId)
+          setSecurityChecking(false)
+          return
+        }
+        
+        // 如果成功获取到环境信息，清除超时
+        clearTimeout(timeoutId)
         
         setDeviceFingerprint(deviceEnv.fingerprint)
         setIpAddress(deviceEnv.ipAddress)
         
         // 检查是否为自动化环境
         if (deviceEnv.automationDetection.isLikelyBot) {
-          setSecurityBlocked('检测到自动化环境，请使用真实浏览器注册')
-          return
+          console.warn('[SecurityCheck] 检测到可能的自动化环境，但不阻止注册')
+          // 不再直接阻止，而是记录警告
         }
         
-        // 如果有IP地址，检查IP注册限制
-        if (deviceEnv.ipAddress) {
-          const { data: ipCheck, error } = await supabase.rpc('check_ip_registration_limit', {
-            p_ip_address: deviceEnv.ipAddress,
-            p_time_window_hours: 24,
-            p_max_registrations: 5
-          })
-          
-          if (error) {
-            console.warn('IP check failed:', error)
-          } else if (ipCheck && !ipCheck.can_register) {
-            setSecurityBlocked(ipCheck.reason)
-            return
+        // 如果有IP地址，检查IP注册限制（优雅处理错误）
+        // 开发环境下的本地IP跳过检查
+        if (deviceEnv.ipAddress && !['127.0.0.1', 'localhost', '::1'].includes(deviceEnv.ipAddress)) {
+          try {
+            const ipCheckPromise = supabase.rpc('check_ip_registration_limit', {
+              p_ip_address: deviceEnv.ipAddress,
+              p_time_window_hours: 24,
+              p_max_registrations: 5
+            })
+            
+            // 为RPC调用设置3秒超时
+            const ipCheckResult = await Promise.race([
+              ipCheckPromise,
+              new Promise<SupabaseRPCResult<IPRegistrationLimitCheck>>((_, reject) => 
+                setTimeout(() => reject(new Error('IP检查超时')), 3000)
+              )
+            ])
+            
+            const { data: ipCheck, error } = ipCheckResult
+            
+            if (error) {
+              console.warn('[SecurityCheck] IP检查RPC调用失败，跳过限制检查:', error.message)
+            } else if (ipCheck && typeof ipCheck === 'object' && 'can_register' in ipCheck) {
+              if (!ipCheck.can_register) {
+                // 确保有明确的错误消息才阻止注册
+                const blockReason = (ipCheck.reason && ipCheck.reason.trim()) || 'IP注册限制检查未通过'
+                console.warn('[SecurityCheck] IP注册限制检查未通过:', blockReason)
+                setSecurityBlocked(blockReason)
+                setSecurityChecking(false)
+                return
+              } else {
+                console.log('[SecurityCheck] IP检查通过')
+              }
+            } else {
+              console.warn('[SecurityCheck] IP检查返回无效数据，跳过检查')
+            }
+          } catch (ipError) {
+            console.warn('[SecurityCheck] IP检查异常，跳过检查:', ipError.message || ipError)
+            // IP检查异常时，清除任何可能的阻止状态
+            if (securityBlocked && securityBlocked.includes('IP')) {
+              setSecurityBlocked(null)
+            }
           }
         }
         
-        // 检查设备指纹限制
-        const { data: deviceCheck, error: deviceError } = await supabase.rpc('check_device_fingerprint_limit', {
-          p_fingerprint_hash: deviceEnv.fingerprintHash,
-          p_max_registrations: 3
-        })
-        
-        if (deviceError) {
-          console.warn('Device fingerprint check failed:', deviceError)
-        } else if (deviceCheck && !deviceCheck.can_register) {
-          setSecurityBlocked(deviceCheck.reason)
-          return
+        // 检查设备指纹限制（优雅处理错误）
+        if (deviceEnv.fingerprintHash) {
+          try {
+            const deviceCheckPromise = supabase.rpc('check_device_fingerprint_limit', {
+              p_fingerprint_hash: deviceEnv.fingerprintHash,
+              p_max_registrations: 3
+            })
+            
+            // 为RPC调用设置3秒超时
+            const deviceCheckResult = await Promise.race([
+              deviceCheckPromise,
+              new Promise<SupabaseRPCResult<DeviceFingerprintLimitCheck>>((_, reject) => 
+                setTimeout(() => reject(new Error('设备指纹检查超时')), 3000)
+              )
+            ])
+            
+            const { data: deviceCheck, error: deviceError } = deviceCheckResult
+            
+            if (deviceError) {
+              console.warn('[SecurityCheck] 设备指纹检查RPC调用失败，跳过限制检查:', deviceError.message)
+            } else if (deviceCheck && typeof deviceCheck === 'object' && 'can_register' in deviceCheck) {
+              if (!deviceCheck.can_register) {
+                // 确保有明确的错误消息才阻止注册
+                const blockReason = (deviceCheck.reason && deviceCheck.reason.trim()) || '设备指纹限制检查未通过'
+                console.warn('[SecurityCheck] 设备指纹限制检查未通过:', blockReason)
+                setSecurityBlocked(blockReason)
+                setSecurityChecking(false)
+                return
+              } else {
+                console.log('[SecurityCheck] 设备指纹检查通过')
+              }
+            } else {
+              console.warn('[SecurityCheck] 设备指纹检查返回无效数据，跳过检查')
+            }
+          } catch (deviceError) {
+            console.warn('[SecurityCheck] 设备指纹检查异常，跳过检查:', deviceError.message || deviceError)
+          }
         }
         
+        console.log('[SecurityCheck] 所有安全检查完成，允许注册')
+        
       } catch (error) {
-        console.warn('Security initialization failed:', error)
+        console.warn('[SecurityCheck] 安全检查总体失败:', error)
+        // 安全检查失败时不阻止注册，但记录错误
+        console.log('[SecurityCheck] 由于检查失败，允许注册继续进行')
       } finally {
         setSecurityChecking(false)
+        console.log('[SecurityCheck] 安全检查流程结束，注册按钮已启用')
       }
     }
     
@@ -119,9 +203,16 @@ export default function SignUpForm() {
     if (newEmail && newEmail.includes('@')) {
       setEmailValidating(true)
       try {
-        const validation = await validateEmailAsync(newEmail)
+        // 为邮箱验证设置5秒超时
+        const validationPromise = validateEmailAsync(newEmail)
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('邮箱验证超时')), 5000)
+        )
+        
+        const validation = await Promise.race([validationPromise, timeoutPromise]) as any
+        
         if (!validation.isValid) {
-          setErrors(prev => ({ ...prev, email: validation.error || '邮箱无效' }))
+          setErrors(prev => ({ ...prev, email: validation.error || t('auth.emailInvalid') }))
         } else {
           setErrors(prev => {
             const { email, ...rest } = prev
@@ -130,9 +221,17 @@ export default function SignUpForm() {
         }
       } catch (error) {
         console.warn('Email validation failed:', error)
+        // 验证失败时清除错误，允许继续
+        setErrors(prev => {
+          const { email, ...rest } = prev
+          return rest
+        })
       } finally {
         setEmailValidating(false)
       }
+    } else {
+      // 如果邮箱格式不完整，清除验证状态
+      setEmailValidating(false)
     }
   }
 
@@ -152,23 +251,30 @@ export default function SignUpForm() {
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = t('auth.invalidEmail')
     } else {
-      // 异步验证邮箱
+      // 异步验证邮箱（带超时处理）
       try {
-        const validation = await validateEmailAsync(email)
+        const validationPromise = validateEmailAsync(email)
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('邮箱验证超时')), 3000)
+        )
+        
+        const validation = await Promise.race([validationPromise, timeoutPromise]) as any
         if (!validation.isValid) {
-          newErrors.email = validation.error || '邮箱无效'
+          newErrors.email = validation.error || t('auth.emailInvalid')
         }
       } catch (error) {
         console.warn('Email validation during form submit failed:', error)
+        // 验证失败时不阻止提交，但记录警告
+        console.log('邮箱验证失败，但允许继续提交')
       }
     }
 
     if (!password) {
       newErrors.password = t('auth.passwordRequired')
     } else if (password.length < 8) {
-      newErrors.password = '密码至少需要8个字符'
+      newErrors.password = t('auth.passwordMinLength')
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-      newErrors.password = '密码需要包含大小写字母和数字'
+      newErrors.password = t('auth.passwordComplexity')
     }
 
     if (password !== confirmPassword) {
@@ -239,7 +345,10 @@ export default function SignUpForm() {
       // 跟踪注册成功事件
       trackSignUp('email')
       
-      alert(t('auth.signUpSuccess'))
+      toast.success(t('auth.signUpSuccess'), {
+        description: '请查看您的邮箱以验证账户',
+        duration: 5000
+      })
     } catch (err: any) {
       console.error('Sign up error:', err)
       
@@ -253,10 +362,13 @@ export default function SignUpForm() {
         setErrors({ password: t('auth.weakPassword') })
         errorReason = 'weak_password'
       } else if (err.message?.includes('invalid email')) {
-        setErrors({ email: '邮箱格式无效' })
+        setErrors({ email: t('auth.invalidEmailFormat') })
         errorReason = 'invalid_email'
       } else {
-        alert(errorMessage)
+        toast.error(errorMessage, {
+          description: '请检查网络连接或稍后重试',
+          duration: 5000
+        })
         errorReason = 'auth_service_error'
       }
       
@@ -276,7 +388,10 @@ export default function SignUpForm() {
       trackSignUp('google')
     } catch (err: any) {
       console.error('Google sign up error:', err)
-      alert(t('auth.googleSignUpError') + ': ' + err.message)
+      toast.error(t('auth.googleSignUpError'), {
+        description: err.message,
+        duration: 5000
+      })
       
       // 跟踪注册失败事件
       trackEvent({
@@ -302,7 +417,10 @@ export default function SignUpForm() {
       trackSignUp('apple')
     } catch (err: any) {
       console.error('Apple sign up error:', err)
-      alert(t('auth.appleSignUpError') + ': ' + err.message)
+      toast.error(t('auth.appleSignUpError'), {
+        description: err.message,
+        duration: 5000
+      })
       
       // 跟踪注册失败事件
       trackEvent({
@@ -332,9 +450,17 @@ export default function SignUpForm() {
         
         {/* 安全状态显示 */}
         {securityChecking && (
-          <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
+          <div className="flex items-center justify-center space-x-2 text-sm text-blue-600 bg-blue-50 p-3 rounded-lg border">
             <Shield className="h-4 w-4 animate-pulse" />
-            <span>正在进行安全检查...</span>
+            <span>{t('auth.securityCheckInProgress')}</span>
+          </div>
+        )}
+        
+        {/* 成功状态显示 */}
+        {!securityChecking && !securityBlocked && deviceFingerprint && (
+          <div className="flex items-center justify-center space-x-2 text-sm text-green-600 bg-green-50 p-2 rounded border">
+            <Shield className="h-4 w-4" />
+            <span>{t('auth.securityCheckCompleted')}</span>
           </div>
         )}
         
@@ -454,7 +580,7 @@ export default function SignUpForm() {
             {emailValidating && (
               <div className="flex items-center space-x-1 text-xs text-muted-foreground">
                 <Loader2 className="h-3 w-3 animate-spin" />
-                <span>验证邮箱...</span>
+                <span>{t('auth.validatingEmail')}</span>
               </div>
             )}
             {errors.email && (
@@ -532,22 +658,17 @@ export default function SignUpForm() {
           <Button
             type="submit"
             className="w-full"
-            disabled={isSubmitting || loading || securityBlocked !== null || securityChecking}
+            disabled={isSubmitting || loading || (securityBlocked && securityBlocked.trim() !== '')}
           >
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 {t('auth.signingUp')}
               </>
-            ) : securityChecking ? (
-              <>
-                <Shield className="mr-2 h-4 w-4 animate-pulse" />
-                安全检查中...
-              </>
             ) : securityBlocked ? (
               <>
                 <AlertTriangle className="mr-2 h-4 w-4" />
-                注册已被阻止
+                {t('auth.registrationBlocked')}
               </>
             ) : (
               t('auth.signUp')

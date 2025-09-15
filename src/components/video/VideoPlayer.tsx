@@ -8,6 +8,7 @@ import videoLoaderService, { type LoadProgress } from '@/services/VideoLoaderSer
 import thumbnailGenerator from '@/services/thumbnailGeneratorService'
 import ProtectedDownloadService from '@/services/protectedDownloadService'
 import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
+import videoPlaybackManager from '@/utils/videoPlaybackManager'
 
 interface VideoPlayerProps {
   src: string
@@ -18,6 +19,7 @@ interface VideoPlayerProps {
   showVolumeControl?: boolean
   objectFit?: 'contain' | 'cover'
   onDownload?: () => void
+  videoId?: string // 新增videoId用于播放管理器
   onShare?: () => void
   alt?: string
   
@@ -83,6 +85,22 @@ export default function VideoPlayer({
   const [loadError, setLoadError] = useState<string | null>(null)
   const [isDragging, setIsDragging] = useState(false)
   // controlsTimeout 移除
+
+  // 注册到视频播放管理器
+  useEffect(() => {
+    if (videoRef.current && videoId) {
+      // 根据视频类型设置优先级
+      let priority = 0
+      if (src.includes('/user-videos/')) priority = 10 // 用户视频优先级最高
+      else if (src.includes('/templates/videos/')) priority = 5 // 模板视频中等优先级
+      
+      videoPlaybackManager.register(videoId, videoRef.current, priority)
+      
+      return () => {
+        videoPlaybackManager.unregister(videoId)
+      }
+    }
+  }, [videoId, src])
 
   // Extract thumbnail if no poster provided (with cache support)
   useEffect(() => {
@@ -199,7 +217,14 @@ export default function VideoPlayer({
       }
     }
     
-    const interval = setInterval(updateTime, 50) // 20fps更新
+    // 检测移动端并调整更新频率
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    const isLowPerformance = navigator.hardwareConcurrency <= 4
+    
+    // 根据设备性能调整更新频率：移动端5fps，低性能8fps，正常设备12fps
+    const updateFrequency = isMobile ? 200 : (isLowPerformance ? 125 : 83) // 对应5fps, 8fps, 12fps
+    
+    const interval = setInterval(updateTime, updateFrequency)
     return () => clearInterval(interval)
   }, [isPlaying, isDragging])
 
@@ -211,6 +236,11 @@ export default function VideoPlayer({
       setIsPlaying(false)
       setIsAutoPlaying(false) // 清除自动播放状态
     } else {
+      // 检查播放管理器是否允许播放
+      if (videoId && !videoPlaybackManager.requestPlay(videoId)) {
+        // 播放被拒绝，不继续执行
+        return
+      }
       // 在播放前检查是否需要加载视频
       if (enableProgressiveLoading && !hasLoadError) {
         try {

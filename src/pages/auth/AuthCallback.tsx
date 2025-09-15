@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { log } from '@/utils/logger'
 import i18n from '@/i18n/config'
 import { languageDebugger } from '@/utils/languageDebugger'
+import { referralService } from '@/services/referralService'
 
 export default function AuthCallback() {
   const { t } = useTranslation()
@@ -14,6 +15,53 @@ export default function AuthCallback() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [isProcessing, setIsProcessing] = useState(true)
+
+  // 🆕 处理OAuth邀请码的通用函数
+  const handleOAuthInvitation = async (user: any, provider: string) => {
+    const pendingInviteCode = localStorage.getItem('pending_invite_code');
+    
+    if (!pendingInviteCode) {
+      console.log(`[AuthCallback] ${provider} OAuth: 无待处理邀请码`);
+      return;
+    }
+
+    try {
+      console.log(`[AuthCallback] ${provider} OAuth: 处理邀请码`, pendingInviteCode);
+      
+      // 检查用户是否已有推荐人
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('referred_by')
+        .eq('id', user.id)
+        .single();
+      
+      if (profileData?.referred_by) {
+        console.log(`[AuthCallback] ${provider} OAuth: 用户已有推荐人，跳过邀请处理`);
+        localStorage.removeItem('pending_invite_code');
+        return;
+      }
+
+      // 处理邀请关系和积分赠送
+      const result = await referralService.acceptInvitation(
+        pendingInviteCode,
+        user.id,
+        user.email || '',
+        undefined, // device_fingerprint 在OAuth中不需要
+        undefined  // ip_address 在OAuth中不需要
+      );
+
+      if (result.success) {
+        console.log(`[AuthCallback] ${provider} OAuth: 邀请处理成功，获得积分:`, result.reward);
+      } else {
+        console.warn(`[AuthCallback] ${provider} OAuth: 邀请处理失败:`, result.error);
+      }
+    } catch (error) {
+      console.error(`[AuthCallback] ${provider} OAuth: 邀请处理异常:`, error);
+    } finally {
+      // 无论成功失败都清理邀请码
+      localStorage.removeItem('pending_invite_code');
+    }
+  };
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -223,6 +271,18 @@ export default function AuthCallback() {
       console.log('[AuthCallback] 处理成功认证，用户:', userEmail)
       setSuccess(true)
       setIsProcessing(false)
+      
+      // 🆕 处理OAuth邀请码
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const oauthProvider = localStorage.getItem('oauth_provider') || 'unknown';
+          await handleOAuthInvitation(session.user, oauthProvider);
+        }
+      } catch (error) {
+        console.error('[AuthCallback] OAuth邀请处理失败:', error);
+        // 不阻止正常登录流程
+      }
       
       // 🚀 最终语言设置确认 - 确保认证成功后语言设置正确
       try {

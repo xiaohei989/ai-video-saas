@@ -239,7 +239,14 @@ RETURNS TABLE (
   calculated_balance INTEGER,
   difference INTEGER
 ) AS $$
+DECLARE
+  v_default_credits INTEGER;
 BEGIN
+  -- 从系统配置表中获取默认积分
+  SELECT COALESCE(setting_value::INTEGER, 50) INTO v_default_credits
+  FROM public.system_settings 
+  WHERE setting_key = 'default_user_credits';
+  
   RETURN QUERY
   WITH transaction_sums AS (
     SELECT 
@@ -251,11 +258,11 @@ BEGIN
   SELECT 
     p.id as user_id,
     p.credits as profile_balance,
-    COALESCE(ts.calculated_balance + 100, 100) as calculated_balance, -- 100是初始积分
-    (p.credits - COALESCE(ts.calculated_balance + 100, 100)) as difference
+    COALESCE(ts.calculated_balance + v_default_credits, v_default_credits) as calculated_balance,
+    (p.credits - COALESCE(ts.calculated_balance + v_default_credits, v_default_credits)) as difference
   FROM public.profiles p
   LEFT JOIN transaction_sums ts ON ts.user_id = p.id
-  WHERE p.credits != COALESCE(ts.calculated_balance + 100, 100);
+  WHERE p.credits != COALESCE(ts.calculated_balance + v_default_credits, v_default_credits);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

@@ -248,6 +248,73 @@ html.dark {
   letter-spacing: 0.025em;
 }
 
+/* 移动端性能保护样式 */
+.performance-emergency {
+  /* 禁用所有动画和过渡效果 */
+  *, *::before, *::after {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+  
+  /* 简化视觉效果 */
+  .shadow-lg, .shadow-xl, .shadow-2xl {
+    box-shadow: none !important;
+  }
+  
+  /* 禁用背景图片 */
+  .bg-gradient-to-r, .bg-gradient-to-l, .bg-gradient-to-t, .bg-gradient-to-b,
+  .bg-gradient-to-br, .bg-gradient-to-bl, .bg-gradient-to-tr, .bg-gradient-to-tl {
+    background-image: none !important;
+    background-color: var(--muted) !important;
+  }
+  
+  /* 简化边框效果 */
+  .border-2, .border-4 {
+    border-width: 1px !important;
+  }
+  
+  /* 禁用模糊效果 */
+  .backdrop-blur, .backdrop-blur-sm, .backdrop-blur-md, .backdrop-blur-lg {
+    backdrop-filter: none !important;
+  }
+  
+  /* 隐藏装饰性元素 */
+  .decoration-element, .floating-element {
+    display: none !important;
+  }
+}
+
+/* 移动端优化的视频播放按钮 */
+@media (max-width: 768px) {
+  .mobile-video-play-overlay {
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: none !important;
+  }
+  
+  .mobile-video-play-button {
+    width: 48px !important;
+    height: 48px !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  }
+  
+  /* 移动端减少不必要的动画 */
+  .animate-pulse, .animate-spin, .animate-bounce {
+    animation: none !important;
+  }
+  
+  /* 移动端简化视觉效果 */
+  .performance-emergency .bg-black\/30, .performance-emergency .bg-black\/20 {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+  }
+}
+
 .font-handwriting-light {
   font-family: 'Dancing Script', 'Caveat', 'Kalam', cursive;
   font-weight: 400;

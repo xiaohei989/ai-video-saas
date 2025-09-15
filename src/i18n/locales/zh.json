@@ -90,7 +90,19 @@
     "verifyingCredentials": "请稍候，正在验证您的登录信息",
     "sessionError": "无法建立会话，请重新登录",
     "authError": "登录过程中出现错误",
-    "redirectingToLogin": "即将跳转到登录页面..."
+    "redirectingToLogin": "即将跳转到登录页面...",
+    "temporaryEmailNotAllowed": "不允许使用临时邮箱地址",
+    "invalidEmailFormat": "邮箱格式无效",
+    "passwordMinLength": "密码至少需要8个字符",
+    "passwordComplexity": "密码需要包含大小写字母和数字",
+    "validatingEmail": "验证邮箱...",
+    "emailInvalid": "邮箱无效",
+    "securityCheckInProgress": "正在进行安全检查，请稍候...",
+    "securityCheckCompleted": "安全检查完成",
+    "registrationBlocked": "注册已被阻止",
+    "ipRegistrationLimitExceeded": "该IP地址注册次数过多，请稍后再试",
+    "deviceRegistrationLimitExceeded": "该设备注册次数过多，请稍后再试",
+    "registrationAllowed": "注册检查通过"
   },
   "user": {
     "guest": "访客",
@@ -575,7 +587,19 @@
       "pending": "待接受",
       "accepted": "已接受", 
       "expired": "已过期"
-    }
+    },
+    "errors": {
+      "checkLimitFailed": "检查邀请限制失败",
+      "createInvitationFailed": "创建邀请失败",
+      "invalidOrExpired": "邀请码无效或已过期",
+      "processingFailed": "处理邀请失败",
+      "acceptFailed": "接受邀请失败",
+      "codeNotFound": "邀请码不存在",
+      "validationFailed": "验证邀请码失败",
+      "cannotInviteYourself": "不能使用自己的邀请码",
+      "alreadyHasReferrer": "您已经使用过邀请码了"
+    },
+    "invitationProcessedSuccessfully": "邀请处理成功"
   },
   "membership": {
     "free": "免费",
@@ -1147,6 +1171,28 @@
         "description": "ASMR视频AI生成器帮助中心，提供详细制作教程、常见问题解答、技术支持。快速上手视频创作。",
         "keywords": "帮助中心,视频制作教程,ASMR制作指南,常见问题,技术支持,使用教程"
       }
+    }
+  },
+  "errors": {
+    "credit": {
+      "consumeFailed": "积分消费失败",
+      "addFailed": "积分添加失败",
+      "networkError": "网络请求失败",
+      "functionCallFailed": "Edge Function调用失败",
+      "functionExecutionFailed": "Edge Function执行失败",
+      "insufficientCredits": "积分不足"
+    },
+    "template": {
+      "nameRequired": "模板名称不能为空",
+      "urlRequired": "URL标识不能为空",
+      "promptRequired": "提示词模板不能为空"
+    },
+    "video": {
+      "downloadFailed": "下载失败",
+      "taskTimeout": "任务超时",
+      "processingFailed": "处理失败",
+      "validationFailed": "输入验证失败",
+      "promptValidationFailed": "提示词验证失败"
     }
   }
 }

@@ -680,7 +680,6 @@ class EdgeFunctionCacheClient {
     try {
       // 开发环境下跳过Edge Function调用，避免CORS错误
       if (import.meta.env.DEV) {
-        console.log('[EDGE CACHE CLIENT] 开发环境，跳过计数器状态检查')
         return {
           queue_size: 0,
           processing: false,

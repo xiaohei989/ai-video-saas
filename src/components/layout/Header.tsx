@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { CircleFlag } from 'react-circle-flags'
 import { 
   Menu, 
   X, 
@@ -18,9 +17,9 @@ import {
   Gift
 } from 'lucide-react'
 
-// 圆形国旗组件
+// 圆形国旗组件（使用稳定的 flagcdn.com CDN）
 const FlagImage = ({ country, className }: { country: string; className?: string }) => {
-  // 国家代码映射（适配 react-circle-flags）
+  // 国家代码映射（适配 flagcdn.com）
   const countryCodeMap: Record<string, string> = {
     US: 'us',
     CN: 'cn', 
@@ -35,10 +34,23 @@ const FlagImage = ({ country, className }: { country: string; className?: string
   const code = countryCodeMap[country]?.toLowerCase() || 'un'
   
   return (
-    <CircleFlag 
-      countryCode={code}
-      height="20"
-      className={className}
+    <img 
+      src={`https://flagcdn.com/w80/${code}.png`}
+      alt={`${country} flag`}
+      width="20"
+      height="15"
+      className={`rounded-full object-cover ${className || ''}`}
+      loading="lazy"
+      style={{
+        imageRendering: 'auto',
+        filter: 'none'
+      }}
+      onError={(e) => {
+        // 如果图片加载失败，显示占位符
+        const target = e.target as HTMLImageElement
+        target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMTUiIHZpZXdCb3g9IjAgMCAyMCAxNSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjE1IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik04IDRMMTIgOEw4IDEyIiBzdHJva2U9IiM5Q0EzQUYiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+'
+        target.alt = 'Flag unavailable'
+      }}
     />
   )
 }

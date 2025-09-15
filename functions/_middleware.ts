@@ -35,20 +35,20 @@ function setSecurityHeaders(headers: Headers) {
   headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), interest-cohort=()');
   
-  // Content Security Policy
-  const csp = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://static.cloudflareinsights.com",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: blob: https: http: https://www.google-analytics.com https://ssl.google-analytics.com",
-    "media-src 'self' blob: https: http:",
-    "connect-src 'self' https://*.supabase.co https://api.stripe.com https://api.qingyuntop.top https://api.apicore.ai https://www.google-analytics.com https://ssl.google-analytics.com https://region1.google-analytics.com https://region1.analytics.google.com https://analytics.google.com https://stats.g.doubleclick.net https://flagcdn.com https://flagpedia.net https://cloudflareinsights.com",
-    "frame-src https://js.stripe.com",
-    "worker-src 'self' blob:"
-  ].join('; ');
-  
-  headers.set('Content-Security-Policy', csp);
+  // Content Security Policy - 已禁用以解决注册功能问题
+  // const csp = [
+  //   "default-src 'self'",
+  //   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://static.cloudflareinsights.com",
+  //   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  //   "font-src 'self' https://fonts.gstatic.com",
+  //   "img-src 'self' data: blob: https: http: https://www.google-analytics.com https://ssl.google-analytics.com",
+  //   "media-src 'self' blob: https: http:",
+  //   "connect-src 'self' https://*.supabase.co https://api.stripe.com https://api.qingyuntop.top https://api.apicore.ai https://www.google-analytics.com https://ssl.google-analytics.com https://region1.google-analytics.com https://region1.analytics.google.com https://analytics.google.com https://stats.g.doubleclick.net https://flagcdn.com https://flagpedia.net https://cloudflareinsights.com",
+  //   "frame-src https://js.stripe.com",
+  //   "worker-src 'self' blob:"
+  // ].join('; ');
+  // 
+  // headers.set('Content-Security-Policy', csp);
 }
 
 function setCacheHeaders(headers: Headers, pathname: string) {

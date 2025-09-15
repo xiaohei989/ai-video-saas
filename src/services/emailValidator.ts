@@ -4,6 +4,7 @@
  */
 
 import { supabase } from '@/lib/supabase'
+import i18n from '@/i18n/config'
 
 // 本地缓存的黑名单域名（作为备用）
 const FALLBACK_BLOCKED_DOMAINS = [
@@ -153,7 +154,7 @@ export async function validateEmailAsync(email: string): Promise<{
     return {
       isValid: false,
       isTemporary: false,
-      error: '邮箱格式不正确'
+      error: i18n.t('auth.invalidEmail')
     };
   }
 
@@ -163,7 +164,7 @@ export async function validateEmailAsync(email: string): Promise<{
     return {
       isValid: false,
       isTemporary: true,
-      error: '不允许使用临时邮箱地址'
+      error: i18n.t('auth.temporaryEmailNotAllowed')
     };
   }
 
@@ -186,7 +187,7 @@ export function validateEmail(email: string): {
     return {
       isValid: false,
       isTemporary: false,
-      error: '邮箱格式不正确'
+      error: i18n.t('auth.invalidEmail')
     };
   }
 
@@ -196,7 +197,7 @@ export function validateEmail(email: string): {
     return {
       isValid: false,
       isTemporary: true,
-      error: '不允许使用临时邮箱地址'
+      error: i18n.t('auth.temporaryEmailNotAllowed')
     };
   }
 

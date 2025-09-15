@@ -153,27 +153,28 @@ i18n.on('languageChanged', (lng) => {
   }
 })
 
-// 🚀 添加页面加载时的语言状态诊断
-if (typeof window !== 'undefined') {
+// 页面加载时的语言状态诊断（开发环境可用）
+if (typeof window !== 'undefined' && import.meta.env.DEV) {
   window.addEventListener('load', () => {
     setTimeout(() => {
-      console.log('[i18n] 页面加载完成后的语言状态诊断:', {
-        currentLanguage: i18n.language,
-        timestamp: new Date().toISOString(),
-        localStorage: {
-          preferred_language: localStorage.getItem('preferred_language'),
-          pre_oauth_language: localStorage.getItem('pre_oauth_language'),
-          user_explicitly_chose_arabic: localStorage.getItem('user_explicitly_chose_arabic'),
-          language_fixed_after_oauth: localStorage.getItem('language_fixed_after_oauth')
-        },
-        browser: {
-          language: navigator.language,
-          languages: navigator.languages,
-          userAgent: navigator.userAgent.substring(0, 100)
-        },
-        url: window.location.href
-      })
-    }, 1000) // 延迟1秒确保所有初始化完成
+      // 仅在需要调试语言问题时启用
+      // console.log('[i18n] 页面加载完成后的语言状态诊断:', {
+      //   currentLanguage: i18n.language,
+      //   timestamp: new Date().toISOString(),
+      //   localStorage: {
+      //     preferred_language: localStorage.getItem('preferred_language'),
+      //     pre_oauth_language: localStorage.getItem('pre_oauth_language'),
+      //     user_explicitly_chose_arabic: localStorage.getItem('user_explicitly_chose_arabic'),
+      //     language_fixed_after_oauth: localStorage.getItem('language_fixed_after_oauth')
+      //   },
+      //   browser: {
+      //     language: navigator.language,
+      //     languages: navigator.languages,
+      //     userAgent: navigator.userAgent.substring(0, 100)
+      //   },
+      //   url: window.location.href
+      // })
+    }, 1000)
   })
 }
 

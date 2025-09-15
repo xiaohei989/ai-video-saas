@@ -87,7 +87,7 @@ class ReferralService {
 
       if (rateLimitError) {
         console.error('Error checking invitation rate limit:', rateLimitError)
-        return { success: false, error: '检查邀请限制失败' }
+        return { success: false, error: i18n.t('referral.errors.checkLimitFailed') }
       }
 
       if (rateLimitCheck && rateLimitCheck.length > 0) {
@@ -147,7 +147,7 @@ class ReferralService {
       return { success: true, invitationCode }
     } catch (error) {
       console.error('Error in createInvitation:', error)
-      return { success: false, error: '创建邀请失败' }
+      return { success: false, error: i18n.t('referral.errors.createInvitationFailed') }
     }
   }
 
@@ -193,7 +193,7 @@ class ReferralService {
         const errorMsg = processError.message || ''
         
         if (errorMsg.includes('临时邮箱') || errorMsg.includes('Temporary email')) {
-          return { success: false, error: '不允许使用临时邮箱地址' }
+          return { success: false, error: i18n.t('auth.temporaryEmailNotAllowed') }
         } else if (errorMsg.includes('maximum invitation limit') || errorMsg.includes('邀请限制')) {
           return { success: false, error: '邀请者已达到最大邀请限制' }
         } else if (errorMsg.includes('Too many registrations') || errorMsg.includes('注册次数过多')) {
@@ -203,11 +203,11 @@ class ReferralService {
         } else if (errorMsg.includes('already has a referrer') || errorMsg.includes('已经使用过')) {
           return { success: false, error: '您已经使用过邀请码了' }
         } else if (errorMsg.includes('Invalid or expired') || errorMsg.includes('无效或已过期')) {
-          return { success: false, error: '邀请码无效或已过期' }
+          return { success: false, error: i18n.t('referral.errors.invalidOrExpired') }
         } else if (errorMsg.includes('设备') || errorMsg.includes('device')) {
           return { success: false, error: '该设备注册次数过多，请稍后再试' }
         } else {
-          return { success: false, error: '处理邀请失败：' + errorMsg }
+          return { success: false, error: i18n.t('referral.errors.processingFailed') + '：' + errorMsg }
         }
       }
 
@@ -223,7 +223,7 @@ class ReferralService {
       return { success: true, reward: 20 }
     } catch (error) {
       console.error('Error in acceptInvitation:', error)
-      return { success: false, error: '接受邀请失败' }
+      return { success: false, error: i18n.t('referral.errors.acceptFailed') }
     }
   }
 
@@ -344,9 +344,9 @@ class ReferralService {
 
       if (error) {
         if (error.code === 'PGRST116') {
-          return { valid: false, error: '邀请码不存在' }
+          return { valid: false, error: i18n.t('referral.errors.codeNotFound') }
         }
-        return { valid: false, error: '验证邀请码失败' }
+        return { valid: false, error: i18n.t('referral.errors.validationFailed') }
       }
 
       // 检查邀请状态
@@ -362,7 +362,7 @@ class ReferralService {
       return { valid: true, invitation: data }
     } catch (error) {
       console.error('Error in validateInvitationCode:', error)
-      return { valid: false, error: '验证邀请码失败' }
+      return { valid: false, error: i18n.t('referral.errors.validationFailed') }
     }
   }
 

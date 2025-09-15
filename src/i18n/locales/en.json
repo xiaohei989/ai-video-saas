@@ -90,7 +90,19 @@
     "verifyingCredentials": "Please wait, verifying your credentials",
     "sessionError": "Unable to establish session, please log in again",
     "authError": "An error occurred during login",
-    "redirectingToLogin": "Redirecting to login page..."
+    "redirectingToLogin": "Redirecting to login page...",
+    "temporaryEmailNotAllowed": "Temporary email addresses are not allowed",
+    "invalidEmailFormat": "Invalid email format",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "passwordComplexity": "Password must contain upper and lowercase letters and numbers",
+    "validatingEmail": "Validating email...",
+    "emailInvalid": "Invalid email",
+    "securityCheckInProgress": "Security check in progress, please wait...",
+    "securityCheckCompleted": "Security check completed",
+    "registrationBlocked": "Registration blocked",
+    "ipRegistrationLimitExceeded": "Too many registrations from this IP address, please try again later",
+    "deviceRegistrationLimitExceeded": "Too many registrations from this device, please try again later",
+    "registrationAllowed": "Registration check passed"
   },
   "user": {
     "guest": "Guest",
@@ -581,7 +593,19 @@
       "pending": "Pending",
       "accepted": "Accepted",
       "expired": "Expired"
-    }
+    },
+    "errors": {
+      "checkLimitFailed": "Failed to check invitation limit",
+      "createInvitationFailed": "Failed to create invitation",
+      "invalidOrExpired": "Invalid or expired invitation code",
+      "processingFailed": "Failed to process invitation",
+      "acceptFailed": "Failed to accept invitation",
+      "codeNotFound": "Invitation code not found",
+      "validationFailed": "Failed to validate invitation code",
+      "cannotInviteYourself": "Cannot use your own invitation code",
+      "alreadyHasReferrer": "You have already used an invitation code"
+    },
+    "invitationProcessedSuccessfully": "Invitation processed successfully"
   },
   "membership": {
     "free": "Free",
@@ -1153,6 +1177,28 @@
         "description": "ASMR video AI generator help center. Detailed creation tutorials, FAQ, technical support. Quick start guide for video creation.",
         "keywords": "help center,video creation tutorials,ASMR creation guide,FAQ,technical support,user guide"
       }
+    }
+  },
+  "errors": {
+    "credit": {
+      "consumeFailed": "Credit consumption failed",
+      "addFailed": "Credit addition failed",
+      "networkError": "Network request failed",
+      "functionCallFailed": "Edge Function call failed",
+      "functionExecutionFailed": "Edge Function execution failed",
+      "insufficientCredits": "Insufficient credits"
+    },
+    "template": {
+      "nameRequired": "Template name cannot be empty",
+      "urlRequired": "URL identifier cannot be empty",
+      "promptRequired": "Prompt template cannot be empty"
+    },
+    "video": {
+      "downloadFailed": "Download failed",
+      "taskTimeout": "Task timeout",
+      "processingFailed": "Processing failed",
+      "validationFailed": "Input validation failed",
+      "promptValidationFailed": "Prompt validation failed"
     }
   }
 }

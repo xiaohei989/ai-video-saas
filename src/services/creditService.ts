@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import i18n from '@/i18n/config'
 
 export interface CreditTransaction {
   id: string
@@ -86,7 +87,7 @@ class CreditService {
       return await this.consumeCreditsViaEdgeFunction(userId, amount, description, referenceId, referenceType)
     } catch (error) {
       console.error('Error in consumeCredits:', error)
-      return { success: false, error: '积分消费失败' }
+      return { success: false, error: i18n.t('errors.credit.consumeFailed') }
     }
   }
 
@@ -122,19 +123,19 @@ class CreditService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
         console.error('[CREDIT SERVICE] Edge Function HTTP error:', response.status, errorData)
-        return { success: false, error: errorData.error || 'Edge Function调用失败' }
+        return { success: false, error: errorData.error || i18n.t('errors.credit.functionCallFailed') }
       }
 
       const result = await response.json()
       
       if (!result.success) {
-        return { success: false, error: result.error || 'Edge Function执行失败' }
+        return { success: false, error: result.error || i18n.t('errors.credit.functionExecutionFailed') }
       }
 
       return { success: true, newBalance: result.newBalance }
     } catch (error) {
       console.error('[CREDIT SERVICE] Error calling Edge Function:', error)
-      return { success: false, error: '网络请求失败' }
+      return { success: false, error: i18n.t('errors.credit.networkError') }
     }
   }
 
@@ -154,7 +155,7 @@ class CreditService {
       return await this.addCreditsViaEdgeFunction(userId, amount, type, description, referenceId, referenceType)
     } catch (error) {
       console.error('Error in addCredits:', error)
-      return { success: false, error: '积分添加失败' }
+      return { success: false, error: i18n.t('errors.credit.addFailed') }
     }
   }
 
@@ -192,19 +193,19 @@ class CreditService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
         console.error('[CREDIT SERVICE] Edge Function HTTP error:', response.status, errorData)
-        return { success: false, error: errorData.error || 'Edge Function调用失败' }
+        return { success: false, error: errorData.error || i18n.t('errors.credit.functionCallFailed') }
       }
 
       const result = await response.json()
       
       if (!result.success) {
-        return { success: false, error: result.error || 'Edge Function执行失败' }
+        return { success: false, error: result.error || i18n.t('errors.credit.functionExecutionFailed') }
       }
 
       return { success: true, newBalance: result.newBalance }
     } catch (error) {
       console.error('[CREDIT SERVICE] Error calling Edge Function:', error)
-      return { success: false, error: '网络请求失败' }
+      return { success: false, error: i18n.t('errors.credit.networkError') }
     }
   }
 

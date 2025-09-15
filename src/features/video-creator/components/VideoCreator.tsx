@@ -163,7 +163,7 @@ export default function VideoCreator() {
       })
       
       if (!validation.isValid) {
-        toast.error(`输入验证失败: ${validation.errors[0]}`)
+        toast.error(`${t('errors.video.validationFailed')}: ${validation.errors[0]}`)
         return
       }
       
@@ -291,7 +291,7 @@ export default function VideoCreator() {
         })
         
         if (!promptValidation.isValid) {
-          toast.error(`提示词验证失败: ${promptValidation.errors[0]}`)
+          toast.error(`${t('errors.video.promptValidationFailed')}: ${promptValidation.errors[0]}`)
           throw new Error('Invalid prompt')
         }
         
