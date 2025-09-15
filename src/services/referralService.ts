@@ -236,6 +236,7 @@ class ReferralService {
    */
   async getUserInvitations(userId: string): Promise<any[]> {
     try {
+      // 简化查询，先获取基本用户信息
       const { data, error } = await supabase
         .from('profiles')
         .select(`
@@ -245,8 +246,7 @@ class ReferralService {
           avatar_url,
           created_at,
           credits,
-          subscription_status,
-          last_login_at
+          last_active_at
         `)
         .eq('referred_by', userId)
         .order('created_at', { ascending: false })
@@ -254,6 +254,27 @@ class ReferralService {
       if (error) {
         console.error('Error fetching referred users:', error)
         return []
+      }
+
+      // 如果有用户数据，再获取订阅信息
+      const userIds = (data || []).map(user => user.id)
+      let subscriptionsMap: Record<string, any> = {}
+      
+      if (userIds.length > 0) {
+        try {
+          const { data: subscriptions } = await supabase
+            .from('subscriptions')
+            .select('user_id, status, tier')
+            .in('user_id', userIds)
+            .eq('status', 'active')
+
+          subscriptionsMap = (subscriptions || []).reduce((acc, sub) => {
+            acc[sub.user_id] = sub
+            return acc
+          }, {})
+        } catch (subError) {
+          console.warn('Error fetching subscriptions:', subError)
+        }
       }
 
       // 转换为兼容格式
@@ -265,8 +286,9 @@ class ReferralService {
           email: user.email,
           avatar_url: user.avatar_url,
           credits: user.credits,
-          subscription_status: user.subscription_status,
-          last_login_at: user.last_login_at
+          last_active_at: user.last_active_at,
+          subscription_status: subscriptionsMap[user.id]?.status || 'inactive',
+          subscription_tier: subscriptionsMap[user.id]?.tier || 'free'
         },
         status: 'accepted',
         reward_credits: 20,

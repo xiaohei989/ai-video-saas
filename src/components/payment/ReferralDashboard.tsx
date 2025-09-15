@@ -282,6 +282,19 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
                               <p className="flex items-center space-x-1">
                                 <span className="text-gray-400">💳</span>
                                 <span>订阅: {invitation.invitee.subscription_status === 'active' ? '已激活' : '未订阅'}</span>
+                                {invitation.invitee?.subscription_tier && (
+                                  <span className="text-xs bg-blue-100 text-blue-800 px-1 rounded">
+                                    {invitation.invitee.subscription_tier}
+                                  </span>
+                                )}
+                              </p>
+                            )}
+                            
+                            {/* 最后活跃时间 */}
+                            {invitation.invitee?.last_active_at && (
+                              <p className="flex items-center space-x-1">
+                                <span className="text-gray-400">👤</span>
+                                <span>最后活跃: {formatPreciseDateTime(invitation.invitee.last_active_at)}</span>
                               </p>
                             )}
                             
