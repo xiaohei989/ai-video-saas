@@ -4,7 +4,7 @@
   "name": "Newborn Baby Interview Comedy",
   "icon": "👶",
   "description": "Creative and funny interview simulation with a newborn baby giving unexpected comedic responses",
-  "previewUrl": "/templates/videos/newborn-baby-interview-comedy.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/newborn-baby-interview-comedy.mp4",
   "tags": [
     "comedy",
     "baby",
@@ -74,6 +74,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/newborn-baby-interview-comedy-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/newborn-baby-interview-comedy-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/newborn-baby-interview-comedy-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/newborn-baby-interview-comedy-thumbnail-blur.jpg"
 }

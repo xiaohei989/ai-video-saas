@@ -4,7 +4,7 @@
   "name": "Windowsill Animal Interview",
   "icon": "🎤",
   "description": "Photorealistic animal interview on windowsill with human-like gestures and voice responses",
-  "previewUrl": "/templates/videos/windowsill-animal-interview.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/windowsill-animal-interview.mp4",
   "tags": [
     "interview",
     "animals",
@@ -106,6 +106,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/windowsill-animal-interview-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/windowsill-animal-interview-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/windowsill-animal-interview-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/windowsill-animal-interview-thumbnail-blur.jpg"
 }

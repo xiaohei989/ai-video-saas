@@ -4,7 +4,7 @@
   "name": "Natural Phenomenon Cutting ASMR",
   "icon": "🌪️",
   "description": "Cut miniature natural phenomenon models revealing dynamic interior structures in 4K ASMR videos",
-  "previewUrl": "/templates/videos/natural-phenomenon-cutting-asmr.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/natural-phenomenon-cutting-asmr.mp4",
   "tags": [
     "asmr",
     "cutting",
@@ -147,6 +147,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/natural-phenomenon-cutting-asmr-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/natural-phenomenon-cutting-asmr-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/natural-phenomenon-cutting-asmr-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/natural-phenomenon-cutting-asmr-thumbnail-blur.jpg"
 }

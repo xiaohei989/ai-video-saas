@@ -4,7 +4,7 @@
   "name": "Miniature Animals Surprise Box",
   "icon": "🦒",
   "description": "Hyper-realistic miniature animals hidden in unexpected containers, revealing surprise moments when doors open",
-  "previewUrl": "/templates/videos/miniature-animals-surprise.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/miniature-animals-surprise.mp4",
   "category": "Animals/Surprise",
   "tags": [
     "miniature",
@@ -248,6 +248,6 @@
       ]
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/miniature-animals-surprise-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/miniature-animals-surprise-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/miniature-animals-surprise-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/miniature-animals-surprise-thumbnail-blur.jpg"
 }

@@ -4,7 +4,7 @@
   "name": "Blueprint to Product",
   "icon": "📐",
   "description": "Transform technical blueprints into fully assembled products with stunning 3D effects",
-  "previewUrl": "/templates/videos/blueprint-to-product.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/blueprint-to-product.mp4",
   "credits": 20,
   "tags": [
     "blueprint",
@@ -409,6 +409,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/blueprint-to-product-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/blueprint-to-product-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/blueprint-to-product-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/blueprint-to-product-thumbnail-blur.jpg"
 }

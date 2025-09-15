@@ -4,7 +4,7 @@
   "name": "Magical Creature Summoning",
   "icon": "🐉",
   "description": "An ancient spellbook summons legendary creatures through elemental magic",
-  "previewUrl": "/templates/videos/magical-creature-summon.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/magical-creature-summon.mp4",
   "credits": 12,
   "tags": [
     "magic",
@@ -675,6 +675,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/magical-creature-summon-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/magical-creature-summon-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/magical-creature-summon-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/magical-creature-summon-thumbnail-blur.jpg"
 }

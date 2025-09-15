@@ -4,7 +4,7 @@
   "name": "Finger Touch Book Magic",
   "icon": "👆",
   "description": "Touch an illustration in a book to bring it to life with spectacular magical effects",
-  "previewUrl": "/templates/videos/finger-touch-activation.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/finger-touch-activation.mp4",
   "credits": 10,
   "tags": [
     "magic",
@@ -639,6 +639,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/finger-touch-activation-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/finger-touch-activation-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/finger-touch-activation-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/finger-touch-activation-thumbnail-blur.jpg"
 }

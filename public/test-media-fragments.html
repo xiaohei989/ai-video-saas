@@ -112,7 +112,7 @@
         </div>
 
         <div class="video-test">
-            <h3>🎬 测试4: 不同视频源</h3>
+            <h3>🎬 测试4: 不同视频源 (BigBuckBunny)</h3>
             <video 
                 id="video4"
                 src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4#t=2.0" 
@@ -129,7 +129,41 @@
         </div>
 
         <div class="video-test">
-            <h3>🌟 测试5: 完全兼容方案</h3>
+            <h3>🚀 测试5: R2存储视频 (已迁移)</h3>
+            <video 
+                id="video5"
+                src="https://pub-e0e4075257f3403f990bacc5d3282fc5.r2.dev/videos/d255e788-bbe7-4321-85d9-b4662743e67a.mp4#t=2.0" 
+                preload="metadata"
+                muted
+                poster=""
+                playsinline
+                controls
+            ></video>
+            <div class="info">
+                <strong>说明:</strong> 测试已迁移到R2的真实视频 - Pigeon Takes the Skateboard Challenge
+            </div>
+            <div id="debug5" class="info" style="background: #fff8e1; font-family: monospace; font-size: 12px;">等待加载...</div>
+        </div>
+
+        <div class="video-test">
+            <h3>🎯 测试6: R2存储视频2 (ASMR)</h3>
+            <video 
+                id="video6"
+                src="https://pub-e0e4075257f3403f990bacc5d3282fc5.r2.dev/videos/2141b988-8358-40c6-bb5d-233bbcbd47dc.mp4#t=1.0" 
+                preload="metadata"
+                muted
+                poster=""
+                playsinline
+                controls
+            ></video>
+            <div class="info">
+                <strong>说明:</strong> 测试已迁移到R2的ASMR视频 - Glass Fruit Cutting ASMR
+            </div>
+            <div id="debug6" class="info" style="background: #fff8e1; font-family: monospace; font-size: 12px;">等待加载...</div>
+        </div>
+
+        <div class="video-test">
+            <h3>🌟 测试7: 完全兼容方案</h3>
             <div id="container5" style="width: 300px; height: 200px; border: 2px solid #007cba; border-radius: 4px; position: relative; overflow: hidden;">
                 <div id="fallback5" style="position: absolute; inset: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; text-align: center;">
                     <div>
@@ -150,10 +184,11 @@
             <div id="testResults">
                 <p>请检查上方的视频是否显示了预览帧...</p>
                 <ul>
-                    <li><strong>iPhone Safari:</strong> 测试2和3应该显示视频第一帧</li>
-                    <li><strong>iPhone Chrome:</strong> 测试2和3应该显示视频第一帧</li>
-                    <li><strong>Android Chrome:</strong> 测试2和3应该显示视频第一帧</li>
+                    <li><strong>iPhone Safari:</strong> 测试2,3,5,6应该显示视频第一帧</li>
+                    <li><strong>iPhone Chrome:</strong> 测试2,3,5,6应该显示视频第一帧</li>
+                    <li><strong>Android Chrome:</strong> 测试2,3,5,6应该显示视频第一帧</li>
                     <li><strong>桌面浏览器:</strong> 所有测试都应该正常显示</li>
+                    <li><strong>重点测试:</strong> 测试5和6是R2存储的真实视频，应该在iOS Chrome中正常显示缩略图</li>
                 </ul>
             </div>
         </div>
@@ -250,7 +285,7 @@
             debug3.innerHTML = `❌ 错误: ${e.type}`;
         });
 
-        // 测试4: 不同视频源
+        // 测试4: BigBuckBunny视频源
         const video4 = document.getElementById('video4');
         const debug4 = document.getElementById('debug4');
         
@@ -264,6 +299,54 @@
         
         video4.addEventListener('error', (e) => {
             debug4.innerHTML = `❌ BigBuckBunny错误: ${e.type}`;
+        });
+
+        // 测试5: R2存储视频1 (鸽子滑板)
+        const video5 = document.getElementById('video5');
+        const debug5 = document.getElementById('debug5');
+        
+        video5.addEventListener('loadstart', () => {
+            debug5.innerHTML = '🔄 R2视频加载中...';
+        });
+        
+        video5.addEventListener('loadedmetadata', () => {
+            debug5.innerHTML = `📊 R2视频 | 时长: ${video5.duration.toFixed(1)}s | 当前: ${video5.currentTime.toFixed(1)}s`;
+        });
+        
+        video5.addEventListener('canplay', () => {
+            debug5.innerHTML += '<br>✅ R2视频可以播放';
+        });
+        
+        video5.addEventListener('seeked', () => {
+            debug5.innerHTML += `<br>🎯 跳转到: ${video5.currentTime.toFixed(1)}s`;
+        });
+        
+        video5.addEventListener('error', (e) => {
+            debug5.innerHTML = `❌ R2视频错误: ${e.type}`;
+        });
+
+        // 测试6: R2存储视频2 (ASMR)
+        const video6 = document.getElementById('video6');
+        const debug6 = document.getElementById('debug6');
+        
+        video6.addEventListener('loadstart', () => {
+            debug6.innerHTML = '🔄 ASMR R2视频加载中...';
+        });
+        
+        video6.addEventListener('loadedmetadata', () => {
+            debug6.innerHTML = `📊 ASMR R2视频 | 时长: ${video6.duration.toFixed(1)}s | 当前: ${video6.currentTime.toFixed(1)}s`;
+        });
+        
+        video6.addEventListener('canplay', () => {
+            debug6.innerHTML += '<br>✅ ASMR R2视频可以播放';
+        });
+        
+        video6.addEventListener('seeked', () => {
+            debug6.innerHTML += `<br>🎯 跳转到: ${video6.currentTime.toFixed(1)}s`;
+        });
+        
+        video6.addEventListener('error', (e) => {
+            debug6.innerHTML = `❌ ASMR R2视频错误: ${e.type}`;
         });
 
         // 测试5: 尝试动态加载视频

@@ -4,7 +4,7 @@
   "name": "ASMR Surreal Toast Spread",
   "icon": "🎭",
   "description": "Use various unexpected miniature objects as butter to spread on toast, creating a visually shocking ASMR experience",
-  "previewUrl": "/templates/videos/asmr-surreal-toast-spread.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/asmr-surreal-toast-spread.mp4",
   "tags": [
     "asmr",
     "surreal",
@@ -134,6 +134,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/asmr-surreal-toast-spread-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/asmr-surreal-toast-spread-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/asmr-surreal-toast-spread-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/asmr-surreal-toast-spread-thumbnail-blur.jpg"
 }

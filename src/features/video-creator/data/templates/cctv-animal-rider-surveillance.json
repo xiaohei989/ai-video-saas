@@ -4,7 +4,7 @@
   "name": "CCTV Animal Rider Surveillance",
   "icon": "📹",
   "description": "Night-vision CCTV footage of various animal riders approaching camera with customizable provocative gestures",
-  "previewUrl": "/templates/videos/cctv-animal-rider-surveillance.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/cctv-animal-rider-surveillance.mp4",
   "tags": [
     "cctv",
     "surveillance",
@@ -177,6 +177,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/cctv-animal-rider-surveillance-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/cctv-animal-rider-surveillance-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/cctv-animal-rider-surveillance-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/cctv-animal-rider-surveillance-thumbnail-blur.jpg"
 }

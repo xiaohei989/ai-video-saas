@@ -4,7 +4,7 @@
   "name": "Surveillance Animal Encounter",
   "icon": "📹",
   "description": "Create unique surveillance camera perspective animal interaction videos with night vision effects and fisheye lens distortion",
-  "previewUrl": "/templates/videos/surveillance-animal-encounter.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/surveillance-animal-encounter.mp4",
   "category": "Animals/Fantasy",
   "tags": [
     "surveillance",
@@ -280,6 +280,6 @@
       ]
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/surveillance-animal-encounter-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/surveillance-animal-encounter-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/surveillance-animal-encounter-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/surveillance-animal-encounter-thumbnail-blur.jpg"
 }

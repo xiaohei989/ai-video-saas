@@ -463,7 +463,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
                         <span>{t('referral.inviteFriends')}</span>
                       </Link>
                       {/* 管理员入口 */}
-                      {((profile as any)?.role === 'admin' || (profile as any)?.role === 'super_admin') && (
+                      {(profile?.role === 'admin' || profile?.role === 'super_admin') && (
                         <Link
                           to="/admin"
                           className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-accent transition-colors duration-200 bg-red-50 dark:bg-red-900/20"
@@ -610,7 +610,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
                       <span>{t('referral.inviteFriends')}</span>
                     </Link>
                     {/* 管理员入口 - 移动端 */}
-                    {((profile as any)?.role === 'admin' || (profile as any)?.role === 'super_admin') && (
+                    {(profile?.role === 'admin' || profile?.role === 'super_admin') && (
                       <Link
                         to="/admin"
                         className="flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-accent transition-all duration-200 bg-red-50 dark:bg-red-900/20"

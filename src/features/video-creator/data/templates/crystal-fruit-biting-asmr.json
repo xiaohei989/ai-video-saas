@@ -4,7 +4,7 @@
   "name": "Crystal Fruit Biting ASMR",
   "icon": "💎",
   "description": "Surrealistic ASMR close-up of biting into crystal-like fruits with customizable colors and materials",
-  "previewUrl": "/templates/videos/crystal-fruit-biting-asmr.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/crystal-fruit-biting-asmr.mp4",
   "tags": [
     "asmr",
     "crystal",
@@ -138,6 +138,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/crystal-fruit-biting-asmr-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/crystal-fruit-biting-asmr-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/crystal-fruit-biting-asmr-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/crystal-fruit-biting-asmr-thumbnail-blur.jpg"
 }

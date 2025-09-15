@@ -4,7 +4,7 @@
   "name": "Baby Adult Anxiety Comedy",
   "icon": "😰",
   "description": "Cinematic close-up of a worried baby expressing various adult anxieties with custom response options",
-  "previewUrl": "/templates/videos/baby-adult-anxiety-comedy.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/baby-adult-anxiety-comedy.mp4",
   "tags": [
     "comedy",
     "baby",
@@ -151,6 +151,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/baby-adult-anxiety-comedy-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/baby-adult-anxiety-comedy-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/baby-adult-anxiety-comedy-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/baby-adult-anxiety-comedy-thumbnail-blur.jpg"
 }

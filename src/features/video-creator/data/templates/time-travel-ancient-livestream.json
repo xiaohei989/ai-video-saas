@@ -5,7 +5,7 @@
   "icon": "⏰",
   "credits": 10,
   "description": "Time-traveling streamers broadcasting live from ancient historical scenes with modern equipment",
-  "previewUrl": "/templates/videos/time-travel-ancient-livestream.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/time-travel-ancient-livestream.mp4",
   "tags": [
     "comedy",
     "time-travel",
@@ -172,6 +172,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/time-travel-ancient-livestream-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/time-travel-ancient-livestream-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/time-travel-ancient-livestream-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/time-travel-ancient-livestream-thumbnail-blur.jpg"
 }

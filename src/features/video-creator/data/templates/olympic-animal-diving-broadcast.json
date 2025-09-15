@@ -4,7 +4,7 @@
   "name": "Olympic Animal Diving Broadcast",
   "icon": "🏊‍♀️",
   "description": "Television broadcast style footage of various animals performing Olympic diving with audience reactions and commentary",
-  "previewUrl": "/templates/videos/olympic-animal-diving-broadcast.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/olympic-animal-diving-broadcast.mp4",
   "tags": [
     "olympic",
     "diving",
@@ -138,6 +138,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/olympic-animal-diving-broadcast-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/olympic-animal-diving-broadcast-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/olympic-animal-diving-broadcast-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/olympic-animal-diving-broadcast-thumbnail-blur.jpg"
 }

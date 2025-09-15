@@ -4,7 +4,7 @@
   "name": "Surveillance Animal Trampoline",
   "icon": "📹",
   "description": "Security camera footage with timestamp display of various animal groups bouncing on trampolines in night vision",
-  "previewUrl": "/templates/videos/surveillance-animal-trampoline.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/surveillance-animal-trampoline.mp4",
   "tags": [
     "surveillance",
     "animals",
@@ -157,6 +157,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/surveillance-animal-trampoline-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/surveillance-animal-trampoline-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/surveillance-animal-trampoline-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/surveillance-animal-trampoline-thumbnail-blur.jpg"
 }

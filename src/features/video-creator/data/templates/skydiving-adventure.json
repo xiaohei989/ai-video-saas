@@ -4,7 +4,7 @@
   "name": "Extreme Skydiving Adventure",
   "icon": "🪂",
   "description": "Create a cinematic skydiving scene with customizable character and dialogue",
-  "previewUrl": "/templates/videos/skydiving-adventure.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/skydiving-adventure.mp4",
   "credits": 10,
   "tags": [
     "skydiving",
@@ -274,6 +274,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/skydiving-adventure-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/skydiving-adventure-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/skydiving-adventure-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/skydiving-adventure-thumbnail-blur.jpg"
 }

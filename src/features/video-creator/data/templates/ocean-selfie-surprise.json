@@ -4,7 +4,7 @@
   "name": "Ocean Selfie Predator Surprise",
   "icon": "🦈",
   "description": "POV selfie video on a speedboat with a surprise marine predator appearance",
-  "previewUrl": "/templates/videos/ocean-selfie-surprise.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/ocean-selfie-surprise.mp4",
   "credits": 10,
   "tags": [
     "selfie",
@@ -318,6 +318,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/ocean-selfie-surprise-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/ocean-selfie-surprise-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/ocean-selfie-surprise-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/ocean-selfie-surprise-thumbnail-blur.jpg"
 }

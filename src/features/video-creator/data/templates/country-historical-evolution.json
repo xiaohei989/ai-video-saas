@@ -4,7 +4,7 @@
   "name": "Country Historical Evolution",
   "icon": "🌍",
   "description": "Transform ancient maps into living 3D miniature countries with tilt-shift effect",
-  "previewUrl": "/templates/videos/country-historical-evolution.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/country-historical-evolution.mp4",
   "credits": 10,
   "tags": [
     "country",
@@ -625,6 +625,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/country-historical-evolution-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/country-historical-evolution-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/country-historical-evolution-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/country-historical-evolution-thumbnail-blur.jpg"
 }

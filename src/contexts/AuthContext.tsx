@@ -49,6 +49,7 @@ interface Profile {
   following_count: number
   template_count: number
   is_verified: boolean
+  role?: string | null // 添加用户角色字段
   created_at: string
   updated_at: string
 }
@@ -179,6 +180,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     following_count: 0,
     template_count: 0,
     is_verified: false,
+    role: null, // 添加 role 字段，默认为 null
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   })
@@ -211,6 +213,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             following_count: cachedProfile.following_count,
             template_count: cachedProfile.template_count,
             is_verified: cachedProfile.is_verified,
+            role: cachedProfile.role, // 添加 role 字段
             created_at: cachedProfile.created_at,
             updated_at: cachedProfile.updated_at
           }

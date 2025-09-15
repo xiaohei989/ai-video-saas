@@ -4,7 +4,7 @@
   "name": "Energy Object Cutting ASMR",
   "icon": "⚡",
   "description": "Ultra-detailed HD ASMR experience of cutting through various energy objects and supernatural phenomena",
-  "previewUrl": "/templates/videos/energy-object-cutting-asmr.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/energy-object-cutting-asmr.mp4",
   "tags": [
     "asmr",
     "cutting",
@@ -109,6 +109,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/energy-object-cutting-asmr-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/energy-object-cutting-asmr-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/energy-object-cutting-asmr-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/energy-object-cutting-asmr-thumbnail-blur.jpg"
 }

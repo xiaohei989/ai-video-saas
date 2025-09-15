@@ -4,7 +4,7 @@
   "name": "Selfie Vlog Animals",
   "icon": "📱",
   "description": "Two anthropomorphic animals having a casual conversation in selfie-style video format",
-  "previewUrl": "/templates/videos/selfie-vlog-animals.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/selfie-vlog-animals.mp4",
   "credits": 20,
   "tags": [
     "animals",
@@ -330,6 +330,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/selfie-vlog-animals-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/selfie-vlog-animals-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/selfie-vlog-animals-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/selfie-vlog-animals-thumbnail-blur.jpg"
 }

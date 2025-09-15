@@ -194,8 +194,8 @@ class CloudflareR2Service {
       return `https://${this.config.publicDomain}/${key}`
     }
     
-    // 使用默认的R2公开URL格式
-    return `https://pub-${this.config.accountId}.r2.dev/${key}`
+    // 使用实际启用的R2公开URL格式
+    return `https://pub-e0e4075257f3403f990bacc5d3282fc5.r2.dev/${key}`
   }
 
   /**

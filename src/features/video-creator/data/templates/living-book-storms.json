@@ -4,7 +4,7 @@
   "name": "Living Book of Storms",
   "icon": "📖",
   "description": "An ancient book transforms into a living diorama with ships battling through storms",
-  "previewUrl": "/templates/videos/living-book-storms.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/living-book-storms.mp4",
   "credits": 15,
   "tags": [
     "magic",
@@ -233,6 +233,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/living-book-storms-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/living-book-storms-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/living-book-storms-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/living-book-storms-thumbnail-blur.jpg"
 }

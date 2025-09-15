@@ -4,26 +4,31 @@
   "name": "Fireplace Cozy International Beauty Selfie",
   "icon": "🔥",
   "description": "Cozy POV selfie with international beauties in a warm fireplace-lit room",
-  "previewUrl": "/templates/videos/fireplace-seduction-selfie.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/fireplace-seduction-selfie.mp4",
   "credits": 8,
-  
-  "tags": ["selfie", "cozy", "fireplace", "charming", "pov", "asmr", "international", "beauty"],
+  "tags": [
+    "selfie",
+    "cozy",
+    "fireplace",
+    "charming",
+    "pov",
+    "asmr",
+    "international",
+    "beauty"
+  ],
   "createdAt": "2025-02-01T14:00:00Z",
   "version": "1.0.0",
   "lastModified": "2025-02-01T14:00:00Z",
-  
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
     "aspect_ratio": "16:9",
-    
     "visual_core": {
       "description": "A warm, dimly lit American country villa living room. The only strong light source is a roaring fireplace, casting flickering golden shadows. The shot is a cozy selfie-POV, held by the subject. A {character_description}, wearing a comfortable silk robe, lies lazily on a plush sofa, backlit by the fire. {pronoun_subject} looks directly into the lens with a playful and charming smile, then slowly sits up, the camera moving smoothly with {pronoun_object}.",
       "style": "cinematic, cozy, warm color palette, low-light, charming, high-detail, realistic skin texture",
       "camera": "selfie-POV, handheld, smooth motion, starts low (on sofa), rises with subject",
       "lighting": "fireplace glow, golden shadows, warm backlighting"
     },
-    
     "timeline": [
       {
         "time": "0-3s",
@@ -45,7 +50,6 @@
         }
       }
     ],
-    
     "audio": {
       "dialogue": {
         "text": "{dialogue_content}",
@@ -54,7 +58,6 @@
       "ambience": "roaring fireplace, soft crackling, cozy room tone"
     }
   },
-
   "params": {
     "character_type": {
       "type": "select",
@@ -184,7 +187,6 @@
         }
       ]
     },
-    
     "dialogue_content": {
       "type": "textarea",
       "label": "Dialogue Content (ASMR Whisper)",
@@ -194,14 +196,36 @@
       "rows": 2,
       "default": "안녕... it's so warm here by the fire"
     },
-    
-    "character": {"type": "hidden", "linkedTo": "character_type", "linkType": "metadata"},
-    "character_description": {"type": "hidden", "linkedTo": "character_type", "linkType": "metadata"},
-    "pronoun_subject": {"type": "hidden", "linkedTo": "character_type", "linkType": "metadata"},
-    "pronoun_object": {"type": "hidden", "linkedTo": "character_type", "linkType": "metadata"},
-    "voice_style": {"type": "hidden", "linkedTo": "character_type", "linkType": "metadata"},
-    "default_dialogue": {"type": "hidden", "linkedTo": "character_type", "linkType": "metadata"},
-    
+    "character": {
+      "type": "hidden",
+      "linkedTo": "character_type",
+      "linkType": "metadata"
+    },
+    "character_description": {
+      "type": "hidden",
+      "linkedTo": "character_type",
+      "linkType": "metadata"
+    },
+    "pronoun_subject": {
+      "type": "hidden",
+      "linkedTo": "character_type",
+      "linkType": "metadata"
+    },
+    "pronoun_object": {
+      "type": "hidden",
+      "linkedTo": "character_type",
+      "linkType": "metadata"
+    },
+    "voice_style": {
+      "type": "hidden",
+      "linkedTo": "character_type",
+      "linkType": "metadata"
+    },
+    "default_dialogue": {
+      "type": "hidden",
+      "linkedTo": "character_type",
+      "linkType": "metadata"
+    },
     "makePublic": {
       "type": "toggle",
       "label": "Make video public",

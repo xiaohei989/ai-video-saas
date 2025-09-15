@@ -4,7 +4,7 @@
   "name": "Art Coffee Machine Magic Creation",
   "icon": "☕",
   "description": "Transform classic artworks into fluid art in a cup through a magical coffee machine",
-  "previewUrl": "/templates/videos/art-coffee-machine.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/art-coffee-machine.mp4",
   "category": "Art/Creative",
   "tags": [
     "coffee",
@@ -128,6 +128,6 @@
       ]
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/art-coffee-machine-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/art-coffee-machine-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/art-coffee-machine-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/art-coffee-machine-thumbnail-blur.jpg"
 }

@@ -4,7 +4,7 @@
   "name": "City Landmarks from Book",
   "icon": "🏙️",
   "description": "A book page transforms into famous city landmarks rising in miniature",
-  "previewUrl": "/templates/videos/city-landmarks-book.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/city-landmarks-book.mp4",
   "credits": 10,
   "tags": [
     "city",
@@ -628,6 +628,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/city-landmarks-book-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/city-landmarks-book-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/city-landmarks-book-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/city-landmarks-book-thumbnail-blur.jpg"
 }

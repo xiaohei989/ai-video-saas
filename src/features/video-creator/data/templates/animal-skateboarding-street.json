@@ -4,7 +4,7 @@
   "name": "Animal Skateboarding Street",
   "icon": "🛹",
   "description": "Documentary-style footage of various small animals performing skateboard tricks on city streets",
-  "previewUrl": "/templates/videos/animal-skateboarding-street.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/animal-skateboarding-street.mp4",
   "tags": [
     "skateboarding",
     "animals",
@@ -113,6 +113,6 @@
       "default": false
     }
   },
-  "thumbnailUrl": "/templates/thumbnails/animal-skateboarding-street-thumbnail.jpg",
-  "blurThumbnailUrl": "/templates/thumbnails/animal-skateboarding-street-thumbnail-blur.jpg"
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/animal-skateboarding-street-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/animal-skateboarding-street-thumbnail-blur.jpg"
 }
