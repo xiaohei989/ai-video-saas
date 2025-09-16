@@ -21,6 +21,7 @@ import { useVideoLazyLoad, type LazyLoadOptions } from '@/hooks/useVideoLazyLoad
 import { useSimpleNetworkQuality } from '@/hooks/useNetworkQuality'
 import thumbnailGenerator from '@/services/thumbnailGeneratorService'
 import { log } from '@/utils/logger'
+import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 
 export interface LazyVideoPlayerProps {
   // 基本视频属性
@@ -406,7 +407,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
         onMouseLeave={() => setIsHovered(false)}
       >
         <VideoPlayer
-          src={src}
+          src={getProxyVideoUrl(src)}
           poster={poster || lazyState.thumbnail || undefined}
           className="w-full h-full"
           objectFit={objectFit}
@@ -443,7 +444,7 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
         onMouseLeave={() => setIsHovered(false)}
       >
         <VideoPlayer
-          src={src}
+          src={getProxyVideoUrl(src)}
           poster={poster}
           className="w-full h-full"
           objectFit={objectFit}
@@ -522,7 +523,7 @@ export const SimpleLazyVideoPlayer: React.FC<{
     return (
       <div ref={inViewRef as React.RefObject<HTMLDivElement>} className={className}>
         <VideoPlayer
-          src={src}
+          src={getProxyVideoUrl(src)}
           poster={poster || lazyState.thumbnail || undefined}
           className="w-full h-full"
           showPlayButton={showPlayButton}

@@ -4,7 +4,7 @@
   "name": "Yeti Mountain Life Vlog",
   "icon": "🏔️",
   "description": "POV selfie footage of a Yeti sharing daily life activities in the Himalayan mountains with entertaining commentary",
-  "previewUrl": "https://cdn.veo3video.me/templates/videos/yeti-mountain-life-vlog.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/yeti-mountain-life-vlog.mp4?v=1758008502567",
   "tags": [
     "yeti",
     "mountain",
@@ -17,7 +17,7 @@
   ],
   "createdAt": "2025-01-29T23:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-01-29T23:00:00Z",
+  "lastModified": "2025-09-16T07:41:42.581Z",
   "promptTemplate": "POV selfie of a realistic white-furred Yeti in {weather_condition} conditions during {time_of_day}, holding a selfie stick with the camera at the end, standing majestically in the Himalayan mountains. {activity_description} The scene unfolds in the breathtaking Himalayan landscape with towering snow-capped peaks reaching into the clouds, pristine glaciers gleaming under natural light, and ancient ice formations creating a dramatic backdrop. Prayer flags flutter in the mountain winds while the thin, crisp air sparkles with ice crystals. Far below, deep valleys disappear into misty clouds, emphasizing the incredible altitude and isolation of this sacred mountain realm. The atmosphere is both serene and powerful, filled with the sounds of mountain winds and distant avalanches echoing through the peaks. National Geographic documentary style, HD quality with cinematic depth of field capturing the majesty of high-altitude wilderness. The Yeti turns to face the camera directly and speaks to the audience in his deep, wise mountain voice: '{voiceover_content}' No background narration or voiceover - only the Yeti's direct speech is heard.",
   "params": {
     "weather_condition": {

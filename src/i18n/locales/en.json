@@ -104,6 +104,25 @@
     "deviceRegistrationLimitExceeded": "Too many registrations from this device, please try again later",
     "registrationAllowed": "Registration check passed"
   },
+  "emailVerification": {
+    "title": "Verify Your Email",
+    "description": "We've sent a verification email to {{email}}",
+    "instructions": "Please follow these steps to complete verification:",
+    "step1": "Open your email app or web-based email",
+    "step2": "Look for the verification email from AI Video SaaS",
+    "step3": "If you don't find it, please check your spam folder",
+    "step4": "Click the verification link in the email",
+    "resendButton": "Resend Verification Email",
+    "resendingButton": "Resending...",
+    "backToSignup": "Back to Sign Up",
+    "linkExpiry": "Verification link will expire in 1 hour",
+    "noEmailContact": "If you continue to not receive the email, please contact customer service",
+    "resendSuccess": "Verification email resent successfully",
+    "resendSuccessDescription": "Please check your email (including spam folder)",
+    "resendError": "Failed to resend",
+    "resendErrorDescription": "Please try again later",
+    "resendWait": "Please wait {{seconds}} seconds before resending"
+  },
   "user": {
     "guest": "Guest",
     "userCenter": "User Center",

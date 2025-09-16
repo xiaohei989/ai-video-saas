@@ -633,7 +633,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // 如果需要邮箱验证
       if (data?.user && !data.session) {
-        alert('请检查您的邮箱以验证账户')
+        // 抛出特定的邮箱验证错误，让前端组件处理
+        throw new Error('EMAIL_VERIFICATION_REQUIRED')
       }
 
       // 如果有引荐码，使用新的安全版本处理引荐关系

@@ -4,7 +4,7 @@
   "name": "Crystal Fruit Biting ASMR",
   "icon": "💎",
   "description": "Surrealistic ASMR close-up of biting into crystal-like fruits with customizable colors and materials",
-  "previewUrl": "https://cdn.veo3video.me/templates/videos/crystal-fruit-biting-asmr.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/crystal-fruit-biting-asmr.mp4?v=1758008502567",
   "tags": [
     "asmr",
     "crystal",
@@ -17,7 +17,7 @@
   ],
   "createdAt": "2025-01-29T20:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-01-29T20:00:00Z",
+  "lastModified": "2025-09-16T07:41:42.574Z",
   "promptTemplate": "Surrealistic ASMR close-up, a woman gently bites into a smooth, {color} {material}-like {fruit_type}. The surface exudes a soft sheen, rich in texture, with a delicate stem remaining on top, reminiscent of {material} art. Her lips part gently as a fair-skinned hand with neatly trimmed nails cradles the {fruit_type}. Captured in slow motion, she bites into the {fruit_type} flesh, and at the instant of biting, small, {color} {material} fragments burst from between her teeth and lips. These fragments refract soft light, naturally falling down in a slow and rhythmic chewing pace. The moist sound of chewing intertwines with the crisp, subtle cracks characteristic of {material}. Each bite is an ASMR feast—layered, quiet, and delicate, transporting viewers into a sensory haze. Emphasizing touch, sound, and vivid visual details to satisfy ASMR cravings.",
   "params": {
     "fruit_type": {

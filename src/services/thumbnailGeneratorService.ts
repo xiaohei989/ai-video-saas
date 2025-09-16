@@ -56,7 +56,7 @@ class ThumbnailGeneratorService {
           }
         }
       })
-      console.log('[ThumbnailGenerator] IndexedDB 初始化成功')
+      // IndexedDB 初始化完成
     } catch (error) {
       console.error('[ThumbnailGenerator] IndexedDB 初始化失败:', error)
     }
@@ -123,56 +123,114 @@ class ThumbnailGeneratorService {
   }
   
   /**
-   * 客户端视频帧提取
+   * 客户端视频帧提取 - 带有回退机制
    */
   private async extractVideoThumbnail(videoUrl: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const video = document.createElement('video')
-      video.crossOrigin = 'anonymous'
-      video.preload = 'metadata'
-      
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-      
-      if (!ctx) {
-        reject(new Error('Canvas context not supported'))
-        return
-      }
-      
-      video.onloadedmetadata = () => {
-        // 设置画布尺寸
-        canvas.width = 640
-        canvas.height = 360
+    // 回退机制：先尝试直接CDN，失败后尝试代理
+    const tryLoadVideo = (url: string, isRetry: boolean = false): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const video = document.createElement('video')
+        video.crossOrigin = 'anonymous'
+        video.preload = 'metadata'
         
-        // 跳转到第1秒位置
-        video.currentTime = Math.min(1.0, video.duration - 0.1)
-      }
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+        
+        if (!ctx) {
+          reject(new Error('Canvas context not supported'))
+          return
+        }
+        
+        // 设置超时机制 - 根据URL类型和重试状态调整超时时间
+        let timeout = 10000 // 默认10秒
+        if (url.includes('filesystem.site')) {
+          // filesystem.site服务器较慢，需要更长超时时间
+          timeout = isRetry ? 25000 : 20000
+        } else if (url.includes('/api/r2/')) {
+          // R2代理路径，第一次尝试10秒，重试时15秒
+          timeout = isRetry ? 15000 : 10000
+        } else if (url.includes('cdn.veo3video.me')) {
+          // 直接CDN访问，较快
+          timeout = isRetry ? 12000 : 8000
+        }
+        const timeoutId = setTimeout(() => {
+          video.remove()
+          canvas.remove()
+          reject(new Error(`Video loading timeout: ${url} (retry: ${isRetry})`))
+        }, timeout)
       
-      video.onseeked = () => {
-        try {
-          // 绘制视频帧到画布
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+        video.onloadedmetadata = () => {
+          // 设置画布尺寸
+          canvas.width = 640
+          canvas.height = 360
           
-          // 转换为 base64 JPEG
-          const thumbnail = canvas.toDataURL('image/jpeg', 0.8)
-          
-          // 清理
+          // 跳转到第1秒位置
+          video.currentTime = Math.min(1.0, video.duration - 0.1)
+        }
+        
+        video.onseeked = () => {
+          try {
+            // 绘制视频帧到画布
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+            
+            // 转换为 base64 JPEG
+            const thumbnail = canvas.toDataURL('image/jpeg', 0.8)
+            
+            // 清理
+            clearTimeout(timeoutId)
+            video.remove()
+            canvas.remove()
+            
+            resolve(thumbnail)
+          } catch (error) {
+            clearTimeout(timeoutId)
+            video.remove()
+            canvas.remove()
+            reject(error)
+          }
+        }
+        
+        video.onerror = (event) => {
+          clearTimeout(timeoutId)
           video.remove()
           canvas.remove()
           
-          resolve(thumbnail)
-        } catch (error) {
+          const error = new Error(`Video loading failed: ${url} (retry: ${isRetry})`)
+          // 添加更多错误信息
+          if (video.error) {
+            error.message += ` (code: ${video.error.code}, media: ${video.error.message || 'unknown'})`
+          }
+          log.warn('视频加载失败，可能是CORS或网络问题', { 
+            url,
+            isRetry,
+            error: video.error,
+            networkState: video.networkState,
+            readyState: video.readyState 
+          })
           reject(error)
         }
+        
+        // 加载视频
+        video.src = url
+        video.load()
+      })
+    }
+    
+    // 处理R2存储URL - 如果是代理路径，先尝试直接CDN
+    if (videoUrl.includes('/api/r2/videos/')) {
+      const directUrl = videoUrl.replace('/api/r2/videos/', 'https://cdn.veo3video.me/videos/')
+      try {
+        // 首先尝试直接CDN加载
+        return await tryLoadVideo(directUrl, false)
+      } catch (error) {
+        // 如果直接CDN失败，回退到代理路径
+        log.warn('直接CDN加载失败，尝试代理路径', { directUrl, proxyUrl: videoUrl })
+        return await tryLoadVideo(videoUrl, true)
       }
-      
-      video.onerror = () => {
-        reject(new Error('Video loading failed'))
-      }
-      
-      video.src = videoUrl
-      video.load()
-    })
+    } else {
+      // 非R2存储URL，直接尝试加载
+      return await tryLoadVideo(videoUrl, false)
+    }
   }
   
   /**
@@ -199,14 +257,12 @@ class ThumbnailGeneratorService {
       // 1. 检查内存缓存
       const memoryCached = this.getFromMemoryCache(videoUrl)
       if (memoryCached) {
-        console.log(`[ThumbnailGenerator] ✅ 内存缓存命中: ${videoId}`)
         return memoryCached
       }
       
       // 2. 检查 IndexedDB
       const dbCached = await this.getFromIndexedDB(videoUrl)
       if (dbCached) {
-        console.log(`[ThumbnailGenerator] ✅ IndexedDB缓存命中: ${videoId}`)
         // 加载到内存缓存
         this.saveToMemoryCache(videoUrl, dbCached)
         return dbCached
@@ -214,12 +270,12 @@ class ThumbnailGeneratorService {
       
       // 3. 避免重复生成
       if (this.generatingThumbnails.has(videoUrl)) {
-        console.log(`[ThumbnailGenerator] ⏳ 正在生成中: ${videoId}`)
+        // 正在生成中，等待完成
         return null
       }
       
       // 4. 生成新缩略图
-      console.log(`[ThumbnailGenerator] 🔄 开始生成缩略图: ${videoId}`)
+      // 开始生成缩略图
       this.generatingThumbnails.add(videoUrl)
       
       try {
@@ -229,7 +285,7 @@ class ThumbnailGeneratorService {
         this.saveToMemoryCache(videoUrl, thumbnail)
         await this.saveToIndexedDB(videoUrl, thumbnail)
         
-        console.log(`[ThumbnailGenerator] ✅ 缩略图生成完成: ${videoId}`)
+        // 缩略图生成完成
         return thumbnail
         
       } finally {
@@ -272,7 +328,7 @@ class ThumbnailGeneratorService {
   clearCache(): void {
     this.memoryCache.clear()
     this.generatingThumbnails.clear()
-    console.log('[ThumbnailGenerator] 缓存已清理')
+    // 缓存已清理
   }
 }
 

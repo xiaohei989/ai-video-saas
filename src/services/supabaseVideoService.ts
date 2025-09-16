@@ -210,12 +210,10 @@ class SupabaseVideoService {
     }
 
     const responseText = await response.text()
-    console.log('[EDGE FUNCTION] 📨 原始响应文本:', responseText)
     
     let result
     try {
       result = JSON.parse(responseText)
-      console.log('[EDGE FUNCTION] 📦 解析后的响应:', JSON.stringify(result, null, 2))
     } catch (parseError) {
       console.error('[EDGE FUNCTION] ❌ JSON解析失败:', parseError)
       throw new Error('Failed to parse Edge Function response')

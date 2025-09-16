@@ -4,7 +4,7 @@
   "name": "Miniature Animals Surprise Box",
   "icon": "🦒",
   "description": "Hyper-realistic miniature animals hidden in unexpected containers, revealing surprise moments when doors open",
-  "previewUrl": "https://cdn.veo3video.me/templates/videos/miniature-animals-surprise.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/miniature-animals-surprise.mp4?v=1758008502567",
   "category": "Animals/Surprise",
   "tags": [
     "miniature",
@@ -18,7 +18,7 @@
   ],
   "createdAt": "2025-01-24T10:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-01-29T04:30:00Z",
+  "lastModified": "2025-09-16T07:41:42.578Z",
   "promptTemplate": "Ultra-realistic documentary shot: The back of a human hand gently opens the rustic wooden {container_type} door toward the camera. Inside, {animal_count} extremely lifelike miniature {animal_type} are nestled in a compact straw nest. The animals {animal_action}. Setting: {environment} with late morning sunlight, casting soft natural shadows. The {container_type} is mounted on a fence pole. Camera: ARRI Alexa Mini LF with 35mm prime macro lens, locked-off frontal shot at door level, f/2.8, perfectly centered composition. Ultra-realistic with hyperrealism, advanced fur/scale simulation, subsurface skin scattering, micro eye reflections. Ambient sounds include soft nature sounds, subtle wood creak, and tiny creature sounds. Mood: surprising, calm, and softly joyful.",
   "params": {
     "animal_type": {

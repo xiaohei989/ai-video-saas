@@ -4,7 +4,7 @@
   "name": "Olympic Animal Diving Broadcast",
   "icon": "🏊‍♀️",
   "description": "Television broadcast style footage of various animals performing Olympic diving with audience reactions and commentary",
-  "previewUrl": "https://cdn.veo3video.me/templates/videos/olympic-animal-diving-broadcast.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/olympic-animal-diving-broadcast.mp4?v=1758008502567",
   "tags": [
     "olympic",
     "diving",
@@ -17,7 +17,7 @@
   ],
   "createdAt": "2025-01-29T18:30:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-01-29T18:30:00Z",
+  "lastModified": "2025-09-16T07:41:42.579Z",
   "promptTemplate": "Olympic diving pool in television broadcast style, showing a {animal} diving from a {platform_height} platform into the swimming pool, performing graceful flips in mid-air with limbs spread like wings, at normal speed, not slow motion. The crowd bursts into laughter at this adorable scene, while the commentator can't help but exclaim \"So cute!\" Audio: gentle water splash sounds, audience laughter and \"aww\" sounds, commentator's warm and humorous commentary.",
   "params": {
     "animal": {

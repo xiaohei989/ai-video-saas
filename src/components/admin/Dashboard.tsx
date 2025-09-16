@@ -38,9 +38,17 @@ interface DashboardStats {
   new_users_this_week: number
   new_users_this_month: number
   total_revenue: number
+  subscription_revenue: number
+  credit_purchase_revenue: number
   revenue_today: number
+  subscription_revenue_today: number
+  credit_purchase_revenue_today: number
   revenue_this_week: number
+  subscription_revenue_this_week: number
+  credit_purchase_revenue_this_week: number
   revenue_this_month: number
+  subscription_revenue_this_month: number
+  credit_purchase_revenue_this_month: number
   active_subscriptions: number
   total_videos: number
   videos_today: number
@@ -89,9 +97,17 @@ export const Dashboard: React.FC = () => {
         new_users_this_week: rawData.new_users_this_week || 0,
         new_users_this_month: rawData.new_users_this_month || 0,
         total_revenue: rawData.total_revenue || 0,
+        subscription_revenue: rawData.subscription_revenue || 0,
+        credit_purchase_revenue: rawData.credit_purchase_revenue || 0,
         revenue_today: rawData.revenue_today || 0,
+        subscription_revenue_today: rawData.subscription_revenue_today || 0,
+        credit_purchase_revenue_today: rawData.credit_purchase_revenue_today || 0,
         revenue_this_week: rawData.revenue_this_week || 0,
+        subscription_revenue_this_week: rawData.subscription_revenue_this_week || 0,
+        credit_purchase_revenue_this_week: rawData.credit_purchase_revenue_this_week || 0,
         revenue_this_month: rawData.revenue_this_month || 0,
+        subscription_revenue_this_month: rawData.subscription_revenue_this_month || 0,
+        credit_purchase_revenue_this_month: rawData.credit_purchase_revenue_this_month || 0,
         active_subscriptions: rawData.active_subscriptions || 0,
         total_videos: rawData.total_videos || 0,
         videos_today: rawData.videos_today || 0,
@@ -133,9 +149,17 @@ export const Dashboard: React.FC = () => {
         new_users_this_week: 0,
         new_users_this_month: 0,
         total_revenue: 0,
+        subscription_revenue: 0,
+        credit_purchase_revenue: 0,
         revenue_today: 0,
+        subscription_revenue_today: 0,
+        credit_purchase_revenue_today: 0,
         revenue_this_week: 0,
+        subscription_revenue_this_week: 0,
+        credit_purchase_revenue_this_week: 0,
         revenue_this_month: 0,
+        subscription_revenue_this_month: 0,
+        credit_purchase_revenue_this_month: 0,
         active_subscriptions: 0,
         total_videos: 0,
         videos_today: 0,
@@ -260,7 +284,7 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {/* 关键指标卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">总用户数</CardTitle>
@@ -276,13 +300,26 @@ export const Dashboard: React.FC = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">总收入</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">订阅收入</CardTitle>
+            <DollarSign className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(dashboardStats.total_revenue || 0)}</div>
+            <div className="text-2xl font-bold text-blue-600">{formatCurrency(dashboardStats.subscription_revenue || 0)}</div>
             <p className="text-xs text-muted-foreground">
-              今日收入 {formatCurrency(dashboardStats.revenue_today || 0)}
+              今日 {formatCurrency(dashboardStats.subscription_revenue_today || 0)} | 本月 {formatCurrency(dashboardStats.subscription_revenue_this_month || 0)}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">积分购买收入</CardTitle>
+            <DollarSign className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">{formatCurrency(dashboardStats.credit_purchase_revenue || 0)}</div>
+            <p className="text-xs text-muted-foreground">
+              今日 {formatCurrency(dashboardStats.credit_purchase_revenue_today || 0)} | 本月 {formatCurrency(dashboardStats.credit_purchase_revenue_this_month || 0)}
             </p>
           </CardContent>
         </Card>

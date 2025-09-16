@@ -5,7 +5,7 @@
   "icon": "⏰",
   "credits": 10,
   "description": "Time-traveling streamers broadcasting live from ancient historical scenes with modern equipment",
-  "previewUrl": "https://cdn.veo3video.me/templates/videos/time-travel-ancient-livestream.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/time-travel-ancient-livestream.mp4?v=1758008502567",
   "tags": [
     "comedy",
     "time-travel",
@@ -18,7 +18,7 @@
   ],
   "createdAt": "2025-01-30T10:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-01-30T10:00:00Z",
+  "lastModified": "2025-09-16T07:41:42.581Z",
   "promptTemplate": "A first-person perspective selfie: {character_description}, moving through {ancient_scene_description}. With focused expression, {pronoun_subject} explains the unfolding scene. {pronoun_subject} reacts with {voice_tone}, exclaiming '{scene_dialogue}' The camera, at a dynamic low angle, vibrates with the action, creating a jittery first-person view as the streamer navigates through the historical chaos. Cinema-quality realistic visuals with dramatic lighting and immersive atmosphere, emphasizing the striking contrast between modern streaming technology and the ancient world.",
   "params": {
     "character_description": {

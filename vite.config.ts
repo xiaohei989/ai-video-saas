@@ -84,13 +84,18 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => path.replace(/^\/api\/filesystem/, ''),
           configure: (proxy, options) => {
             proxy.on('proxyReq', (proxyReq, req, res) => {
-              console.log('[VITE PROXY] Filesystem request:', proxyReq.method, proxyReq.path);
+              // 减少日志输出：仅在开发调试时显示
+              if (process.env.DEBUG_PROXY) {
+                console.log('[VITE PROXY] Filesystem (legacy) request:', proxyReq.method, proxyReq.path);
+              }
               proxyReq.setHeader('Access-Control-Allow-Origin', '*');
               proxyReq.setHeader('User-Agent', 'Mozilla/5.0 (compatible; VideoProxy/1.0)');
             });
             
             proxy.on('proxyRes', (proxyRes, req, res) => {
-              console.log('[VITE PROXY] Filesystem response:', proxyRes.statusCode, req.url);
+              if (process.env.DEBUG_PROXY) {
+                console.log('[VITE PROXY] Filesystem (legacy) response:', proxyRes.statusCode, req.url);
+              }
               proxyRes.headers['Access-Control-Allow-Origin'] = '*';
               proxyRes.headers['Access-Control-Allow-Methods'] = 'GET,HEAD,OPTIONS';
               proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type,Range';
@@ -112,13 +117,18 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => path.replace(/^\/api\/heyoo/, ''),
           configure: (proxy, options) => {
             proxy.on('proxyReq', (proxyReq, req, res) => {
-              console.log('[VITE PROXY] Heyoo request:', proxyReq.method, proxyReq.path);
+              // 减少日志输出：仅在开发调试时显示
+              if (process.env.DEBUG_PROXY) {
+                console.log('[VITE PROXY] Heyoo (legacy) request:', proxyReq.method, proxyReq.path);
+              }
               proxyReq.setHeader('Access-Control-Allow-Origin', '*');
               proxyReq.setHeader('User-Agent', 'Mozilla/5.0 (compatible; VideoProxy/1.0)');
             });
             
             proxy.on('proxyRes', (proxyRes, req, res) => {
-              console.log('[VITE PROXY] Heyoo response:', proxyRes.statusCode, req.url);
+              if (process.env.DEBUG_PROXY) {
+                console.log('[VITE PROXY] Heyoo (legacy) response:', proxyRes.statusCode, req.url);
+              }
               proxyRes.headers['Access-Control-Allow-Origin'] = '*';
               proxyRes.headers['Access-Control-Allow-Methods'] = 'GET,HEAD,OPTIONS';
               proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type,Range';
@@ -126,6 +136,77 @@ export default defineConfig(({ mode }) => {
             
             proxy.on('error', (err, req, res) => {
               console.error('[VITE PROXY] Heyoo proxy error:', err.message, req.url);
+              if (!res.headersSent) {
+                res.writeHead(500, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({error: 'Proxy error', message: err.message}));
+              }
+            });
+          }
+        },
+        // 代理R2存储的视频请求，解决CORS问题
+        '/api/r2': {
+          target: 'https://cdn.veo3video.me',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/r2/, ''),
+          timeout: 30000, // 30秒超时
+          configure: (proxy, options) => {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              console.log('🔵 [R2 PROXY] 请求:', proxyReq.method, proxyReq.path);
+              proxyReq.setHeader('Access-Control-Allow-Origin', '*');
+              proxyReq.setHeader('User-Agent', 'Mozilla/5.0 (compatible; VideoProxy/1.0)');
+              proxyReq.setHeader('Connection', 'keep-alive');
+              // 设置请求超时
+              proxyReq.setTimeout(30000, () => {
+                console.error('[VITE PROXY] R2 proxy request timeout:', req.url);
+                proxyReq.destroy();
+              });
+            });
+            
+            proxy.on('proxyRes', (proxyRes, req, res) => {
+              console.log('✅ [R2 PROXY] 响应:', proxyRes.statusCode, req.url);
+              proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+              proxyRes.headers['Access-Control-Allow-Methods'] = 'GET,HEAD,OPTIONS';
+              proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type,Range';
+            });
+            
+            proxy.on('error', (err, req, res) => {
+              console.error('[VITE PROXY] R2 proxy error:', err.message, req.url);
+              if (!res.headersSent) {
+                // 对于TLS连接错误，返回502 Bad Gateway而不是500
+                const statusCode = err.message.includes('TLS') || err.message.includes('socket') ? 502 : 500;
+                res.writeHead(statusCode, {
+                  'Content-Type': 'application/json',
+                  'Access-Control-Allow-Origin': '*'
+                });
+                res.end(JSON.stringify({
+                  error: 'Proxy error', 
+                  message: err.message,
+                  retry: true
+                }));
+              }
+            });
+          }
+        },
+        // 代理用户视频文件的直接访问路径 - 只处理视频文件，不影响React路由
+        '/videos/*.mp4': {
+          target: 'https://cdn.veo3video.me',
+          changeOrigin: true,
+          configure: (proxy, options) => {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              console.log('🎥 [USER VIDEO PROXY] 请求:', proxyReq.method, proxyReq.path);
+              proxyReq.setHeader('Access-Control-Allow-Origin', '*');
+              proxyReq.setHeader('User-Agent', 'Mozilla/5.0 (compatible; VideoProxy/1.0)');
+            });
+            
+            proxy.on('proxyRes', (proxyRes, req, res) => {
+              console.log('✅ [USER VIDEO PROXY] 响应:', proxyRes.statusCode, req.url);
+              proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+              proxyRes.headers['Access-Control-Allow-Methods'] = 'GET,HEAD,OPTIONS';
+              proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type,Range';
+            });
+            
+            proxy.on('error', (err, req, res) => {
+              console.error('[VITE PROXY] User video proxy error:', err.message, req.url);
               if (!res.headersSent) {
                 res.writeHead(500, {'Content-Type': 'application/json'});
                 res.end(JSON.stringify({error: 'Proxy error', message: err.message}));

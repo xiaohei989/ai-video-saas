@@ -208,6 +208,7 @@ export default function VideoCard({
               muted
               playsInline
               poster=""
+              crossOrigin="anonymous"
               className="w-full h-full object-cover absolute inset-0"
               style={{ pointerEvents: 'none' }}
               onLoadedMetadata={(e) => {

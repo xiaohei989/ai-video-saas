@@ -185,26 +185,26 @@ class ApicoreApiService {
    * 查询任务状态
    */
   async queryStatus(taskId: string): Promise<ApicoreTaskResponse> {
-    console.log(`[APICORE API] === 查询任务状态: ${taskId} ===`);
+    // console.log(`[APICORE API] === 查询任务状态: ${taskId} ===`);
     
     // 首先尝试GET请求
     try {
-      console.log(`[APICORE API] 尝试GET请求查询状态...`);
+      // console.log(`[APICORE API] 尝试GET请求查询状态...`);
       const result = await this.queryStatusWithGet(taskId);
-      console.log(`[APICORE API] GET请求成功，状态:`, JSON.stringify(result, null, 2));
+      // console.log(`[APICORE API] GET请求成功，状态:`, JSON.stringify(result, null, 2));
       return result;
     } catch (corsError) {
       console.warn(`[APICORE API] GET请求失败，尝试POST fallback:`, corsError);
       
       try {
-        console.log(`[APICORE API] 尝试POST请求查询状态...`);
+        // console.log(`[APICORE API] 尝试POST请求查询状态...`);
         const result = await this.queryStatusWithPost(taskId);
-        console.log(`[APICORE API] POST请求成功，状态:`, JSON.stringify(result, null, 2));
+        // console.log(`[APICORE API] POST请求成功，状态:`, JSON.stringify(result, null, 2));
         return result;
       } catch (postError) {
         console.warn(`[APICORE API] POST请求也失败，使用模拟进度:`, postError);
         const mockResult = this.getMockProgressStatus(taskId);
-        console.log(`[APICORE API] 使用模拟状态:`, JSON.stringify(mockResult, null, 2));
+        // console.log(`[APICORE API] 使用模拟状态:`, JSON.stringify(mockResult, null, 2));
         return mockResult;
       }
     }

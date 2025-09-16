@@ -86,6 +86,25 @@
     "authError": "Une erreur s'est produite lors de la connexion",
     "redirectingToLogin": "Redirection vers la page de connexion..."
   },
+  "emailVerification": {
+    "title": "Vérifiez votre adresse e-mail",
+    "description": "Nous avons envoyé un e-mail de vérification à {{email}}",
+    "instructions": "Veuillez suivre ces étapes pour compléter la vérification :",
+    "step1": "Ouvrez votre application e-mail ou webmail",
+    "step2": "Recherchez l'e-mail de vérification d'AI Video SaaS",
+    "step3": "Si vous ne le trouvez pas, vérifiez votre dossier spam",
+    "step4": "Cliquez sur le lien de vérification dans l'e-mail",
+    "resendButton": "Renvoyer l'e-mail de vérification",
+    "resendingButton": "Renvoi en cours...",
+    "backToSignup": "Retourner à l'inscription",
+    "linkExpiry": "Le lien de vérification expirera dans 1 heure",
+    "noEmailContact": "Si vous ne recevez toujours pas l'e-mail, contactez le support",
+    "resendSuccess": "E-mail de vérification renvoyé",
+    "resendSuccessDescription": "Veuillez vérifier votre boîte de réception (y compris le dossier spam)",
+    "resendError": "Echec du renvoi",
+    "resendErrorDescription": "Veuillez réessayer plus tard",
+    "resendWait": "Veuillez attendre {{seconds}} secondes avant de renvoyer"
+  },
   "user": {
     "guest": "Invité",
     "userCenter": "Centre utilisateur",

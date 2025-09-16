@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R2代理测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        video {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border: 1px solid #ddd;
+            margin: 10px 0;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>🧪 R2代理功能测试</h1>
+    
+    <div class="test-section">
+        <h2>测试1: 直接访问R2 URL（预期失败 - CORS问题）</h2>
+        <p><strong>URL:</strong> https://cdn.veo3video.me/templates/videos/glass-cutting-asmr.mp4</p>
+        <video id="direct-video" crossorigin="anonymous" preload="metadata">
+            <source src="https://cdn.veo3video.me/templates/videos/glass-cutting-asmr.mp4" type="video/mp4">
+            您的浏览器不支持视频播放。
+        </video>
+        <div id="direct-status" class="status info">加载中...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试2: 通过代理访问R2 URL（预期成功）</h2>
+        <p><strong>代理URL:</strong> /api/r2/templates/videos/glass-cutting-asmr.mp4</p>
+        <video id="proxy-video" crossorigin="anonymous" preload="metadata">
+            <source src="/api/r2/templates/videos/glass-cutting-asmr.mp4" type="video/mp4">
+            您的浏览器不支持视频播放。
+        </video>
+        <div id="proxy-status" class="status info">加载中...</div>
+    </div>
+
+    <script>
+        // 测试直接访问
+        const directVideo = document.getElementById('direct-video');
+        const directStatus = document.getElementById('direct-status');
+        
+        directVideo.addEventListener('loadedmetadata', () => {
+            directStatus.className = 'status success';
+            directStatus.textContent = '✅ 直接访问成功！视频可以播放';
+        });
+        
+        directVideo.addEventListener('error', (e) => {
+            directStatus.className = 'status error';
+            directStatus.textContent = '❌ 直接访问失败（CORS问题）: ' + e.target.error?.message || '未知错误';
+        });
+        
+        // 测试代理访问
+        const proxyVideo = document.getElementById('proxy-video');
+        const proxyStatus = document.getElementById('proxy-status');
+        
+        proxyVideo.addEventListener('loadedmetadata', () => {
+            proxyStatus.className = 'status success';
+            proxyStatus.textContent = '✅ 代理访问成功！R2代理工作正常';
+        });
+        
+        proxyVideo.addEventListener('error', (e) => {
+            proxyStatus.className = 'status error';
+            proxyStatus.textContent = '❌ 代理访问失败: ' + e.target.error?.message || '未知错误';
+        });
+        
+        // 3秒后检查状态
+        setTimeout(() => {
+            if (directStatus.textContent === '加载中...') {
+                directStatus.className = 'status error';
+                directStatus.textContent = '❌ 直接访问超时（可能是CORS问题）';
+            }
+            if (proxyStatus.textContent === '加载中...') {
+                proxyStatus.className = 'status error';
+                proxyStatus.textContent = '❌ 代理访问超时';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

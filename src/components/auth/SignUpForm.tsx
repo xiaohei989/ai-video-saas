@@ -14,6 +14,7 @@ import { useAnalytics } from '@/hooks/useAnalytics'
 import { useSEO } from '@/hooks/useSEO'
 import type { IPRegistrationLimitCheck, DeviceFingerprintLimitCheck, SupabaseRPCResult } from '@/types/antifraud'
 import { toast } from 'sonner'
+import { EmailVerification } from './EmailVerification'
 
 // Google 图标组件
 const GoogleIcon = ({ className }: { className?: string }) => (
@@ -58,6 +59,8 @@ export default function SignUpForm() {
   const [securityChecking, setSecurityChecking] = useState(false)
   const [securityBlocked, setSecurityBlocked] = useState<string | null>(null)
   const [emailValidating, setEmailValidating] = useState(false)
+  const [showEmailVerification, setShowEmailVerification] = useState(false)
+  const [registeredEmail, setRegisteredEmail] = useState('')
   
   // 收集设备指纹
   useEffect(() => {
@@ -355,7 +358,17 @@ export default function SignUpForm() {
       let errorReason = 'unknown_error'
       let errorMessage = t('auth.signUpError') + ': ' + err.message
       
-      if (err.message?.includes('already registered')) {
+      if (err.message === 'EMAIL_VERIFICATION_REQUIRED') {
+        setRegisteredEmail(email)
+        setShowEmailVerification(true)
+        toast.success('注册成功！', {
+          description: `验证邮件已发送到 ${email}`,
+          duration: 5000
+        })
+        errorReason = 'email_verification_required'
+        // 不记录为失败，因为这是正常的邮箱验证流程
+        return
+      } else if (err.message?.includes('already registered')) {
         setErrors({ email: t('auth.emailAlreadyRegistered') })
         errorReason = 'email_already_exists'
       } else if (err.message?.includes('weak password')) {
@@ -437,6 +450,19 @@ export default function SignUpForm() {
     }
   }
 
+
+  // 如果需要显示邮箱验证界面
+  if (showEmailVerification) {
+    return (
+      <EmailVerification 
+        email={registeredEmail}
+        onBack={() => {
+          setShowEmailVerification(false)
+          setRegisteredEmail('')
+        }}
+      />
+    )
+  }
 
   return (
     <Card className="w-full max-w-md mx-auto">

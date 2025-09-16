@@ -390,7 +390,7 @@ class VideoPollingService {
       const jobStatus = await veo3Service.getJobStatus(video.veo3_job_id)
       
       if (!jobStatus) {
-        console.log(`[POLLING] ⚠️ 检测到${apiDisplayName}连接丢失: ${video.id}，尝试恢复...`)
+        // console.log(`[POLLING] ⚠️ 检测到${apiDisplayName}连接丢失: ${video.id}，尝试恢复...`)
         
         // 尝试恢复API轮询（根据API提供商自动选择方法）
         const restored = await veo3Service.restoreJob(video.veo3_job_id, video.id, apiProvider)

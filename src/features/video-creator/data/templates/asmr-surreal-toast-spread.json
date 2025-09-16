@@ -4,7 +4,7 @@
   "name": "ASMR Surreal Toast Spread",
   "icon": "🎭",
   "description": "Use various unexpected miniature objects as butter to spread on toast, creating a visually shocking ASMR experience",
-  "previewUrl": "https://cdn.veo3video.me/templates/videos/asmr-surreal-toast-spread.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/asmr-surreal-toast-spread.mp4?v=1758008502567",
   "tags": [
     "asmr",
     "surreal",
@@ -17,7 +17,7 @@
   ],
   "createdAt": "2024-08-24T12:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-01-29T04:30:00Z",
+  "lastModified": "2025-09-16T07:41:42.570Z",
   "promptTemplate": "A super-realistic HD close-up: showing a hand tilting and shaking a {container_type} to dump out {item_quantity} {miniature_items} onto a thick golden slice of freshly baked toast with a crispy surface. The miniature objects tumble out chaotically with satisfying metallic clanks, plastic clicks, and crystalline chimes - some landing upside down, others sideways, many bouncing and rolling with realistic physics as they hit the toast surface. Each object reflects the warm studio lights differently: metal surfaces gleaming with mirror-like reflections, gems refracting rainbow colors, electronic devices flickering with LED lights, and smooth plastic creating subtle highlights. The objects create distinctive impact sounds - heavy metallic thuds from gold bars, sharp crystalline pings from gems, hollow plastic taps from LEGO bricks, and electronic beeps from devices. Then using a knife to attempt to spread these miniature objects on the toast, creating an extraordinary tactile contrast between the cold, hard surfaces of the items and the warm, soft bread. The knife blade scrapes against metal objects with sharp metallic sounds, pushes smooth gems across the bread creating grinding textures, and nudges electronic components that continue blinking and beeping. Some round objects roll away from the knife's pressure, while angular ones create interesting patterns and indentations in the bread surface. The whole scene emphasizes the surreal contrast between inedible objects and food preparation, with each material creating unique sounds - metallic scraping, plastic clicking, electronic humming, and glass tinkling - all softly illuminated by warm studio lights. The shallow depth of field blurs the background, focusing on the texture contrast between the soft toast and hard miniature objects. Shot from top to bottom, ASMR cooking video perspective - creating maximum visual shock through the bizarre juxtaposition of using non-food objects as spreadable ingredients.",
   "params": {
     "miniature_items": {

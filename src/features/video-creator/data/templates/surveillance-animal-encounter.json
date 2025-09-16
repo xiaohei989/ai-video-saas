@@ -4,7 +4,7 @@
   "name": "Surveillance Animal Encounter",
   "icon": "📹",
   "description": "Create unique surveillance camera perspective animal interaction videos with night vision effects and fisheye lens distortion",
-  "previewUrl": "https://cdn.veo3video.me/templates/videos/surveillance-animal-encounter.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/surveillance-animal-encounter.mp4?v=1758008502567",
   "category": "Animals/Fantasy",
   "tags": [
     "surveillance",
@@ -16,7 +16,7 @@
   ],
   "createdAt": "2025-01-22T10:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-01-29T04:30:00Z",
+  "lastModified": "2025-09-16T07:41:42.580Z",
   "promptTemplate": "Low-quality surveillance video style, black and white, {night_vision} in night vision mode, high contrast, rough film texture. Fixed perspective: {lens_type} lens (simulating real cat's eye perspective), peeking from behind the interior door. The light is dim, and the {scene_location} is shrouded in darkness. A huge {main_animal} walks slowly and majestically towards the door with heavy steps. Walking with the {main_animal} is a {companion_animal}. They walk to the door in unison. When they stop in front of the door, the {companion_animal}'s eyes turn to the cat's eye lens (lens position). {action_type}. The {main_animal} is expressionless and indifferent to the {companion_animal}'s behavior. Due to the cat's eye perspective, the edges of the picture are slightly dark. It is quiet all around, with only the faint chirping of insects in the distance.",
   "params": {
     "night_vision": {

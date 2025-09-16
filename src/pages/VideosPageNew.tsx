@@ -48,6 +48,7 @@ import { formatRelativeTime, formatDuration } from '@/utils/timeFormat'
 import { toast } from 'sonner'
 import { SubscriptionService } from '@/services/subscriptionService'
 import { useSEO } from '@/hooks/useSEO'
+import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 
 type Video = Database['public']['Tables']['videos']['Row']
 
@@ -287,7 +288,7 @@ export default function VideosPageNew() {
    * 处理任务更新
    */
   const handleTaskUpdate = (task: VideoTask) => {
-    console.log(`[VideosPage] 任务进度更新: ${task.id} - ${task.progress}%`)
+    // console.log(`[VideosPage] 任务进度更新: ${task.id} - ${task.progress}%`)
     
     // 获取 ProgressManager 的最新进度，优先使用智能模拟进度
     const smartProgress = progressManager.getProgress(task.id)
@@ -495,9 +496,10 @@ export default function VideosPageNew() {
     }
 
     try {
-      // 直接使用浏览器下载
+      // 使用代理URL进行下载
+      const proxyUrl = getProxyVideoUrl(video.video_url)
       const link = document.createElement('a')
-      link.href = video.video_url
+      link.href = proxyUrl
       link.download = `${video.title || 'video'}-${video.id}.mp4`
       link.target = '_blank'
       document.body.appendChild(link)
@@ -698,7 +700,7 @@ export default function VideosPageNew() {
                     // 有视频URL - 显示视频播放器
                     <LazyVideoPlayer
                       {...lazyVideoPlayerConfig}
-                      src={video.video_url}
+                      src={getProxyVideoUrl(video.video_url)}
                       poster={video.thumbnail_url || undefined}
                       userId={user?.id}
                       videoId={video.id}

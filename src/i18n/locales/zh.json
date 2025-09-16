@@ -104,6 +104,25 @@
     "deviceRegistrationLimitExceeded": "该设备注册次数过多，请稍后再试",
     "registrationAllowed": "注册检查通过"
   },
+  "emailVerification": {
+    "title": "验证您的邮箱",
+    "description": "我们已向 {{email}} 发送了一封验证邮件",
+    "instructions": "请按照以下步骤完成验证：",
+    "step1": "打开您的邮箱应用或网页版邮箱",
+    "step2": "查找来自 AI Video SaaS 的验证邮件",
+    "step3": "如果没有找到，请检查垃圾邮件文件夹",
+    "step4": "点击邮件中的验证链接",
+    "resendButton": "重新发送验证邮件",
+    "resendingButton": "重新发送中...",
+    "backToSignup": "返回注册",
+    "linkExpiry": "验证链接将在1小时后过期",
+    "noEmailContact": "如果持续收不到邮件，请联系客服",
+    "resendSuccess": "验证邮件已重新发送",
+    "resendSuccessDescription": "请检查您的邮箱（包括垃圾邮件文件夹）",
+    "resendError": "重新发送失败",
+    "resendErrorDescription": "请稍后重试",
+    "resendWait": "请等待 {{seconds}} 秒后再重新发送"
+  },
   "user": {
     "guest": "访客",
     "userCenter": "用户中心",

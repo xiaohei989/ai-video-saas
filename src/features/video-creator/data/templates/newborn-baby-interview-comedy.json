@@ -4,7 +4,7 @@
   "name": "Newborn Baby Interview Comedy",
   "icon": "👶",
   "description": "Creative and funny interview simulation with a newborn baby giving unexpected comedic responses",
-  "previewUrl": "https://cdn.veo3video.me/templates/videos/newborn-baby-interview-comedy.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/newborn-baby-interview-comedy.mp4?v=1758008502567",
   "tags": [
     "comedy",
     "baby",
@@ -17,7 +17,7 @@
   ],
   "createdAt": "2025-01-29T21:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-01-29T21:00:00Z",
+  "lastModified": "2025-09-16T07:41:42.578Z",
   "promptTemplate": "A creative and funny short video, simulating the contrasting comedic scene of a newborn baby being interviewed and 'talking.' Hospital ward setting with white bed and pillows, large windows letting in natural light, creating a bright and warm medical environment. A newborn, wrapped in a white towel, sitting on the bed, looking confused. An adult woman interviewer, wearing a blue suit, holding a microphone with 'BABYME' printed on it, leaning in with a smile and asking: 'Welcome to the new world, you're the new member of our family. What do you want to say?' The baby responds: '{baby_response}' Camera work includes slice switching (close-up of baby and microphone → mid-shot interactive panorama → close-up of baby), with natural camera movement, reminiscent of a news interview. Realistic, textured look with bright colors, natural lighting, natural movement, and a lighthearted comedic atmosphere. No subtitles.",
   "params": {
     "baby_response": {

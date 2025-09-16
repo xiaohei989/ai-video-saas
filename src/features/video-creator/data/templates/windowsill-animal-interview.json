@@ -4,7 +4,7 @@
   "name": "Windowsill Animal Interview",
   "icon": "🎤",
   "description": "Photorealistic animal interview on windowsill with human-like gestures and voice responses",
-  "previewUrl": "https://cdn.veo3video.me/templates/videos/windowsill-animal-interview.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/windowsill-animal-interview.mp4?v=1758008502567",
   "tags": [
     "interview",
     "animals",
@@ -17,7 +17,7 @@
   ],
   "createdAt": "2025-01-29T20:30:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-01-29T20:30:00Z",
+  "lastModified": "2025-09-16T07:41:42.581Z",
   "promptTemplate": "A realistic {animal} sitting on a windowsill, calmly gazing outside. Quiet home interior with natural daylight pouring through a window, sheer curtains gently swaying. A reporter appears next to the window with a microphone and asks, 'What should people do after watching this video?' The {animal} turns to the camera, raises one paw — now anatomically adjusted to form a perfect human-like {gesture} — and confidently says in English, 'Like it.' Photorealistic with light surreal enhancement — real fur, lighting, and movement, but the paw forms a clearly defined gesture like a human hand. Camera starts with a mid-shot over the reporter's shoulder, cuts to a tight front-facing close-up of the {animal}'s gesture and face, ends with a slow zoom-out for comedic timing. Peaceful and homey atmosphere with whimsical twist, using soft color tones and warm light.",
   "params": {
     "animal": {

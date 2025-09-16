@@ -4,7 +4,7 @@
   "name": "Baby Adult Anxiety Comedy",
   "icon": "😰",
   "description": "Cinematic close-up of a worried baby expressing various adult anxieties with custom response options",
-  "previewUrl": "https://cdn.veo3video.me/templates/videos/baby-adult-anxiety-comedy.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/baby-adult-anxiety-comedy.mp4?v=1758008502567",
   "tags": [
     "comedy",
     "baby",
@@ -17,7 +17,7 @@
   ],
   "createdAt": "2025-01-29T21:30:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-01-29T21:30:00Z",
+  "lastModified": "2025-09-16T07:41:42.571Z",
   "promptTemplate": "A cinematic long take, an extreme close-up shot. The focus is on a sunlit nursery where a baby, around one year old, looks deeply sad and worried. The background features a cream-colored carpet and a baby crib, beautifully blurred to create a stunning depth of field with excellent bokeh. The camera captures a continuous action: First, the baby lifts his head, his eyes welling with tears, his expression filled with profound sorrow. He lets out a heavy, world-weary sigh, facing the camera directly. (The frame is a tight single shot on the baby; no one else appears). At this moment, a gentle, adult female voice asks from off-screen in {response_language}: '{interview_question}' Then, a black microphone enters the frame, moving into position right in front of the baby. The baby replies in a desperate, childish voice in {response_language}: '{baby_answer}' Both the interviewer and baby speak clearly in {response_language} language with appropriate accents and pronunciation.",
   "params": {
     "complaint_type": {

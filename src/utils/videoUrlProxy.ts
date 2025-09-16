@@ -26,22 +26,35 @@ export function getProxyVideoUrl(originalUrl: string): string {
       const path = originalUrl.replace('https://heyoo.oss-ap-southeast-1.aliyuncs.com', '');
       return `/api/heyoo${path}`;
     }
+    
+    // 代理R2存储域名，解决CORS问题
+    if (originalUrl.includes('cdn.veo3video.me')) {
+      const path = originalUrl.replace('https://cdn.veo3video.me', '');
+      return `/api/r2${path}`;
+    }
   }
   
-  // 生产环境或其他域名直接返回原始URL
+  // 生产环境直接返回原始URL，CORS问题已通过Cloudflare Transform Rules解决
   return originalUrl;
 }
 
 /**
- * 检查URL是否需要CORS代理
+ * 检查URL是否需要CORS代理（仅在开发环境）
+ * 生产环境的cdn.veo3video.me已通过Cloudflare Transform Rules解决CORS
  */
 export function needsCorsProxy(url: string): boolean {
   if (!url || typeof url !== 'string') {
     return false;
   }
   
+  // 只在开发环境需要代理
+  if (!import.meta.env.DEV) {
+    return false;
+  }
+  
   return url.includes('filesystem.site') || 
-         url.includes('heyoo.oss-ap-southeast-1.aliyuncs.com');
+         url.includes('heyoo.oss-ap-southeast-1.aliyuncs.com') ||
+         url.includes('cdn.veo3video.me');
 }
 
 /**

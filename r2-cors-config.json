@@ -1,0 +1,10 @@
+{
+  "rules": [
+    {
+      "allowedOrigins": ["*"],
+      "allowedMethods": ["GET", "HEAD", "OPTIONS"],
+      "allowedHeaders": ["*"],
+      "maxAge": 3600
+    }
+  ]
+}

@@ -14,7 +14,6 @@ interface VideoRecord {
   migration_status: string
   original_video_url: string | null
   title?: string
-  template_name?: string
 }
 
 interface MigrationResult {
@@ -40,13 +39,175 @@ class VideoMigrationService {
 
   constructor() {
     this.supabase = createClient(
-      import.meta.env.VITE_SUPABASE_URL || '',
-      import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+      this.getEnv('VITE_SUPABASE_URL') || '',
+      this.getEnv('VITE_SUPABASE_SERVICE_ROLE_KEY') || this.getEnv('VITE_SUPABASE_ANON_KEY') || ''
     )
   }
 
   /**
-   * 迁移单个视频到R2
+   * 获取环境变量的辅助方法
+   * 支持两种环境变量访问方式：浏览器环境使用 import.meta.env，Node.js环境使用 process.env
+   */
+  private getEnv(key: string): string | undefined {
+    if (typeof window === 'undefined') {
+      // Node.js环境 (如服务端执行的代码)
+      return process.env[key]
+    } else {
+      // 浏览器环境
+      return import.meta.env[key]
+    }
+  }
+
+  /**
+   * 使用预签名URL迁移视频到R2
+   */
+  async migrateVideoWithPresignedUrl(videoId: string): Promise<MigrationResult> {
+    try {
+      console.log(`[VideoMigration] 开始预签名URL迁移: ${videoId}`)
+
+      // 1. 获取视频信息
+      const { data: video, error: fetchError } = await this.supabase
+        .from('videos')
+        .select('id, video_url, r2_url, r2_key, migration_status, original_video_url, title')
+        .eq('id', videoId)
+        .single()
+
+      if (fetchError || !video) {
+        return {
+          success: false,
+          videoId,
+          error: `视频不存在: ${fetchError?.message}`
+        }
+      }
+
+      // 2. 检查是否需要迁移
+      if (video.migration_status === 'completed' && video.r2_url) {
+        return {
+          success: true,
+          videoId,
+          r2Url: video.r2_url,
+          skipped: true,
+          reason: '已完成迁移'
+        }
+      }
+
+      if (!video.video_url) {
+        return {
+          success: false,
+          videoId,
+          error: '视频URL为空',
+          skipped: true
+        }
+      }
+
+      // 3. 更新状态为下载中
+      await this.updateMigrationStatus(videoId, 'downloading')
+
+      // 4. 生成预签名URL
+      console.log(`[VideoMigration] 生成预签名URL: ${videoId}`)
+      const { data: urlData, error: urlError } = await this.supabase.functions.invoke('generate-upload-url', {
+        body: {
+          videoId,
+          contentType: 'video/mp4',
+          expiresIn: 3600
+        }
+      })
+
+      if (urlError || !urlData.success) {
+        await this.updateMigrationStatus(videoId, 'failed')
+        return {
+          success: false,
+          videoId,
+          error: `预签名URL生成失败: ${urlError?.message || urlData.error}`
+        }
+      }
+
+      const { signedUrl, publicUrl, key } = urlData.data
+
+      // 5. 下载原始视频
+      console.log(`[VideoMigration] 下载原始视频: ${videoId}`)
+      const response = await fetch(video.video_url)
+      if (!response.ok) {
+        await this.updateMigrationStatus(videoId, 'failed')
+        return {
+          success: false,
+          videoId,
+          error: `下载失败: ${response.status} ${response.statusText}`
+        }
+      }
+
+      const videoBuffer = await response.arrayBuffer()
+      console.log(`[VideoMigration] 下载完成: ${videoBuffer.byteLength} bytes`)
+
+      // 6. 更新状态为上传中
+      await this.updateMigrationStatus(videoId, 'uploading')
+
+      // 7. 使用预签名URL上传到R2
+      console.log(`[VideoMigration] 上传到R2: ${videoId}`)
+      const uploadResponse = await fetch(signedUrl, {
+        method: 'PUT',
+        body: videoBuffer,
+        headers: {
+          'Content-Type': 'video/mp4',
+          'Content-Length': videoBuffer.byteLength.toString()
+        }
+      })
+
+      if (!uploadResponse.ok) {
+        await this.updateMigrationStatus(videoId, 'failed')
+        const errorText = await uploadResponse.text()
+        return {
+          success: false,
+          videoId,
+          error: `R2上传失败: ${uploadResponse.status} - ${errorText}`
+        }
+      }
+
+      // 8. 更新数据库记录
+      const { error: updateError } = await this.supabase
+        .from('videos')
+        .update({
+          r2_url: publicUrl,
+          r2_key: key,
+          migration_status: 'completed',
+          r2_uploaded_at: new Date().toISOString(),
+          original_video_url: video.original_video_url || video.video_url
+        })
+        .eq('id', videoId)
+
+      if (updateError) {
+        console.error(`[VideoMigration] 数据库更新失败: ${videoId}`, updateError)
+        return {
+          success: false,
+          videoId,
+          error: `数据库更新失败: ${updateError.message}`
+        }
+      }
+
+      console.log(`[VideoMigration] 预签名URL迁移成功: ${videoId} -> ${publicUrl}`)
+
+      return {
+        success: true,
+        videoId,
+        r2Url: publicUrl,
+        r2Key: key
+      }
+
+    } catch (error) {
+      console.error(`[VideoMigration] 预签名URL迁移异常: ${videoId}`, error)
+      
+      await this.updateMigrationStatus(videoId, 'failed').catch(() => {})
+      
+      return {
+        success: false,
+        videoId,
+        error: error instanceof Error ? error.message : '未知错误'
+      }
+    }
+  }
+
+  /**
+   * 迁移单个视频到R2（原始方法，使用直接上传）
    */
   async migrateVideo(videoId: string): Promise<MigrationResult> {
     try {
@@ -55,7 +216,7 @@ class VideoMigrationService {
       // 1. 获取视频信息
       const { data: video, error: fetchError } = await this.supabase
         .from('videos')
-        .select('id, video_url, r2_url, r2_key, migration_status, original_video_url, title, template_name')
+        .select('id, video_url, r2_url, r2_key, migration_status, original_video_url, title')
         .eq('id', videoId)
         .single()
 
@@ -241,12 +402,80 @@ class VideoMigrationService {
   }
 
   /**
+   * 使用服务端Edge Function迁移视频（推荐方法）
+   */
+  async migrateVideoServerSide(videoId: string, forceRemigrate: boolean = false): Promise<MigrationResult> {
+    try {
+      console.log(`[VideoMigration] 开始服务端迁移: ${videoId}`)
+
+      const supabaseUrl = this.getEnv('VITE_SUPABASE_URL')
+      const anonKey = this.getEnv('VITE_SUPABASE_ANON_KEY')
+
+      if (!supabaseUrl || !anonKey) {
+        return {
+          success: false,
+          videoId,
+          error: 'Supabase配置缺失'
+        }
+      }
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/migrate-video`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${anonKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          videoId,
+          forceRemigrate
+        })
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        let errorData
+        try {
+          errorData = JSON.parse(errorText)
+        } catch {
+          errorData = { error: errorText }
+        }
+        
+        return {
+          success: false,
+          videoId,
+          error: `服务端迁移失败: ${response.status} - ${errorData.error || 'Unknown error'}`
+        }
+      }
+
+      const result = await response.json()
+      
+      if (result.success) {
+        console.log(`[VideoMigration] 服务端迁移成功: ${videoId} -> ${result.r2Url}`)
+      } else {
+        console.error(`[VideoMigration] 服务端迁移失败: ${videoId} - ${result.error}`)
+      }
+
+      return result
+
+    } catch (error) {
+      console.error(`[VideoMigration] 服务端迁移异常: ${videoId}`, error)
+      return {
+        success: false,
+        videoId,
+        error: error instanceof Error ? error.message : '未知错误'
+      }
+    }
+  }
+
+  /**
    * 迁移新完成的视频（集成到视频完成流程）
+   * 现在使用服务端迁移方法
    */
   async migrateNewVideo(videoId: string): Promise<boolean> {
     console.log(`[VideoMigration] 自动迁移新视频: ${videoId}`)
     
-    const result = await this.migrateVideo(videoId)
+    // 优先使用服务端迁移
+    const result = await this.migrateVideoServerSide(videoId)
     
     if (result.success && !result.skipped) {
       console.log(`[VideoMigration] 新视频自动迁移成功: ${videoId}`)
@@ -256,7 +485,10 @@ class VideoMigrationService {
       return true
     } else {
       console.error(`[VideoMigration] 新视频迁移失败: ${videoId} - ${result.error}`)
-      return false
+      // 如果服务端迁移失败，可以fallback到客户端迁移
+      console.log(`[VideoMigration] 尝试fallback到客户端迁移...`)
+      const fallbackResult = await this.migrateVideoWithPresignedUrl(videoId)
+      return fallbackResult.success
     }
   }
 

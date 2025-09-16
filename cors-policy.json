@@ -1,0 +1,22 @@
+{
+  "rules": [
+    {
+      "allowed_origins": [
+        "https://veo3video.me",
+        "https://www.veo3video.me",
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "https://ai-video-saas.pages.dev",
+        "*"
+      ],
+      "allowed_methods": [
+        "GET",
+        "HEAD"
+      ],
+      "allowed_headers": [
+        "*"
+      ],
+      "max_age": 3600
+    }
+  ]
+}

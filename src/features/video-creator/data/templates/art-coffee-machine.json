@@ -4,7 +4,7 @@
   "name": "Art Coffee Machine Magic Creation",
   "icon": "☕",
   "description": "Transform classic artworks into fluid art in a cup through a magical coffee machine",
-  "previewUrl": "https://cdn.veo3video.me/templates/videos/art-coffee-machine.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/art-coffee-machine.mp4?v=1758008502567",
   "category": "Art/Creative",
   "tags": [
     "coffee",
@@ -17,7 +17,7 @@
   ],
   "createdAt": "2025-01-22T11:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-01-29T04:30:00Z",
+  "lastModified": "2025-09-16T07:41:42.570Z",
   "promptTemplate": "A hand wearing a black glove inserts a card printed with {artwork} into a silver, metallic machine. The brand name \"veo3video.me\" is printed on the front of the machine. After the card is fully inserted, the camera pans down. The outlet of the machine is directly aligned with a {cup_style} cup. Then, a stream of liquid in a mix of colors as coffee flows out of the nozzle, as if multiple pigments are being squeezed out simultaneously. Once the liquid is poured into the cup, it quickly forms a rotating vortex at the bottom. The various colors dynamically interweave and blend with the vortex. As more liquid is poured, these colors eventually perfectly replicate the {artwork}, like a magical piece of artistic latte art. ASMR sound effects.",
   "params": {
     "artwork": {

@@ -4,7 +4,7 @@
   "name": "CCTV Animal Rider Surveillance",
   "icon": "📹",
   "description": "Night-vision CCTV footage of various animal riders approaching camera with customizable provocative gestures",
-  "previewUrl": "https://cdn.veo3video.me/templates/videos/cctv-animal-rider-surveillance.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/cctv-animal-rider-surveillance.mp4?v=1758008502567",
   "tags": [
     "cctv",
     "surveillance",
@@ -16,7 +16,7 @@
   ],
   "createdAt": "2025-01-29T19:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-01-29T19:00:00Z",
+  "lastModified": "2025-09-16T07:41:42.573Z",
   "promptTemplate": "Night-vision CCTV realism, monochrome low-lux grain, fixed security cam perspective. Static shot from high-mounted CCTV cam showing a {mount_animal} with a {rider_animal} rider starting in the distance at {location} and walking directly toward the camera, coming to a stop at medium close-up distance. The {rider_animal} MUST remain firmly seated on the {mount_animal}'s back for the entire 8-second duration without dismounting, teleporting, or changing position. Timeline: 0-4s: steady approach with realistic walking gait; 4-5s: complete stop 3 meters from camera, rider braces against momentum change while staying mounted; 5-8s: both animals snap heads to look directly at camera lens, the {mount_animal} displays a wide, unnatural smile by pulling its lips back to expose teeth, while the {rider_animal} - STILL FIRMLY SEATED AND MAINTAINING RIDING POSITION - performs {provocative_gesture} toward the camera using only its upper body and arms, keeping its lower body stable in the riding position on the {mount_animal}'s back. Timestamp 2025-07-27 02:30:15 displayed top-left in white monospace digits. 960×540 resolution, 24fps, desaturated greyscale with slight green tint, coarse digital noise typical of low-lux CCD surveillance systems.",
   "params": {
     "mount_animal": {

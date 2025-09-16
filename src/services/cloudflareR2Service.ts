@@ -26,12 +26,23 @@ class CloudflareR2Service {
   private config: R2Config
 
   constructor() {
+    // 支持两种环境变量访问方式：浏览器环境使用 import.meta.env，Node.js环境使用 process.env
+    const getEnv = (key: string): string | undefined => {
+      if (typeof window === 'undefined') {
+        // Node.js环境 (如服务端执行的代码)
+        return process.env[key]
+      } else {
+        // 浏览器环境
+        return import.meta.env[key]
+      }
+    }
+
     this.config = {
-      accountId: import.meta.env.VITE_CLOUDFLARE_ACCOUNT_ID || '',
-      accessKeyId: import.meta.env.VITE_CLOUDFLARE_R2_ACCESS_KEY_ID || '',
-      secretAccessKey: import.meta.env.VITE_CLOUDFLARE_R2_SECRET_ACCESS_KEY || '',
-      bucketName: import.meta.env.VITE_CLOUDFLARE_R2_BUCKET_NAME || 'ai-video-storage',
-      publicDomain: import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_DOMAIN
+      accountId: getEnv('VITE_CLOUDFLARE_ACCOUNT_ID') || '',
+      accessKeyId: getEnv('VITE_CLOUDFLARE_R2_ACCESS_KEY_ID') || '',
+      secretAccessKey: getEnv('VITE_CLOUDFLARE_R2_SECRET_ACCESS_KEY') || '',
+      bucketName: getEnv('VITE_CLOUDFLARE_R2_BUCKET_NAME') || 'ai-video-storage',
+      publicDomain: getEnv('VITE_CLOUDFLARE_R2_PUBLIC_DOMAIN')
     }
 
     if (!this.config.accountId || !this.config.accessKeyId || !this.config.secretAccessKey) {
@@ -194,8 +205,8 @@ class CloudflareR2Service {
       return `https://${this.config.publicDomain}/${key}`
     }
     
-    // 使用实际启用的R2公开URL格式
-    return `https://pub-e0e4075257f3403f990bacc5d3282fc5.r2.dev/${key}`
+    // 使用配置的R2公开URL格式
+    return `https://pub-${this.config.accountId}.r2.dev/${key}`
   }
 
   /**

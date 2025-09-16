@@ -4,7 +4,7 @@
   "name": "Fireplace Cozy International Beauty Selfie",
   "icon": "🔥",
   "description": "Cozy POV selfie with international beauties in a warm fireplace-lit room",
-  "previewUrl": "https://cdn.veo3video.me/templates/videos/fireplace-seduction-selfie.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/fireplace-seduction-selfie.mp4?v=1758008502567",
   "credits": 8,
   "tags": [
     "selfie",
@@ -18,7 +18,7 @@
   ],
   "createdAt": "2025-02-01T14:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-02-01T14:00:00Z",
+  "lastModified": "2025-09-16T07:41:42.575Z",
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",

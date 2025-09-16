@@ -8,6 +8,7 @@ import { TemplateList, TemplateEdit, TemplateCreate, TemplateShow } from './Temp
 import { TicketList, TicketShow, TicketEdit } from './Tickets'
 import { FAQList, FAQEdit, FAQCreate } from './FAQ'
 import { SystemSettingsList, SystemSettingsEdit, SystemSettingsCreate } from './SystemSettings'
+import { OrderList, OrderShow } from './Orders'
 import AdminDebug from './AdminDebug'
 import ErrorBoundary from './ErrorBoundary'
 
@@ -18,7 +19,8 @@ import {
   MessageCircle,
   HelpCircle,
   Settings,
-  FileText
+  FileText,
+  Receipt
 } from 'lucide-react'
 
 const AdminApp: React.FC = () => {
@@ -61,6 +63,17 @@ const AdminApp: React.FC = () => {
           label: '用户管理'
         }}
         icon={Users}
+      />
+
+      {/* 订单管理 */}
+      <Resource
+        name="orders"
+        list={OrderList}
+        show={OrderShow}
+        options={{ 
+          label: '订单管理'
+        }}
+        icon={Receipt}
       />
 
       {/* 模板管理 */}

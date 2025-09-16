@@ -21,7 +21,7 @@ export function detectApiProvider(taskId: string): ApiProvider {
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(taskId);
   
   if (isUUID) {
-    console.log(`[API DETECTOR] 检测到APICore任务: ${taskId}`);
+    // console.log(`[API DETECTOR] 检测到APICore任务: ${taskId}`);
     return 'apicore';
   }
 
@@ -30,7 +30,7 @@ export function detectApiProvider(taskId: string): ApiProvider {
   const hasPrefix = taskId.includes(':') || taskId.startsWith('qingyun-') || taskId.startsWith('veo3-');
   
   if (hasPrefix) {
-    console.log(`[API DETECTOR] 检测到青云API任务: ${taskId}`);
+    // console.log(`[API DETECTOR] 检测到青云API任务: ${taskId}`);
     return 'qingyun';
   }
 

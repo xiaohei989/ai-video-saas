@@ -67,7 +67,7 @@ class ProgressManager {
           
           // 如果API进度停滞，使用时间模拟继续增长
           if (progress.isProgressStagnant) {
-            console.log(`[PROGRESS MANAGER] ⏰ API停滞，启用时间模拟：${videoId} 从${progress.progress}%继续`)
+            // // console.log(`[PROGRESS MANAGER] ⏰ API停滞，启用时间模拟：${videoId} 从${progress.progress}%继续`)
           }
           
           const elapsedTime = Math.floor((now.getTime() - progress.startedAt.getTime()) / 1000)
@@ -87,7 +87,7 @@ class ProgressManager {
           // 如果API停滞，确保进度不低于当前值
           if (progress.isProgressStagnant && newProgress < progress.progress) {
             newProgress = Math.min(progress.progress + 1, 99) // 至少增长1%
-            console.log(`[PROGRESS MANAGER] 🚀 停滞模拟增长：${videoId} ${progress.progress}% → ${newProgress}%`)
+            // // console.log(`[PROGRESS MANAGER] 🚀 停滞模拟增长：${videoId} ${progress.progress}% → ${newProgress}%`)
           }
           
           if (Math.abs(newProgress - progress.progress) >= 1) {
@@ -145,7 +145,7 @@ class ProgressManager {
 
     // 严格的进度非回退保护 - 适用于所有进度更新
     if (data.progress !== undefined && data.progress < existing.progress && existing.progress > 5) {
-      console.log(`[PROGRESS MANAGER] 🚫 拒绝进度回退: ${videoId} 保持${existing.progress}%，拒绝${data.progress}%`)
+      // // console.log(`[PROGRESS MANAGER] 🚫 拒绝进度回退: ${videoId} 保持${existing.progress}%，拒绝${data.progress}%`)
       updated.progress = existing.progress // 强制保持现有进度
       
       // 保持其他字段的更新，只是不回退进度值
@@ -163,7 +163,7 @@ class ProgressManager {
           updated.lastProgressValue = data.progress
           updated.lastProgressChangeTime = now
           updated.isProgressStagnant = false
-          console.log(`[PROGRESS MANAGER] 真实API进度更新: ${videoId} ${existing.progress}% → ${data.progress}%`)
+          // console.log(`[PROGRESS MANAGER] 真实API进度更新: ${videoId} ${existing.progress}% → ${data.progress}%`)
         } else {
           // 相同进度值，检查停滞时间
           const lastChangeTime = existing.lastProgressChangeTime || existing.updatedAt
@@ -173,7 +173,7 @@ class ProgressManager {
           
           if (stagnantTime > 30000) { // 30秒停滞
             if (!existing.isProgressStagnant) {
-              console.log(`[PROGRESS MANAGER] 🚨 检测到API进度停滞: ${videoId} ${data.progress}% 已持续 ${Math.round(stagnantTime/1000)}秒`)
+              // // console.log(`[PROGRESS MANAGER] 🚨 检测到API进度停滞: ${videoId} ${data.progress}% 已持续 ${Math.round(stagnantTime/1000)}秒`)
             }
             updated.isProgressStagnant = true
           }
@@ -182,7 +182,7 @@ class ProgressManager {
           updated.lastProgressChangeTime = existing.lastProgressChangeTime || now
         }
       } else {
-        console.log(`[PROGRESS MANAGER] 模拟进度更新: ${videoId} ${existing.progress}% → ${data.progress}%`)
+        // console.log(`[PROGRESS MANAGER] 模拟进度更新: ${videoId} ${existing.progress}% → ${data.progress}%`)
       }
     }
 
@@ -301,7 +301,7 @@ class ProgressManager {
       
       // 将fallback进度存储到内存中
       this.progressMap.set(videoId, fallbackProgress)
-      console.log(`[PROGRESS MANAGER] Created fallback progress for ${videoId}: ${fallbackProgress.progress}% (${quality} quality)`)
+      // console.log(`[PROGRESS MANAGER] Created fallback progress for ${videoId}: ${fallbackProgress.progress}% (${quality} quality)`)
       
       return fallbackProgress
     }
@@ -398,7 +398,7 @@ class ProgressManager {
       if (!isExpired) {
         callback(existing)
       } else {
-        console.log(`[PROGRESS MANAGER] Expired progress data for ${videoId}, age: ${Math.round(dataAge/1000)}s`)
+        // console.log(`[PROGRESS MANAGER] Expired progress data for ${videoId}, age: ${Math.round(dataAge/1000)}s`)
         // 清理过期数据
         this.progressMap.delete(videoId)
       }
@@ -426,7 +426,7 @@ class ProgressManager {
         try {
           callback(progress)
         } catch (error) {
-          console.error('[PROGRESS MANAGER] Error in subscriber callback:', error)
+          // console.error('[PROGRESS MANAGER] Error in subscriber callback:', error)
         }
       })
     }
@@ -438,7 +438,7 @@ class ProgressManager {
   clearProgress(videoId: string) {
     this.progressMap.delete(videoId)
     this.subscribers.delete(videoId)
-    console.log(`[PROGRESS MANAGER] Cleared progress for ${videoId}`)
+    // console.log(`[PROGRESS MANAGER] Cleared progress for ${videoId}`)
   }
 
   /**
@@ -448,7 +448,7 @@ class ProgressManager {
     if (this.progressUpdateTimer) {
       clearInterval(this.progressUpdateTimer)
       this.progressUpdateTimer = null
-      console.log(`[PROGRESS MANAGER] Progress update timer stopped`)
+      // console.log(`[PROGRESS MANAGER] Progress update timer stopped`)
     }
   }
 
@@ -505,14 +505,14 @@ class ProgressManager {
    * 启动状态同步检查定时器
    */
   startStateSyncTimer(userId: string) {
-    console.log(`[PROGRESS MANAGER] 🔄 启动状态同步检查定时器`)
+    // console.log(`[PROGRESS MANAGER] 🔄 启动状态同步检查定时器`)
     
     // 每30秒检查一次状态一致性
     const syncInterval = setInterval(async () => {
       try {
         const result = await this.validateStateConsistency(userId)
         if (result.fixed > 0) {
-          console.log(`[PROGRESS MANAGER] 🔧 定期同步修复了 ${result.fixed} 个状态不一致`)
+          // console.log(`[PROGRESS MANAGER] 🔧 定期同步修复了 ${result.fixed} 个状态不一致`)
         }
       } catch (error) {
         console.error(`[PROGRESS MANAGER] ❌ 定期状态同步检查失败:`, error)
@@ -526,7 +526,7 @@ class ProgressManager {
     
     return () => {
       clearInterval(syncInterval)
-      console.log(`[PROGRESS MANAGER] 🔒 状态同步定时器已停止`)
+      // console.log(`[PROGRESS MANAGER] 🔒 状态同步定时器已停止`)
     }
   }
 
@@ -559,12 +559,12 @@ class ProgressManager {
           const isExpired = Date.now() - progress.updatedAt.getTime() > 2 * 60 * 60 * 1000
           if (!isExpired && (progress.status === 'processing' || progress.status === 'pending')) {
             this.progressMap.set(videoId, progress)
-            console.log(`[PROGRESS MANAGER] Restored from localStorage: ${videoId} (${progress.progress}%)`)
+            // console.log(`[PROGRESS MANAGER] Restored from localStorage: ${videoId} (${progress.progress}%)`)
           }
         }
       }
     } catch (error) {
-      console.error('[PROGRESS MANAGER] Failed to load from localStorage:', error)
+      // console.error('[PROGRESS MANAGER] Failed to load from localStorage:', error)
     }
   }
 
@@ -586,7 +586,7 @@ class ProgressManager {
       }
       localStorage.setItem('videoProgress', JSON.stringify(data))
     } catch (error) {
-      console.error('[PROGRESS MANAGER] Failed to save to localStorage:', error)
+      // console.error('[PROGRESS MANAGER] Failed to save to localStorage:', error)
     }
   }
 
@@ -656,7 +656,7 @@ class ProgressManager {
    * 立即保存所有待同步的任务到数据库
    */
   async flushToDatabase() {
-    console.log(`[PROGRESS MANAGER] 💾 开始批量同步 ${this.pendingSyncTasks.size} 个任务到数据库`)
+    // console.log(`[PROGRESS MANAGER] 💾 开始批量同步 ${this.pendingSyncTasks.size} 个任务到数据库`)
     const promises: Promise<void>[] = []
     for (const videoId of this.pendingSyncTasks) {
       // 清除防抖定时器
@@ -668,7 +668,7 @@ class ProgressManager {
     }
     
     await Promise.all(promises)
-    console.log(`[PROGRESS MANAGER] ✅ 批量同步完成`)
+    // console.log(`[PROGRESS MANAGER] ✅ 批量同步完成`)
   }
 
   /**
@@ -682,7 +682,7 @@ class ProgressManager {
   }> {
     // 避免未使用参数警告
     void userId
-    console.log(`[PROGRESS MANAGER] 🔍 开始状态一致性检查...`)
+    // console.log(`[PROGRESS MANAGER] 🔍 开始状态一致性检查...`)
     const result = { checked: 0, fixed: 0, errors: [] }
     
     try {
@@ -698,7 +698,7 @@ class ProgressManager {
           const dbVideo = await supabaseVideoService.getVideo(videoId)
           
           if (!dbVideo) {
-            console.log(`[PROGRESS MANAGER] 🧹 清理已删除视频的进度数据: ${videoId}`)
+            // console.log(`[PROGRESS MANAGER] 🧹 清理已删除视频的进度数据: ${videoId}`)
             this.clearProgress(videoId)
             result.fixed++
             continue
@@ -709,19 +709,19 @@ class ProgressManager {
           const memStatus = progress.status
           
           if (dbStatus !== memStatus) {
-            console.log(`[PROGRESS MANAGER] 🔄 状态不一致: ${videoId} 内存[${memStatus}] vs 数据库[${dbStatus}]`)
+            // console.log(`[PROGRESS MANAGER] 🔄 状态不一致: ${videoId} 内存[${memStatus}] vs 数据库[${dbStatus}]`)
             
             // 如果数据库显示已完成但内存还在处理中
             if (dbStatus === 'completed' && (memStatus === 'processing' || memStatus === 'pending')) {
               if (dbVideo.video_url) {
-                console.log(`[PROGRESS MANAGER] ✅ 同步完成状态: ${videoId}`)
+                // console.log(`[PROGRESS MANAGER] ✅ 同步完成状态: ${videoId}`)
                 this.markAsCompleted(videoId, dbVideo.video_url)
                 result.fixed++
               }
             }
             // 如果数据库显示失败但内存还在处理中
             else if (dbStatus === 'failed' && (memStatus === 'processing' || memStatus === 'pending')) {
-              console.log(`[PROGRESS MANAGER] ❌ 同步失败状态: ${videoId}`)
+              // console.log(`[PROGRESS MANAGER] ❌ 同步失败状态: ${videoId}`)
               this.markAsFailed(videoId, dbVideo.error_message || '任务失败')
               result.fixed++
             }
@@ -734,7 +734,7 @@ class ProgressManager {
         }
       }
       
-      console.log(`[PROGRESS MANAGER] ✅ 状态一致性检查完成: 检查${result.checked}个，修复${result.fixed}个，错误${result.errors.length}个`)
+      // console.log(`[PROGRESS MANAGER] ✅ 状态一致性检查完成: 检查${result.checked}个，修复${result.fixed}个，错误${result.errors.length}个`)
       
     } catch (error) {
       const errorMsg = `State consistency check failed: ${String(error)}`
@@ -790,15 +790,15 @@ class ProgressManager {
           if (!isExpired) {
             this.progressMap.set(video.id, progress)
             restoredCount++
-            console.log(`[PROGRESS MANAGER] Restored from database: ${video.id} (${progress.progress}%)`)
+            // console.log(`[PROGRESS MANAGER] Restored from database: ${video.id} (${progress.progress}%)`)
           }
         }
       }
       
-      console.log(`[PROGRESS MANAGER] Restored ${restoredCount} tasks from database`)
+      // console.log(`[PROGRESS MANAGER] Restored ${restoredCount} tasks from database`)
       return restoredCount
     } catch (error) {
-      console.error('[PROGRESS MANAGER] Failed to restore from database:', error)
+      // console.error('[PROGRESS MANAGER] Failed to restore from database:', error)
       return 0
     }
   }

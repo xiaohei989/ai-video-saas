@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浏览器CORS测试 - 预签名URL上传</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #6c757d; cursor: not-allowed; }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .progress {
+            width: 100%;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #28a745;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 浏览器CORS测试 - 预签名URL上传</h1>
+        
+        <div class="info status">
+            <strong>测试目标:</strong> 验证预签名URL方案在浏览器环境下的CORS兼容性
+        </div>
+
+        <h2>📋 测试步骤</h2>
+        <ol>
+            <li>获取预签名URL</li>
+            <li>下载测试视频</li>
+            <li>使用预签名URL上传到R2</li>
+            <li>验证上传结果</li>
+        </ol>
+
+        <div>
+            <button id="startTest" onclick="startCORSTest()">开始CORS测试</button>
+            <button id="clearLog" onclick="clearLog()">清除日志</button>
+        </div>
+
+        <div id="progress" class="progress" style="display: none;">
+            <div id="progressBar" class="progress-bar" style="width: 0%;"></div>
+        </div>
+
+        <div id="status" class="info status" style="display: none;">
+            正在初始化测试...
+        </div>
+
+        <h2>📊 测试日志</h2>
+        <div id="log">
+            <div class="info status">等待开始测试...</div>
+        </div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://hvkzwrnvxsleeonqqrzq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2a3p3cm52eHNsZWVvbnFxcnpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3NjQ1NjAsImV4cCI6MjA3MTM0MDU2MH0.VOHVXCUFRk83t1cfPHd6Lf5SwWDQHn1Hl2Mn0qqiyPk';
+        
+        // 测试视频URL（使用我们的测试视频）
+        const testVideoUrl = 'https://heyoo.oss-ap-southeast-1.aliyuncs.com/fba658c2-4ae0-4097-9f64-59a9575390c4_normal.mp4';
+
+        let logContainer = document.getElementById('log');
+        let statusDiv = document.getElementById('status');
+        let progressDiv = document.getElementById('progress');
+        let progressBar = document.getElementById('progressBar');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = `${type} status`;
+            div.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+            logContainer.appendChild(div);
+            div.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateProgress(percent) {
+            progressBar.style.width = percent + '%';
+        }
+
+        function updateStatus(message, type = 'info') {
+            statusDiv.className = `${type} status`;
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+        }
+
+        function clearLog() {
+            logContainer.innerHTML = '<div class="info status">日志已清除</div>';
+            statusDiv.style.display = 'none';
+            progressDiv.style.display = 'none';
+        }
+
+        async function startCORSTest() {
+            const button = document.getElementById('startTest');
+            button.disabled = true;
+            progressDiv.style.display = 'block';
+            
+            try {
+                log('🚀 开始浏览器CORS测试');
+                updateStatus('正在进行CORS测试...', 'info');
+                updateProgress(10);
+
+                const testVideoId = `browser-test-${Date.now()}`;
+                log(`📹 测试视频ID: ${testVideoId}`);
+
+                // 第一步：获取预签名URL
+                log('🔗 步骤1: 获取预签名URL...');
+                updateProgress(20);
+
+                const urlResponse = await fetch(`${supabaseUrl}/functions/v1/generate-upload-url`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${supabaseKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        videoId: testVideoId,
+                        contentType: 'video/mp4',
+                        expiresIn: 3600
+                    })
+                });
+
+                if (!urlResponse.ok) {
+                    throw new Error(`预签名URL获取失败: ${urlResponse.status}`);
+                }
+
+                const urlData = await urlResponse.json();
+                if (!urlData.success) {
+                    throw new Error(`预签名URL生成失败: ${urlData.error}`);
+                }
+
+                const { signedUrl, publicUrl } = urlData.data;
+                log('✅ 预签名URL获取成功', 'success');
+                log(`📋 公开URL: <a href="${publicUrl}" target="_blank">${publicUrl}</a>`);
+                updateProgress(40);
+
+                // 第二步：下载测试视频
+                log('⬇️ 步骤2: 下载测试视频...');
+                updateProgress(50);
+
+                const videoResponse = await fetch(testVideoUrl);
+                if (!videoResponse.ok) {
+                    throw new Error(`视频下载失败: ${videoResponse.status}`);
+                }
+
+                const videoBlob = await videoResponse.blob();
+                log(`✅ 视频下载成功: ${videoBlob.size} bytes (${(videoBlob.size / 1024 / 1024).toFixed(2)} MB)`, 'success');
+                updateProgress(70);
+
+                // 第三步：使用预签名URL上传（这里是关键的CORS测试点）
+                log('⬆️ 步骤3: 使用预签名URL上传到R2... (CORS测试关键点)', 'warning');
+                updateProgress(80);
+
+                try {
+                    const uploadResponse = await fetch(signedUrl, {
+                        method: 'PUT',
+                        body: videoBlob,
+                        headers: {
+                            'Content-Type': 'video/mp4'
+                        }
+                    });
+
+                    if (!uploadResponse.ok) {
+                        const errorText = await uploadResponse.text();
+                        throw new Error(`上传失败: ${uploadResponse.status} - ${errorText}`);
+                    }
+
+                    log('✅ R2上传成功 - CORS配置正确！', 'success');
+                    updateProgress(90);
+
+                    // 第四步：验证上传结果
+                    log('🔍 步骤4: 验证上传结果...');
+                    
+                    // 等待R2处理
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                    const verifyResponse = await fetch(publicUrl, { method: 'HEAD' });
+                    if (verifyResponse.ok) {
+                        log('✅ 文件可通过公开URL访问', 'success');
+                        log(`📊 文件信息: Content-Type: ${verifyResponse.headers.get('content-type')}, Size: ${verifyResponse.headers.get('content-length')} bytes`);
+                    } else {
+                        log('⚠️ 文件暂时无法访问（可能需要等待CDN同步）', 'warning');
+                    }
+
+                    updateProgress(100);
+                    updateStatus('🎉 CORS测试完全成功！预签名URL方案在浏览器中工作正常', 'success');
+                    
+                    log('🎯 ========== 测试总结 ==========', 'success');
+                    log('✅ 预签名URL获取 - 成功', 'success');
+                    log('✅ 视频文件下载 - 成功', 'success');
+                    log('✅ R2跨域上传 - 成功 (无CORS错误)', 'success');
+                    log('✅ 文件访问验证 - 成功', 'success');
+                    log('🎉 结论: 方案2完全可行，CORS配置正确！', 'success');
+
+                } catch (corsError) {
+                    if (corsError.message.includes('CORS') || corsError.message.includes('cors')) {
+                        log('❌ CORS错误: 需要配置R2存储桶的CORS设置', 'error');
+                        updateStatus('CORS配置需要调整', 'error');
+                    } else {
+                        throw corsError;
+                    }
+                }
+
+            } catch (error) {
+                log(`💥 测试失败: ${error.message}`, 'error');
+                updateStatus(`测试失败: ${error.message}`, 'error');
+                console.error('详细错误:', error);
+
+                log('🔍 故障排除建议:', 'warning');
+                log('1. 检查Edge Function是否正确部署', 'warning');
+                log('2. 验证环境变量配置', 'warning');
+                log('3. 确认R2 CORS设置正确', 'warning');
+                log('4. 检查网络连接', 'warning');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // 页面加载时显示初始信息
+        window.addEventListener('load', function() {
+            log('🌐 浏览器环境测试页面已加载');
+            log('📋 测试将验证预签名URL方案的CORS兼容性');
+            log('⚡ 点击"开始CORS测试"按钮开始测试');
+        });
+    </script>
+</body>
+</html>

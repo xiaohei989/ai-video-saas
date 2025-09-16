@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Play, Hash, TrendingUp, Sparkles, ArrowUp, Camera } from 'lucide-react'
+import { Play, Hash, TrendingUp, Sparkles, ArrowUp, Video } from 'lucide-react'
 import { templateList as initialTemplates, getPopularTags, getTemplatesByTags } from '@/features/video-creator/data/templates/index'
 import LazyVideoPlayer from '@/components/video/LazyVideoPlayer'
 import LikeCounterButton from '@/components/templates/LikeCounterButton'
@@ -34,7 +34,13 @@ export default function TemplatesPage() {
   })
   const [pageSize, setPageSize] = useState(() => {
     const size = searchParams.get('size')
-    return size ? Math.max(9, parseInt(size, 10)) : 12
+    // 移动端优化：默认显示更少的模版
+    const isMobile = typeof window !== 'undefined' && (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+      window.innerWidth <= 768 // 同时检查屏幕宽度
+    )
+    const defaultSize = isMobile ? 6 : 12 // 移动端减少到6个
+    return size ? Math.max(3, parseInt(size, 10)) : defaultSize
   })
   const [sortBy, setSortBy] = useState<SortOption>(() => {
     const sort = searchParams.get('sort') as SortOption
@@ -99,17 +105,49 @@ export default function TemplatesPage() {
     }
   }, [searchParams])
 
-  // 获取所有模板ID用于批量查询点赞状态
-  const templateIds = useMemo(() => templates.map(t => t.id), [templates])
+  // 根据标签筛选和排序的模板列表
+  const filteredAndSortedTemplates = useMemo(() => {
+    // 首先根据选中的标签筛选模板
+    const filteredTemplates = getTemplatesByTags(selectedTags)
+    
+    // 然后排序 - 暂时使用静态数据排序，避免循环依赖
+    switch (sortBy) {
+      case 'latest':
+        // 按创建时间降序排序（最新的在前）
+        return filteredTemplates.sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
+          return dateB - dateA
+        })
+      
+      case 'popular':
+      default:
+        // 默认按积分排序，点赞数排序将在点赞状态加载后更新
+        return filteredTemplates
+    }
+  }, [selectedTags, sortBy])
+
+  // 分页计算
+  const totalItems = filteredAndSortedTemplates.length
+  const totalPages = Math.ceil(totalItems / pageSize)
+  const startIndex = (currentPage - 1) * pageSize
+  const endIndex = startIndex + pageSize
+  const paginatedTemplates = filteredAndSortedTemplates.slice(startIndex, endIndex)
   
-  // 批量管理点赞状态
+  // 优化：只查询当前页模版的点赞状态，减少网络请求
+  const currentPageTemplateIds = useMemo(() => 
+    paginatedTemplates.map(t => t.id), 
+    [paginatedTemplates]
+  )
+  
+  // 批量管理点赞状态 - 只查询当前页
   const {
     likeStatuses,
     loading: likesLoading,
     getLikeStatus,
     updateStatus
   } = useTemplateLikes({
-    templateIds,
+    templateIds: currentPageTemplateIds,
     enableAutoRefresh: false
   })
   
@@ -168,42 +206,6 @@ export default function TemplatesPage() {
     })
   }
 
-  // 根据标签筛选和排序的模板列表
-  const filteredAndSortedTemplates = useMemo(() => {
-    // 首先根据选中的标签筛选模板
-    const filteredTemplates = getTemplatesByTags(selectedTags)
-    
-    // 然后排序
-    switch (sortBy) {
-      case 'popular':
-        // 按点赞数降序排序（优先使用实时数据，回退到静态数据）
-        return filteredTemplates.sort((a, b) => {
-          const likeStatusA = getLikeStatus(a.id)
-          const likeStatusB = getLikeStatus(b.id)
-          const likesA = likeStatusA?.like_count ?? 0
-          const likesB = likeStatusB?.like_count ?? 0
-          return likesB - likesA
-        })
-      
-      case 'latest':
-        // 按创建时间降序排序（最新的在前）
-        return filteredTemplates.sort((a, b) => {
-          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
-          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
-          return dateB - dateA
-        })
-      
-      default:
-        return filteredTemplates
-    }
-  }, [selectedTags, sortBy, likeStatuses, getLikeStatus])
-
-  // 分页计算
-  const totalItems = filteredAndSortedTemplates.length
-  const totalPages = Math.ceil(totalItems / pageSize)
-  const startIndex = (currentPage - 1) * pageSize
-  const endIndex = startIndex + pageSize
-  const paginatedTemplates = filteredAndSortedTemplates.slice(startIndex, endIndex)
 
   // 当切换排序或页面大小时，重置到第一页
   useEffect(() => {
@@ -368,129 +370,19 @@ export default function TemplatesPage() {
         )}
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {paginatedTemplates.map((template: any, index: number) => {
-          // 所有视频都使用懒加载，优先显示缩略图
-          const enableLazy = true // 启用懒加载，静默后台加载视频
-          
-          // 检测移动端，禁用autoPlayOnHover以节省资源
-          const isMobile = typeof window !== 'undefined' && 
-            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-          
-          return (
-          <Card key={template.id} className="overflow-hidden shadow-md flex flex-col">
-            <div className="aspect-video bg-muted relative group">
-              {template.previewUrl ? (
-                <LazyVideoPlayer
-                  src={template.previewUrl}
-                  poster={template.thumbnailUrl}
-                  className="w-full h-full"
-                  objectFit="cover"
-                  showPlayButton={true}
-                  showVolumeControl={true}
-                  autoPlayOnHover={!isMobile} // 移动端禁用自动播放
-                  alt={template.name}
-                  enableLazyLoad={enableLazy}
-                  enableThumbnailCache={true}
-                  enableNetworkAdaptive={true}
-                  enableProgressiveLoading={!isMobile} // 移动端禁用渐进式加载
-                />
-              ) : template.thumbnailUrl ? (
-                <img 
-                  src={template.thumbnailUrl}
-                  alt={template.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-muted flex items-center justify-center">
-                  <div className="text-center text-muted-foreground">
-                    <Play className="h-12 w-12 mx-auto mb-2" />
-                    <p className="text-sm font-medium">{template.name}</p>
-                    <p className="text-xs opacity-70 mt-1">{template.icon} {template.description}</p>
-                  </div>
-                </div>
-              )}
-              
-              
-              {/* 生成按钮（底部中间，移动端始终显示，桌面端悬停显示） */}
-              <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 z-20">
-                <Button 
-                  variant="outline"
-                  size="sm"
-                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-200 text-xs font-light px-3 py-1.5"
-                  onClick={() => {
-                    // 跟踪模板使用事件
-                    trackTemplateView(template.id, template.category)
-                    trackEvent({
-                      action: 'template_use_click',
-                      category: 'product_usage',
-                      label: template.id,
-                      custom_parameters: {
-                        template_name: template.name,
-                        template_category: template.category,
-                        credit_cost: template.credits
-                      }
-                    })
-                    navigate(`/create?template=${template.slug}`)
-                  }}
-                >
-                  <Camera className="h-3 w-3 mr-1.5" />
-                  {t('template.generate')}
-                </Button>
-              </div>
-              
-              {/* 可交互的点赞区域（左上角） */}
-              <div className="absolute top-2 left-2 z-10">
-                {(() => {
-                  const likeStatus = getLikeStatus(template.id)
-                  const likeCount = likeStatus?.like_count ?? 0
-                  const isLiked = likeStatus?.is_liked ?? false
-                  
-                  return (
-                    <LikeCounterButton
-                      templateId={template.id}
-                      initialLikeCount={likeCount}
-                      initialIsLiked={isLiked}
-                      size="sm"
-                      variant="default"
-                      showIcon={true}
-                      animated={true}
-                      onLikeChange={(liked, count) => {
-                        updateStatus(template.id, { is_liked: liked, like_count: count })
-                      }}
-                    />
-                  )
-                })()}
-              </div>
-            </div>
-            <CardContent className="flex-1 flex flex-col justify-between p-4">
-              <div className="space-y-3">
-                {/* 描述信息 */}
-                <p className="text-xs text-muted-foreground line-clamp-3">
-                  {template.description}
-                </p>
-                
-                
-                {/* 标签 */}
-                {template.tags && template.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {template.tags.map((tag: string) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] bg-secondary text-secondary-foreground rounded-sm"
-                      >
-                        <Hash className="h-2 w-2" />
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-              
-            </CardContent>
-          </Card>
-          )
-        })}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        {paginatedTemplates.map((template: any, index: number) => (
+          <TemplateCard 
+            key={template.id}
+            template={template}
+            index={index}
+            onUseTemplate={navigate}
+            onLikeChange={updateStatus}
+            getLikeStatus={getLikeStatus}
+            trackTemplateView={trackTemplateView}
+            trackEvent={trackEvent}
+          />
+        ))}
       </div>
 
       {/* 分页组件 */}
@@ -524,3 +416,183 @@ export default function TemplatesPage() {
     </div>
   )
 }
+
+// 优化的模版卡片组件，使用React.memo减少重渲染
+const TemplateCard = memo(({ 
+  template, 
+  index, 
+  onUseTemplate, 
+  onLikeChange, 
+  getLikeStatus, 
+  trackTemplateView, 
+  trackEvent 
+}: {
+  template: any
+  index: number
+  onUseTemplate: (url: string) => void
+  onLikeChange: (id: string, status: any) => void
+  getLikeStatus: (id: string) => any
+  trackTemplateView: (id: string, category: string) => void
+  trackEvent: (event: any) => void
+}) => {
+  const { t } = useTranslation()
+  
+  // 检测移动端，禁用autoPlayOnHover以节省资源
+  const isMobile = typeof window !== 'undefined' && (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+    window.innerWidth <= 768 // 同时检查屏幕宽度
+  )
+  
+  // 移动端优化策略：
+  // 1. 只显示缩略图，不加载视频  
+  // 2. 减少同时渲染的数量
+  // 3. 禁用所有自动加载功能
+  const enableVideoLazy = !isMobile || index < 3 // 移动端只对前3个启用视频懒加载
+  const enableThumbnailOnly = isMobile && index >= 3 // 移动端后续只显示缩略图
+
+  const handleUseTemplate = () => {
+    // 跟踪模板使用事件
+    trackTemplateView(template.id, template.category)
+    trackEvent({
+      action: 'template_use_click',
+      category: 'product_usage',
+      label: template.id,
+      custom_parameters: {
+        template_name: template.name,
+        template_category: template.category,
+        credit_cost: template.credits
+      }
+    })
+    onUseTemplate(`/create?template=${template.slug}`)
+  }
+
+  const likeStatus = getLikeStatus(template.id)
+  const likeCount = likeStatus?.like_count ?? 0
+  const isLiked = likeStatus?.is_liked ?? false
+
+  return (
+    <Card className="overflow-hidden shadow-md flex flex-col">
+      <div className="aspect-video bg-muted relative group">
+        {enableThumbnailOnly ? (
+          // 移动端优化：只显示缩略图，点击时才加载视频
+          template.thumbnailUrl ? (
+            <div className="relative w-full h-full">
+              <img 
+                src={template.thumbnailUrl}
+                alt={template.name}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                <div className="bg-white/90 rounded-full p-3 shadow-lg">
+                  <Play className="h-6 w-6 text-gray-700" />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full h-full bg-muted flex items-center justify-center">
+              <div className="text-center text-muted-foreground">
+                <Play className="h-12 w-12 mx-auto mb-2" />
+                <p className="text-sm font-medium">{template.name}</p>
+                <p className="text-xs opacity-70 mt-1">{template.icon} {template.description}</p>
+              </div>
+            </div>
+          )
+        ) : template.previewUrl ? (
+          <LazyVideoPlayer
+            src={template.previewUrl}
+            poster={template.thumbnailUrl}
+            className="w-full h-full"
+            objectFit="cover"
+            showPlayButton={true}
+            showVolumeControl={!isMobile} // 移动端隐藏音量控制
+            autoPlayOnHover={!isMobile} // 移动端禁用自动播放
+            alt={template.name}
+            videoId={template.id}
+            videoTitle={template.name}
+            enableLazyLoad={enableVideoLazy}
+            enableThumbnailCache={true}
+            enableNetworkAdaptive={!isMobile} // 移动端禁用网络自适应
+            enableProgressiveLoading={!isMobile} // 移动端禁用渐进式加载
+            lazyLoadOptions={{
+              threshold: isMobile ? 0.5 : 0.1, // 移动端提高触发阈值
+              loadStrategy: isMobile ? 'onInteraction' : 'onVisible', // 移动端改为交互时加载
+              enablePreload: !isMobile // 移动端禁用预加载
+            }}
+          />
+        ) : template.thumbnailUrl ? (
+          <img 
+            src={template.thumbnailUrl}
+            alt={template.name}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full bg-muted flex items-center justify-center">
+            <div className="text-center text-muted-foreground">
+              <Play className="h-12 w-12 mx-auto mb-2" />
+              <p className="text-sm font-medium">{template.name}</p>
+              <p className="text-xs opacity-70 mt-1">{template.icon} {template.description}</p>
+            </div>
+          </div>
+        )}
+        
+        {/* 生成按钮（底部中间，移动端始终显示，桌面端悬停显示） */}
+        <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 z-20">
+          <Button 
+            variant="outline"
+            size="sm"
+            className="bg-black/20 border-white/40 text-white hover:text-white hover:bg-gradient-to-r hover:from-blue-500/30 hover:to-purple-500/30 hover:border-white/60 hover:scale-105 backdrop-blur-md transition-all duration-300 text-xs font-semibold px-4 py-2 shadow-xl [&:hover]:text-white"
+            onClick={handleUseTemplate}
+            style={{
+              textShadow: '0 1px 3px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.5), 0 0 24px rgba(0,0,0,0.3)',
+              color: 'white'
+            }}
+          >
+            <Video className="h-3.5 w-3.5 mr-1.5 drop-shadow-lg text-white" />
+            <span className="drop-shadow-lg text-white">{t('template.generate')}</span>
+          </Button>
+        </div>
+        
+        {/* 可交互的点赞区域（左上角） */}
+        <div className="absolute top-2 left-2 z-10">
+          <LikeCounterButton
+            templateId={template.id}
+            initialLikeCount={likeCount}
+            initialIsLiked={isLiked}
+            size="sm"
+            variant="default"
+            showIcon={true}
+            animated={true}
+            onLikeChange={(liked, count) => {
+              onLikeChange(template.id, { is_liked: liked, like_count: count })
+            }}
+          />
+        </div>
+      </div>
+      <CardContent className="flex-1 flex flex-col justify-between p-4">
+        <div className="space-y-3">
+          {/* 描述信息 */}
+          <p className="text-xs text-muted-foreground line-clamp-3">
+            {template.description}
+          </p>
+          
+          {/* 标签 */}
+          {template.tags && template.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {template.tags.map((tag: string) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] bg-secondary text-secondary-foreground rounded-sm"
+                >
+                  <Hash className="h-2 w-2" />
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  )
+})

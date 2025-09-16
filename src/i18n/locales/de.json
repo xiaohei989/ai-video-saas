@@ -86,6 +86,25 @@
     "authError": "Ein Fehler ist bei der Anmeldung aufgetreten",
     "redirectingToLogin": "Weiterleitung zur Anmeldeseite..."
   },
+  "emailVerification": {
+    "title": "E-Mail-Adresse verifizieren",
+    "description": "Wir haben eine Bestätigungs-E-Mail an {{email}} gesendet",
+    "instructions": "Bitte folgen Sie diesen Schritten zur Vervollständigung der Verifizierung:",
+    "step1": "Öffnen Sie Ihre E-Mail-App oder Ihr Webmail",
+    "step2": "Suchen Sie nach der Verifikations-E-Mail von AI Video SaaS",
+    "step3": "Falls Sie sie nicht finden, prüfen Sie Ihren Spam-Ordner",
+    "step4": "Klicken Sie auf den Verifikationslink in der E-Mail",
+    "resendButton": "Verifikations-E-Mail erneut senden",
+    "resendingButton": "Wird erneut gesendet...",
+    "backToSignup": "Zurück zur Registrierung",
+    "linkExpiry": "Der Verifikationslink läuft in 1 Stunde ab",
+    "noEmailContact": "Falls Sie weiterhin keine E-Mail erhalten, kontaktieren Sie den Support",
+    "resendSuccess": "Verifikations-E-Mail wurde erneut gesendet",
+    "resendSuccessDescription": "Bitte prüfen Sie Ihr E-Mail-Postfach (einschließlich Spam-Ordner)",
+    "resendError": "Erneutes Senden fehlgeschlagen",
+    "resendErrorDescription": "Bitte versuchen Sie es später erneut",
+    "resendWait": "Bitte warten Sie {{seconds}} Sekunden vor dem erneuten Senden"
+  },
   "user": {
     "guest": "Gast",
     "userCenter": "Benutzerzentrale",

@@ -4,7 +4,7 @@
   "name": "Tiny Pet on Fingertip",
   "icon": "🐾",
   "description": "Capture an ultra-miniature adorable animal standing on fingertip, creating a heartwarming and healing scene",
-  "previewUrl": "https://cdn.veo3video.me/templates/videos/tiny-pet-fingertip.mp4",
+  "previewUrl": "https://cdn.veo3video.me/templates/videos/tiny-pet-fingertip.mp4?v=1758008502567",
   "tags": [
     "cute pets",
     "miniature",
@@ -18,7 +18,7 @@
   "category": "Animals/Pets",
   "createdAt": "2024-02-01T14:30:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-01-29T04:30:00Z",
+  "lastModified": "2025-09-16T07:41:42.581Z",
   "promptTemplate": "Extreme macro close-up, professional camera, ultra-shallow depth of field focusing on a tiny {animal_type} with {animal_color} coloring balanced on a fingertip. The {size_adjective} {animal_type} has {special_feature}. Scene: {scene_setting} with warm natural lighting. The {animal_type} {animal_action}, creating a heartwarming and peaceful atmosphere.",
   "params": {
     "animal_type": {

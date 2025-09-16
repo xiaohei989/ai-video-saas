@@ -99,6 +99,25 @@
     "completingLogin": "ログインを完了しています...",
     "verifyingCredentials": "お待ちください、認証情報を確認中です"
   },
+  "emailVerification": {
+    "title": "メールアドレスを認証",
+    "description": "認証メールを送信しました：{{email}}",
+    "instructions": "以下の手順に従って認証を完了してください：",
+    "step1": "メールアプリまたはWebメールを開く",
+    "step2": "AI Video SaaS からの認証メールを探す",
+    "step3": "見つからない場合は迷惑メールフォルダをチェック",
+    "step4": "メール内の認証リンクをクリック",
+    "resendButton": "認証メールを再送信",
+    "resendingButton": "再送信中...",
+    "backToSignup": "サインアップに戻る",
+    "linkExpiry": "認証リンクは1時間後に期限切れになります",
+    "noEmailContact": "メールが届かない場合はカスタマーサービスにお問い合わせください",
+    "resendSuccess": "認証メールを再送信しました",
+    "resendSuccessDescription": "メール（迷惑メールフォルダを含む）をご確認ください",
+    "resendError": "再送信に失敗しました",
+    "resendErrorDescription": "しばらくしてから再度お試しください",
+    "resendWait": "{{seconds}}秒後に再送信してください"
+  },
   "userCenter": {
     "welcome": "ようこそ",
     "noBio": "自己紹介が追加されていません",
