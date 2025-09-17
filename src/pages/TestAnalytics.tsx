@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import analyticsService from '@/services/analyticsService'
 import { CheckCircle, XCircle, Play, ShoppingCart, Heart, Share2, Download } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function TestAnalytics() {
   const { t } = useTranslation()
@@ -102,7 +103,7 @@ export default function TestAnalytics() {
 
   const handleCustomEvent = () => {
     if (!customEvent.action || !customEvent.category) {
-      alert(t('analytics.testPage.customEvents.fillRequired'))
+      toast.error(t('analytics.testPage.customEvents.fillRequired'))
       return
     }
 

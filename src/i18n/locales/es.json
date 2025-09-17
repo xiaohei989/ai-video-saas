@@ -81,7 +81,27 @@
     "verifyingCredentials": "Por favor espere, verificando sus credenciales",
     "sessionError": "No se puede establecer la sesión, por favor inicie sesión nuevamente",
     "authError": "Ocurrió un error durante el inicio de sesión",
-    "redirectingToLogin": "Redirigiendo a la página de inicio de sesión..."
+    "redirectingToLogin": "Redirigiendo a la página de inicio de sesión...",
+    "checkYourEmail": "Revisa tu correo electrónico",
+    "resetPasswordEmailSent": "Se ha enviado un correo de restablecimiento de contraseña a {{email}}",
+    "resetPasswordInstructions": "Por favor sigue las instrucciones del correo para restablecer tu contraseña",
+    "sendAnotherEmail": "Enviar otro correo",
+    "forgotPasswordDescription": "Ingresa tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña",
+    "sendResetEmail": "Enviar correo de restablecimiento",
+    "sendingResetEmail": "Enviando...",
+    "userNotFound": "Usuario no encontrado",
+    "rateLimitError": "Demasiadas solicitudes, por favor intenta más tarde",
+    "resetPasswordError": "Error al restablecer la contraseña",
+    "newPasswordPlaceholder": "Ingresa tu nueva contraseña",
+    "confirmNewPassword": "Confirmar nueva contraseña",
+    "confirmNewPasswordPlaceholder": "Ingresa tu nueva contraseña nuevamente",
+    "updatingPassword": "Actualizando...",
+    "passwordUpdatedDescription": "Tu contraseña se ha actualizado correctamente, redirigiendo a la página de perfil en 3 segundos",
+    "redirectingToProfile": "Redirigiendo a la página de perfil en 3 segundos...",
+    "samePasswordError": "La nueva contraseña no puede ser igual a la anterior",
+    "passwordRequirement1": "Mínimo 8 caracteres",
+    "passwordRequirement2": "Contiene letras mayúsculas y minúsculas",
+    "passwordRequirement3": "Contiene al menos un número"
   },
   "emailVerification": {
     "title": "Verifica tu correo electrónico",
@@ -477,6 +497,12 @@
     "completed": "¡Generación completada!",
     "failed": "Generación fallida",
     "generationLimited": "Límite de generación alcanzado, espere antes de intentar nuevamente",
+    "insufficientCreditsError": "💰 Créditos insuficientes para generar video",
+    "insufficientCreditsDescription": "Requiere {{required}} créditos, saldo actual {{current}} créditos",
+    "concurrencyLimitError": "🚫 Límite máximo de generación concurrente alcanzado",
+    "concurrencyLimitDescription": "Los usuarios {{tier}} pueden generar hasta {{limit}} videos simultáneamente",
+    "viewPricingPlans": "Ver Planes",
+    "upgradePlan": "Actualizar Plan",
     "finalizing": "Finalizando...",
     "restoring": "Restaurando...",
     "unknownStatus": "Estado desconocido"
@@ -1093,5 +1119,71 @@
     "clearVideoCache": "Borrar Caché de Vídeos",
     "clearCacheConfirm": "¿Estás seguro de que quieres borrar toda la caché relacionada con vídeos? Esto borrará las vistas previas de vídeos, caché de miniaturas y otros datos.",
     "cacheCleared": "Caché de vídeos borrada exitosamente"
+  },
+  "errors": {
+    "credit": {
+      "insufficientCredits": "Créditos insuficientes. Por favor recarga créditos o actualiza tu plan",
+      "creditRetrievalFailed": "Error al obtener información de créditos",
+      "creditDeductionFailed": "Error al deducir créditos",
+      "invalidCreditAmount": "Cantidad de créditos inválida"
+    },
+    "validation": {
+      "emailTimeout": "Tiempo de espera de validación de correo agotado",
+      "ipCheckTimeout": "Tiempo de espera de verificación de IP agotado",
+      "deviceFingerprintTimeout": "Tiempo de espera de verificación de huella digital agotado",
+      "securityCheckFailed": "Error en la verificación de seguridad",
+      "invalidEmailFormat": "Formato de correo electrónico inválido",
+      "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
+      "passwordComplexity": "La contraseña debe incluir mayúsculas, minúsculas y números",
+      "usernameInvalid": "El nombre de usuario solo puede contener letras, números, guiones bajos y guiones de 3-20 caracteres"
+    },
+    "general": {
+      "networkError": "Error de red",
+      "serverError": "Error del servidor",
+      "unknownError": "Error desconocido",
+      "timeoutError": "Tiempo de espera agotado",
+      "accessDenied": "Acceso denegado",
+      "sessionExpired": "Sesión expirada. Por favor inicia sesión nuevamente",
+      "operationFailed": "Operación fallida"
+    },
+    "template": {
+      "loadFailed": "Error al cargar plantilla",
+      "notFound": "Plantilla no encontrada",
+      "parameterMissing": "Parámetros requeridos faltantes",
+      "parameterInvalid": "Parámetros inválidos",
+      "generationFailed": "Error en la generación de plantilla"
+    },
+    "video": {
+      "generationFailed": "Error en la generación de video",
+      "downloadFailed": "Error al descargar video",
+      "uploadFailed": "Error al subir video",
+      "processingFailed": "Error en el procesamiento de video",
+      "notFound": "Video no encontrado",
+      "accessDenied": "Acceso al video denegado"
+    }
+  },
+  "notifications": {
+    "signUpSuccess": "Registro completado exitosamente",
+    "emailVerificationRequired": "Se requiere verificación de correo",
+    "emailVerificationSent": "Correo de verificación enviado",
+    "passwordResetSent": "Correo de restablecimiento de contraseña enviado",
+    "profileUpdated": "Perfil actualizado",
+    "settingsSaved": "Configuración guardada",
+    "operationCompleted": "Operación completada",
+    "dataExported": "Exportación de datos completada",
+    "accountDeleted": "Cuenta eliminada",
+    "subscriptionUpdated": "Suscripción actualizada",
+    "paymentSucceeded": "Pago completado exitosamente",
+    "downloadStarted": "Descarga iniciada",
+    "downloadCompleted": "Descarga completada",
+    "linkCopied": "Enlace copiado al portapapeles",
+    "feedbackReceived": "¡Comentarios recibidos. Gracias!",
+    "supportTicketCreated": "Ticket de soporte creado",
+    "supportTicketUpdated": "Ticket de soporte actualizado",
+    "checkEmailInbox": "Por favor revisa tu bandeja de entrada",
+    "checkSpamFolder": "Si no encuentras el correo, revisa tu carpeta de spam",
+    "networkConnectionCheck": "Por favor verifica tu conexión de red e intenta nuevamente",
+    "tryAgainLater": "Por favor intenta nuevamente más tarde",
+    "contactSupport": "Si el problema persiste, contacta a soporte"
   }
 }

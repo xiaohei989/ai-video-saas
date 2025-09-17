@@ -1,21 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
-import { ChevronRight, ChevronDown, Gem, AlertCircle, Sparkles, Shuffle, Copy, Eye, EyeOff, Lock } from 'lucide-react'
+import { ChevronRight, ChevronDown, Gem, AlertCircle, Sparkles, Shuffle } from 'lucide-react'
 import { Template } from '../data/templates'
-import { Button } from '@/components/ui/button'
 import { CustomSelect } from '@/components/ui/custom-select'
+import PortalDropdown from '@/components/ui/portal-dropdown'
 import ImageUploader from './ImageUploader'
 import { PromptGenerator } from '@/services/promptGenerator'
 import { generateRandomParams } from '@/utils/randomParams'
 import { getVideoCreditCost } from '@/config/credits'
 import { useAuth } from '@/contexts/AuthContext'
-import { SubscriptionService } from '@/services/subscriptionService'
-import { edgeCacheClient } from '@/services/EdgeFunctionCacheClient'
 import { InputValidator } from '@/utils/inputValidator'
 import { securityMonitor } from '@/services/securityMonitorService'
 import { ThreatType, SecurityLevel } from '@/config/security'
-import type { Subscription } from '@/types'
+import { toast } from 'sonner'
 
 interface ConfigPanelProps {
   selectedTemplate: Template
@@ -45,57 +42,8 @@ export default function ConfigPanel({
   const { t } = useTranslation()
   const { user } = useAuth()
   const [showTemplateList, setShowTemplateList] = useState(false)
-  const [showPromptDebug, setShowPromptDebug] = useState(false)
   const [showValidationError, setShowValidationError] = useState(false)
-  const [subscription, setSubscription] = useState<Subscription | null>(null)
-  
-  // 获取用户订阅信息
-  useEffect(() => {
-    const loadSubscription = async () => {
-      if (!user?.id) {
-        return
-      }
-
-      try {
-        // 优先使用缓存获取订阅信息
-        const tier = await edgeCacheClient.getUserSubscription(user.id)
-        
-        if (tier && tier !== 'free') {
-          // 如果有有效订阅，构建subscription对象
-          setSubscription({
-            id: '',
-            userId: user.id,
-            stripeSubscriptionId: '',
-            planId: tier as any,
-            status: 'active' as const,
-            currentPeriodStart: new Date(),
-            currentPeriodEnd: new Date(),
-            cancelAtPeriodEnd: false,
-            createdAt: new Date(),
-            updatedAt: new Date()
-          })
-        } else {
-          // 免费用户或缓存未命中时，使用原方法
-          const data = await SubscriptionService.getCurrentSubscription(user.id)
-          setSubscription(data)
-        }
-      } catch (error) {
-        console.error('[ConfigPanel] 加载订阅信息失败:', error)
-        setSubscription(null)
-      } finally {
-        // cleanup
-      }
-    }
-
-    loadSubscription()
-  }, [user?.id])
-
-  // 检查用户是否有有效订阅（不依赖积分数量）
-  const isSubscribed = !!(
-    subscription && 
-    subscription.status === 'active' && 
-    subscription.planId
-  )
+  const templateTriggerRef = useRef<HTMLButtonElement>(null)
 
   // Auto-fill activity description and voiceover when activity changes
   useEffect(() => {
@@ -447,7 +395,6 @@ export default function ConfigPanel({
   
   const generatePrompt = () => {
     // 统一使用generateJsonPrompt，根据模板格式自动决定输出格式
-    // 字符串模板 → 输出字符串，JSON模板 → 输出JSON对象
     return PromptGenerator.generateJsonPrompt(selectedTemplate, params)
   }
 
@@ -455,37 +402,12 @@ export default function ConfigPanel({
     // 为了兼容性保留的旧方法（总是输出字符串）
     return PromptGenerator.generatePromptForLocal(selectedTemplate, params)
   }
-
-  const copyPromptToClipboard = async () => {
-    const promptResult = generatePrompt()
-    
-    // 根据结果类型决定复制内容
-    const textToCopy = typeof promptResult === 'string' 
-      ? promptResult 
-      : JSON.stringify(promptResult, null, 2)
-    
-    try {
-      await navigator.clipboard.writeText(textToCopy)
-      // 这里可以添加 toast 通知，但为了简洁暂时省略
-      console.log('提示词已复制到剪贴板', typeof promptResult === 'string' ? '(文本格式)' : '(JSON格式)')
-    } catch (error) {
-      console.error('复制失败:', error)
-      // 降级方案：创建临时 textarea 进行复制
-      const textarea = document.createElement('textarea')
-      textarea.value = textToCopy
-      document.body.appendChild(textarea)
-      textarea.select()
-      document.execCommand('copy')
-      document.body.removeChild(textarea)
-      console.log('提示词已复制到剪贴板 (降级方案)')
-    }
-  }
   
   const handleGenerate = () => {
     if (!canGenerate()) {
       const missing = getMissingParams()
       setShowValidationError(true)
-      alert(`Please fill in required fields: ${missing.join(', ')}`)
+      toast.error(`Please fill in required fields: ${missing.join(', ')}`)
       return
     }
     
@@ -509,11 +431,11 @@ export default function ConfigPanel({
   }
 
   return (
-    <div className="h-full lg:h-full flex flex-col max-h-[50vh] lg:max-h-none">
+    <div className="h-full flex flex-col">
       {/* Top Section with Credits and Generate Button */}
-      <div className="p-3 lg:p-4 border-b border-border">
+      <div className="p-2 lg:p-4 border-b border-border">
         {/* Credits Required */}
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-1 text-xs">
             <Gem className="h-3 w-3 text-purple-600" />
             <span className="text-muted-foreground">{t('configPanel.creditsRequired')}:</span>
@@ -529,7 +451,7 @@ export default function ConfigPanel({
         {/* Generate Button with gradient and shimmer effect */}
         <button
           className={`
-            w-full relative overflow-hidden rounded-md px-4 py-2.5 font-medium text-white
+            w-full relative overflow-hidden rounded-md px-3 py-2 lg:px-4 lg:py-2.5 font-medium text-white text-sm
             ${canGenerate() && !isGenerating 
               ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 active:scale-95' 
               : 'bg-gray-400 cursor-not-allowed opacity-50'
@@ -552,8 +474,6 @@ export default function ConfigPanel({
             )}
           </span>
         </button>
-
-
         
         {/* Validation Messages - only show after generate attempt */}
         {showValidationError && !canGenerate() && (
@@ -570,13 +490,14 @@ export default function ConfigPanel({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-2 lg:p-2.5">
-        <div className="space-y-2">
+      <div className="flex-1 overflow-y-auto p-2">
+        <div className="space-y-1.5">
           {/* Template Selector with Random Button */}
           <div className="flex gap-2">
             <div className="relative flex-1">
               <button
-                className="w-full px-2.5 py-1.5 text-xs border border-input bg-background rounded-md hover:bg-accent flex items-center justify-between"
+                ref={templateTriggerRef}
+                className="w-full px-2 py-1.5 text-xs border border-input bg-background rounded-md hover:bg-accent flex items-center justify-between"
                 onClick={() => setShowTemplateList(!showTemplateList)}
               >
                 <div className="flex items-center gap-1.5">
@@ -590,29 +511,30 @@ export default function ConfigPanel({
                 )}
               </button>
 
-              {/* Template List (dropdown) */}
-              {showTemplateList && (
-                <div className="absolute top-full mt-1 w-full bg-card border border-border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto">
-                  {templates.map(template => (
-                    <button
-                      key={template.id}
-                      className="w-full px-2.5 py-1.5 text-xs text-left hover:bg-accent flex items-center gap-1.5"
-                      onClick={() => {
-                        onTemplateChange(template.id)
-                        setShowTemplateList(false)
-                      }}
-                    >
-                      <span className="text-sm">{template.icon}</span>
-                      <span>{template.name}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+              <PortalDropdown
+                isOpen={showTemplateList}
+                onClose={() => setShowTemplateList(false)}
+                triggerRef={templateTriggerRef}
+              >
+                {templates.map(template => (
+                  <button
+                    key={template.id}
+                    className="w-full px-2.5 py-1.5 text-xs text-left hover:bg-accent flex items-center gap-1.5"
+                    onClick={() => {
+                      onTemplateChange(template.id)
+                      setShowTemplateList(false)
+                    }}
+                  >
+                    <span className="text-sm">{template.icon}</span>
+                    <span>{template.name}</span>
+                  </button>
+                ))}
+              </PortalDropdown>
             </div>
             
             {/* Random Button */}
             <button
-              className="px-2.5 py-1.5 text-xs border border-input bg-background rounded-md hover:bg-accent flex items-center justify-center"
+              className="px-2 py-1.5 text-xs border border-input bg-background rounded-md hover:bg-accent flex items-center justify-center"
               onClick={() => {
                 const randomParams = generateRandomParams(selectedTemplate)
                 Object.entries(randomParams).forEach(([key, value]) => {
@@ -629,8 +551,8 @@ export default function ConfigPanel({
           </div>
 
           {/* Parameters Container with Rounded Rectangle */}
-          <div className="bg-muted/30 border border-border rounded-lg p-2">
-            <div className="space-y-1.5">
+          <div className="bg-muted/30 border border-border rounded-lg p-1.5 lg:p-2">
+            <div className="space-y-1 lg:space-y-1.5">
               {Object.entries(selectedTemplate.params)
                 .filter(([key]) => key !== 'makePublic') // Exclude makePublic if it exists
                 .map(([key, param]) => 
@@ -640,67 +562,6 @@ export default function ConfigPanel({
           </div>
         </div>
       </div>
-
-      {/* 提示词显示区域 */}
-      <div className="border-t border-border bg-muted/20 p-2">
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-            {t('configPanel.prompt')}
-            {!isSubscribed && <Lock className="h-3 w-3" />}
-          </span>
-          {isSubscribed && (
-            <div className="flex gap-1">
-              <button
-                className="p-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                onClick={() => setShowPromptDebug(!showPromptDebug)}
-                title={showPromptDebug ? t('configPanel.hidePrompt') : t('configPanel.viewPrompt')}
-              >
-                {showPromptDebug ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
-              </button>
-              <button
-                className="p-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                onClick={copyPromptToClipboard}
-                title={t('configPanel.copyPrompt')}
-              >
-                <Copy className="h-3 w-3" />
-              </button>
-            </div>
-          )}
-        </div>
-        
-        {isSubscribed ? (
-          // 订阅用户：显示完整提示词
-          showPromptDebug && (
-            <div className="bg-background border border-border rounded-md p-2 max-h-32 overflow-y-auto">
-              <pre className="text-xs text-foreground whitespace-pre-wrap break-words">
-                {(() => {
-                  const promptResult = generatePrompt()
-                  return typeof promptResult === 'string' 
-                    ? promptResult 
-                    : JSON.stringify(promptResult, null, 2)
-                })()}
-              </pre>
-            </div>
-          )
-        ) : (
-          // 免费用户：显示升级提示
-          <div className="bg-background border border-border rounded-md p-3 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Lock className="h-4 w-4 text-muted-foreground" />
-            </div>
-            <p className="text-xs text-muted-foreground mb-3">
-              {t('configPanel.promptAccessRequired')}
-            </p>
-            <Link to="/pricing">
-              <Button size="sm" variant="default" className="text-xs">
-                <Gem className="h-3 w-3 mr-1" />
-                {t('configPanel.upgradeToUnlock')}
-              </Button>
-            </Link>
-          </div>
-        )}
-      </div>
-
     </div>
   )
 }

@@ -114,7 +114,7 @@ export default function SignUpForm() {
             const ipCheckResult = await Promise.race([
               ipCheckPromise,
               new Promise<SupabaseRPCResult<IPRegistrationLimitCheck>>((_, reject) => 
-                setTimeout(() => reject(new Error('IP检查超时')), 3000)
+                setTimeout(() => reject(new Error(t('errors.validation.ipCheckTimeout'))), 3000)
               )
             ])
             
@@ -209,7 +209,7 @@ export default function SignUpForm() {
         // 为邮箱验证设置5秒超时
         const validationPromise = validateEmailAsync(newEmail)
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('邮箱验证超时')), 5000)
+          setTimeout(() => reject(new Error(t('errors.validation.emailTimeout'))), 5000)
         )
         
         const validation = await Promise.race([validationPromise, timeoutPromise]) as any
@@ -258,7 +258,7 @@ export default function SignUpForm() {
       try {
         const validationPromise = validateEmailAsync(email)
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('邮箱验证超时')), 3000)
+          setTimeout(() => reject(new Error(t('errors.validation.emailTimeout'))), 3000)
         )
         
         const validation = await Promise.race([validationPromise, timeoutPromise]) as any
@@ -349,7 +349,7 @@ export default function SignUpForm() {
       trackSignUp('email')
       
       toast.success(t('auth.signUpSuccess'), {
-        description: '请查看您的邮箱以验证账户',
+        description: t('notifications.checkEmailInbox'),
         duration: 5000
       })
     } catch (err: any) {
@@ -361,8 +361,8 @@ export default function SignUpForm() {
       if (err.message === 'EMAIL_VERIFICATION_REQUIRED') {
         setRegisteredEmail(email)
         setShowEmailVerification(true)
-        toast.success('注册成功！', {
-          description: `验证邮件已发送到 ${email}`,
+        toast.success(t('notifications.signUpSuccess'), {
+          description: t('notifications.emailVerificationSent') + ` ${email}`,
           duration: 5000
         })
         errorReason = 'email_verification_required'
@@ -379,7 +379,7 @@ export default function SignUpForm() {
         errorReason = 'invalid_email'
       } else {
         toast.error(errorMessage, {
-          description: '请检查网络连接或稍后重试',
+          description: t('notifications.networkConnectionCheck'),
           duration: 5000
         })
         errorReason = 'auth_service_error'

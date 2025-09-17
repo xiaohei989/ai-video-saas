@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { getAdminStats } from '@/services/adminDataProvider'
 import { useCacheManager } from '@/utils/cacheManager'
 import { Trash2, RefreshCcw, HardDrive, AlertCircle, CheckCircle } from 'lucide-react'
+import { toast } from 'sonner'
 
 const AdminDebug: React.FC = () => {
   const { t } = useTranslation()
@@ -136,14 +137,14 @@ const AdminDebug: React.FC = () => {
             avatar_url: profile.avatar_url
           }
           localStorage.setItem('admin_user', JSON.stringify(adminUser))
-          alert(t('admin.authRefreshed'))
+          toast.success(t('admin.authRefreshed'))
           window.location.reload()
         } else {
-          alert(t('admin.noPermission'))
+          toast.error(t('admin.noPermission'))
         }
       }
     } catch (error: any) {
-      alert(`${t('admin.refreshFailed')}: ${error.message}`)
+      toast.error(`${t('admin.refreshFailed')}: ${error.message}`)
     }
   }
 

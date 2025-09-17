@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTranslation } from 'react-i18next'
 import { Loader2, Lock, CheckCircle } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function ResetPasswordForm() {
   const { t } = useTranslation()
@@ -66,7 +67,7 @@ export default function ResetPasswordForm() {
       } else if (err.message?.includes('weak password')) {
         setErrors({ password: t('auth.weakPassword') })
       } else {
-        alert(t('auth.updatePasswordError') + ': ' + err.message)
+        toast.error(t('auth.updatePasswordError') + ': ' + err.message)
       }
     } finally {
       setIsSubmitting(false)

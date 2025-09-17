@@ -87,7 +87,27 @@
     "verifyingCredentials": "お待ちください、認証情報を確認中です",
     "sessionError": "セッションを確立できません、再度ログインしてください",
     "authError": "ログイン中にエラーが発生しました",
-    "redirectingToLogin": "ログインページにリダイレクトしています..."
+    "redirectingToLogin": "ログインページにリダイレクトしています...",
+    "checkYourEmail": "メールを確認してください",
+    "resetPasswordEmailSent": "パスワードリセットメールが {{email}} に送信されました",
+    "resetPasswordInstructions": "メールの指示に従ってパスワードをリセットしてください",
+    "sendAnotherEmail": "別のメールを送信",
+    "forgotPasswordDescription": "メールアドレスを入力してください。パスワードリセット用のリンクをお送りします",
+    "sendResetEmail": "リセットメールを送信",
+    "sendingResetEmail": "送信中...",
+    "userNotFound": "ユーザーが見つかりません",
+    "rateLimitError": "リクエストが多すぎます。しばらくしてから再試行してください",
+    "resetPasswordError": "パスワードリセットに失敗しました",
+    "newPasswordPlaceholder": "新しいパスワードを入力してください",
+    "confirmNewPassword": "新しいパスワードを確認",
+    "confirmNewPasswordPlaceholder": "新しいパスワードを再度入力してください",
+    "updatingPassword": "更新中...",
+    "passwordUpdatedDescription": "パスワードが正常に更新されました。3秒後にプロフィールページに移動します",
+    "redirectingToProfile": "3秒後にプロフィールページに移動します...",
+    "samePasswordError": "新しいパスワードは古いパスワードと同じにできません",
+    "passwordRequirement1": "最低8文字",
+    "passwordRequirement2": "大文字と小文字を含む",
+    "passwordRequirement3": "少なくとも1つの数字を含む"
   },
   "user": {
     "guest": "ゲスト",
@@ -477,6 +497,12 @@
     "completed": "生成完了！",
     "failed": "生成失敗",
     "generationLimited": "生成回数の上限に達しました。しばらくしてから再試行してください",
+    "insufficientCreditsError": "💰 クレジット不足で動画を生成できません",
+    "insufficientCreditsDescription": "{{required}}クレジットが必要、現在の残高{{current}}クレジット",
+    "concurrencyLimitError": "🚫 同時生成数の上限に達しました",
+    "concurrencyLimitDescription": "{{tier}}ユーザーは最大{{limit}}個の動画を同時生成できます",
+    "viewPricingPlans": "プランを見る",
+    "upgradePlan": "プランをアップグレード",
     "finalizing": "最終処理中...",
     "restoring": "復元中...",
     "unknownStatus": "ステータス不明"
@@ -1088,6 +1114,71 @@
       "clearing": "キャッシュを削除中...",
       "cleared": "キャッシュが正常に削除されました"
     }
+  },
+  "errors": {
+    "credit": {
+      "consumeFailed": "クレジット消費に失敗しました",
+      "addFailed": "クレジット追加に失敗しました",
+      "networkError": "ネットワークリクエストに失敗しました",
+      "functionCallFailed": "Edge Function呼び出しに失敗しました",
+      "functionExecutionFailed": "Edge Function実行に失敗しました",
+      "insufficientCredits": "クレジット不足"
+    },
+    "validation": {
+      "emailValidationTimeout": "メール検証タイムアウト",
+      "ipCheckTimeout": "IPチェックタイムアウト",
+      "deviceFingerprintTimeout": "デバイス指紋チェックタイムアウト"
+    },
+    "general": {
+      "videoProcessingTimeout": "動画処理タイムアウト（30秒）",
+      "cannotCreateCanvasContext": "Canvasコンテキストを作成できません",
+      "cannotGetVideoStream": "動画ストリームを取得できません",
+      "recordingError": "録画中にエラーが発生しました",
+      "videoLoadFailed": "動画の読み込みに失敗しました",
+      "qingyunImageUrlOnly": "QingyunAPIはURL形式の画像のみサポートしています。画像のURLを提供してください。",
+      "cannotReadResponseStream": "レスポンスストリームを読み取れません",
+      "apiResponseFormatError": "APIレスポンス形式エラー",
+      "thumbnailUploadFailed": "サムネイルのアップロードに失敗しました",
+      "previewVideoUploadFailed": "プレビュー動画のアップロードに失敗しました",
+      "jsonConfigMissingFields": "JSON設定ファイルに必要フィールドが不足: name, slug",
+      "jsonConfigFormatError": "JSON設定ファイル形式エラー",
+      "batchExportFailed": "一括エクスポートに失敗しました",
+      "subscriptionCancelFailed": "サブスクリプションのキャンセルに失敗しました"
+    },
+    "template": {
+      "nameRequired": "テンプレート名は空にできません",
+      "urlRequired": "URL識別子は空にできません",
+      "promptRequired": "プロンプトテンプレートは空にできません"
+    },
+    "video": {
+      "downloadFailed": "ダウンロードに失敗しました",
+      "taskTimeout": "タスクタイムアウト",
+      "processingFailed": "処理に失敗しました",
+      "validationFailed": "入力検証に失敗しました",
+      "promptValidationFailed": "プロンプト検証に失敗しました"
+    }
+  },
+  "notifications": {
+    "loginTooFrequent": "ログイン試行が頻繁すぎます。しばらくしてから再試行してください",
+    "passwordResetSent": "パスワードリセットリンクがメールに送信されました",
+    "passwordUpdateSuccess": "パスワードが正常に更新されました",
+    "pleaseLoginFirst": "まずログインしてください",
+    "likeSuccess": "いいねしました",
+    "unlikeSuccess": "いいねを取り消しました",
+    "rateLimitExceeded": "リクエストが多すぎます",
+    "downloadStarting": "HD透かしなし動画のダウンロードを開始...",
+    "downloadSuccess": "ダウンロードが開始されました！ブラウザのダウンロードリストを確認してください",
+    "downloadOpenInNewWindow": "ブラウザのセキュリティ制限により、新しいウィンドウで動画を開きます。右クリックで保存してください",
+    "downloadLinkCreated": "ダウンロードリンクが作成されました",
+    "watermarkProcessing": "動画に透かしを追加中です。お待ちください...",
+    "watermarkSuccess": "透かし付き動画が正常に生成されました！",
+    "watermarkFailed": "透かし処理に失敗しました。オリジナル動画をダウンロードします",
+    "downloadNoWatermark": "ダウンロードが開始されました（透かしなし版）",
+    "videoDownloadCorsRestriction": "CORS制限により、新しいウィンドウで動画を開きます",
+    "videoDownloadInstruction": "新しいウィンドウで動画を右クリックし、「名前を付けて保存」を選択してダウンロードしてください",
+    "autoDownloadFailed": "自動ダウンロードできません。リンクをコピーして手動でダウンロードしてください",
+    "networkNotSuitableForPreload": "ネットワーク条件がプリロードに適していません",
+    "videoPreloadFailed": "動画のプリロードに失敗しました"
   },
   "admin": {
     "clearVideoCache": "動画キャッシュを削除",

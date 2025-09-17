@@ -14,6 +14,7 @@ import { useCSRF } from '@/services/csrfService'
 import { InputValidator } from '@/utils/inputValidator'
 import { securityMonitor } from '@/services/securityMonitorService'
 import { ThreatType, SecurityLevel } from '@/config/security'
+import { toast } from 'sonner'
 
 // Google 图标组件
 const GoogleIcon = ({ className }: { className?: string }) => (
@@ -52,12 +53,12 @@ export default function SignInForm() {
     
     // 检查是否被限流
     if (isLimited()) {
-      alert('登录尝试过于频繁，请稍后再试')
+      toast.error(t('auth.rateLimitError'))
       return
     }
     
     if (!email || !password) {
-      alert(t('auth.fillAllFields'))
+      toast.error(t('auth.fillAllFields'))
       return
     }
 
@@ -136,11 +137,11 @@ export default function SignInForm() {
         })
         
         if (err.message?.includes('Invalid login credentials')) {
-          alert(t('auth.invalidCredentials'))
+          toast.error(t('auth.invalidCredentials'))
         } else if (err.message?.includes('Email not confirmed')) {
-          alert(t('auth.emailNotConfirmed'))
+          toast.error(t('auth.emailNotConfirmed'))
         } else {
-          alert(t('auth.signInError') + ': ' + err.message)
+          toast.error(t('auth.signInError') + ': ' + err.message)
         }
       } finally {
         setIsSubmitting(false)
@@ -157,7 +158,7 @@ export default function SignInForm() {
       trackLogin('google')
     } catch (err: any) {
       console.error('Google sign in error:', err)
-      alert(t('auth.googleSignInError') + ': ' + err.message)
+      toast.error(t('auth.googleSignInError') + ': ' + err.message)
     } finally {
       setIsSubmitting(false)
     }
@@ -172,7 +173,7 @@ export default function SignInForm() {
       trackLogin('apple')
     } catch (err: any) {
       console.error('Apple sign in error:', err)
-      alert(t('auth.appleSignInError') + ': ' + err.message)
+      toast.error(t('auth.appleSignInError') + ': ' + err.message)
     } finally {
       setIsSubmitting(false)
     }

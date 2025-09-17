@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/contexts/AuthContext'
+import { toast } from 'sonner'
 import { 
   User, 
   Globe, 
@@ -140,7 +141,7 @@ export default function PublicProfilePage() {
   const handleFollow = async () => {
     if (!user || !profile) {
       // 提示登录
-      alert(t('profile.loginToFollow'))
+      toast.error(t('profile.loginToFollow'))
       return
     }
 
@@ -181,7 +182,7 @@ export default function PublicProfilePage() {
   const copyProfileLink = () => {
     const url = window.location.href
     navigator.clipboard.writeText(url)
-    alert(t('profile.linkCopied'))
+    toast.success(t('profile.linkCopied'))
   }
 
   const formatDate = (date: string) => {

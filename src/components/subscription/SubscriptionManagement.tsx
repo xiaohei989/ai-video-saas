@@ -18,6 +18,7 @@ import { SubscriptionService } from '@/services/subscriptionService'
 import type { Subscription } from '@/types'
 import { format } from 'date-fns'
 import { zhCN, enUS, ja, ko, es } from 'date-fns/locale'
+import { toast } from 'sonner'
 
 const getDateLocaleByLanguage = (language: string) => {
   switch (language) {
@@ -61,10 +62,10 @@ export default function SubscriptionManagement({
       onSubscriptionChange?.()
       setShowCancelDialog(false)
       
-      alert(t('subscription.management.cancelSuccess'))
+      toast.success(t('subscription.management.cancelSuccess'))
     } catch (error) {
       console.error('Cancel subscription failed:', error)
-      alert(t('subscription.management.cancelError'))
+      toast.error(t('subscription.management.cancelError'))
     } finally {
       setLoading(false)
     }

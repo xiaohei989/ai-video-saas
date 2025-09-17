@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Play, Settings, Activity, AlertCircle } from 'lucide-react'
 import { getApicoreApiService } from '@/services/veo/ApicoreApiService'
 import type { ApicoreCreateRequest } from '@/services/veo/ApicoreApiService'
+import { toast } from 'sonner'
 
 interface TestResult {
   taskId?: string
@@ -41,7 +42,7 @@ export default function TestApicoreApi() {
   // 按API官方示例直接查询任务
   const directQueryTest = async () => {
     if (!apiKey.trim()) {
-      alert('请先输入API密钥')
+      toast.error('请先输入API密钥')
       return
     }
 
@@ -122,7 +123,7 @@ export default function TestApicoreApi() {
   // 开始测试视频生成
   const startTest = async () => {
     if (!apiKey.trim()) {
-      alert('请先输入API密钥')
+      toast.error('请先输入API密钥')
       return
     }
 

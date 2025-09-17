@@ -84,7 +84,27 @@
     "verifyingCredentials": "Bitte warten, Anmeldedaten werden überprüft",
     "sessionError": "Session kann nicht erstellt werden, bitte melden Sie sich erneut an",
     "authError": "Ein Fehler ist bei der Anmeldung aufgetreten",
-    "redirectingToLogin": "Weiterleitung zur Anmeldeseite..."
+    "redirectingToLogin": "Weiterleitung zur Anmeldeseite...",
+    "checkYourEmail": "Überprüfen Sie Ihre E-Mail",
+    "resetPasswordEmailSent": "Eine E-Mail zum Zurücksetzen des Passworts wurde an {{email}} gesendet",
+    "resetPasswordInstructions": "Bitte folgen Sie den Anweisungen in der E-Mail, um Ihr Passwort zurückzusetzen",
+    "sendAnotherEmail": "Weitere E-Mail senden",
+    "forgotPasswordDescription": "Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Link zum Zurücksetzen Ihres Passworts",
+    "sendResetEmail": "Reset-E-Mail senden",
+    "sendingResetEmail": "Wird gesendet...",
+    "userNotFound": "Benutzer nicht gefunden",
+    "rateLimitError": "Zu viele Anfragen, bitte versuchen Sie es später erneut",
+    "resetPasswordError": "Passwort-Zurücksetzung fehlgeschlagen",
+    "newPasswordPlaceholder": "Geben Sie Ihr neues Passwort ein",
+    "confirmNewPassword": "Neues Passwort bestätigen",
+    "confirmNewPasswordPlaceholder": "Geben Sie Ihr neues Passwort erneut ein",
+    "updatingPassword": "Wird aktualisiert...",
+    "passwordUpdatedDescription": "Ihr Passwort wurde erfolgreich aktualisiert, Weiterleitung zur Profilseite in 3 Sekunden",
+    "redirectingToProfile": "Weiterleitung zur Profilseite in 3 Sekunden...",
+    "samePasswordError": "Das neue Passwort kann nicht mit dem alten übereinstimmen",
+    "passwordRequirement1": "Mindestens 8 Zeichen",
+    "passwordRequirement2": "Enthält Groß- und Kleinbuchstaben",
+    "passwordRequirement3": "Enthält mindestens eine Zahl"
   },
   "emailVerification": {
     "title": "E-Mail-Adresse verifizieren",
@@ -1203,5 +1223,71 @@
     "clearVideoCache": "Video-Cache löschen",
     "clearCacheConfirm": "Sind Sie sicher, dass Sie alle videobezogenen Caches löschen möchten? Dies löscht Video-Vorschauen, Miniaturansicht-Caches und andere Daten.",
     "cacheCleared": "Video-Cache erfolgreich gelöscht"
+  },
+  "errors": {
+    "credit": {
+      "insufficientCredits": "Unzureichende Credits. Bitte laden Sie Credits auf oder upgraden Sie Ihren Plan",
+      "creditRetrievalFailed": "Fehler beim Abrufen der Credit-Informationen",
+      "creditDeductionFailed": "Fehler beim Abziehen von Credits",
+      "invalidCreditAmount": "Ungültiger Credit-Betrag"
+    },
+    "validation": {
+      "emailTimeout": "Zeitüberschreitung bei E-Mail-Validierung",
+      "ipCheckTimeout": "Zeitüberschreitung bei IP-Überprüfung",
+      "deviceFingerprintTimeout": "Zeitüberschreitung bei Gerätefingerabdruck-Überprüfung",
+      "securityCheckFailed": "Sicherheitsüberprüfung fehlgeschlagen",
+      "invalidEmailFormat": "Ungültiges E-Mail-Format",
+      "passwordMinLength": "Das Passwort muss mindestens 8 Zeichen lang sein",
+      "passwordComplexity": "Das Passwort muss Groß-, Kleinbuchstaben und Zahlen enthalten",
+      "usernameInvalid": "Der Benutzername darf nur Buchstaben, Zahlen, Unterstriche und Bindestriche mit 3-20 Zeichen enthalten"
+    },
+    "general": {
+      "networkError": "Netzwerkfehler",
+      "serverError": "Serverfehler",
+      "unknownError": "Unbekannter Fehler",
+      "timeoutError": "Zeitüberschreitung",
+      "accessDenied": "Zugriff verweigert",
+      "sessionExpired": "Sitzung abgelaufen. Bitte melden Sie sich erneut an",
+      "operationFailed": "Vorgang fehlgeschlagen"
+    },
+    "template": {
+      "loadFailed": "Fehler beim Laden der Vorlage",
+      "notFound": "Vorlage nicht gefunden",
+      "parameterMissing": "Erforderliche Parameter fehlen",
+      "parameterInvalid": "Ungültige Parameter",
+      "generationFailed": "Fehler bei der Vorlagengenerierung"
+    },
+    "video": {
+      "generationFailed": "Fehler bei der Videogenerierung",
+      "downloadFailed": "Fehler beim Video-Download",
+      "uploadFailed": "Fehler beim Video-Upload",
+      "processingFailed": "Fehler bei der Videoverarbeitung",
+      "notFound": "Video nicht gefunden",
+      "accessDenied": "Video-Zugriff verweigert"
+    }
+  },
+  "notifications": {
+    "signUpSuccess": "Registrierung erfolgreich abgeschlossen",
+    "emailVerificationRequired": "E-Mail-Verifizierung erforderlich",
+    "emailVerificationSent": "Verifizierungs-E-Mail gesendet",
+    "passwordResetSent": "Passwort-Zurücksetzungs-E-Mail gesendet",
+    "profileUpdated": "Profil aktualisiert",
+    "settingsSaved": "Einstellungen gespeichert",
+    "operationCompleted": "Vorgang abgeschlossen",
+    "dataExported": "Datenexport abgeschlossen",
+    "accountDeleted": "Konto gelöscht",
+    "subscriptionUpdated": "Abonnement aktualisiert",
+    "paymentSucceeded": "Zahlung erfolgreich abgeschlossen",
+    "downloadStarted": "Download gestartet",
+    "downloadCompleted": "Download abgeschlossen",
+    "linkCopied": "Link in die Zwischenablage kopiert",
+    "feedbackReceived": "Feedback erhalten. Vielen Dank!",
+    "supportTicketCreated": "Support-Ticket erstellt",
+    "supportTicketUpdated": "Support-Ticket aktualisiert",
+    "checkEmailInbox": "Bitte überprüfen Sie Ihren E-Mail-Eingang",
+    "checkSpamFolder": "Wenn Sie die E-Mail nicht finden, überprüfen Sie Ihren Spam-Ordner",
+    "networkConnectionCheck": "Bitte überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut",
+    "tryAgainLater": "Bitte versuchen Sie es später erneut",
+    "contactSupport": "Falls das Problem weiterhin besteht, kontaktieren Sie den Support"
   }
 }

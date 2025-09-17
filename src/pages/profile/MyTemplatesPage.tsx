@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import { 
   Plus,
   Grid3x3,
@@ -164,10 +165,10 @@ export default function MyTemplatesPage() {
       if (error) throw error
       
       setTemplates(prev => prev.filter(t => t.id !== templateId))
-      alert(t('templates.deleteSuccess'))
+      toast.success(t('templates.deleteSuccess'))
     } catch (error) {
       console.error('Error deleting template:', error)
-      alert(t('templates.deleteError'))
+      toast.error(t('templates.deleteError'))
     }
   }
 
@@ -194,10 +195,10 @@ export default function MyTemplatesPage() {
       if (error) throw error
       
       setTemplates(prev => [data, ...prev])
-      alert(t('templates.duplicateSuccess'))
+      toast.success(t('templates.duplicateSuccess'))
     } catch (error) {
       console.error('Error duplicating template:', error)
-      alert(t('templates.duplicateError'))
+      toast.error(t('templates.duplicateError'))
     }
   }
 
@@ -221,7 +222,7 @@ export default function MyTemplatesPage() {
   const handleShare = (template: Template) => {
     const url = `${window.location.origin}/templates/${template.id}`
     navigator.clipboard.writeText(url)
-    alert(t('templates.linkCopied'))
+    toast.success(t('templates.linkCopied'))
   }
 
   const handleBatchDelete = async () => {
@@ -238,10 +239,10 @@ export default function MyTemplatesPage() {
       
       setTemplates(prev => prev.filter(t => !selectedTemplates.has(t.id)))
       setSelectedTemplates(new Set())
-      alert(t('templates.batchDeleteSuccess'))
+      toast.success(t('templates.batchDeleteSuccess'))
     } catch (error) {
       console.error('Error batch deleting templates:', error)
-      alert(t('templates.batchDeleteError'))
+      toast.error(t('templates.batchDeleteError'))
     }
   }
 

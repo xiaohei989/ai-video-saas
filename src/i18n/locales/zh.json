@@ -102,7 +102,27 @@
     "registrationBlocked": "注册已被阻止",
     "ipRegistrationLimitExceeded": "该IP地址注册次数过多，请稍后再试",
     "deviceRegistrationLimitExceeded": "该设备注册次数过多，请稍后再试",
-    "registrationAllowed": "注册检查通过"
+    "registrationAllowed": "注册检查通过",
+    "checkYourEmail": "请检查您的邮箱",
+    "resetPasswordEmailSent": "密码重置邮件已发送到 {{email}}",
+    "resetPasswordInstructions": "请按照邮件中的说明重置您的密码",
+    "sendAnotherEmail": "重新发送邮件",
+    "forgotPasswordDescription": "输入您的邮箱地址，我们将发送重置密码的链接",
+    "sendResetEmail": "发送重置邮件",
+    "sendingResetEmail": "发送中...",
+    "userNotFound": "未找到该用户",
+    "rateLimitError": "请求过于频繁，请稍后重试",
+    "resetPasswordError": "重置密码失败",
+    "newPasswordPlaceholder": "输入您的新密码",
+    "confirmNewPassword": "确认新密码", 
+    "confirmNewPasswordPlaceholder": "再次输入您的新密码",
+    "updatingPassword": "更新中...",
+    "passwordUpdatedDescription": "您的密码已成功更新，将在3秒后跳转到个人资料页",
+    "redirectingToProfile": "3秒后自动跳转到个人资料页...",
+    "samePasswordError": "新密码不能与旧密码相同",
+    "passwordRequirement1": "至少8个字符",
+    "passwordRequirement2": "包含大写和小写字母",
+    "passwordRequirement3": "包含至少一个数字"
   },
   "emailVerification": {
     "title": "验证您的邮箱",
@@ -482,6 +502,12 @@
     "completed": "生成完成！",
     "failed": "生成失败",
     "generationLimited": "生成次数已达限制，请稍后再试",
+    "insufficientCreditsError": "💰 积分余额不足，无法生成视频",
+    "insufficientCreditsDescription": "需要 {{required}} 积分，当前余额 {{current}} 积分",
+    "concurrencyLimitError": "🚫 同时生成视频数量已达上限",
+    "concurrencyLimitDescription": "{{tier}} 用户最多同时生成 {{limit}} 个视频",
+    "viewPricingPlans": "查看套餐",
+    "upgradePlan": "升级套餐",
     "finalizing": "最终处理中...",
     "restoring": "恢复中...",
     "unknownStatus": "状态未知"
@@ -1201,6 +1227,27 @@
       "functionExecutionFailed": "Edge Function执行失败",
       "insufficientCredits": "积分不足"
     },
+    "validation": {
+      "emailValidationTimeout": "邮箱验证超时",
+      "ipCheckTimeout": "IP检查超时",
+      "deviceFingerprintTimeout": "设备指纹检查超时"
+    },
+    "general": {
+      "videoProcessingTimeout": "视频处理超时（30秒）",
+      "cannotCreateCanvasContext": "无法创建Canvas上下文",
+      "cannotGetVideoStream": "无法获取视频流",
+      "recordingError": "录制过程中发生错误",
+      "videoLoadFailed": "视频加载失败",
+      "qingyunImageUrlOnly": "青云API只支持URL格式的图片。请提供图片的URL地址。",
+      "cannotReadResponseStream": "无法读取响应流",
+      "apiResponseFormatError": "API响应格式不正确",
+      "thumbnailUploadFailed": "缩略图上载失败",
+      "previewVideoUploadFailed": "预览视频上传失败",
+      "jsonConfigMissingFields": "JSON配置文件缺少必要字段: name, slug",
+      "jsonConfigFormatError": "JSON配置文件格式错误",
+      "batchExportFailed": "批量导出失败",
+      "subscriptionCancelFailed": "取消订阅失败"
+    },
     "template": {
       "nameRequired": "模板名称不能为空",
       "urlRequired": "URL标识不能为空",
@@ -1213,5 +1260,27 @@
       "validationFailed": "输入验证失败",
       "promptValidationFailed": "提示词验证失败"
     }
+  },
+  "notifications": {
+    "loginTooFrequent": "登录尝试过于频繁，请稍后再试",
+    "passwordResetSent": "密码重置链接已发送到您的邮箱",
+    "passwordUpdateSuccess": "密码更新成功",
+    "pleaseLoginFirst": "请先登录",
+    "likeSuccess": "点赞成功",
+    "unlikeSuccess": "已取消点赞",
+    "rateLimitExceeded": "请求过于频繁",
+    "downloadStarting": "开始下载高清无水印视频...",
+    "downloadSuccess": "下载开始！请查看浏览器下载列表",
+    "downloadOpenInNewWindow": "由于浏览器安全限制，将在新窗口中打开视频，请右键保存",
+    "downloadLinkCreated": "下载链接已创建",
+    "watermarkProcessing": "正在为视频添加水印，请稍候...",
+    "watermarkSuccess": "带水印视频已生成！",
+    "watermarkFailed": "水印处理失败，下载原视频",
+    "downloadNoWatermark": "下载已启动（无水印版本）",
+    "videoDownloadCorsRestriction": "由于跨域限制，将在新窗口中打开视频",
+    "videoDownloadInstruction": "请在新窗口中右键点击视频，选择\"另存为\"进行下载",
+    "autoDownloadFailed": "无法自动下载，请复制链接手动下载",
+    "networkNotSuitableForPreload": "网络条件不适合预加载",
+    "videoPreloadFailed": "视频预加载失败"
   }
 }

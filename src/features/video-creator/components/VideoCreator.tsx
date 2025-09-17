@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import ConfigPanel from './ConfigPanel'
 import PreviewPanel from './PreviewPanel'
+import PromptSection from './PromptSection'
 import { templates } from '../data/templates'
 import videoQueueService from '@/services/videoQueueService'
 import { generateRandomParams } from '@/utils/randomParams'
@@ -15,6 +16,7 @@ import { useVideoGenerationLimiter } from '@/hooks/useRateLimiter'
 import { InputValidator } from '@/utils/inputValidator'
 import { securityMonitor } from '@/services/securityMonitorService'
 import { ThreatType, SecurityLevel } from '@/config/security'
+import creditService from '@/services/creditService'
 
 export default function VideoCreator() {
   const { t } = useTranslation()
@@ -208,7 +210,12 @@ export default function VideoCreator() {
       const submitStatus = await videoQueueService.canUserSubmit(user.id)
       
       if (!submitStatus.canSubmit) {
-        toast.error(submitStatus.reason || t('videoCreator.cannotSubmit'), {
+        const userQueueInfo = await videoQueueService.getUserQueueStatus(user.id)
+        toast.error(t('videoCreator.concurrencyLimitError'), {
+          description: t('videoCreator.concurrencyLimitDescription', {
+            tier: submitStatus.tier || 'free',
+            limit: userQueueInfo.maxAllowed
+          }),
           action: submitStatus.tier !== 'enterprise' ? {
             label: t('videoCreator.upgradePlan'),
             onClick: () => navigate('/pricing')
@@ -269,6 +276,40 @@ export default function VideoCreator() {
 
     // Calculate credits based on quality and aspect ratio
     const requiredCredits = getVideoCreditCost(quality === 'fast' ? 'standard' : 'high', aspectRatio)
+
+    // 前置检查：积分是否足够
+    try {
+      const userCredits = await creditService.getUserCredits(user.id)
+      console.log('[前置检查] 用户积分:', userCredits)
+      if (!userCredits || userCredits.credits < requiredCredits) {
+        console.log('[前置检查] 积分不足，显示错误提示')
+        toast.error(t('videoCreator.insufficientCreditsError'), {
+          description: t('videoCreator.insufficientCreditsDescription', {
+            required: requiredCredits,
+            current: userCredits?.credits || 0
+          }),
+          action: {
+            label: t('videoCreator.viewPricingPlans'),
+            onClick: () => navigate('/pricing')
+          }
+        })
+        return
+      }
+    } catch (error) {
+      console.error('[前置检查] Failed to check user credits:', error)
+      // 如果检查失败，直接显示积分不足错误，不继续执行
+      toast.error(t('videoCreator.insufficientCreditsError'), {
+        description: t('videoCreator.insufficientCreditsDescription', {
+          required: requiredCredits,
+          current: 0
+        }),
+        action: {
+          label: t('videoCreator.viewPricingPlans'),
+          onClick: () => navigate('/pricing')
+        }
+      })
+      return
+    }
 
 
     // Removed special handling for art-coffee-machine custom images
@@ -384,7 +425,52 @@ export default function VideoCreator() {
           action: 'video_generation_failed'
         })
         
-        toast.error(t('videoCreator.submitFailed'))
+        // 根据错误类型显示不同的提示信息
+        const errorMessage = (error as Error)?.message || ''
+        
+        if (errorMessage.includes('积分余额不足') || errorMessage.includes('积分不足') || errorMessage.includes('Insufficient credits') || errorMessage.includes('insufficient')) {
+          // 积分不足错误
+          const userCredits = await creditService.getUserCredits(user.id).catch(() => ({ credits: 0 }))
+          toast.error(t('videoCreator.insufficientCreditsError'), {
+            description: t('videoCreator.insufficientCreditsDescription', {
+              required: requiredCredits,
+              current: userCredits?.credits || 0
+            }),
+            action: {
+              label: t('videoCreator.viewPricingPlans'),
+              onClick: () => navigate('/pricing')
+            }
+          })
+        } else if (errorMessage.includes('达到.*限制') || errorMessage.includes('并发') || errorMessage.includes('concurrent') || errorMessage.includes('limit')) {
+          // 并发限制错误
+          try {
+            const submitStatus = await videoQueueService.canUserSubmit(user.id)
+            const userQueueInfo = await videoQueueService.getUserQueueStatus(user.id)
+            toast.error(t('videoCreator.concurrencyLimitError'), {
+              description: t('videoCreator.concurrencyLimitDescription', {
+                tier: submitStatus.tier || 'free',
+                limit: userQueueInfo.maxAllowed
+              }),
+              action: submitStatus.tier !== 'enterprise' ? {
+                label: t('videoCreator.upgradePlan'),
+                onClick: () => navigate('/pricing')
+              } : undefined
+            })
+          } catch {
+            toast.error(t('videoCreator.concurrencyLimitError'), {
+              description: errorMessage,
+              action: {
+                label: t('videoCreator.upgradePlan'),
+                onClick: () => navigate('/pricing')
+              }
+            })
+          }
+        } else {
+          // 通用错误
+          toast.error(t('videoCreator.submitFailed'), {
+            description: errorMessage
+          })
+        }
         throw error
       }
     })
@@ -397,27 +483,70 @@ export default function VideoCreator() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row h-full bg-background -mx-4 -my-6 sm:-mx-6 lg:-mx-8">
-      {/* 配置面板 - 移动端在上方，桌面端在左侧 */}
-      <div className="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-border bg-card flex-shrink-0">
-        <ConfigPanel
-          selectedTemplate={selectedTemplate}
-          templates={templates}
-          params={params}
-          quality={quality}
-          aspectRatio={aspectRatio}
-          onTemplateChange={handleTemplateChange}
-          onParamChange={handleParamChange}
-          onGenerate={handleGenerate}
-          isGenerating={isGenerating}
-          isLimited={isLimited()}
-          remainingRequests={getRemainingRequests()}
-        />
+    <div className="h-full bg-background -mx-4 -my-6 sm:-mx-6 lg:-mx-8">
+      {/* 桌面端：左右分栏布局 */}
+      <div className="hidden lg:flex flex-row h-full">
+        {/* 左侧：配置面板 */}
+        <div className="w-80 border-r border-border bg-card flex-shrink-0">
+          <ConfigPanel
+            selectedTemplate={selectedTemplate}
+            templates={templates}
+            params={params}
+            quality={quality}
+            aspectRatio={aspectRatio}
+            onTemplateChange={handleTemplateChange}
+            onParamChange={handleParamChange}
+            onGenerate={handleGenerate}
+            isGenerating={isGenerating}
+            isLimited={isLimited()}
+            remainingRequests={getRemainingRequests()}
+          />
+        </div>
+        
+        {/* 右侧：预览面板 + 提示词区域 */}
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1">
+            <PreviewPanel
+              template={selectedTemplate}
+              videoUrl={generatedVideoUrl}
+              isGenerating={isGenerating}
+              progress={generationProgress}
+              status={generationStatus}
+              startTime={startTime}
+              quality={quality}
+              aspectRatio={aspectRatio}
+              onQualityChange={setQuality}
+              onAspectRatioChange={setAspectRatio}
+            />
+          </div>
+          <PromptSection
+            template={selectedTemplate}
+            params={params}
+          />
+        </div>
       </div>
-      
-      {/* 预览面板 - 移动端在下方，桌面端在右侧 */}
-      <div className="flex-1 flex flex-col min-h-0">
-        <div className="flex-1">
+
+      {/* 移动端：垂直堆叠布局 */}
+      <div className="lg:hidden flex flex-col h-full">
+        {/* 1. 配置面板（紧凑布局） */}
+        <div className="border-b border-border bg-card">
+          <ConfigPanel
+            selectedTemplate={selectedTemplate}
+            templates={templates}
+            params={params}
+            quality={quality}
+            aspectRatio={aspectRatio}
+            onTemplateChange={handleTemplateChange}
+            onParamChange={handleParamChange}
+            onGenerate={handleGenerate}
+            isGenerating={isGenerating}
+            isLimited={isLimited()}
+            remainingRequests={getRemainingRequests()}
+          />
+        </div>
+        
+        {/* 2. 预览面板 */}
+        <div className="flex-1 min-h-[300px]">
           <PreviewPanel
             template={selectedTemplate}
             videoUrl={generatedVideoUrl}
@@ -431,6 +560,12 @@ export default function VideoCreator() {
             onAspectRatioChange={setAspectRatio}
           />
         </div>
+        
+        {/* 3. 提示词区域（底部） */}
+        <PromptSection
+          template={selectedTemplate}
+          params={params}
+        />
       </div>
     </div>
   )

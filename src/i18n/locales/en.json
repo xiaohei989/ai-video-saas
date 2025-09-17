@@ -102,7 +102,27 @@
     "registrationBlocked": "Registration blocked",
     "ipRegistrationLimitExceeded": "Too many registrations from this IP address, please try again later",
     "deviceRegistrationLimitExceeded": "Too many registrations from this device, please try again later",
-    "registrationAllowed": "Registration check passed"
+    "registrationAllowed": "Registration check passed",
+    "checkYourEmail": "Check Your Email",
+    "resetPasswordEmailSent": "Password reset email has been sent to {{email}}",
+    "resetPasswordInstructions": "Please follow the instructions in the email to reset your password",
+    "sendAnotherEmail": "Send Another Email",
+    "forgotPasswordDescription": "Enter your email address and we'll send you a link to reset your password",
+    "sendResetEmail": "Send Reset Email",
+    "sendingResetEmail": "Sending...",
+    "userNotFound": "User not found",
+    "rateLimitError": "Too many requests, please try again later",
+    "resetPasswordError": "Password reset failed",
+    "newPasswordPlaceholder": "Enter your new password",
+    "confirmNewPassword": "Confirm New Password",
+    "confirmNewPasswordPlaceholder": "Enter your new password again",
+    "updatingPassword": "Updating...",
+    "passwordUpdatedDescription": "Your password has been successfully updated, redirecting to profile page in 3 seconds",
+    "redirectingToProfile": "Redirecting to profile page in 3 seconds...",
+    "samePasswordError": "New password cannot be the same as the old password",
+    "passwordRequirement1": "At least 8 characters",
+    "passwordRequirement2": "Contains uppercase and lowercase letters",
+    "passwordRequirement3": "Contains at least one number"
   },
   "emailVerification": {
     "title": "Verify Your Email",
@@ -488,6 +508,12 @@
     "completed": "Generation completed!",
     "failed": "Generation failed",
     "generationLimited": "Generation limit reached, please wait before trying again",
+    "insufficientCreditsError": "💰 Insufficient credits to generate video",
+    "insufficientCreditsDescription": "Requires {{required}} credits, current balance {{current}} credits",
+    "concurrencyLimitError": "🚫 Maximum concurrent video generation limit reached",
+    "concurrencyLimitDescription": "{{tier}} users can generate up to {{limit}} videos simultaneously",
+    "viewPricingPlans": "View Plans",
+    "upgradePlan": "Upgrade Plan",
     "finalizing": "Finalizing...",
     "restoring": "Restoring...",
     "unknownStatus": "Unknown status"
@@ -1207,6 +1233,27 @@
       "functionExecutionFailed": "Edge Function execution failed",
       "insufficientCredits": "Insufficient credits"
     },
+    "validation": {
+      "emailValidationTimeout": "Email validation timeout",
+      "ipCheckTimeout": "IP check timeout",
+      "deviceFingerprintTimeout": "Device fingerprint check timeout"
+    },
+    "general": {
+      "videoProcessingTimeout": "Video processing timeout (30 seconds)",
+      "cannotCreateCanvasContext": "Cannot create Canvas context",
+      "cannotGetVideoStream": "Cannot get video stream",
+      "recordingError": "Error occurred during recording",
+      "videoLoadFailed": "Video loading failed",
+      "qingyunImageUrlOnly": "Qingyun API only supports URL format images. Please provide image URL.",
+      "cannotReadResponseStream": "Cannot read response stream",
+      "apiResponseFormatError": "API response format error",
+      "thumbnailUploadFailed": "Thumbnail upload failed",
+      "previewVideoUploadFailed": "Preview video upload failed",
+      "jsonConfigMissingFields": "JSON config file missing required fields: name, slug",
+      "jsonConfigFormatError": "JSON config file format error",
+      "batchExportFailed": "Batch export failed",
+      "subscriptionCancelFailed": "Subscription cancellation failed"
+    },
     "template": {
       "nameRequired": "Template name cannot be empty",
       "urlRequired": "URL identifier cannot be empty",
@@ -1219,5 +1266,27 @@
       "validationFailed": "Input validation failed",
       "promptValidationFailed": "Prompt validation failed"
     }
+  },
+  "notifications": {
+    "loginTooFrequent": "Login attempts too frequent, please try again later",
+    "passwordResetSent": "Password reset link has been sent to your email",
+    "passwordUpdateSuccess": "Password updated successfully",
+    "pleaseLoginFirst": "Please login first",
+    "likeSuccess": "Liked successfully",
+    "unlikeSuccess": "Unliked successfully",
+    "rateLimitExceeded": "Too many requests",
+    "downloadStarting": "Starting HD watermark-free video download...",
+    "downloadSuccess": "Download started! Please check your browser's download list",
+    "downloadOpenInNewWindow": "Due to browser security restrictions, video will open in new window, please right-click to save",
+    "downloadLinkCreated": "Download link created",
+    "watermarkProcessing": "Adding watermark to video, please wait...",
+    "watermarkSuccess": "Watermarked video generated successfully!",
+    "watermarkFailed": "Watermark processing failed, downloading original video",
+    "downloadNoWatermark": "Download started (watermark-free version)",
+    "videoDownloadCorsRestriction": "Due to CORS restrictions, opening video in new window",
+    "videoDownloadInstruction": "Please right-click the video in the new window and select 'Save As' to download",
+    "autoDownloadFailed": "Cannot auto-download, please copy link to download manually",
+    "networkNotSuitableForPreload": "Network conditions not suitable for preloading",
+    "videoPreloadFailed": "Video preload failed"
   }
 }

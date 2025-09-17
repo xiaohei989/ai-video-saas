@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 // import cacheIntegrationService from '@/services/CacheIntegrationService'
 // import { counterEventProcessor } from '@/services/CounterEventProcessor'
 
@@ -83,10 +84,10 @@ const PerformanceDashboard: React.FC = () => {
     try {
       // TODO: 实现真实的计数器处理逻辑
       // const result = await counterEventProcessor.triggerManualProcessing()
-      alert(`模拟处理了 10 个事件`)
+      toast.success(`模拟处理了 10 个事件`)
       await fetchMetrics() // 刷新指标
     } catch (err) {
-      alert('手动处理失败: ' + (err instanceof Error ? err.message : String(err)))
+      toast.error('手动处理失败: ' + (err instanceof Error ? err.message : String(err)))
     }
   }
 
@@ -96,10 +97,10 @@ const PerformanceDashboard: React.FC = () => {
       setRefreshing(true)
       // TODO: 实现真实的缓存服务初始化
       // await cacheIntegrationService.initialize()
-      alert('模拟缓存集成服务初始化成功')
+      toast.success('模拟缓存集成服务初始化成功')
       await fetchMetrics()
     } catch (err) {
-      alert('初始化失败: ' + (err instanceof Error ? err.message : String(err)))
+      toast.error('初始化失败: ' + (err instanceof Error ? err.message : String(err)))
     } finally {
       setRefreshing(false)
     }
@@ -111,9 +112,9 @@ const PerformanceDashboard: React.FC = () => {
       setRefreshing(true)
       // TODO: 实现真实的热门模板排行榜更新
       // await cacheIntegrationService.updatePopularTemplatesRanking()
-      alert('模拟热门模板排行榜更新成功')
+      toast.success('模拟热门模板排行榜更新成功')
     } catch (err) {
-      alert('更新失败: ' + (err instanceof Error ? err.message : String(err)))
+      toast.error('更新失败: ' + (err instanceof Error ? err.message : String(err)))
     } finally {
       setRefreshing(false)
     }

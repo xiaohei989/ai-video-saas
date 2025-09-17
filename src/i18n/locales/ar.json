@@ -84,7 +84,27 @@
     "verifyingCredentials": "يرجى الانتظار، نتحقق من بياناتك",
     "sessionError": "غير قادر على إنشاء جلسة، يرجى تسجيل الدخول مرة أخرى",
     "authError": "حدث خطأ أثناء تسجيل الدخول",
-    "redirectingToLogin": "إعادة توجيه لصفحة تسجيل الدخول..."
+    "redirectingToLogin": "إعادة توجيه لصفحة تسجيل الدخول...",
+    "checkYourEmail": "تحقق من بريدك الإلكتروني",
+    "resetPasswordEmailSent": "تم إرسال بريد إعادة تعيين كلمة المرور إلى {{email}}",
+    "resetPasswordInstructions": "يرجى اتباع التعليمات في البريد الإلكتروني لإعادة تعيين كلمة المرور",
+    "sendAnotherEmail": "إرسال بريد آخر",
+    "forgotPasswordDescription": "أدخل عنوان بريدك الإلكتروني وسنرسل لك رابط لإعادة تعيين كلمة المرور",
+    "sendResetEmail": "إرسال بريد إعادة التعيين",
+    "sendingResetEmail": "جاري الإرسال...",
+    "userNotFound": "لم يتم العثور على المستخدم",
+    "rateLimitError": "طلبات كثيرة جداً، يرجى المحاولة لاحقاً",
+    "resetPasswordError": "فشل في إعادة تعيين كلمة المرور",
+    "newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
+    "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+    "confirmNewPasswordPlaceholder": "أدخل كلمة المرور الجديدة مرة أخرى",
+    "updatingPassword": "جاري التحديث...",
+    "passwordUpdatedDescription": "تم تحديث كلمة المرور بنجاح، سيتم التوجيه إلى صفحة الملف الشخصي في 3 ثواني",
+    "redirectingToProfile": "التوجيه إلى صفحة الملف الشخصي في 3 ثواني...",
+    "samePasswordError": "كلمة المرور الجديدة لا يمكن أن تكون نفس القديمة",
+    "passwordRequirement1": "8 أحرف على الأقل",
+    "passwordRequirement2": "تحتوي على أحرف كبيرة وصغيرة",
+    "passwordRequirement3": "تحتوي على رقم واحد على الأقل"
   },
   "emailVerification": {
     "title": "تأكيد عنوان بريدك الإلكتروني",
@@ -1157,5 +1177,71 @@
     "clearVideoCache": "مسح تخزين الفيديو المؤقت",
     "clearCacheConfirm": "هل أنت متأكد من أنك تريد مسح جميع التخزين المؤقت المتعلق بالفيديو؟ سيؤدي هذا إلى مسح معاينات الفيديو وتخزين الصور المصغرة والبيانات الأخرى.",
     "cacheCleared": "تم مسح تخزين الفيديو المؤقت بنجاح"
+  },
+  "errors": {
+    "credit": {
+      "insufficientCredits": "أرصدة غير كافية. يرجى شحن الأرصدة أو ترقية خطتك",
+      "creditRetrievalFailed": "فشل في استرداد معلومات الأرصدة",
+      "creditDeductionFailed": "فشل في خصم الأرصدة",
+      "invalidCreditAmount": "مقدار أرصدة غير صحيح"
+    },
+    "validation": {
+      "emailTimeout": "انتهت مهلة التحقق من البريد الإلكتروني",
+      "ipCheckTimeout": "انتهت مهلة فحص الآي بي",
+      "deviceFingerprintTimeout": "انتهت مهلة فحص بصمة الجهاز",
+      "securityCheckFailed": "فشل في فحص الأمان",
+      "invalidEmailFormat": "تنسيق البريد الإلكتروني غير صحيح",
+      "passwordMinLength": "يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل",
+      "passwordComplexity": "يجب أن تتضمن كلمة المرور أحرف كبيرة وصغيرة وأرقام",
+      "usernameInvalid": "اسم المستخدم يمكن أن يحتوي فقط على أحرف وأرقام وشرطات سفلية وشرطات من 3-20 حرف"
+    },
+    "general": {
+      "networkError": "خطأ في الشبكة",
+      "serverError": "خطأ في الخادم",
+      "unknownError": "خطأ غير معروف",
+      "timeoutError": "انتهت المهلة الزمنية",
+      "accessDenied": "تم رفض الوصول",
+      "sessionExpired": "انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى",
+      "operationFailed": "فشلت العملية"
+    },
+    "template": {
+      "loadFailed": "فشل في تحميل القالب",
+      "notFound": "القالب غير موجود",
+      "parameterMissing": "المعاملات المطلوبة مفقودة",
+      "parameterInvalid": "معاملات غير صحيحة",
+      "generationFailed": "فشل في إنشاء القالب"
+    },
+    "video": {
+      "generationFailed": "فشل في إنشاء الفيديو",
+      "downloadFailed": "فشل في تنزيل الفيديو",
+      "uploadFailed": "فشل في رفع الفيديو",
+      "processingFailed": "فشل في معالجة الفيديو",
+      "notFound": "الفيديو غير موجود",
+      "accessDenied": "تم رفض الوصول للفيديو"
+    }
+  },
+  "notifications": {
+    "signUpSuccess": "تم التسجيل بنجاح",
+    "emailVerificationRequired": "التحقق من البريد الإلكتروني مطلوب",
+    "emailVerificationSent": "تم إرسال بريد التحقق",
+    "passwordResetSent": "تم إرسال بريد إعادة تعيين كلمة المرور",
+    "profileUpdated": "تم تحديث الملف الشخصي",
+    "settingsSaved": "تم حفظ الإعدادات",
+    "operationCompleted": "تمت العملية",
+    "dataExported": "تم تصدير البيانات",
+    "accountDeleted": "تم حذف الحساب",
+    "subscriptionUpdated": "تم تحديث الاشتراك",
+    "paymentSucceeded": "تمت الدفعة بنجاح",
+    "downloadStarted": "بدأ التنزيل",
+    "downloadCompleted": "اكتمل التنزيل",
+    "linkCopied": "تم نسخ الرابط للحافظة",
+    "feedbackReceived": "تم استلام الملاحظات. شكراً لك!",
+    "supportTicketCreated": "تم إنشاء تذكرة الدعم",
+    "supportTicketUpdated": "تم تحديث تذكرة الدعم",
+    "checkEmailInbox": "يرجى فحص صندوق الوارد",
+    "checkSpamFolder": "إذا لم تجد البريد، تحقق من مجلد الرسائل غير المرغوب فيها",
+    "networkConnectionCheck": "يرجى فحص اتصال الشبكة والمحاولة مرة أخرى",
+    "tryAgainLater": "يرجى المحاولة مرة أخرى لاحقاً",
+    "contactSupport": "إذا استمرت المشكلة، اتصل بالدعم الفني"
   }
 }

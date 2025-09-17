@@ -84,7 +84,27 @@
     "verifyingCredentials": "Veuillez patienter, vérification de vos identifiants",
     "sessionError": "Impossible d'établir la session, veuillez vous reconnecter",
     "authError": "Une erreur s'est produite lors de la connexion",
-    "redirectingToLogin": "Redirection vers la page de connexion..."
+    "redirectingToLogin": "Redirection vers la page de connexion...",
+    "checkYourEmail": "Vérifiez votre e-mail",
+    "resetPasswordEmailSent": "Un e-mail de réinitialisation du mot de passe a été envoyé à {{email}}",
+    "resetPasswordInstructions": "Veuillez suivre les instructions de l'e-mail pour réinitialiser votre mot de passe",
+    "sendAnotherEmail": "Envoyer un autre e-mail",
+    "forgotPasswordDescription": "Saisissez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe",
+    "sendResetEmail": "Envoyer l'e-mail de réinitialisation",
+    "sendingResetEmail": "Envoi en cours...",
+    "userNotFound": "Utilisateur non trouvé",
+    "rateLimitError": "Trop de demandes, veuillez réessayer plus tard",
+    "resetPasswordError": "Échec de la réinitialisation du mot de passe",
+    "newPasswordPlaceholder": "Saisissez votre nouveau mot de passe",
+    "confirmNewPassword": "Confirmer le nouveau mot de passe",
+    "confirmNewPasswordPlaceholder": "Saisissez à nouveau votre nouveau mot de passe",
+    "updatingPassword": "Mise à jour...",
+    "passwordUpdatedDescription": "Votre mot de passe a été mis à jour avec succès, redirection vers la page de profil dans 3 secondes",
+    "redirectingToProfile": "Redirection vers la page de profil dans 3 secondes...",
+    "samePasswordError": "Le nouveau mot de passe ne peut pas être identique à l'ancien",
+    "passwordRequirement1": "Au moins 8 caractères",
+    "passwordRequirement2": "Contient des lettres majuscules et minuscules",
+    "passwordRequirement3": "Contient au moins un chiffre"
   },
   "emailVerification": {
     "title": "Vérifiez votre adresse e-mail",
@@ -1203,5 +1223,71 @@
     "clearVideoCache": "Effacer le Cache Vidéo",
     "clearCacheConfirm": "Êtes-vous sûr de vouloir effacer tous les caches liés aux vidéos ? Cela supprimera les aperçus vidéo, les caches de miniatures et autres données.",
     "cacheCleared": "Cache vidéo supprimé avec succès"
+  },
+  "errors": {
+    "credit": {
+      "insufficientCredits": "Crédits insuffisants. Veuillez recharger vos crédits ou mettre à niveau votre plan",
+      "creditRetrievalFailed": "Échec de la récupération des informations de crédit",
+      "creditDeductionFailed": "Échec de la déduction de crédits",
+      "invalidCreditAmount": "Montant de crédit invalide"
+    },
+    "validation": {
+      "emailTimeout": "Délai d'expiration de la validation d'email",
+      "ipCheckTimeout": "Délai d'expiration de la vérification IP",
+      "deviceFingerprintTimeout": "Délai d'expiration de la vérification d'empreinte digitale",
+      "securityCheckFailed": "Échec de la vérification de sécurité",
+      "invalidEmailFormat": "Format d'email invalide",
+      "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères",
+      "passwordComplexity": "Le mot de passe doit inclure des majuscules, minuscules et chiffres",
+      "usernameInvalid": "Le nom d'utilisateur ne peut contenir que des lettres, chiffres, traits de soulignement et tirets de 3-20 caractères"
+    },
+    "general": {
+      "networkError": "Erreur de réseau",
+      "serverError": "Erreur du serveur",
+      "unknownError": "Erreur inconnue",
+      "timeoutError": "Délai d'expiration dépassé",
+      "accessDenied": "Accès refusé",
+      "sessionExpired": "Session expirée. Veuillez vous reconnecter",
+      "operationFailed": "Opération échouée"
+    },
+    "template": {
+      "loadFailed": "Échec du chargement du modèle",
+      "notFound": "Modèle non trouvé",
+      "parameterMissing": "Paramètres requis manquants",
+      "parameterInvalid": "Paramètres invalides",
+      "generationFailed": "Échec de la génération du modèle"
+    },
+    "video": {
+      "generationFailed": "Échec de la génération vidéo",
+      "downloadFailed": "Échec du téléchargement vidéo",
+      "uploadFailed": "Échec de l'upload vidéo",
+      "processingFailed": "Échec du traitement vidéo",
+      "notFound": "Vidéo non trouvée",
+      "accessDenied": "Accès à la vidéo refusé"
+    }
+  },
+  "notifications": {
+    "signUpSuccess": "Inscription complétée avec succès",
+    "emailVerificationRequired": "Vérification d'email requise",
+    "emailVerificationSent": "Email de vérification envoyé",
+    "passwordResetSent": "Email de réinitialisation de mot de passe envoyé",
+    "profileUpdated": "Profil mis à jour",
+    "settingsSaved": "Paramètres sauvegardés",
+    "operationCompleted": "Opération terminée",
+    "dataExported": "Exportation des données terminée",
+    "accountDeleted": "Compte supprimé",
+    "subscriptionUpdated": "Abonnement mis à jour",
+    "paymentSucceeded": "Paiement effectué avec succès",
+    "downloadStarted": "Téléchargement commencé",
+    "downloadCompleted": "Téléchargement terminé",
+    "linkCopied": "Lien copié dans le presse-papiers",
+    "feedbackReceived": "Commentaires reçus. Merci !",
+    "supportTicketCreated": "Ticket de support créé",
+    "supportTicketUpdated": "Ticket de support mis à jour",
+    "checkEmailInbox": "Veuillez vérifier votre boîte de réception",
+    "checkSpamFolder": "Si vous ne trouvez pas l'email, vérifiez votre dossier spam",
+    "networkConnectionCheck": "Veuillez vérifier votre connexion réseau et réessayer",
+    "tryAgainLater": "Veuillez réessayer plus tard",
+    "contactSupport": "Si le problème persiste, contactez le support"
   }
 }

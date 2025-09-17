@@ -11,6 +11,7 @@ import SimpleVideoPlayer from '@/components/video/SimpleVideoPlayer'
 import LikeCounterButton from '@/components/templates/LikeCounterButton'
 import TemplatesSkeleton from '@/components/templates/TemplatesSkeleton'
 import Pagination from '@/components/ui/pagination'
+import CachedImage from '@/components/ui/CachedImage'
 import { useTemplateLikes } from '@/hooks/useTemplateLikes'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useSEO } from '@/hooks/useSEO'
@@ -855,36 +856,50 @@ const TemplateCard = memo(({
     <Card className="overflow-hidden shadow-md flex flex-col">
       <div className="aspect-video bg-muted relative group">
         {template.previewUrl ? (
-          <SimpleVideoPlayer
-            src={template.previewUrl}
-            poster={template.thumbnailUrl}
-            className="w-full h-full"
-            objectFit="cover"
-            showPlayButton={true}
-            autoPlayOnHover={!isMobile} // 移动端禁用自动播放
-            muted={false} // 默认有声音播放
-            alt={template.name}
-            videoId={template.id}
-            videoTitle={template.name}
-            onPlay={() => {
-              // 跟踪视频播放事件
-              trackEvent({
-                action: 'template_video_play',
-                category: 'user_engagement',
-                label: template.id,
-                custom_parameters: {
-                  template_name: template.name,
-                  template_category: template.category || 'unknown'
-                }
-              })
-            }}
-          />
+          <div className="relative w-full h-full">
+            {/* 缓存的缩略图作为背景 */}
+            {template.thumbnailUrl && (
+              <CachedImage 
+                src={template.thumbnailUrl}
+                alt={template.name}
+                className="absolute inset-0 w-full h-full object-cover"
+                cacheKey={`template_${template.id}`}
+                maxAge={24 * 60 * 60 * 1000} // 24小时缓存
+              />
+            )}
+            {/* 视频播放器在上层 */}
+            <SimpleVideoPlayer
+              src={template.previewUrl}
+              poster={template.thumbnailUrl}
+              className="relative z-10 w-full h-full"
+              objectFit="cover"
+              showPlayButton={true}
+              autoPlayOnHover={!isMobile} // 移动端禁用自动播放
+              muted={false} // 默认有声音播放
+              alt={template.name}
+              videoId={template.id}
+              videoTitle={template.name}
+              onPlay={() => {
+                // 跟踪视频播放事件
+                trackEvent({
+                  action: 'template_video_play',
+                  category: 'user_engagement',
+                  label: template.id,
+                  custom_parameters: {
+                    template_name: template.name,
+                    template_category: template.category || 'unknown'
+                  }
+                })
+              }}
+            />
+          </div>
         ) : template.thumbnailUrl ? (
-          <img 
+          <CachedImage 
             src={template.thumbnailUrl}
             alt={template.name}
             className="w-full h-full object-cover"
-            loading="lazy"
+            cacheKey={`template_${template.id}`}
+            maxAge={24 * 60 * 60 * 1000} // 24小时缓存
           />
         ) : (
           <div className="w-full h-full bg-muted flex items-center justify-center">

@@ -67,6 +67,7 @@ class VideoQueueService {
   private queueCheckInterval: number
   private intervalId?: NodeJS.Timeout
   private cleanupIntervalId?: NodeJS.Timeout
+  private lastZombieCheck: number = 0
   
   // 用户并发限制配置（基础配置，年度订阅映射到对应基础版本）
   private userConcurrentLimits: Record<SubscriptionTier, number> = {
@@ -413,19 +414,65 @@ class VideoQueueService {
   }
 
   /**
-   * 获取用户当前活跃的任务数（改进版：先清理无效任务）
+   * 获取用户当前活跃的任务数（改进版：双重验证机制）
    */
   private async getUserActiveCount(userId: string): Promise<number> {
     // 先清理可能的无效任务
     await this.cleanupInvalidActiveTasks(userId)
     
-    let count = 0
+    // 内存计数
+    let memoryCount = 0
     for (const activeUserId of this.activeJobs.values()) {
       if (activeUserId === userId) {
-        count++
+        memoryCount++
       }
     }
-    return count
+    
+    // 数据库验证作为安全网
+    try {
+      const { data: dbActiveVideos, error } = await supabase
+        .from('videos')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('status', 'processing')
+        .eq('is_deleted', false)
+      
+      if (error) {
+        console.warn(`[QUEUE SERVICE] 数据库验证查询失败: ${error.message}`)
+        return memoryCount // 如果数据库查询失败，使用内存计数
+      }
+      
+      const dbCount = dbActiveVideos?.length || 0
+      
+      // 如果内存计数与数据库差异过大，以数据库为准（保守策略）
+      if (Math.abs(memoryCount - dbCount) > 1) {
+        console.warn(`[QUEUE SERVICE] 🔄 并发计数不一致: 内存=${memoryCount}, 数据库=${dbCount}, 用户=${userId}`)
+        
+        // 记录详细信息用于调试
+        const memoryTasks = []
+        for (const [taskId, taskUserId] of this.activeJobs.entries()) {
+          if (taskUserId === userId) {
+            memoryTasks.push(taskId)
+          }
+        }
+        
+        console.warn(`[QUEUE SERVICE] 内存中的任务: ${memoryTasks.join(', ')}`)
+        console.warn(`[QUEUE SERVICE] 数据库中的任务: ${dbActiveVideos?.map(v => v.id).join(', ') || '无'}`)
+        
+        // 如果数据库计数更小，说明内存中有已完成但未清理的任务
+        // 如果数据库计数更大，说明内存中缺少一些任务（可能是重启后恢复不完整）
+        // 保守策略：取较大值以避免过度限制用户
+        const conservativeCount = Math.max(memoryCount, dbCount)
+        console.warn(`[QUEUE SERVICE] 采用保守计数: ${conservativeCount}`)
+        return conservativeCount
+      }
+      
+      return memoryCount
+      
+    } catch (error) {
+      console.error(`[QUEUE SERVICE] 双重验证过程中出错:`, error)
+      return memoryCount // 发生错误时，回退到内存计数
+    }
   }
 
   /**
@@ -503,14 +550,39 @@ class VideoQueueService {
         timestamp: new Date().toISOString()
       })
       
-      // 记录当前用户的活跃任务ID（用于调试）
-      const userTaskIds = []
+      // 记录当前用户的活跃任务详情（用于调试）
+      const userActiveTasks = []
       for (const [taskId, taskUserId] of this.activeJobs.entries()) {
         if (taskUserId === userId) {
-          userTaskIds.push(taskId)
+          try {
+            const taskInfo = await supabaseVideoService.getVideo(taskId)
+            userActiveTasks.push({
+              id: taskId,
+              status: taskInfo?.status || 'unknown',
+              startedAt: taskInfo?.processing_started_at,
+              title: taskInfo?.title || '无标题',
+              processingMinutes: taskInfo?.processing_started_at 
+                ? Math.round((Date.now() - new Date(taskInfo.processing_started_at).getTime()) / 60000)
+                : 0
+            })
+          } catch (error) {
+            userActiveTasks.push({
+              id: taskId,
+              status: 'error',
+              error: 'Failed to fetch details'
+            })
+          }
         }
       }
-      console.warn(`[QUEUE SERVICE] 🔍 用户活跃任务ID:`, userTaskIds)
+      
+      console.warn(`[QUEUE SERVICE] 🔍 用户活跃任务详情:`, {
+        userId,
+        activeCount: userActiveCount,
+        maxAllowed: userMaxAllowed,
+        tasks: userActiveTasks,
+        totalSystemActive: this.activeJobs.size,
+        systemMaxConcurrent: this.systemMaxConcurrent
+      })
       
       if (baseTier === 'free') {
         reason = `您已达到免费用户限制（${userActiveCount}/${userMaxAllowed}个并发视频）。升级订阅可同时生成更多视频！`
@@ -530,6 +602,16 @@ class VideoQueueService {
         tier
       }
     }
+
+    // 成功情况下也记录一些有用信息（但级别较低）
+    console.log(`[QUEUE SERVICE] ✅ 用户并发检查通过:`, {
+      userId,
+      tier,
+      activeCount: userActiveCount,
+      maxAllowed: userMaxAllowed,
+      available: userMaxAllowed - userActiveCount,
+      systemLoad: `${this.activeJobs.size}/${this.systemMaxConcurrent}`
+    })
 
     return {
       canSubmit: true,
@@ -864,10 +946,65 @@ class VideoQueueService {
   }
 
   /**
+   * 运行时清理僵尸任务（长时间卡住的任务）
+   */
+  private async cleanupZombieTasks(): Promise<void> {
+    try {
+      const now = Date.now()
+      const ZOMBIE_THRESHOLD = 30 * 60 * 1000 // 30分钟
+      const zombieTasks: string[] = []
+      
+      console.log(`[QUEUE SERVICE] 🔍 运行时僵尸任务检测，当前活跃任务数: ${this.activeJobs.size}`)
+      
+      for (const [videoId, userId] of this.activeJobs.entries()) {
+        try {
+          const video = await supabaseVideoService.getVideo(videoId)
+          if (video && video.processing_started_at) {
+            const processingTime = now - new Date(video.processing_started_at).getTime()
+            
+            if (processingTime > ZOMBIE_THRESHOLD) {
+              console.warn(`[QUEUE SERVICE] 🧟 运行时检测到僵尸任务: ${videoId}, 处理时长: ${Math.round(processingTime / 60000)} 分钟`)
+              zombieTasks.push(videoId)
+              
+              await this.cleanupZombieTask(videoId, userId, video.veo3_job_id)
+            }
+          } else if (!video) {
+            // 内存中有但数据库没有的任务，直接清理
+            console.warn(`[QUEUE SERVICE] 🧟 检测到幽灵任务（数据库中不存在）: ${videoId}`)
+            this.activeJobs.delete(videoId)
+            zombieTasks.push(videoId)
+          }
+        } catch (error) {
+          console.error(`[QUEUE SERVICE] 检测僵尸任务时出错 ${videoId}:`, error)
+        }
+      }
+      
+      if (zombieTasks.length > 0) {
+        console.log(`[QUEUE SERVICE] ✅ 运行时清理了 ${zombieTasks.length} 个僵尸任务: ${zombieTasks.join(', ')}`)
+        
+        // 触发队列处理，释放的资源可以给其他任务使用
+        setTimeout(() => {
+          this.processQueue()
+        }, 1000)
+      }
+      
+    } catch (error) {
+      console.error('[QUEUE SERVICE] 运行时僵尸任务清理出错:', error)
+    }
+  }
+
+  /**
    * 处理队列（定时器调用）
    */
   private async processQueue(): Promise<void> {
     try {
+      // 定期清理僵尸任务（每5分钟检查一次）
+      const now = Date.now()
+      if (now - this.lastZombieCheck > 300000) { // 5分钟
+        await this.cleanupZombieTasks()
+        this.lastZombieCheck = now
+      }
+      
       // 检查系统容量
       const availableSlots = this.systemMaxConcurrent - this.activeJobs.size
       if (availableSlots <= 0) {
@@ -962,15 +1099,27 @@ class VideoQueueService {
   }
 
   /**
-   * 任务完成时调用（清理状态）
+   * 任务完成时调用（改进版：确保清理的原子性）
    */
   async jobCompleted(videoId: string): Promise<void> {
     console.log(`[QUEUE SERVICE] Job completed: ${videoId}`)
     
+    let userId: string | undefined
+    
     try {
-      // 验证数据库状态是否已正确更新为completed
+      // 1. 立即从内存清理（避免时间窗口问题）
+      const wasInMemory = this.activeJobs.has(videoId)
+      if (wasInMemory) {
+        userId = this.activeJobs.get(videoId)
+        this.activeJobs.delete(videoId)
+        console.log(`[QUEUE SERVICE] ✅ 立即从内存移除任务: ${videoId}`)
+      }
+      
+      // 2. 验证和更新数据库状态
       const video = await supabaseVideoService.getVideo(videoId)
       if (video) {
+        userId = userId || video.user_id // 确保我们有用户ID
+        
         if (video.status !== 'completed') {
           console.warn(`[QUEUE SERVICE] ⚠️ 任务 ${videoId} 完成但数据库状态不正确: ${video.status}`)
           
@@ -987,43 +1136,65 @@ class VideoQueueService {
         } else {
           console.log(`[QUEUE SERVICE] ✅ 任务 ${videoId} 数据库状态正确`)
         }
+        
+        // 3. 清理相关用户的缓存
+        try {
+          const redisCacheIntegrationService = (await import('./RedisCacheIntegrationService')).default
+          await redisCacheIntegrationService.clearUserSubscriptionCache(video.user_id)
+          console.log(`[QUEUE SERVICE] ✅ 清理用户缓存: ${video.user_id}`)
+        } catch (cacheError) {
+          console.warn(`[QUEUE SERVICE] 缓存清理失败:`, cacheError)
+        }
+        
       } else {
         console.error(`[QUEUE SERVICE] ❌ 无法获取任务 ${videoId} 的数据库记录`)
       }
+      
+      // 4. 触发队列处理
+      setTimeout(() => {
+        this.processQueue()
+      }, 500) // 减少延迟，更快处理队列
+      
+      console.log(`[QUEUE SERVICE] ✅ 任务 ${videoId} 清理完成，用户: ${userId}`)
+      
     } catch (error) {
-      console.error(`[QUEUE SERVICE] ❌ 验证任务完成状态时出错 ${videoId}:`, error)
-    }
-    
-    // 从活跃任务中移除
-    this.activeJobs.delete(videoId)
-    
-    // 清理相关用户的缓存，确保并发计数准确
-    try {
-      const video = await supabaseVideoService.getVideo(videoId)
-      if (video) {
-        const redisCacheIntegrationService = (await import('./RedisCacheIntegrationService')).default
-        await redisCacheIntegrationService.clearUserSubscriptionCache(video.user_id)
+      console.error(`[QUEUE SERVICE] ❌ 任务完成清理出错 ${videoId}:`, error)
+      
+      // 错误情况下，确保内存状态已清理
+      if (this.activeJobs.has(videoId)) {
+        this.activeJobs.delete(videoId)
+        console.log(`[QUEUE SERVICE] 🔧 错误恢复：强制从内存移除任务: ${videoId}`)
       }
-    } catch (cacheError) {
-      console.warn(`[QUEUE SERVICE] 任务完成后清理缓存时出错:`, cacheError)
+      
+      // 即使出错也要触发队列处理
+      setTimeout(() => {
+        this.processQueue()
+      }, 1000)
     }
-    
-    // 触发队列处理
-    setTimeout(() => {
-      this.processQueue()
-    }, 1000)
   }
 
   /**
-   * 任务失败时调用（清理状态）
+   * 任务失败时调用（改进版：确保清理的原子性）
    */
   async jobFailed(videoId: string): Promise<void> {
     console.log(`[QUEUE SERVICE] Job failed: ${videoId}`)
     
+    let userId: string | undefined
+    
     try {
-      // 验证并更新数据库状态为失败
+      // 1. 立即从内存清理（避免时间窗口问题）
+      const wasInMemory = this.activeJobs.has(videoId)
+      if (wasInMemory) {
+        userId = this.activeJobs.get(videoId)
+        this.activeJobs.delete(videoId)
+        console.log(`[QUEUE SERVICE] ✅ 立即从内存移除失败任务: ${videoId}`)
+      }
+      
+      // 2. 验证并更新数据库状态为失败
       const video = await supabaseVideoService.getVideo(videoId)
       if (video) {
+        userId = userId || video.user_id // 确保我们有用户ID
+        
         if (video.status !== 'failed') {
           console.log(`[QUEUE SERVICE] 🔄 更新数据库状态为failed: ${videoId}`)
           await supabaseVideoService.updateVideo(videoId, {
@@ -1035,7 +1206,7 @@ class VideoQueueService {
           console.log(`[QUEUE SERVICE] ✅ 任务 ${videoId} 数据库状态已为failed`)
         }
         
-        // 退还积分
+        // 3. 退还积分
         if (video.credits_used && video.credits_used > 0) {
           console.log(`[QUEUE SERVICE] 💰 退还失败任务积分: ${video.credits_used} credits`)
           
@@ -1054,31 +1225,41 @@ class VideoQueueService {
             console.error(`[QUEUE SERVICE] ❌ 积分退还失败: ${refundResult.error}`)
           }
         }
+        
+        // 4. 清理相关用户的缓存
+        try {
+          const redisCacheIntegrationService = (await import('./RedisCacheIntegrationService')).default
+          await redisCacheIntegrationService.clearUserSubscriptionCache(video.user_id)
+          console.log(`[QUEUE SERVICE] ✅ 清理用户缓存: ${video.user_id}`)
+        } catch (cacheError) {
+          console.warn(`[QUEUE SERVICE] 缓存清理失败:`, cacheError)
+        }
+        
       } else {
         console.error(`[QUEUE SERVICE] ❌ 无法获取失败任务 ${videoId} 的数据库记录`)
       }
+      
+      // 5. 触发队列处理
+      setTimeout(() => {
+        this.processQueue()
+      }, 500) // 减少延迟，更快处理队列
+      
+      console.log(`[QUEUE SERVICE] ✅ 失败任务 ${videoId} 清理完成，用户: ${userId}`)
+      
     } catch (error) {
       console.error(`[QUEUE SERVICE] ❌ 处理失败任务时出错 ${videoId}:`, error)
-    }
-    
-    // 从活跃任务中移除
-    this.activeJobs.delete(videoId)
-    
-    // 清理相关用户的缓存，确保并发计数准确
-    try {
-      const video = await supabaseVideoService.getVideo(videoId)
-      if (video) {
-        const redisCacheIntegrationService = (await import('./RedisCacheIntegrationService')).default
-        await redisCacheIntegrationService.clearUserSubscriptionCache(video.user_id)
+      
+      // 错误情况下，确保内存状态已清理
+      if (this.activeJobs.has(videoId)) {
+        this.activeJobs.delete(videoId)
+        console.log(`[QUEUE SERVICE] 🔧 错误恢复：强制从内存移除失败任务: ${videoId}`)
       }
-    } catch (cacheError) {
-      console.warn(`[QUEUE SERVICE] 任务失败后清理缓存时出错:`, cacheError)
+      
+      // 即使出错也要触发队列处理
+      setTimeout(() => {
+        this.processQueue()
+      }, 1000)
     }
-    
-    // 触发队列处理
-    setTimeout(() => {
-      this.processQueue()
-    }, 1000)
   }
 
   /**

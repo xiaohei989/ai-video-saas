@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { toast } from 'sonner'
 import redisCacheIntegrationService from '@/services/RedisCacheIntegrationService'
 
 interface RedisHealthStatus {
@@ -247,10 +248,10 @@ const RedisPerformanceDashboard: React.FC = () => {
       setLoading(true)
       await redisCacheIntegrationService.initialize()
       await fetchHealthStatus()
-      alert('Redis缓存服务初始化成功！')
+      toast.success('Redis缓存服务初始化成功！')
     } catch (err) {
       setError(err instanceof Error ? err.message : '初始化失败')
-      alert('Redis缓存服务初始化失败: ' + (err instanceof Error ? err.message : String(err)))
+      toast.error('Redis缓存服务初始化失败: ' + (err instanceof Error ? err.message : String(err)))
     }
   }
 
@@ -258,10 +259,10 @@ const RedisPerformanceDashboard: React.FC = () => {
   const triggerCounterProcessing = async () => {
     try {
       const result = await redisCacheIntegrationService.triggerCounterBatchProcessing()
-      alert(`计数器批量处理完成！处理了 ${result.processed} 个更新`)
+      toast.success(`计数器批量处理完成！处理了 ${result.processed} 个更新`)
       await fetchHealthStatus() // 刷新状态
     } catch (err) {
-      alert('计数器批量处理失败: ' + (err instanceof Error ? err.message : String(err)))
+      toast.error('计数器批量处理失败: ' + (err instanceof Error ? err.message : String(err)))
     }
   }
 

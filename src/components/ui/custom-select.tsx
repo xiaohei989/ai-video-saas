@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { ChevronDown } from 'lucide-react'
+import PortalDropdown from './portal-dropdown'
 
 interface Option {
   value: string
@@ -25,26 +26,15 @@ export function CustomSelect({
   showIcon = false
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
 
   // Find the selected option
   const selectedOption = options.find(opt => opt.value === value)
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
+    <div className={`relative ${className}`}>
       <button
+        ref={triggerRef}
         type="button"
         className="w-full px-2.5 py-1 text-xs border border-input bg-background rounded-md hover:bg-accent flex items-center justify-between"
         onClick={() => setIsOpen(!isOpen)}
@@ -60,29 +50,30 @@ export function CustomSelect({
         <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
-      {/* Dropdown */}
-      {isOpen && (
-        <div className="absolute top-full mt-1 w-full bg-card border border-border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto">
-          {options.map(option => (
-            <button
-              key={option.value}
-              type="button"
-              className={`w-full px-2.5 py-1.5 text-xs text-left hover:bg-accent flex items-center gap-2 ${
-                value === option.value ? 'bg-accent' : ''
-              }`}
-              onClick={() => {
-                onChange(option.value)
-                setIsOpen(false)
-              }}
-            >
-              {showIcon && option.icon && (
-                <span>{option.icon}</span>
-              )}
-              <span>{option.label}</span>
-            </button>
-          ))}
-        </div>
-      )}
+      <PortalDropdown
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        triggerRef={triggerRef}
+      >
+        {options.map(option => (
+          <button
+            key={option.value}
+            type="button"
+            className={`w-full px-2.5 py-1.5 text-xs text-left hover:bg-accent flex items-center gap-2 ${
+              value === option.value ? 'bg-accent' : ''
+            }`}
+            onClick={() => {
+              onChange(option.value)
+              setIsOpen(false)
+            }}
+          >
+            {showIcon && option.icon && (
+              <span>{option.icon}</span>
+            )}
+            <span>{option.label}</span>
+          </button>
+        ))}
+      </PortalDropdown>
     </div>
   )
 }

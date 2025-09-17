@@ -81,7 +81,27 @@
     "verifyingCredentials": "잠시만 기다려 주세요, 인증 정보를 확인 중입니다",
     "sessionError": "세션을 설정할 수 없습니다, 다시 로그인해 주세요",
     "authError": "로그인 중 오류가 발생했습니다",
-    "redirectingToLogin": "로그인 페이지로 이동 중입니다..."
+    "redirectingToLogin": "로그인 페이지로 이동 중입니다...",
+    "checkYourEmail": "이메일을 확인해주세요",
+    "resetPasswordEmailSent": "비밀번호 재설정 이메일이 {{email}}로 전송되었습니다",
+    "resetPasswordInstructions": "이메일의 지시사항을 따라 비밀번호를 재설정해주세요",
+    "sendAnotherEmail": "다른 이메일 보내기",
+    "forgotPasswordDescription": "이메일 주소를 입력하시면 비밀번호 재설정 링크를 보내드립니다",
+    "sendResetEmail": "재설정 이메일 보내기",
+    "sendingResetEmail": "전송 중...",
+    "userNotFound": "사용자를 찾을 수 없습니다",
+    "rateLimitError": "요청이 너무 많습니다. 잠시 후 다시 시도해주세요",
+    "resetPasswordError": "비밀번호 재설정에 실패했습니다",
+    "newPasswordPlaceholder": "새 비밀번호를 입력해주세요",
+    "confirmNewPassword": "새 비밀번호 확인",
+    "confirmNewPasswordPlaceholder": "새 비밀번호를 다시 입력해주세요",
+    "updatingPassword": "업데이트 중...",
+    "passwordUpdatedDescription": "비밀번호가 성공적으로 업데이트되었습니다. 3초 후 프로필 페이지로 이동합니다",
+    "redirectingToProfile": "3초 후 프로필 페이지로 이동합니다...",
+    "samePasswordError": "새 비밀번호는 기존 비밀번호와 같을 수 없습니다",
+    "passwordRequirement1": "최소 8자",
+    "passwordRequirement2": "대문자와 소문자 포함",
+    "passwordRequirement3": "최소 1개의 숫자 포함"
   },
   "emailVerification": {
     "title": "이메일 주소 확인",
@@ -471,6 +491,12 @@
     "completed": "생성 완료!",
     "failed": "생성 실패",
     "generationLimited": "생성 한도에 도달했습니다. 잠시 후 다시 시도해 주세요",
+    "insufficientCreditsError": "💰 크레딕이 부족하여 비디오를 생성할 수 없습니다",
+    "insufficientCreditsDescription": "{{required}}크레딕이 필요하며, 현재 잔액은 {{current}}크레딕입니다",
+    "concurrencyLimitError": "🚫 동시 생성 한도에 도달했습니다",
+    "concurrencyLimitDescription": "{{tier}} 사용자는 최대 {{limit}}개의 비디오를 동시에 생성할 수 있습니다",
+    "viewPricingPlans": "요금제 보기",
+    "upgradePlan": "요금제 업그레이드",
     "finalizing": "최종 처리 중...",
     "restoring": "복구 중...",
     "unknownStatus": "알 수 없는 상태"
@@ -1087,5 +1113,71 @@
     "clearVideoCache": "비디오 캐시 삭제",
     "clearCacheConfirm": "비디오 관련 캐시를 모두 삭제하시겠습니까? 비디오 미리보기, 썸네일 캐시 등의 데이터가 삭제됩니다.",
     "cacheCleared": "비디오 캐시가 성공적으로 삭제되었습니다"
+  },
+  "errors": {
+    "credit": {
+      "insufficientCredits": "크레딧이 부족합니다. 크레딧을 충전하거나 플랜을 업그레이드하세요",
+      "creditRetrievalFailed": "크레딧 정보 조회에 실패했습니다",
+      "creditDeductionFailed": "크레딧 차감에 실패했습니다",
+      "invalidCreditAmount": "유효하지 않은 크레딧 수량입니다"
+    },
+    "validation": {
+      "emailTimeout": "이메일 검증이 시간 초과되었습니다",
+      "ipCheckTimeout": "IP 검사가 시간 초과되었습니다",
+      "deviceFingerprintTimeout": "기기 지문 검사가 시간 초과되었습니다",
+      "securityCheckFailed": "보안 검사에 실패했습니다",
+      "invalidEmailFormat": "유효하지 않은 이메일 형식입니다",
+      "passwordMinLength": "비밀번호는 최소 8자 이상이어야 합니다",
+      "passwordComplexity": "비밀번호는 대문자, 소문자, 숫자를 포함해야 합니다",
+      "usernameInvalid": "사용자명은 3-20자의 영문자, 숫자, 밑줄, 하이픈만 사용 가능합니다"
+    },
+    "general": {
+      "networkError": "네트워크 오류가 발생했습니다",
+      "serverError": "서버 오류가 발생했습니다",
+      "unknownError": "알 수 없는 오류가 발생했습니다",
+      "timeoutError": "요청 시간이 초과되었습니다",
+      "accessDenied": "접근이 거부되었습니다",
+      "sessionExpired": "세션이 만료되었습니다. 다시 로그인하세요",
+      "operationFailed": "작업이 실패했습니다"
+    },
+    "template": {
+      "loadFailed": "템플릿 로드에 실패했습니다",
+      "notFound": "템플릿을 찾을 수 없습니다",
+      "parameterMissing": "필수 매개변수가 누락되었습니다",
+      "parameterInvalid": "유효하지 않은 매개변수입니다",
+      "generationFailed": "템플릿 생성에 실패했습니다"
+    },
+    "video": {
+      "generationFailed": "비디오 생성에 실패했습니다",
+      "downloadFailed": "비디오 다운로드에 실패했습니다",
+      "uploadFailed": "비디오 업로드에 실패했습니다",
+      "processingFailed": "비디오 처리에 실패했습니다",
+      "notFound": "비디오를 찾을 수 없습니다",
+      "accessDenied": "비디오에 액세스할 수 없습니다"
+    }
+  },
+  "notifications": {
+    "signUpSuccess": "회원가입이 성공적으로 완료되었습니다",
+    "emailVerificationRequired": "이메일 인증이 필요합니다",
+    "emailVerificationSent": "인증 이메일이 전송되었습니다",
+    "passwordResetSent": "비밀번호 재설정 이메일이 전송되었습니다",
+    "profileUpdated": "프로필이 업데이트되었습니다",
+    "settingsSaved": "설정이 저장되었습니다",
+    "operationCompleted": "작업이 완료되었습니다",
+    "dataExported": "데이터 내보내기가 완료되었습니다",
+    "accountDeleted": "계정이 삭제되었습니다",
+    "subscriptionUpdated": "구독이 업데이트되었습니다",
+    "paymentSucceeded": "결제가 성공적으로 완료되었습니다",
+    "downloadStarted": "다운로드가 시작되었습니다",
+    "downloadCompleted": "다운로드가 완료되었습니다",
+    "linkCopied": "링크가 클립보드에 복사되었습니다",
+    "feedbackReceived": "피드백을 받았습니다. 감사합니다!",
+    "supportTicketCreated": "지원 티켓이 생성되었습니다",
+    "supportTicketUpdated": "지원 티켓이 업데이트되었습니다",
+    "checkEmailInbox": "이메일 수신함을 확인하세요",
+    "checkSpamFolder": "이메일을 찾을 수 없으면 스팸 폴더를 확인하세요",
+    "networkConnectionCheck": "네트워크 연결을 확인하고 다시 시도하세요",
+    "tryAgainLater": "잠시 후 다시 시도하세요",
+    "contactSupport": "문제가 지속되면 고객 지원에 문의하세요"
   }
 }

@@ -5,7 +5,9 @@ import { useNavigate } from 'react-router-dom'
 import { referralService } from '@/services/referralService'
 import { edgeCacheClient } from '@/services/EdgeFunctionCacheClient'
 import i18n from '@/i18n/config'
+import { useTranslation } from 'react-i18next'
 import { languageDebugger } from '@/utils/languageDebugger'
+import { toast } from 'sonner'
 
 // 认证上下文类型定义
 interface AuthContextType {
@@ -952,7 +954,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) throw error
       
-      alert('密码重置链接已发送到您的邮箱')
+      // Use i18n.t() for translation since we can't use hook in this context
+      toast.success(i18n.t('notifications.passwordResetSent'))
     } catch (err) {
       setError(err as AuthError)
       throw err
@@ -973,7 +976,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) throw error
       
-      alert('密码更新成功')
+      // Use i18n.t() for translation since we can't use hook in this context
+      toast.success(i18n.t('notifications.operationCompleted'))
       navigate('/profile')
     } catch (err) {
       setError(err as AuthError)
