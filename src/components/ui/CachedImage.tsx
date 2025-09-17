@@ -22,6 +22,16 @@ export default function CachedImage({
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
 
+  // 移动端检测
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  
+  // 移动端优化配置
+  const config = {
+    imageQuality: isMobile ? 0.3 : 0.6,  // 移动端使用更低质量
+    maxFileSize: isMobile ? 100 : 200,    // 移动端更严格的大小限制(KB)
+    maxCacheItems: isMobile ? 10 : 20     // 移动端更少缓存项
+  }
+
   const getCacheKey = (url: string) => {
     return cacheKey || `cached_img_${btoa(url).slice(0, 20)}`
   }
@@ -33,7 +43,7 @@ export default function CachedImage({
       const cacheKeys = Object.keys(localStorage).filter(key => key.startsWith('cached_img_'))
       
       // 如果缓存项目过多，清理最旧的
-      if (cacheKeys.length > 20) { // 限制最多20个缓存项
+      if (cacheKeys.length > config.maxCacheItems) { // 根据设备类型动态限制
         const cacheItems = cacheKeys.map(key => {
           try {
             const data = JSON.parse(localStorage.getItem(key) || '{}')
@@ -55,8 +65,25 @@ export default function CachedImage({
     }
   }
 
+  // 检测localStorage是否可用（私人浏览模式可能禁用）
+  const isLocalStorageAvailable = () => {
+    try {
+      const testKey = '__localStorage_test__'
+      localStorage.setItem(testKey, 'test')
+      localStorage.removeItem(testKey)
+      return true
+    } catch {
+      return false
+    }
+  }
+
   const getCachedImage = (url: string) => {
     try {
+      if (!isLocalStorageAvailable()) {
+        console.warn(`[CachedImage] localStorage不可用(${isMobile ? 'Mobile' : 'Desktop'})，可能在私人浏览模式`)
+        return null
+      }
+      
       const key = getCacheKey(url)
       const cached = localStorage.getItem(key)
       if (!cached) return null
@@ -72,21 +99,29 @@ export default function CachedImage({
       
       return data.base64
     } catch (error) {
-      console.warn('读取缓存图片失败:', error)
+      console.warn(`[CachedImage] 读取缓存失败(${isMobile ? 'Mobile' : 'Desktop'}):`, error)
       return null
     }
   }
 
   const cacheImage = async (url: string): Promise<string> => {
     return new Promise((resolve) => {
+      // 检查localStorage是否可用
+      if (!isLocalStorageAvailable()) {
+        console.warn(`[CachedImage] localStorage不可用，跳过缓存(${isMobile ? 'Mobile' : 'Desktop'})`)
+        resolve(url)
+        return
+      }
+      
       // 使用代理URL避免CORS问题
       const proxyUrl = getProxyVideoUrl(url)
       
       // 创建临时img元素来加载图片
       const img = new Image()
       
-      // 使用统一的CORS处理逻辑
-      if (needsCorsProxy(proxyUrl)) {
+      // CORS设置优化：在生产环境总是尝试设置crossOrigin
+      // 必须在设置src之前设置crossOrigin（移动Safari要求）
+      if (!import.meta.env.DEV || needsCorsProxy(proxyUrl)) {
         img.crossOrigin = 'anonymous'
       }
       
@@ -109,13 +144,22 @@ export default function CachedImage({
           // 将图片绘制到canvas上
           ctx.drawImage(img, 0, 0)
           
-          // 获取Base64数据 - 使用更高压缩比
-          const base64 = canvas.toDataURL('image/jpeg', 0.6) // 降低质量以减小大小
+          // Canvas taint检测：尝试获取一个像素来测试是否污染
+          try {
+            ctx.getImageData(0, 0, 1, 1)
+          } catch (taintError) {
+            console.warn(`[CachedImage] Canvas被污染，无法缓存(${isMobile ? 'Mobile' : 'Desktop'}):`, url, taintError)
+            resolve(url)
+            return
+          }
           
-          // 检查大小并实施更严格的限制
+          // 获取Base64数据 - 根据设备类型使用不同压缩比
+          const base64 = canvas.toDataURL('image/jpeg', config.imageQuality)
+          
+          // 检查大小并实施设备相关的限制
           const estimatedSize = (base64.length * 0.75) / 1024 // 估算KB大小
-          if (estimatedSize > 200) { // 降低单个文件大小限制到200KB
-            console.log('[CachedImage] 图片过大，跳过缓存:', url, `约${estimatedSize.toFixed(1)}KB`)
+          if (estimatedSize > config.maxFileSize) { // 根据设备类型动态限制大小
+            console.log(`[CachedImage] 图片过大，跳过缓存(${isMobile ? 'Mobile' : 'Desktop'}):`, url, `约${estimatedSize.toFixed(1)}KB`)
             resolve(url)
             return
           }
@@ -131,7 +175,7 @@ export default function CachedImage({
               size: estimatedSize
             }
             localStorage.setItem(key, JSON.stringify(data))
-            console.log('[CachedImage] 图片缓存成功:', url, `大小约${estimatedSize.toFixed(1)}KB`)
+            console.log(`[CachedImage] 图片缓存成功(${isMobile ? 'Mobile' : 'Desktop'}):`, url, `大小约${estimatedSize.toFixed(1)}KB`)
             resolve(base64)
           } catch (storageError) {
             if (storageError instanceof DOMException && storageError.name === 'QuotaExceededError') {
@@ -152,7 +196,7 @@ export default function CachedImage({
                   size: estimatedSize
                 }
                 localStorage.setItem(key, JSON.stringify(data))
-                console.log('[CachedImage] 清理后缓存成功:', url, `大小约${estimatedSize.toFixed(1)}KB`)
+                console.log(`[CachedImage] 清理后缓存成功(${isMobile ? 'Mobile' : 'Desktop'}):`, url, `大小约${estimatedSize.toFixed(1)}KB`)
                 resolve(base64)
               } catch (retryError) {
                 console.warn('清理后仍然存储失败，使用原始URL:', retryError)
@@ -211,13 +255,13 @@ export default function CachedImage({
       setImageSrc(proxyUrl)
       setIsLoading(false)
       
-      // 异步缓存图片（只在生产环境且支持CORS的情况下缓存）
-      if (!import.meta.env.DEV && needsCorsProxy(src)) {
+      // 静默后台缓存（生产环境启用Base64缓存优化）
+      // 不替换当前显示，为下次访问做准备
+      if (!import.meta.env.DEV) {
         try {
-          const finalSrc = await cacheImage(src)
-          if (finalSrc !== src && finalSrc !== proxyUrl) {
-            setImageSrc(finalSrc)
-          }
+          // 静默缓存，不影响当前显示的图片
+          await cacheImage(src)
+          // 移除了setImageSrc(finalSrc)调用，避免图片闪烁
         } catch (error) {
           // 缓存失败不影响显示，静默处理
         }
