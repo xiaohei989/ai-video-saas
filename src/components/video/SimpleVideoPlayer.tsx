@@ -14,6 +14,13 @@ import { cn } from '@/utils/cn'
 import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 import { getOptimalThumbnailSource, supportsMediaFragments } from '@/utils/thumbnailFallback'
 import VideoSkeleton from './VideoSkeleton'
+import { 
+  toggleFullscreen as toggleFullscreenHelper,
+  getFullscreenState,
+  detectDeviceCapabilities,
+  bindVideoFullscreenEventsiOS,
+  getFullscreenTooltip
+} from '@/utils/fullscreenHelper'
 
 export interface SimpleVideoPlayerProps {
   // 基本属性
@@ -75,6 +82,9 @@ export default function SimpleVideoPlayer({
   const [hasMetadata, setHasMetadata] = useState(false)
   const [currentVideoSrc, setCurrentVideoSrc] = useState(src)
   const [hasTriedFallback, setHasTriedFallback] = useState(false)
+  
+  // 设备能力检测
+  const [deviceCapabilities] = useState(detectDeviceCapabilities())
 
   // 智能视频源优化 - 根据浏览器支持情况添加 Media Fragments
   const getOptimizedVideoUrl = (videoSrc: string): string => {
@@ -270,28 +280,67 @@ export default function SimpleVideoPlayer({
     setCurrentTime(newTime)
   }
 
-  // 全屏切换功能
-  const toggleFullscreen = () => {
-    if (!containerRef.current) return
+  // 全屏切换功能 - iOS兼容版本
+  const toggleFullscreen = async () => {
+    const video = videoRef.current
+    const container = containerRef.current
     
-    if (document.fullscreenElement) {
-      document.exitFullscreen()
-    } else {
-      containerRef.current.requestFullscreen()
+    if (!video) {
+      console.warn('[SimpleVideoPlayer] 视频元素不可用')
+      return
+    }
+
+    try {
+      const success = await toggleFullscreenHelper(video, container || undefined)
+      if (!success) {
+        console.warn('[SimpleVideoPlayer] 全屏切换失败')
+        
+        // iOS设备的回退方案
+        if (deviceCapabilities.isiOS) {
+          console.log('[SimpleVideoPlayer] iOS用户可以使用原生视频控制条进入全屏')
+        }
+      } else {
+        console.log('[SimpleVideoPlayer] 全屏切换成功')
+      }
+    } catch (error) {
+      console.error('[SimpleVideoPlayer] 全屏切换出错:', error)
     }
   }
 
-  // 监听全屏状态变化
+  // iOS全屏事件监听
   useEffect(() => {
+    const video = videoRef.current
+    if (!video || !deviceCapabilities.isiOS) return
+
+    const cleanup = bindVideoFullscreenEventsiOS(
+      video,
+      () => {
+        console.log('[SimpleVideoPlayer] iOS进入全屏')
+        setIsFullscreen(true)
+      },
+      () => {
+        console.log('[SimpleVideoPlayer] iOS退出全屏')
+        setIsFullscreen(false)
+      }
+    )
+
+    return cleanup
+  }, [deviceCapabilities.isiOS])
+
+  // 标准全屏事件监听（非iOS）
+  useEffect(() => {
+    if (deviceCapabilities.isiOS) return
+
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement)
+      const state = getFullscreenState()
+      setIsFullscreen(state.isFullscreen)
     }
 
     document.addEventListener('fullscreenchange', handleFullscreenChange)
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange)
     }
-  }, [])
+  }, [deviceCapabilities.isiOS])
 
   // 格式化时间显示
   const formatTime = (seconds: number) => {
@@ -359,6 +408,13 @@ export default function SimpleVideoPlayer({
                          transition-transform hover:scale-105">
             <Play className="h-6 w-6 md:h-8 md:w-8 text-white ml-0.5 md:ml-1" />
           </div>
+        </div>
+      )}
+      
+      {/* iOS全屏提示 */}
+      {deviceCapabilities.isiOS && showControls && !isPlaying && (
+        <div className="absolute top-4 right-4 bg-black/70 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
+          iOS: 点击全屏按钮进入全屏
         </div>
       )}
 
@@ -431,7 +487,8 @@ export default function SimpleVideoPlayer({
                 onClick={toggleFullscreen}
                 className="flex items-center justify-center w-8 h-8 text-white hover:bg-white/20 
                          rounded-full transition-colors duration-200"
-                aria-label={isFullscreen ? '退出全屏' : '全屏播放'}
+                aria-label={getFullscreenTooltip(isFullscreen)}
+                title={getFullscreenTooltip(isFullscreen)}
               >
                 {isFullscreen ? (
                   <Minimize className="h-4 w-4" />

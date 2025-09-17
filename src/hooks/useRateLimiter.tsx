@@ -8,7 +8,10 @@ import {
 } from '../utils/rateLimiter';
 
 /**
- * Rate Limiting Hook
+ * Rate Limiting Hook - 已废弃
+ * 
+ * @deprecated 前端限流功能已被移除，因为存在用户标识污染和误判问题
+ * 现在依赖服务端业务逻辑控制（积分系统、并发限制、队列系统等）
  * 为组件提供请求限流功能
  */
 export function useRateLimiter(
@@ -27,36 +30,31 @@ export function useRateLimiter(
     };
   }, [action, customConfig]);
 
-  // 生成限流键（与后端保持一致）
+  // 生成限流键（修复用户标识逻辑）
   const getRateLimitKey = useCallback((additionalKey?: string) => {
-    let userId = 'anonymous';
+    let userId: string;
     
     if (user?.id) {
-      userId = user.id;
+      // 已登录用户：使用固定的用户ID，确保登录后清除匿名状态影响
+      userId = `user_${user.id}`;
     } else {
-      // 为匿名用户生成指纹，与后端逻辑保持一致
-      const userAgent = navigator.userAgent || 'unknown';
-      const fingerprint = generateUserFingerprint(userAgent);
-      userId = `anon_${fingerprint}`;
+      // 匿名用户：使用会话级别的标识，避免跨用户污染
+      const sessionId = sessionStorage.getItem('anonymous_session_id') || 
+        crypto.randomUUID?.() || 
+        Date.now().toString();
+      
+      // 确保会话ID被保存
+      if (!sessionStorage.getItem('anonymous_session_id')) {
+        sessionStorage.setItem('anonymous_session_id', sessionId);
+      }
+      
+      userId = `anon_${sessionId}`;
     }
     
     const baseKey = `${userId}:${action}`;
     return additionalKey ? `${baseKey}:${additionalKey}` : baseKey;
   }, [user?.id, action]);
 
-  // 生成用户指纹（与后端算法保持一致）
-  const generateUserFingerprint = (userAgent: string): string => {
-    // 注意：前端无法获取真实IP，所以只使用UserAgent
-    // 这与后端略有不同，但对于已登录用户不影响
-    const combined = `frontend:${userAgent}`;
-    let hash = 0;
-    for (let i = 0; i < combined.length; i++) {
-      const char = combined.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return Math.abs(hash).toString(36);
-  };
 
   // 检查是否允许请求
   const checkLimit = useCallback((additionalKey?: string): RateLimitResult => {
@@ -131,6 +129,18 @@ export function useRateLimiter(
     globalRateLimiter.reset(key);
   }, [getRateLimitKey]);
 
+  // 清除匿名用户的限流数据（用户登录后调用）
+  const clearAnonymousRateLimit = useCallback(() => {
+    const sessionId = sessionStorage.getItem('anonymous_session_id');
+    if (sessionId) {
+      const anonKey = `anon_${sessionId}:${action}`;
+      globalRateLimiter.reset(anonKey);
+      
+      // 可选：清除会话ID，让下次匿名访问使用新的标识
+      sessionStorage.removeItem('anonymous_session_id');
+    }
+  }, [action]);
+
   // 是否被限流
   const isLimited = useCallback((additionalKey?: string) => {
     const limitResult = checkLimit(additionalKey);
@@ -162,6 +172,7 @@ export function useRateLimiter(
     
     // 管理方法
     resetLimit,
+    clearAnonymousRateLimit,
     
     // 配置信息
     config

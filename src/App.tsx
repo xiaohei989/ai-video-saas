@@ -37,6 +37,7 @@ import TitleEffectDemo from './pages/TitleEffectDemo'
 import TestWatermark from './pages/TestWatermark'
 import SimpleWatermarkTest from './pages/SimpleWatermarkTest'
 import TestProtection from './pages/TestProtection'
+import TestiOSFullscreen from './pages/TestiOSFullscreen'
 
 // Auth pages
 import SignInForm from './components/auth/SignInForm'
@@ -161,6 +162,7 @@ function App() {
               {/* Test pages (development only) */}
               <Route path="/test/apicore" element={<Layout><TestApicoreApi /></Layout>} />
               <Route path="/test/analytics" element={<Layout><TestAnalytics /></Layout>} />
+              <Route path="/test-ios-fullscreen" element={<Layout><TestiOSFullscreen /></Layout>} />
               
               {/* Protected routes */}
               <Route element={<ProtectedRoute />}>

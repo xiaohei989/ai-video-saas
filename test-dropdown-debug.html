@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Art Coffee Machine 下拉菜单测试</title>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .select-container {
+            margin-bottom: 20px;
+        }
+        .label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        .select-trigger {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .select-trigger:hover {
+            border-color: #9ca3af;
+        }
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            margin-top: 4px;
+        }
+        .option {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+        }
+        .option:hover {
+            background: #f9fafb;
+        }
+        .option:last-child {
+            border-bottom: none;
+        }
+        .option.selected {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+        .debug-info {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        h1 {
+            color: #111827;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #374151;
+            margin: 20px 0 10px 0;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚨 Art Coffee Machine 模板下拉菜单调试</h1>
+        <div id="root"></div>
+    </div>
+
+    <script type="text/babel">
+        const { useState, useRef, useEffect } = React;
+        
+        // 简单的chevron图标组件
+        function ChevronDown({ size = 16, style = {} }) {
+            return React.createElement('svg', {
+                width: size,
+                height: size,
+                viewBox: '0 0 24 24',
+                fill: 'none',
+                stroke: 'currentColor',
+                strokeWidth: 2,
+                strokeLinecap: 'round',
+                strokeLinejoin: 'round',
+                style: style
+            }, React.createElement('polyline', { points: '6,9 12,15 18,9' }));
+        }
+
+        // Art Coffee Machine 模板配置
+        const templateData = {
+            "id": "f01f880a-b9b3-4dc3-9b5f-34f2fc9fb736",
+            "slug": "art-coffee-machine",
+            "name": "Art Coffee Machine Magic Creation",
+            "params": {
+                "artwork": {
+                    "type": "select",
+                    "label": "Artwork",
+                    "required": true,
+                    "default": "Van Gogh's famous painting The Starry Night",
+                    "options": [
+                        {
+                            "value": "Van Gogh's famous painting The Starry Night",
+                            "label": "Van Gogh's Starry Night"
+                        },
+                        {
+                            "value": "Monet's Water Lilies",
+                            "label": "Monet's Water Lilies"
+                        },
+                        {
+                            "value": "Leonardo da Vinci's Mona Lisa",
+                            "label": "Da Vinci's Mona Lisa"
+                        },
+                        {
+                            "value": "Hokusai's The Great Wave",
+                            "label": "Hokusai's Great Wave"
+                        },
+                        {
+                            "value": "Mondrian's Composition",
+                            "label": "Mondrian's Composition"
+                        },
+                        {
+                            "value": "Picasso's Guernica",
+                            "label": "Picasso's Guernica"
+                        },
+                        {
+                            "value": "Klimt's The Kiss",
+                            "label": "Klimt's The Kiss"
+                        },
+                        {
+                            "value": "Munch's The Scream",
+                            "label": "Munch's The Scream"
+                        },
+                        {
+                            "value": "Vermeer's Girl with a Pearl Earring",
+                            "label": "Vermeer's Girl with Pearl Earring"
+                        },
+                        {
+                            "value": "Botticelli's The Birth of Venus",
+                            "label": "Botticelli's Birth of Venus"
+                        },
+                        {
+                            "value": "Dali's The Persistence of Memory",
+                            "label": "Dali's Persistence of Memory"
+                        },
+                        {
+                            "value": "Kandinsky's Composition VII",
+                            "label": "Kandinsky's Composition VII"
+                        },
+                        {
+                            "value": "Rembrandt's The Night Watch",
+                            "label": "Rembrandt's Night Watch"
+                        },
+                        {
+                            "value": "Michelangelo's The Creation of Adam",
+                            "label": "Michelangelo's Creation of Adam"
+                        },
+                        {
+                            "value": "Banksy's Girl With Balloon",
+                            "label": "Banksy's Girl With Balloon"
+                        }
+                    ]
+                },
+                "cup_style": {
+                    "type": "select",
+                    "label": "Cup Style",
+                    "default": "European-style retro white",
+                    "options": [
+                        {
+                            "value": "European-style retro white",
+                            "label": "European Retro White Porcelain"
+                        },
+                        {
+                            "value": "modern minimalist glass",
+                            "label": "Modern Minimalist Glass"
+                        },
+                        {
+                            "value": "Japanese ceramic",
+                            "label": "Japanese Ceramic"
+                        },
+                        {
+                            "value": "Nordic wood-textured",
+                            "label": "Nordic Wood Texture"
+                        },
+                        {
+                            "value": "industrial metal",
+                            "label": "Industrial Metal"
+                        },
+                        {
+                            "value": "crystal clear glass",
+                            "label": "Crystal Glass"
+                        },
+                        {
+                            "value": "vintage porcelain with gold rim",
+                            "label": "Gold-rimmed Vintage Porcelain"
+                        },
+                        {
+                            "value": "handmade pottery",
+                            "label": "Handmade Pottery"
+                        }
+                    ]
+                }
+            }
+        };
+
+        // 自定义下拉选择组件
+        function CustomSelect({ label, value, onChange, options, placeholder = "选择选项" }) {
+            const [isOpen, setIsOpen] = useState(false);
+            const [debugInfo, setDebugInfo] = useState('');
+            const triggerRef = useRef(null);
+            const dropdownRef = useRef(null);
+
+            // 查找选中的选项
+            const selectedOption = options.find(opt => opt.value === value);
+
+            useEffect(() => {
+                setDebugInfo(`
+选项数量: ${options.length}
+当前值: ${value}
+选中选项: ${selectedOption ? selectedOption.label : '未选中'}
+下拉菜单状态: ${isOpen ? '打开' : '关闭'}
+                `.trim());
+            }, [options, value, selectedOption, isOpen]);
+
+            // 处理外部点击关闭
+            useEffect(() => {
+                if (!isOpen) return;
+
+                const handleClickOutside = (event) => {
+                    if (
+                        triggerRef.current?.contains(event.target) ||
+                        dropdownRef.current?.contains(event.target)
+                    ) {
+                        return;
+                    }
+                    setIsOpen(false);
+                };
+
+                document.addEventListener('mousedown', handleClickOutside);
+                return () => {
+                    document.removeEventListener('mousedown', handleClickOutside);
+                };
+            }, [isOpen]);
+
+            const handleOptionClick = (optionValue) => {
+                console.log('选择选项:', optionValue);
+                onChange(optionValue);
+                setIsOpen(false);
+            };
+
+            return (
+                <div className="select-container">
+                    <label className="label">{label}</label>
+                    <div style={{ position: 'relative' }}>
+                        <button
+                            ref={triggerRef}
+                            className="select-trigger"
+                            onClick={() => {
+                                console.log('点击下拉触发器');
+                                setIsOpen(!isOpen);
+                            }}
+                            type="button"
+                        >
+                            <span>
+                                {selectedOption ? selectedOption.label : placeholder}
+                            </span>
+                            <ChevronDown 
+                                size={16} 
+                                style={{ 
+                                    transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                                    transition: 'transform 0.2s'
+                                }}
+                            />
+                        </button>
+
+                        {isOpen && (
+                            <div ref={dropdownRef} className="dropdown">
+                                {options.map((option, index) => (
+                                    <div
+                                        key={option.value}
+                                        className={`option ${value === option.value ? 'selected' : ''}`}
+                                        onClick={() => handleOptionClick(option.value)}
+                                    >
+                                        {option.label}
+                                        {value === option.value && ' ✓'}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="debug-info">
+                        <strong>调试信息:</strong><br/>
+                        {debugInfo}
+                    </div>
+                </div>
+            );
+        }
+
+        // 主应用组件
+        function App() {
+            const [artworkValue, setArtworkValue] = useState(templateData.params.artwork.default);
+            const [cupStyleValue, setCupStyleValue] = useState(templateData.params.cup_style.default);
+
+            return (
+                <div>
+                    <p><strong>模板:</strong> {templateData.name}</p>
+                    <p><strong>模板ID:</strong> {templateData.id}</p>
+                    
+                    <h2>🎨 Artwork 参数测试</h2>
+                    <CustomSelect
+                        label={templateData.params.artwork.label}
+                        value={artworkValue}
+                        onChange={setArtworkValue}
+                        options={templateData.params.artwork.options}
+                        placeholder="选择艺术作品"
+                    />
+
+                    <h2>☕ Cup Style 参数测试</h2>
+                    <CustomSelect
+                        label={templateData.params.cup_style.label}
+                        value={cupStyleValue}
+                        onChange={setCupStyleValue}
+                        options={templateData.params.cup_style.options}
+                        placeholder="选择杯子风格"
+                    />
+
+                    <div className="debug-info">
+                        <strong>当前选择值:</strong><br/>
+                        Artwork: {artworkValue}<br/>
+                        Cup Style: {cupStyleValue}
+                    </div>
+                </div>
+            );
+        }
+
+        // 渲染应用
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

@@ -1,14 +1,14 @@
 /**
  * APICore Service for Video Generation
- * 支持8种Veo3模型组合：fast/pro × 纯文字/带图片 × 16:9/9:16
+ * 支持4种Veo3模型组合：fast/pro × 纯文字/带图片
+ * 宽高比通过提示词中的"aspect ratio"指令控制
  */
 
 export interface ApicoreCreateRequest {
   prompt: string;
-  model: 'veo3-fast' | 'veo3-fast-aspect' | 'veo3-fast-frames' | 'veo3-fast-frames-aspect' |
-         'veo3-pro' | 'veo3-pro-aspect' | 'veo3-pro-frames' | 'veo3-pro-frames-aspect';
+  model: 'veo3-fast' | 'veo3-fast-frames' | 'veo3-pro' | 'veo3-pro-frames';
   enhance_prompt?: boolean;
-  aspect_ratio?: '16:9' | '9:16';
+  // aspect_ratio参数已移除，改为通过提示词控制
   images?: string[];
 }
 
@@ -95,21 +95,16 @@ class ApicoreApiService {
    * 智能选择模型
    * @param quality - 质量设置：fast（快速）或 pro（高质量）
    * @param hasImages - 是否包含图片
-   * @param aspectRatio - 宽高比：16:9 或 9:16
+   * 注意：宽高比现在通过提示词中的"aspect ratio"指令控制
    */
   selectModel(
     quality: 'fast' | 'pro', 
-    hasImages: boolean, 
-    aspectRatio: '16:9' | '9:16' = '16:9'
+    hasImages: boolean
   ): ApicoreCreateRequest['model'] {
     let model = `veo3-${quality}` as string;
     
     if (hasImages) {
       model += '-frames';
-    }
-    
-    if (aspectRatio === '9:16') {
-      model += '-aspect';
     }
     
     return model as ApicoreCreateRequest['model'];
@@ -123,7 +118,7 @@ class ApicoreApiService {
     console.log('[APICORE API] Model:', request.model);
     console.log('[APICORE API] Prompt:', request.prompt);
     console.log('[APICORE API] Images:', request.images?.length || 0, 'images');
-    console.log('[APICORE API] Aspect Ratio:', request.aspect_ratio);
+    // 宽高比现在通过提示词控制，不再作为单独参数
     console.log('[APICORE API] Enhance prompt:', request.enhance_prompt !== false);
 
     let lastError: Error | null = null;
@@ -528,25 +523,18 @@ class ApicoreApiService {
   getSupportedModels(): ApicoreCreateRequest['model'][] {
     return [
       'veo3-fast',
-      'veo3-fast-aspect',
       'veo3-fast-frames',
-      'veo3-fast-frames-aspect',
       'veo3-pro',
-      'veo3-pro-aspect',
-      'veo3-pro-frames',
-      'veo3-pro-frames-aspect'
+      'veo3-pro-frames'
     ];
   }
 
   /**
    * 检查模型是否支持特定功能
    */
-  modelSupportsFeature(model: ApicoreCreateRequest['model'], feature: 'images' | 'aspect_9_16'): boolean {
+  modelSupportsFeature(model: ApicoreCreateRequest['model'], feature: 'images'): boolean {
     if (feature === 'images') {
       return model.includes('-frames');
-    }
-    if (feature === 'aspect_9_16') {
-      return model.includes('-aspect');
     }
     return false;
   }

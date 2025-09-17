@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { cn } from '@/utils/cn'
-import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
+import { getProxyVideoUrl, needsCorsProxy } from '@/utils/videoUrlProxy'
 
 interface CachedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string
@@ -84,11 +84,9 @@ export default function CachedImage({
       
       // 创建临时img元素来加载图片
       const img = new Image()
-      // 使用代理时不需要设置crossOrigin
-      if (proxyUrl !== url) {
-        // 代理URL，不设置crossOrigin
-      } else {
-        // 非代理URL，尝试设置crossOrigin
+      
+      // 使用统一的CORS处理逻辑
+      if (needsCorsProxy(proxyUrl)) {
         img.crossOrigin = 'anonymous'
       }
       
@@ -117,7 +115,7 @@ export default function CachedImage({
           // 检查大小并实施更严格的限制
           const estimatedSize = (base64.length * 0.75) / 1024 // 估算KB大小
           if (estimatedSize > 200) { // 降低单个文件大小限制到200KB
-            console.log('图片过大，跳过缓存:', url, `约${estimatedSize.toFixed(1)}KB`)
+            console.log('[CachedImage] 图片过大，跳过缓存:', url, `约${estimatedSize.toFixed(1)}KB`)
             resolve(url)
             return
           }
@@ -133,7 +131,7 @@ export default function CachedImage({
               size: estimatedSize
             }
             localStorage.setItem(key, JSON.stringify(data))
-            console.log('图片缓存成功:', url, `大小约${estimatedSize.toFixed(1)}KB`)
+            console.log('[CachedImage] 图片缓存成功:', url, `大小约${estimatedSize.toFixed(1)}KB`)
             resolve(base64)
           } catch (storageError) {
             if (storageError instanceof DOMException && storageError.name === 'QuotaExceededError') {
@@ -154,7 +152,7 @@ export default function CachedImage({
                   size: estimatedSize
                 }
                 localStorage.setItem(key, JSON.stringify(data))
-                console.log('清理后缓存成功:', url, `大小约${estimatedSize.toFixed(1)}KB`)
+                console.log('[CachedImage] 清理后缓存成功:', url, `大小约${estimatedSize.toFixed(1)}KB`)
                 resolve(base64)
               } catch (retryError) {
                 console.warn('清理后仍然存储失败，使用原始URL:', retryError)
@@ -172,7 +170,21 @@ export default function CachedImage({
       }
       
       img.onerror = () => {
-        console.warn('图片加载失败:', proxyUrl)
+        // 如果是CORS错误且使用了代理URL，尝试使用原始URL
+        if (proxyUrl !== url && needsCorsProxy(proxyUrl)) {
+          // 创建新的img元素，不设置crossOrigin
+          const fallbackImg = new Image()
+          fallbackImg.onload = () => {
+            resolve(url)
+          }
+          fallbackImg.onerror = () => {
+            resolve(url)
+          }
+          fallbackImg.src = url
+          return
+        }
+        
+        // 其他错误情况，直接回退到原始URL
         resolve(url)
       }
       
@@ -194,16 +206,21 @@ export default function CachedImage({
         return
       }
       
-      // 缓存中没有，则加载并缓存
-      try {
-        const finalSrc = await cacheImage(src)
-        setImageSrc(finalSrc)
-        setIsLoading(false)
-      } catch (error) {
-        console.warn('图片加载失败:', error)
-        setHasError(true)
-        setIsLoading(false)
-        setImageSrc(src) // 回退到原始URL
+      // 缓存中没有，先显示代理URL，然后异步缓存
+      const proxyUrl = getProxyVideoUrl(src)
+      setImageSrc(proxyUrl)
+      setIsLoading(false)
+      
+      // 异步缓存图片（只在生产环境且支持CORS的情况下缓存）
+      if (!import.meta.env.DEV && needsCorsProxy(src)) {
+        try {
+          const finalSrc = await cacheImage(src)
+          if (finalSrc !== src && finalSrc !== proxyUrl) {
+            setImageSrc(finalSrc)
+          }
+        } catch (error) {
+          // 缓存失败不影响显示，静默处理
+        }
       }
     }
 
@@ -216,6 +233,23 @@ export default function CachedImage({
   }
 
   const handleError = () => {
+    // 如果是CORS错误，尝试不带crossOrigin重新加载
+    if (needsCorsProxy(imageSrc)) {
+      // 创建一个新的img元素测试不带crossOrigin的加载
+      const testImg = new Image()
+      testImg.onload = () => {
+        setImageSrc(imageSrc + '?fallback=' + Date.now()) // 添加时间戳强制刷新
+        setIsLoading(false)
+        setHasError(false)
+      }
+      testImg.onerror = () => {
+        setIsLoading(false)
+        setHasError(true)
+      }
+      testImg.src = imageSrc
+      return
+    }
+    
     setIsLoading(false)
     setHasError(true)
   }
@@ -240,6 +274,13 @@ export default function CachedImage({
     )
   }
 
+  // 智能决定是否需要设置crossOrigin属性
+  const needsCors = needsCorsProxy(imageSrc)
+  
+  // 如果URL包含fallback参数，说明是重试加载，不设置crossOrigin
+  const isFallbackLoad = imageSrc.includes('?fallback=')
+  const shouldSetCors = needsCors && !isFallbackLoad
+  
   return (
     <img
       src={imageSrc}
@@ -247,6 +288,7 @@ export default function CachedImage({
       className={className}
       onLoad={handleLoad}
       onError={handleError}
+      crossOrigin={shouldSetCors ? 'anonymous' : undefined}
       {...props}
     />
   )

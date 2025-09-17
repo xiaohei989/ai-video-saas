@@ -9,6 +9,13 @@ import videoLoaderService, { type LoadProgress } from '@/services/VideoLoaderSer
 import ProtectedDownloadService from '@/services/protectedDownloadService'
 import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 import videoPlaybackManager from '@/utils/videoPlaybackManager'
+import { 
+  toggleFullscreen as toggleFullscreenHelper,
+  getFullscreenState,
+  detectDeviceCapabilities,
+  bindVideoFullscreenEventsiOS,
+  getFullscreenTooltip
+} from '@/utils/fullscreenHelper'
 
 interface VideoPlayerProps {
   src: string
@@ -85,6 +92,10 @@ export default function VideoPlayer({
   const [loadError, setLoadError] = useState<string | null>(null)
   const [isDragging, setIsDragging] = useState(false)
   // controlsTimeout 移除
+  
+  // 全屏相关状态
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [deviceCapabilities, setDeviceCapabilities] = useState(detectDeviceCapabilities())
 
   // 注册到视频播放管理器
   useEffect(() => {
@@ -101,6 +112,41 @@ export default function VideoPlayer({
       }
     }
   }, [videoId, src])
+
+  // iOS全屏事件监听
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !deviceCapabilities.isiOS) return
+
+    const cleanup = bindVideoFullscreenEventsiOS(
+      video,
+      () => {
+        console.log('[VideoPlayer] iOS进入全屏')
+        setIsFullscreen(true)
+      },
+      () => {
+        console.log('[VideoPlayer] iOS退出全屏')
+        setIsFullscreen(false)
+      }
+    )
+
+    return cleanup
+  }, [deviceCapabilities.isiOS])
+
+  // 标准全屏事件监听（非iOS）
+  useEffect(() => {
+    if (deviceCapabilities.isiOS) return
+
+    const handleFullscreenChange = () => {
+      const state = getFullscreenState()
+      setIsFullscreen(state.isFullscreen)
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+    }
+  }, [deviceCapabilities.isiOS])
 
   // Extract thumbnail if no poster provided (with cache support)
   useEffect(() => {
@@ -311,13 +357,30 @@ export default function VideoPlayer({
     setCurrentTime(newTime)
   }
 
-  const toggleFullscreen = () => {
-    if (!containerRef.current) return
+  const toggleFullscreen = async () => {
+    const video = videoRef.current
+    const container = containerRef.current
     
-    if (document.fullscreenElement) {
-      document.exitFullscreen()
-    } else {
-      containerRef.current.requestFullscreen()
+    if (!video) {
+      console.warn('[VideoPlayer] 视频元素不可用')
+      return
+    }
+
+    try {
+      const success = await toggleFullscreenHelper(video, container || undefined)
+      if (!success) {
+        console.warn('[VideoPlayer] 全屏切换失败')
+        
+        // iOS设备的回退方案：显示用户提示
+        if (deviceCapabilities.isiOS) {
+          // 可以在这里显示一个提示，告诉用户如何手动进入全屏
+          console.log('[VideoPlayer] iOS用户可以双击视频或使用播放控制条进入全屏')
+        }
+      } else {
+        console.log('[VideoPlayer] 全屏切换成功')
+      }
+    } catch (error) {
+      console.error('[VideoPlayer] 全屏切换出错:', error)
     }
   }
 
@@ -381,6 +444,13 @@ export default function VideoPlayer({
       {isPlaying && duration > 0 && (
         <div className="absolute top-2 right-2 z-10 bg-black/50 text-white px-1.5 py-0.5 rounded text-[10px] font-light backdrop-blur-sm">
           {formatTime(currentTime)} / {formatTime(duration)}
+        </div>
+      )}
+      
+      {/* iOS全屏提示 */}
+      {deviceCapabilities.isiOS && isHovering && !isPlaying && (
+        <div className="absolute top-2 left-2 z-10 bg-black/70 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
+          iOS 设备: 点击右下角全屏按钮
         </div>
       )}
       
@@ -597,7 +667,7 @@ export default function VideoPlayer({
               variant="ghost"
               className="h-8 w-8 text-white hover:bg-white/20 transition-colors"
               onClick={toggleFullscreen}
-              title="全屏播放"
+              title={getFullscreenTooltip(isFullscreen)}
             >
               <Maximize className="h-4 w-4" strokeWidth={1.5} />
             </Button>

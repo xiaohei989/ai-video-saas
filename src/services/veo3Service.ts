@@ -537,17 +537,22 @@ class Veo3Service {
       // 选择合适的APICore模型
       const quality = request.model || 'fast'
       const aspectRatio = request.aspectRatio || '16:9'
-      const apicoreModel = apicoreService.selectModel(quality, !!images, aspectRatio)
+      const apicoreModel = apicoreService.selectModel(quality, !!images)
+      
+      // 在提示词中添加宽高比设置
+      const finalPrompt = aspectRatio === '9:16' 
+        ? `Aspect ratio: 9:16. ${request.prompt}`
+        : request.prompt
       
       // console.log(`[VEO3 SERVICE] APICore model selected: ${apicoreModel}`)
       
       // 创建视频任务
       const task = await apicoreService.createVideo({
-        prompt: request.prompt,
-        model: apicoreModel,
+        prompt: finalPrompt,        // 使用增强后的提示词
+        model: apicoreModel,        // 使用简化的模型名
         images: images,
-        enhance_prompt: true,
-        aspect_ratio: aspectRatio
+        enhance_prompt: true
+        // 移除aspect_ratio参数，改为通过提示词控制
       })
       
       // 获取任务ID

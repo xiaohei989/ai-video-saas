@@ -43,6 +43,18 @@ interface JsonPromptTemplate {
 
 export class PromptGenerator {
   /**
+   * 为提示词添加宽高比设置
+   * @param prompt - 原始提示词
+   * @param aspectRatio - 宽高比设置
+   */
+  static addAspectRatioToPrompt(prompt: string, aspectRatio: '16:9' | '9:16'): string {
+    if (aspectRatio === '9:16') {
+      return `Aspect ratio: 9:16. ${prompt}`;
+    }
+    return prompt; // 16:9时保持原提示词不变
+  }
+
+  /**
    * 将JSON格式的提示词转换为字符串格式
    */
   static convertJsonPromptToString(jsonPrompt: JsonPromptTemplate): string {
@@ -219,7 +231,8 @@ export class PromptGenerator {
    */
   static generatePromptForLocal(
     template: LocalTemplate,
-    values: Record<string, any>
+    values: Record<string, any>,
+    aspectRatio?: '16:9' | '9:16'  // 新增参数
   ): string {
     // 首先解析联动参数
     const resolvedValues = this.resolveLinkedParameters(template, values);
@@ -276,6 +289,11 @@ export class PromptGenerator {
       });
     });
     
+    // 最后增强提示词（添加宽高比设置）
+    if (aspectRatio) {
+      return this.addAspectRatioToPrompt(prompt, aspectRatio);
+    }
+    
     return prompt;
   }
 
@@ -284,18 +302,24 @@ export class PromptGenerator {
    */
   static generateJsonPrompt(
     template: LocalTemplate,
-    values: Record<string, any>
+    values: Record<string, any>,
+    aspectRatio?: '16:9' | '9:16'  // 新增aspectRatio参数
   ): JsonPromptTemplate | string {
     // 首先解析联动参数
     const resolvedValues = this.resolveLinkedParameters(template, values);
     
     // 检查promptTemplate的类型
     if (typeof template.promptTemplate === 'string') {
-      // 如果是字符串格式，仍返回处理后的字符串
-      return this.generatePromptForLocal(template, values);
+      // 如果是字符串格式，仍返回处理后的字符串，传递aspectRatio参数
+      return this.generatePromptForLocal(template, values, aspectRatio);
     } else if (typeof template.promptTemplate === 'object' && template.promptTemplate !== null) {
       // 如果是JSON格式，进行深度克隆并替换参数
       const jsonPrompt = JSON.parse(JSON.stringify(template.promptTemplate));
+      
+      // 🆕 动态设置aspect_ratio（如果用户选择了非默认值）
+      if (aspectRatio) {
+        jsonPrompt.aspect_ratio = aspectRatio;
+      }
       
       // 递归替换JSON中的所有占位符
       return this.replaceJsonPlaceholders(jsonPrompt, resolvedValues, template.params);

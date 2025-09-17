@@ -24,8 +24,6 @@ interface ConfigPanelProps {
   onParamChange: (key: string, value: any) => void
   onGenerate: (promptData: { prompt: string; jsonPrompt: any }) => void
   isGenerating: boolean
-  isLimited?: boolean
-  remainingRequests?: number
 }
 
 export default function ConfigPanel({

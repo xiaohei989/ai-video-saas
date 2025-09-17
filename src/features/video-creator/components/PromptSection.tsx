@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Eye, EyeOff, Copy, Lock, Gem } from 'lucide-react'
@@ -14,15 +14,25 @@ import type { Subscription } from '@/types'
 interface PromptSectionProps {
   template: Template
   params: Record<string, any>
+  aspectRatio?: '16:9' | '9:16'  // 新增宽高比参数
 }
 
 export default function PromptSection({
   template,
-  params
+  params,
+  aspectRatio
 }: PromptSectionProps) {
   const { t } = useTranslation()
   const { user } = useAuth()
   const [showPromptDebug, setShowPromptDebug] = useState(false)
+  
+  // 强制刷新key，确保在aspectRatio变化时重新渲染
+  const [refreshKey, setRefreshKey] = useState(0)
+  
+  // 当aspectRatio变化时，强制重新渲染
+  useEffect(() => {
+    setRefreshKey(prev => prev + 1)
+  }, [aspectRatio])
 
   // 获取用户订阅信息
   const { data: subscription } = useQuery({
@@ -67,13 +77,16 @@ export default function PromptSection({
     subscription.planId
   ), [subscription])
 
-  const generatePrompt = () => {
-    // 统一使用generateJsonPrompt，根据模板格式自动决定输出格式
-    return PromptGenerator.generateJsonPrompt(template, params)
-  }
+  const generatePrompt = useMemo(() => {
+    // 如果aspectRatio未定义，使用默认值16:9
+    const finalAspectRatio = aspectRatio || '16:9';
+    
+    const result = PromptGenerator.generateJsonPrompt(template, params, finalAspectRatio);
+    return result;
+  }, [template, params, aspectRatio, refreshKey])
 
   const copyPromptToClipboard = async () => {
-    const promptResult = generatePrompt()
+    const promptResult = generatePrompt
     
     // 根据结果类型决定复制内容
     const textToCopy = typeof promptResult === 'string' 
@@ -129,10 +142,11 @@ export default function PromptSection({
           <div className="bg-background border border-border rounded-md p-3 max-h-40 overflow-y-auto">
             <pre className="text-xs text-foreground whitespace-pre-wrap break-words font-mono">
               {(() => {
-                const promptResult = generatePrompt()
-                return typeof promptResult === 'string' 
-                  ? promptResult 
-                  : JSON.stringify(promptResult, null, 2)
+                // 直接使用最新的generatePrompt结果
+                const content = typeof generatePrompt === 'string' 
+                  ? generatePrompt 
+                  : JSON.stringify(generatePrompt, null, 2);
+                return content;
               })()}
             </pre>
           </div>

@@ -40,7 +40,7 @@ export function getProxyVideoUrl(originalUrl: string): string {
 
 /**
  * 检查URL是否需要CORS处理
- * 所有CDN域名的视频都需要设置crossOrigin属性
+ * 用于Canvas操作的跨域图片需要设置crossOrigin='anonymous'
  */
 export function needsCorsProxy(url: string): boolean {
   if (!url || typeof url !== 'string') {
@@ -54,10 +54,19 @@ export function needsCorsProxy(url: string): boolean {
            url.includes('cdn.veo3video.me');
   }
   
-  // 生产环境：CDN域名需要CORS处理（设置crossOrigin属性）
-  return url.includes('cdn.veo3video.me') ||
-         url.includes('filesystem.site') ||
-         url.includes('heyoo.oss-ap-southeast-1.aliyuncs.com');
+  // 生产环境：更保守的CORS策略
+  // 只有确认支持CORS的域名才设置crossOrigin
+  const supportedCorsDomains = [
+    'cdn.veo3video.me', // R2存储，已配置CORS
+  ];
+  
+  // 检查是否为支持CORS的域名
+  const isSupportedDomain = supportedCorsDomains.some(domain => url.includes(domain));
+  
+  // 同时检查是否不是fallback重试请求
+  const isFallbackRequest = url.includes('?fallback=');
+  
+  return isSupportedDomain && !isFallbackRequest;
 }
 
 /**

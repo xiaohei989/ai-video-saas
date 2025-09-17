@@ -12,7 +12,7 @@ import { toast } from 'sonner'
 import { getVideoCreditCost } from '@/config/credits'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useSEO } from '@/hooks/useSEO'
-import { useVideoGenerationLimiter } from '@/hooks/useRateLimiter'
+// import { useVideoGenerationLimiter } from '@/hooks/useRateLimiter' // 已移除限流功能
 import { InputValidator } from '@/utils/inputValidator'
 import { securityMonitor } from '@/services/securityMonitorService'
 import { ThreatType, SecurityLevel } from '@/config/security'
@@ -27,7 +27,7 @@ export default function VideoCreator() {
   const authContext = useContext(AuthContext)
   const user = authContext?.user
   const { trackVideoGeneration, trackTemplateView, trackTemplateUse } = useAnalytics()
-  const { executeWithLimit, isLimited, getRemainingRequests } = useVideoGenerationLimiter()
+  // const { executeWithLimit, isLimited, getRemainingRequests } = useVideoGenerationLimiter() // 已移除限流功能
 
   // SEO优化
   useSEO('create')
@@ -91,6 +91,7 @@ export default function VideoCreator() {
       }
     }
   }, [templateIdFromUrl, paramsFromUrl]) // 移除 selectedTemplate.id 依赖
+
 
   // 初始化队列服务并获取用户队列信息
   useEffect(() => {
@@ -156,7 +157,18 @@ export default function VideoCreator() {
   }
 
   const handleParamChange = (key: string, value: any) => {
-    // 安全验证用户输入
+    // 检查是否是预定义的select选项，如果是则跳过验证
+    const param = selectedTemplate.params[key]
+    const isSelectOption = param?.type === 'select' && 
+      param.options?.some(option => option.value === value)
+    
+    // 对于预定义的select选项，直接使用不验证
+    if (isSelectOption) {
+      setParams(prev => ({ ...prev, [key]: value }))
+      return
+    }
+    
+    // 安全验证用户输入（仅对非预定义选项）
     if (typeof value === 'string' && value.length > 0) {
       const validation = InputValidator.validateString(value, {
         sanitize: true,
@@ -199,11 +211,25 @@ export default function VideoCreator() {
       return
     }
     
-    // 检查是否被限流
-    if (isLimited()) {
-      toast.error(t('videoCreator.generationLimited'))
-      return
-    }
+    // 限流检查已临时禁用 - 解决误判问题
+    // if (isLimited()) {
+    //   const remainingRequests = getRemainingRequests()
+    //   console.error('[限流检查] 用户被限流', {
+    //     userId: user?.id,
+    //     email: user?.email,
+    //     remainingRequests,
+    //     isNewUser: !user?.id
+    //   })
+    //   
+    //   toast.error(t('videoCreator.generationLimited'), {
+    //     description: `当前剩余请求数：${remainingRequests}。如果这是错误，请刷新页面重试。`,
+    //     action: {
+    //       label: '刷新页面',
+    //       onClick: () => window.location.reload()
+    //     }
+    //   })
+    //   return
+    // }
 
     // 检查用户是否可以提交新任务
     try {
@@ -272,6 +298,11 @@ export default function VideoCreator() {
           prompt = prompt.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), replacementValue)
         }
       })
+      
+      // 为fallback逻辑也添加aspectRatio处理
+      if (aspectRatio === '9:16') {
+        prompt = `Aspect ratio: 9:16. ${prompt}`
+      }
     }
 
     // Calculate credits based on quality and aspect ratio
@@ -319,9 +350,8 @@ export default function VideoCreator() {
     setGenerationStatus(t('videoCreator.submittingTask'))
     setStartTime(Date.now())
     
-    // 使用限流保护的视频生成
-    const result = await executeWithLimit(async () => {
-      try {
+    // 直接执行视频生成（已移除限流保护）
+    try {
         // 跟踪模板使用和视频生成开始事件
         trackTemplateUse(selectedTemplate.id, selectedTemplate.category || 'unknown')
         // 验证提示词内容
@@ -402,9 +432,8 @@ export default function VideoCreator() {
         navigate('/videos')
         
         console.log('Task submitted successfully, redirecting to videos page')
-        return true
         
-      } catch (error) {
+    } catch (error) {
         console.error('Failed to submit video generation job:', error)
         setIsGenerating(false)
         setGenerationProgress(0)
@@ -472,13 +501,6 @@ export default function VideoCreator() {
           })
         }
         throw error
-      }
-    })
-    
-    if (result === null) {
-      // 生成被限流
-      toast.error(`视频生成频率过高，剩余额度: ${getRemainingRequests()}`)
-      setIsGenerating(false)
     }
   }
 
@@ -498,8 +520,6 @@ export default function VideoCreator() {
             onParamChange={handleParamChange}
             onGenerate={handleGenerate}
             isGenerating={isGenerating}
-            isLimited={isLimited()}
-            remainingRequests={getRemainingRequests()}
           />
         </div>
         
@@ -522,6 +542,7 @@ export default function VideoCreator() {
           <PromptSection
             template={selectedTemplate}
             params={params}
+            aspectRatio={aspectRatio}
           />
         </div>
       </div>
@@ -540,8 +561,6 @@ export default function VideoCreator() {
             onParamChange={handleParamChange}
             onGenerate={handleGenerate}
             isGenerating={isGenerating}
-            isLimited={isLimited()}
-            remainingRequests={getRemainingRequests()}
           />
         </div>
         
@@ -565,6 +584,7 @@ export default function VideoCreator() {
         <PromptSection
           template={selectedTemplate}
           params={params}
+          aspectRatio={aspectRatio}
         />
       </div>
     </div>
