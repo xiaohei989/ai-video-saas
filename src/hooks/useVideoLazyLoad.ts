@@ -11,7 +11,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useInView } from 'react-intersection-observer'
-import thumbnailGenerator from '@/services/thumbnailGeneratorService'
+// thumbnailGenerator 服务已简化，现在使用浏览器原生 Media Fragments
 import videoLoaderService, { type VideoLoadOptions, type LoadProgress } from '@/services/VideoLoaderService'
 import { addTimeout, clearTimer } from '@/utils/timerManager'
 import { log } from '@/utils/logger'
@@ -142,7 +142,9 @@ export function useVideoLazyLoad(
 
     setState(prev => ({ ...prev, thumbnailLoading: true }))
 
-    const thumbnailPromise = thumbnailGenerator.ensureThumbnailCached(videoUrl)
+    // 缩略图现在使用浏览器原生 Media Fragments，无需额外生成
+    // const thumbnailPromise = thumbnailGenerator.ensureThumbnailCached(videoUrl)
+    const thumbnailPromise = Promise.resolve('')
 
     thumbnailPromiseRef.current = thumbnailPromise
 
@@ -318,7 +320,7 @@ export function useVideoLazyLoad(
     thumbnailPromiseRef.current = null
   }, [cancel])
 
-  // 根据加载策略自动触发加载 - 添加延迟避免同时加载过多视频
+  // 根据加载策略自动触发加载 - 用户交互立即响应，其他策略添加延迟
   useEffect(() => {
     const shouldLoad = (() => {
       switch (loadStrategy) {
@@ -334,33 +336,41 @@ export function useVideoLazyLoad(
     })()
 
     if (shouldLoad && !state.isLoaded && !state.isLoading && !state.hasError) {
-      // 使用定时器管理器，避免创建过多setTimeout
-      const timerId = `video-load-${videoUrl}-${Date.now()}`
-      
-      // 检测移动端并调整延迟策略
-      const isMobile = typeof window !== 'undefined' && 
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-      
-      // 移动端使用更长延迟，减少并发
-      const baseDelay = isMobile ? 2000 : 1000
-      const randomDelay = Math.random() * (isMobile ? 3000 : 1000)
-      const delay = baseDelay + randomDelay
-      
-      // 根据策略设置优先级
-      let priority = 0
-      if (loadStrategy === 'immediate') priority = 10
-      else if (loadStrategy === 'onVisible') priority = 5
-      else if (loadStrategy === 'onInteraction') priority = 1
-      
-      addTimeout(timerId, () => {
-        if (!state.isLoaded && !state.isLoading && !state.hasError) {
-          load().catch(error => {
-            log.warn('自动懒加载失败', { videoUrl, error: error.message })
-          })
-        }
-      }, delay, priority)
+      // 用户交互触发的加载立即执行，其他策略使用延迟
+      if (loadStrategy === 'onInteraction' && state.hasInteracted) {
+        // 用户点击触发的加载立即执行，无延迟
+        log.debug('用户交互触发，立即加载视频', { videoUrl, loadStrategy })
+        load().catch(error => {
+          log.warn('用户交互加载失败', { videoUrl, error: error.message })
+        })
+      } else {
+        // 其他策略使用延迟机制避免同时加载过多视频
+        const timerId = `video-load-${videoUrl}-${Date.now()}`
+        
+        // 检测移动端并调整延迟策略（纯宽度检测）
+        const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768
+        
+        // 非交互加载使用适中延迟
+        const baseDelay = isMobile ? 800 : 500
+        const randomDelay = Math.random() * (isMobile ? 1200 : 800)
+        const delay = baseDelay + randomDelay
+        
+        // 根据策略设置优先级
+        let priority = 0
+        if (loadStrategy === 'immediate') priority = 10
+        else if (loadStrategy === 'onVisible') priority = 5
+        else if (loadStrategy === 'onInteraction') priority = 1
+        
+        addTimeout(timerId, () => {
+          if (!state.isLoaded && !state.isLoading && !state.hasError) {
+            load().catch(error => {
+              log.warn('自动懒加载失败', { videoUrl, error: error.message })
+            })
+          }
+        }, delay, priority)
 
-      return () => clearTimer(timerId)
+        return () => clearTimer(timerId)
+      }
     }
   }, [loadStrategy, state.isVisible, state.hasInteracted, state.isLoaded, state.isLoading, state.hasError, load])
 

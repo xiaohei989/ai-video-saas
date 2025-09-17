@@ -65,8 +65,8 @@ export default function HomePage() {
         transitionDuration={1000}
       />
 
-      {/* Main Content */}
-      <div className="relative z-10 space-y-12 py-8">
+      {/* Main Content - 移动端避免被固定导航条遮挡 */}
+      <div className="relative z-10 space-y-12 py-8 md:py-8">
         {/* Hero Section with animations */}
         <section className="text-center space-y-8 animate-in fade-in duration-700">
           <AnimatedHeroTitle

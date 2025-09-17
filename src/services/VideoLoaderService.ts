@@ -295,6 +295,19 @@ class VideoLoaderService {
       video.preload = options.preload || 'metadata'
       video.src = videoUrl
       
+      // 导入CORS处理工具函数
+      import('../utils/videoUrlProxy').then(({ applyVideoCorsFix }) => {
+        applyVideoCorsFix(video, videoUrl)
+      }).catch(() => {
+        // 如果导入失败，手动设置CORS属性
+        if (videoUrl.includes('cdn.veo3video.me') || 
+            videoUrl.includes('filesystem.site') ||
+            videoUrl.includes('heyoo.oss-ap-southeast-1.aliyuncs.com')) {
+          video.crossOrigin = 'anonymous'
+          video.setAttribute('crossorigin', 'anonymous')
+        }
+      })
+      
       const startTime = Date.now()
       let lastLoaded = 0
 

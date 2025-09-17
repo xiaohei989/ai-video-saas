@@ -39,22 +39,25 @@ export function getProxyVideoUrl(originalUrl: string): string {
 }
 
 /**
- * 检查URL是否需要CORS代理（仅在开发环境）
- * 生产环境的cdn.veo3video.me已通过Cloudflare Transform Rules解决CORS
+ * 检查URL是否需要CORS处理
+ * 所有CDN域名的视频都需要设置crossOrigin属性
  */
 export function needsCorsProxy(url: string): boolean {
   if (!url || typeof url !== 'string') {
     return false;
   }
   
-  // 只在开发环境需要代理
-  if (!import.meta.env.DEV) {
-    return false;
+  // 开发环境：需要代理的域名
+  if (import.meta.env.DEV) {
+    return url.includes('filesystem.site') || 
+           url.includes('heyoo.oss-ap-southeast-1.aliyuncs.com') ||
+           url.includes('cdn.veo3video.me');
   }
   
-  return url.includes('filesystem.site') || 
-         url.includes('heyoo.oss-ap-southeast-1.aliyuncs.com') ||
-         url.includes('cdn.veo3video.me');
+  // 生产环境：CDN域名需要CORS处理（设置crossOrigin属性）
+  return url.includes('cdn.veo3video.me') ||
+         url.includes('filesystem.site') ||
+         url.includes('heyoo.oss-ap-southeast-1.aliyuncs.com');
 }
 
 /**
@@ -62,7 +65,7 @@ export function needsCorsProxy(url: string): boolean {
  */
 export function applyVideoCorsFix(video: HTMLVideoElement, url: string): void {
   if (needsCorsProxy(url)) {
-    // 对需要代理的URL设置crossOrigin
+    // 对需要CORS处理的URL设置crossOrigin
     video.crossOrigin = 'anonymous';
     video.setAttribute('crossorigin', 'anonymous');
   }

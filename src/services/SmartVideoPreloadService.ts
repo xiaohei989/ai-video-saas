@@ -13,7 +13,7 @@
 
 import { multiLevelCache, CACHE_PREFIX, TTL_STRATEGY } from './MultiLevelCacheService'
 import videoLoaderService, { NetworkQuality } from './VideoLoaderService'
-import thumbnailGenerator from './thumbnailGeneratorService'
+// thumbnailGenerator 服务已简化，现在使用浏览器原生 Media Fragments
 
 export interface PreloadStrategy {
   viewport: {
@@ -488,13 +488,16 @@ class SmartVideoPreloadService {
     const cached = await multiLevelCache.get(cacheKey)
     if (cached) return
     
-    // 从视频提取缩略图
-    const thumbnail = await thumbnailGenerator.ensureThumbnailCached(`/videos/${videoId}`, videoId)
+    // 缩略图现在使用浏览器原生 Media Fragments，无需额外生成
+    // const thumbnail = await thumbnailGenerator.ensureThumbnailCached(`/videos/${videoId}`, videoId)
+    const thumbnail = null
     
-    // 缓存缩略图
-    await multiLevelCache.set(cacheKey, thumbnail, {
-      ttl: TTL_STRATEGY.STATIC
-    })
+    // 缓存缩略图 (现在跳过，因为不再生成)
+    if (thumbnail) {
+      await multiLevelCache.set(cacheKey, thumbnail, {
+        ttl: TTL_STRATEGY.STATIC
+      })
+    }
   }
 
   /**

@@ -114,9 +114,13 @@ export async function extractVideoThumbnails(
       return
     }
     
-    // 只对外部URL设置crossOrigin，避免本地文件的CORS问题
-    if (videoUrl.startsWith('http://') || videoUrl.startsWith('https://')) {
+    // 对需要CORS处理的URL设置crossOrigin
+    if (videoUrl.includes('cdn.veo3video.me') || 
+        videoUrl.includes('filesystem.site') ||
+        videoUrl.includes('heyoo.oss-ap-southeast-1.aliyuncs.com') ||
+        (videoUrl.startsWith('http://') || videoUrl.startsWith('https://'))) {
       video.crossOrigin = 'anonymous'
+      video.setAttribute('crossorigin', 'anonymous')
     }
     video.muted = true
     video.playsInline = true
@@ -218,7 +222,14 @@ async function extractVideoThumbnailDirect(
       return
     }
     
-    // 不设置crossOrigin，直接尝试访问
+    // 对需要CORS处理的URL设置crossOrigin
+    if (videoUrl.includes('cdn.veo3video.me') || 
+        videoUrl.includes('filesystem.site') ||
+        videoUrl.includes('heyoo.oss-ap-southeast-1.aliyuncs.com') ||
+        (videoUrl.startsWith('http://') || videoUrl.startsWith('https://'))) {
+      video.crossOrigin = 'anonymous'
+      video.setAttribute('crossorigin', 'anonymous')
+    }
     video.muted = true
     video.playsInline = true
     

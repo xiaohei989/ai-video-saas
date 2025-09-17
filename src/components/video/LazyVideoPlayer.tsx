@@ -19,7 +19,7 @@ import { Progress } from '@/components/ui/progress'
 import { cn } from '@/utils/cn'
 import { useVideoLazyLoad, type LazyLoadOptions } from '@/hooks/useVideoLazyLoad'
 import { useSimpleNetworkQuality } from '@/hooks/useNetworkQuality'
-import thumbnailGenerator from '@/services/thumbnailGeneratorService'
+// thumbnailGenerator 服务已简化，现在使用浏览器原生 Media Fragments
 import { log } from '@/utils/logger'
 import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 
@@ -100,26 +100,43 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
   const { t } = useTranslation()
   const [hasUserInteraction, setHasUserInteraction] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
+  const [shouldAutoPlay, setShouldAutoPlay] = useState(false)
+  const videoPlayerRef = useRef<any>(null)
   
   // 缩略图状态管理 - 支持同步初始化和异步实时更新
-  const [smartThumbnails, setSmartThumbnails] = useState<{ normal: string; blur: string } | null>(() => {
-    // 同步初始化 - 优先显示可用内容，避免闪烁
+  const [smartThumbnails, setSmartThumbnails] = useState<{ normal: string; blur: string; source?: string } | null>(() => {
+    // 同步初始化 - 优先显示可用内容，避免闪烁（避免在此处记录日志）
     if (enableThumbnailCache) {
-      const memoryCached = thumbnailGenerator.getFromMemoryCache(src)
+      // 缩略图现在使用浏览器原生 Media Fragments，无需缓存检查
+      // const memoryCached = thumbnailGenerator.getFromMemoryCache(src)
+      const memoryCached = null
       if (memoryCached) {
-        log.debug('同步初始化：使用内存缓存', { videoId })
-        return { normal: memoryCached, blur: memoryCached }
+        return { normal: memoryCached, blur: memoryCached, source: 'memory' }
       }
     }
     
     if (poster) {
-      log.debug('同步初始化：使用poster', { videoId })
-      return { normal: poster, blur: poster }
+      return { normal: poster, blur: poster, source: 'poster' }
     }
     
-    log.debug('同步初始化：使用默认占位符', { videoId })
-    return null
+    return { normal: '', blur: '', source: 'default' }
   })
+  
+  // 延迟记录初始化日志，避免渲染期间状态更新
+  useEffect(() => {
+    if (!smartThumbnails?.source) return
+    
+    const messages = {
+      memory: '同步初始化：使用内存缓存',
+      poster: '同步初始化：使用poster',
+      default: '同步初始化：使用默认占位符'
+    }
+    
+    const message = messages[smartThumbnails.source as keyof typeof messages]
+    if (message) {
+      log.debug(message, { videoId })
+    }
+  }, []) // 只在组件挂载时执行一次
   
   // 异步缓存确保和实时更新
   useEffect(() => {
@@ -140,7 +157,9 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
     
     const updateThumbnail = async () => {
       try {
-        const thumbnail = await thumbnailGenerator.ensureThumbnailCached(src, videoId)
+        // 缩略图现在使用浏览器原生 Media Fragments，无需额外生成
+        // const thumbnail = await thumbnailGenerator.ensureThumbnailCached(src, videoId)
+        const thumbnail = null
         if (isCancelled) return // 防止组件卸载后的状态更新
         
         if (thumbnail && thumbnail !== smartThumbnails?.normal) {
@@ -198,51 +217,110 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
     enableLazyLoad ? finalLazyLoadOptions : { loadStrategy: 'immediate', ...finalLazyLoadOptions }
   )
 
-  // 处理用户交互 - 优化依赖项
+  // 处理用户交互 - 修复依赖项循环
   const handleInteraction = useCallback(() => {
     if (!hasUserInteraction) {
       setHasUserInteraction(true)
       lazyActions.markInteraction()
     }
-  }, [hasUserInteraction, lazyActions.markInteraction])
+  }, [hasUserInteraction, lazyActions])
 
-  // 处理点击播放 - 优化依赖项
+  // 处理点击播放 - 修复双重触发问题，确保第一次点击立即响应并自动播放
   const handlePlayClick = useCallback((e?: React.MouseEvent) => {
     e?.stopPropagation()
-    handleInteraction()
     
+    // 立即标记用户交互
+    if (!hasUserInteraction) {
+      setHasUserInteraction(true)
+      lazyActions.markInteraction()
+    }
+    
+    // 标记用户希望自动播放
+    setShouldAutoPlay(true)
+    
+    // 立即触发加载，不等待延迟
     if (!lazyState.isLoaded && !lazyState.isLoading && !lazyState.hasError) {
+      log.debug('用户点击播放，立即开始加载视频并准备自动播放', { 
+        videoUrl: src,
+        currentState: {
+          isLoaded: lazyState.isLoaded,
+          isLoading: lazyState.isLoading,
+          hasError: lazyState.hasError
+        }
+      })
+      
       lazyActions.load().catch(error => {
         log.warn('手动加载失败', { error })
         // 对于CORS等网络错误，直接标记为已加载，使用原始VideoPlayer
       })
     }
-  }, [lazyState.isLoaded, lazyState.isLoading, lazyState.hasError, lazyActions.load, handleInteraction])
+  }, [
+    hasUserInteraction, 
+    lazyState.isLoaded, 
+    lazyState.isLoading, 
+    lazyState.hasError, 
+    lazyActions, 
+    src,
+    setHasUserInteraction
+  ])
 
   // 已移除异步缩略图更新逻辑 - 现在使用一次性同步初始化，避免闪烁
 
-  // 事件处理器
+  // 事件处理器 - 使用 useRef 避免回调函数依赖项循环
+  const onVisibilityChangeRef = useRef(onVisibilityChange)
+  const onLoadRef = useRef(onLoad)
+  const onErrorRef = useRef(onError)
+  const onThumbnailLoadRef = useRef(onThumbnailLoad)
+  
+  // 保持回调函数引用最新
   useEffect(() => {
-    onVisibilityChange?.(lazyState.isVisible)
-  }, [lazyState.isVisible, onVisibilityChange])
+    onVisibilityChangeRef.current = onVisibilityChange
+    onLoadRef.current = onLoad
+    onErrorRef.current = onError
+    onThumbnailLoadRef.current = onThumbnailLoad
+  })
+
+  useEffect(() => {
+    onVisibilityChangeRef.current?.(lazyState.isVisible)
+  }, [lazyState.isVisible])
 
   useEffect(() => {
     if (lazyState.isLoaded && !lazyState.hasError) {
-      onLoad?.()
+      onLoadRef.current?.()
     }
-  }, [lazyState.isLoaded, lazyState.hasError, onLoad])
+  }, [lazyState.isLoaded, lazyState.hasError])
 
   useEffect(() => {
     if (lazyState.hasError && lazyState.error) {
-      onError?.(lazyState.error)
+      onErrorRef.current?.(lazyState.error)
     }
-  }, [lazyState.hasError, lazyState.error, onError])
+  }, [lazyState.hasError, lazyState.error])
 
   useEffect(() => {
     if (lazyState.thumbnail) {
-      onThumbnailLoad?.(lazyState.thumbnail)
+      onThumbnailLoadRef.current?.(lazyState.thumbnail)
     }
-  }, [lazyState.thumbnail, onThumbnailLoad])
+  }, [lazyState.thumbnail])
+
+  // 自动播放逻辑：当视频加载完成且用户点击了播放按钮时自动播放
+  useEffect(() => {
+    if (lazyState.isLoaded && !lazyState.hasError && shouldAutoPlay && videoPlayerRef.current) {
+      // 延迟一小段时间确保 VideoPlayer 完全渲染
+      const timer = setTimeout(() => {
+        const videoElement = videoPlayerRef.current?.querySelector('video')
+        if (videoElement) {
+          log.debug('自动播放视频', { videoUrl: src })
+          videoElement.play().catch(error => {
+            log.warn('自动播放失败', { error })
+          })
+          // 重置自动播放标记
+          setShouldAutoPlay(false)
+        }
+      }, 100)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [lazyState.isLoaded, lazyState.hasError, shouldAutoPlay, src])
 
   /**
    * 渲染占位符 - 使用 useMemo 优化
@@ -406,24 +484,26 @@ const LazyVideoPlayer: React.FC<LazyVideoPlayerProps> = ({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <VideoPlayer
-          src={getProxyVideoUrl(src)}
-          poster={poster || lazyState.thumbnail || undefined}
-          className="w-full h-full"
-          objectFit={objectFit}
-          showPlayButton={showPlayButton}
-          showVolumeControl={showVolumeControl}
-          autoPlayOnHover={autoPlayOnHover}
-          onDownload={onDownload}
-          onShare={onShare}
-          userId={userId}
-          videoId={videoId}
-          videoTitle={videoTitle}
-          enableDownloadProtection={enableDownloadProtection}
-          onTimeUpdate={onTimeUpdate}
-          alt={alt}
-          {...restProps}
-        />
+        <div ref={videoPlayerRef}>
+          <VideoPlayer
+            src={getProxyVideoUrl(src)}
+            poster={poster || lazyState.thumbnail || undefined}
+            className="w-full h-full"
+            objectFit={objectFit}
+            showPlayButton={showPlayButton}
+            showVolumeControl={showVolumeControl}
+            autoPlayOnHover={autoPlayOnHover}
+            onDownload={onDownload}
+            onShare={onShare}
+            userId={userId}
+            videoId={videoId}
+            videoTitle={videoTitle}
+            enableDownloadProtection={enableDownloadProtection}
+            onTimeUpdate={onTimeUpdate}
+            alt={alt}
+            {...restProps}
+          />
+        </div>
         {renderNetworkIndicator()}
       </div>
     )

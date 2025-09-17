@@ -4,7 +4,6 @@
  */
 
 import videoLoaderService from '@/services/VideoLoaderService'
-import thumbnailGenerator from '@/services/thumbnailGeneratorService'
 import { resetApicoreApiService } from '@/services/veo/ApicoreApiService'
 
 /**
@@ -19,10 +18,8 @@ export async function clearAllVideoCache(): Promise<void> {
     videoLoaderService.cleanup()
     console.log('✅ VideoLoader缓存已清除')
 
-    // 2. 清除简化的缩略图缓存
-    console.log('🖼️ 清除缩略图缓存...')
-    thumbnailGenerator.clearCache()
-    console.log('✅ 缩略图缓存已清除')
+    // 2. 缩略图现在由浏览器原生 Media Fragments 处理，无需清除缓存
+    console.log('🖼️ 缩略图现在使用浏览器原生处理，跳过清除')
 
     // 3. 重置APICore服务实例
     console.log('🔄 重置APICore服务实例...')
@@ -156,9 +153,8 @@ export async function clearTemplateCache(): Promise<void> {
     }
     console.log(`✅ 清除了${templateKeys.length}个模板存储项:`, templateKeys)
 
-    // 3. 清除缩略图缓存
-    console.log('🖼️ 清除缩略图缓存...')
-    thumbnailGenerator.clearCache()
+    // 3. 缩略图现在由浏览器原生处理，无需清除
+    console.log('🖼️ 缩略图现在使用浏览器原生处理，跳过清除')
 
     // 4. 清除浏览器中模板相关的Service Worker缓存
     console.log('🌐 清除模板相关浏览器缓存...')

@@ -14,7 +14,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { BatteryLow } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { multiLevelCache, CACHE_PREFIX } from '@/services/MultiLevelCacheService'
-import { thumbnailGenerator } from '@/services/thumbnailGeneratorService'
+// thumbnailGenerator 服务已简化，现在使用浏览器原生 Media Fragments
 // import { smartPreloadService } from '@/services/SmartVideoPreloadService' // 暂时未使用
 
 export interface VideoSource {
@@ -223,12 +223,14 @@ export default function OptimizedBackgroundVideo({
    */
   const getBestThumbnails = useCallback(async (videoSrc: string) => {
     try {
-      const thumbnails = await thumbnailGenerator.getBestThumbnail(videoSrc, fallbackImage)
+      // 缩略图现在使用浏览器原生 Media Fragments，无需额外生成
+      // const thumbnails = await thumbnailGenerator.getBestThumbnail(videoSrc, fallbackImage)
+      const thumbnails = { normal: fallbackImage, blur: fallbackImage }
       setDynamicThumbnails(thumbnails)
       
       // 预加载缩略图
       if (thumbnails.normal !== fallbackImage) {
-        await thumbnailGenerator.preloadThumbnails([thumbnails.normal, thumbnails.blur])
+        // await thumbnailGenerator.preloadThumbnails([thumbnails.normal, thumbnails.blur])
         if (import.meta.env.DEV) {
           console.log('[OptimizedBG] 🖼️ 缩略图预加载完成')
         }
@@ -262,10 +264,12 @@ export default function OptimizedBackgroundVideo({
         video.addEventListener('seeked', resolve, { once: true })
       })
       
-      const thumbnails = await thumbnailGenerator.generateThumbnailFromVideo(video, {
-        blurRadius: 20,
-        quality: 2
-      })
+      // 缩略图现在使用浏览器原生 Media Fragments，无需额外生成
+      // const thumbnails = await thumbnailGenerator.generateThumbnailFromVideo(video, {
+      //   blurRadius: 20,
+      //   quality: 2
+      // })
+      const thumbnails = { normal: fallbackImage, blur: fallbackImage }
       
       setDynamicThumbnails(thumbnails)
       

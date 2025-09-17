@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from 'react'
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { 
@@ -78,6 +78,63 @@ export function Header({ className = "" }: HeaderProps = {}) {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
   const { theme, setTheme } = useTheme()
+  
+  // 移动端强制导航方案
+  const [isNavigating, setIsNavigating] = useState(false)
+  
+  const handleMobileNavigation = useCallback((path: string, elementName: string, event?: React.MouseEvent) => {
+    // 防止重复点击
+    if (isNavigating) {
+      console.log(`[Header] 正在导航中，忽略重复点击: ${elementName}`)
+      return
+    }
+    
+    // 检测是否为移动端
+    const isMobile = typeof window !== 'undefined' && (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+      window.innerWidth <= 768
+    )
+    
+    console.log(`[Header] 导航处理: ${elementName} -> ${path}`, {
+      current: location.pathname,
+      target: path,
+      isMobile,
+      navigating: isNavigating,
+      eventType: event?.type || 'unknown'
+    })
+    
+    // 如果是当前页面，不需要导航
+    if (location.pathname === path) {
+      console.log(`[Header] 已在目标页面: ${path}`)
+      return
+    }
+    
+    
+    // 强制导航
+    setIsNavigating(true)
+    console.log(`[Header] 🚀 强制导航: ${elementName} -> ${path}`)
+    
+    try {
+      navigate(path)
+      console.log(`[Header] ✅ 导航成功: ${path}`)
+    } catch (error) {
+      console.error(`[Header] ❌ 导航失败:`, error)
+    } finally {
+      // 清除导航状态
+      setTimeout(() => {
+        setIsNavigating(false)
+      }, 500)
+    }
+  }, [navigate, location.pathname, isNavigating])
+  
+  // 导航状态调试
+  useEffect(() => {
+    console.log('[Header] 导航状态变化:', {
+      pathname: location.pathname,
+      isNavigating,
+      timestamp: new Date().toISOString()
+    })
+  }, [location.pathname, isNavigating])
   
   // 导航背景框动态定位系统
   const navRefs = useRef<(HTMLAnchorElement | null)[]>([])
@@ -344,24 +401,68 @@ export function Header({ className = "" }: HeaderProps = {}) {
             </Link>
           </nav>
 
-          {/* Mobile Navigation with Icons and Text - 占据中央大部分空间 */}
+          {/* Mobile Navigation with Icons and Text - 使用编程式导航 */}
           <nav className="md:hidden flex items-center justify-center flex-1 gap-1">
-            <Link to="/" className={`mobile-nav-item ${location.pathname === '/' ? 'mobile-nav-active' : ''}`}>
+            <button 
+              type="button"
+              className={`mobile-nav-item ${location.pathname === '/' ? 'mobile-nav-active' : ''}`}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                handleMobileNavigation('/', '首页', e)
+              }}
+              onMouseDown={(e) => {
+                console.log('[Header] 🖱️ 鼠标按下: 首页')
+              }}
+            >
               <Home className="h-4 w-4" />
               <span className="text-xs">{t('nav.home')}</span>
-            </Link>
-            <Link to="/templates" className={`mobile-nav-item ${location.pathname === '/templates' ? 'mobile-nav-active' : ''}`}>
+            </button>
+            <button 
+              type="button"
+              className={`mobile-nav-item ${location.pathname === '/templates' ? 'mobile-nav-active' : ''}`}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                handleMobileNavigation('/templates', '模板', e)
+              }}
+              onMouseDown={(e) => {
+                console.log('[Header] 🖱️ 鼠标按下: 模板')
+              }}
+            >
               <TrendingUp className="h-4 w-4" />
               <span className="text-xs">{t('nav.templates')}</span>
-            </Link>
-            <Link to="/videos" className={`mobile-nav-item ${location.pathname === '/videos' ? 'mobile-nav-active' : ''}`}>
+            </button>
+            <button 
+              type="button"
+              className={`mobile-nav-item ${location.pathname === '/videos' ? 'mobile-nav-active' : ''}`}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                handleMobileNavigation('/videos', '视频', e)
+              }}
+              onMouseDown={(e) => {
+                console.log('[Header] 🖱️ 鼠标按下: 视频')
+              }}
+            >
               <Video className="h-4 w-4" />
               <span className="text-xs">{t('nav.videos')}</span>
-            </Link>
-            <Link to="/pricing" className={`mobile-nav-item ${location.pathname === '/pricing' ? 'mobile-nav-active' : ''}`}>
+            </button>
+            <button 
+              type="button"
+              className={`mobile-nav-item ${location.pathname === '/pricing' ? 'mobile-nav-active' : ''}`}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                handleMobileNavigation('/pricing', '定价', e)
+              }}
+              onMouseDown={(e) => {
+                console.log('[Header] 🖱️ 鼠标按下: 定价')
+              }}
+            >
               <DollarSign className="h-4 w-4" />
               <span className="text-xs">{t('nav.pricing')}</span>
-            </Link>
+            </button>
           </nav>
 
           {/* Right side actions */}

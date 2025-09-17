@@ -48,6 +48,7 @@ class SupabaseVideoService {
     aspectRatio?: '16:9' | '9:16'
     quality?: 'fast' | 'pro'
     apiProvider?: 'qingyun' | 'apicore'
+    aiTitleStatus?: 'pending' | 'ai_generated' | 'timeout_default' | 'user_provided' | 'error_fallback'
   }): Promise<Video | null> {
     try {
       // Store template ID and other parameters in metadata since they're not direct DB fields
@@ -85,7 +86,8 @@ class SupabaseVideoService {
           share_count: 0,
           version: 1,
           tags: [],
-          metadata: metadata
+          metadata: metadata,
+          ai_title_status: data.aiTitleStatus || 'pending'
         })
         .select()
         .single()

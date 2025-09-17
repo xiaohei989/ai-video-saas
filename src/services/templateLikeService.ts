@@ -383,7 +383,7 @@ class TemplateLikeService {
         is_liked: status.is_liked,
         like_count: status.like_count,
         cached_at: Date.now(),
-        ttl: 5 * 60 * 1000
+        ttl: 30 * 60 * 1000 // 30分钟缓存
       }))
       likesCacheService.setBatch(templateIds, allCachedStatuses)
 

@@ -579,7 +579,7 @@ class VideoQueueService {
 
     // 🎯 新增：在创建视频记录前先生成AI标题和简介
     console.log(`[QUEUE SERVICE] 📝 开始为视频生成AI标题和简介...`)
-    const aiMetadata = await this.generateVideoMetadataSync(request.videoData, request.userId, 8000)
+    const aiMetadata = await this.generateVideoMetadataSync(request.videoData, request.userId, 12000)
     
     // 创建视频记录时使用AI生成的标题和简介
     const videoRecord = await supabaseVideoService.createVideo({
@@ -594,7 +594,8 @@ class VideoQueueService {
       isPublic: request.videoData.isPublic,
       aspectRatio: request.videoData.aspectRatio || '16:9',
       quality: request.videoData.quality || 'fast',
-      apiProvider: request.videoData.apiProvider || 'qingyun'
+      apiProvider: request.videoData.apiProvider || 'qingyun',
+      aiTitleStatus: aiMetadata.status // 添加AI标题状态
     })
 
     if (!videoRecord) {
@@ -626,22 +627,27 @@ class VideoQueueService {
       console.warn('[QUEUE SERVICE] Failed to update credit transaction reference_id:', error)
     }
 
-    // 检查是否使用了智能默认值（而非AI生成的值）
-    const isUsingSmartDefault = aiMetadata.title.includes('Epic') || 
-                                aiMetadata.title.includes('Amazing') || 
-                                aiMetadata.title.includes('Incredible') ||
-                                aiMetadata.title.includes('Adventure') ||
-                                aiMetadata.title.includes('Showcase') ||
-                                aiMetadata.title.includes('Story')
-    
-    if (isUsingSmartDefault) {
-      console.log(`[QUEUE SERVICE] 🔄 检测到使用了智能默认标题，启动异步AI更新`)
-      // 延迟1秒后开始异步更新，避免立即重试
+    // 根据AI生成状态决定后续处理
+    if (aiMetadata.status === 'timeout_default') {
+      console.log(`[QUEUE SERVICE] 🔄 检测到超时使用默认标题，启动延迟AI处理`)
+      
+      // 如果有AI Promise，启动延迟处理
+      if (aiMetadata.aiPromise) {
+        this.handleDelayedAIResult(videoRecord.id, aiMetadata.aiPromise)
+      }
+      
+      // 同时启动异步重试机制
+      setTimeout(() => {
+        this.generateVideoMetadataAsync(videoRecord.id, request.videoData, request.userId, true)
+      }, 2000) // 稍微延迟一下，给延迟处理一些时间
+      
+    } else if (aiMetadata.status === 'ai_generated') {
+      console.log(`[QUEUE SERVICE] ✅ 使用AI生成的标题和简介，无需异步更新`)
+    } else {
+      console.log(`[QUEUE SERVICE] ⚠️ 使用错误回退方案，将尝试异步重新生成`)
       setTimeout(() => {
         this.generateVideoMetadataAsync(videoRecord.id, request.videoData, request.userId, true)
       }, 1000)
-    } else {
-      console.log(`[QUEUE SERVICE] ✅ 使用AI生成的标题和简介，无需异步更新`)
     }
 
     // 检查是否可以立即开始处理
@@ -1333,8 +1339,8 @@ class VideoQueueService {
   private async generateVideoMetadataSync(
     videoData: SubmitJobRequest['videoData'], 
     userId: string,
-    timeoutMs: number = 8000
-  ): Promise<{ title: string; description: string }> {
+    timeoutMs: number = 12000
+  ): Promise<{ title: string; description: string; status: 'ai_generated' | 'timeout_default' | 'error_fallback'; aiPromise?: Promise<any> }> {
     try {
       console.log(`[QUEUE SERVICE] 🚀 开始同步生成AI标题和简介 (超时: ${timeoutMs}ms)`)
       
@@ -1344,45 +1350,62 @@ class VideoQueueService {
         this.getTemplateName(videoData.templateId)
       ])
       
-      // 使用Promise.race实现超时机制
-      const result = await Promise.race([
-        // AI生成请求
-        aiContentService.generateVideoMetadata({
-          templateName,
-          prompt: videoData.prompt || '',
-          parameters: videoData.parameters || {},
-          userLanguage
-        }),
-        // 超时Promise
-        new Promise<{ title: string; description: string }>((resolve) => 
-          setTimeout(() => {
-            console.log(`[QUEUE SERVICE] ⏰ AI生成超时(${timeoutMs}ms)，使用智能默认值`)
-            
-            // 生成更智能的默认标题
-            const smartTitle = this.generateSmartDefaultTitle(templateName, videoData.parameters || {})
-            const smartDescription = this.generateSmartDefaultDescription(templateName, videoData.prompt || '', videoData.parameters || {})
-            
-            resolve({
-              title: videoData.title || smartTitle,
-              description: videoData.description || smartDescription
-            })
-          }, timeoutMs)
-        )
-      ])
-      
-      console.log(`[QUEUE SERVICE] ✅ AI标题生成成功:`, {
-        title: result.title.substring(0, 30) + '...',
-        descriptionLength: result.description.length
+      // 创建AI生成Promise（不在race中丢弃）
+      const aiPromise = aiContentService.generateVideoMetadata({
+        templateName,
+        prompt: videoData.prompt || '',
+        parameters: videoData.parameters || {},
+        userLanguage
       })
       
-      return result
+      // 创建超时Promise
+      const timeoutPromise = new Promise<{ status: 'timeout' }>((resolve) => 
+        setTimeout(() => {
+          console.log(`[QUEUE SERVICE] ⏰ AI生成超时(${timeoutMs}ms)，使用智能默认值`)
+          resolve({ status: 'timeout' })
+        }, timeoutMs)
+      )
+      
+      // 使用Promise.race，但保持AI Promise的引用
+      const raceResult = await Promise.race([
+        aiPromise.then(result => ({ ...result, status: 'ai_success' })),
+        timeoutPromise
+      ])
+      
+      if (raceResult.status === 'ai_success') {
+        // AI在超时前完成
+        console.log(`[QUEUE SERVICE] ✅ AI标题生成成功:`, {
+          title: raceResult.title.substring(0, 30) + '...',
+          descriptionLength: raceResult.description.length
+        })
+        
+        return {
+          title: raceResult.title,
+          description: raceResult.description,
+          status: 'ai_generated'
+        }
+      } else {
+        // 超时，使用默认值，但保持AI Promise引用用于后续处理
+        const smartTitle = this.generateSmartDefaultTitle(templateName, videoData.parameters || {})
+        const smartDescription = this.generateSmartDefaultDescription(templateName, videoData.prompt || '', videoData.parameters || {})
+        
+        console.log(`[QUEUE SERVICE] ⚠️ 使用超时默认值，但保持AI Promise用于延迟处理`)
+        
+        return {
+          title: videoData.title || smartTitle,
+          description: videoData.description || smartDescription,
+          status: 'timeout_default',
+          aiPromise // 保持引用，用于延迟处理
+        }
+      }
     } catch (error) {
       console.error(`[QUEUE SERVICE] AI标题生成失败，使用回退方案: ${error}`)
       const templateName = await this.getTemplateName(videoData.templateId)
       
       return {
         title: videoData.title || templateName,
-        description: videoData.description || `基于模板"${templateName}"生成的AI视频内容。`
+        description: videoData.description || `基于模板"${templateName}"生成的AI视频内容。`,
+        status: 'error_fallback'
       }
     }
   }
@@ -1432,16 +1455,17 @@ class VideoQueueService {
           isRetry
         })
         
-        // 更新视频记录
+        // 更新视频记录，但只更新状态为timeout_default或error_fallback的记录
         const { error: updateError } = await supabase
           .from('videos')
           .update({
             title: metadata.title,
             description: metadata.description,
-            // 添加标记表示已通过AI更新
+            ai_title_status: 'ai_generated',
             updated_at: new Date().toISOString()
           })
           .eq('id', videoId)
+          .in('ai_title_status', ['timeout_default', 'error_fallback'])
         
         if (updateError) {
           console.error(`[QUEUE SERVICE] 更新视频标题简介失败: ${updateError.message}`)
@@ -1599,6 +1623,79 @@ class VideoQueueService {
     }
     
     return description + '.'
+  }
+
+  /**
+   * 处理延迟到达的AI结果
+   */
+  private handleDelayedAIResult(videoId: string, aiPromise: Promise<any>): void {
+    console.log(`[QUEUE SERVICE] 🚀 启动延迟AI结果处理: ${videoId}`)
+    
+    // 给AI一些额外时间完成，最多等待2分钟
+    const maxWaitTime = 2 * 60 * 1000 // 2分钟
+    const startTime = Date.now()
+    
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('延迟AI处理超时')), maxWaitTime)
+    )
+    
+    Promise.race([aiPromise, timeoutPromise])
+      .then(async (result: { title: string; description: string }) => {
+        const waitTime = Date.now() - startTime
+        console.log(`[QUEUE SERVICE] 🎉 延迟AI结果到达: ${videoId}, 等待时间: ${waitTime}ms`)
+        
+        try {
+          // 检查视频记录是否仍然存在且为超时默认状态
+          const { data: video, error } = await supabase
+            .from('videos')
+            .select('id, ai_title_status, title, description')
+            .eq('id', videoId)
+            .single()
+          
+          if (error) {
+            console.error(`[QUEUE SERVICE] 获取视频记录失败: ${error.message}`)
+            return
+          }
+          
+          if (!video) {
+            console.warn(`[QUEUE SERVICE] 视频记录不存在: ${videoId}`)
+            return
+          }
+          
+          // 只有在状态为timeout_default时才更新
+          if (video.ai_title_status === 'timeout_default') {
+            const { error: updateError } = await supabase
+              .from('videos')
+              .update({
+                title: result.title,
+                description: result.description,
+                ai_title_status: 'ai_generated',
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', videoId)
+            
+            if (updateError) {
+              console.error(`[QUEUE SERVICE] 延迟更新失败: ${updateError.message}`)
+            } else {
+              console.log(`[QUEUE SERVICE] ✅ 延迟AI结果更新成功: ${videoId}`)
+              console.log(`[QUEUE SERVICE] 📝 标题: ${result.title.substring(0, 40)}...`)
+            }
+          } else {
+            console.log(`[QUEUE SERVICE] ⚠️ 视频状态已变更，跳过延迟更新: ${video.ai_title_status}`)
+          }
+          
+        } catch (error) {
+          console.error(`[QUEUE SERVICE] 延迟处理时发生错误: ${error}`)
+        }
+      })
+      .catch((error) => {
+        const waitTime = Date.now() - startTime
+        if (error.message === '延迟AI处理超时') {
+          console.warn(`[QUEUE SERVICE] ⏰ 延迟AI处理超时: ${videoId}, 等待时间: ${waitTime}ms`)
+        } else {
+          console.error(`[QUEUE SERVICE] 延迟AI处理失败: ${videoId}`, error)
+        }
+      })
   }
 
   /**

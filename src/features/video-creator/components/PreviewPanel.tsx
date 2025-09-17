@@ -15,7 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import LazyVideoPlayer from '@/components/video/LazyVideoPlayer'
+import SimpleVideoPlayer from '@/components/video/SimpleVideoPlayer'
 import LikeCounterButton from '@/components/templates/LikeCounterButton'
 import { useTemplateLikes } from '@/hooks/useTemplateLikes'
 import { useAuthContext } from '@/contexts/AuthContext'
@@ -237,20 +237,17 @@ export default function PreviewPanel({
                   </p>
                 </div>
               ) : videoUrl || template.previewUrl ? (
-                <LazyVideoPlayer
+                <SimpleVideoPlayer
                   key={`${template.id}-${videoUrl || template.previewUrl || ''}`}
                   src={videoUrl || template.previewUrl || ''}
                   poster={template.thumbnailUrl}
                   className="w-full h-full"
                   showPlayButton={true}
-                  showVolumeControl={true}
                   autoPlayOnHover={false}
                   objectFit="cover"
                   alt={template.name}
-                  enableLazyLoad={true}
-                  enableThumbnailCache={true}
-                  enableNetworkAdaptive={false}
-                  enableProgressiveLoading={true}
+                  videoId={template.id}
+                  videoTitle={template.name}
                 />
               ) : (
                 <div className="flex flex-col items-center gap-3 text-muted-foreground">

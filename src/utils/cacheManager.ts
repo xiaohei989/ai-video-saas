@@ -4,7 +4,7 @@
  */
 
 import videoLoaderService from '@/services/VideoLoaderService'
-import thumbnailGenerator from '@/services/thumbnailGeneratorService'
+// thumbnailGenerator 服务已简化，现在使用浏览器原生 Media Fragments
 import { likesCacheService } from '@/services/likesCacheService'
 
 interface CacheStats {
@@ -134,9 +134,9 @@ class CacheManager {
       this.clearVideoLoaderCache()
       clearedItems.push('VideoLoader内存缓存')
 
-      // 2. 清除ThumbnailGenerator缓存
-      await thumbnailGenerator.clearCache()
-      clearedItems.push('缩略图缓存（内存+IndexedDB）')
+      // 2. 缩略图现在使用浏览器原生 Media Fragments，无需清除缓存
+      // await thumbnailGenerator.clearCache()
+      clearedItems.push('缩略图现在使用浏览器原生处理')
 
       // 3. 清除LikesCache
       this.clearLikesCache()

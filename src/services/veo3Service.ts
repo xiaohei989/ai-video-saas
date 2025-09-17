@@ -2,7 +2,6 @@ import { getQingyunApiService } from './veo/QingyunApiService'
 import { getApicoreApiService } from './veo/ApicoreApiService'
 import supabaseVideoService from './supabaseVideoService'
 import { progressManager } from './progressManager'
-import { thumbnailGenerationService } from './ThumbnailGenerationService'
 import i18n from '@/i18n/config'
 import { detectApiProvider, getApiProviderDisplayName } from '@/utils/apiProviderDetector'
 
@@ -385,15 +384,7 @@ class Veo3Service {
           progressManager.markAsCompleted(request.videoRecordId, finalVideoUrl)
           // console.log('[VEO3 SERVICE] ✅ Memory state updated via progressManager with final URL:', finalVideoUrl)
 
-          // 🎬 触发缩略图生成（使用最终URL）
-          // console.log('[VEO3 SERVICE] 🖼️ 触发缩略图生成...')
-          try {
-            await thumbnailGenerationService.onVideoCompleted(request.videoRecordId, finalVideoUrl)
-            // console.log('[VEO3 SERVICE] ✅ 缩略图生成任务已启动')
-          } catch (thumbnailError) {
-            // console.error('[VEO3 SERVICE] ❌ 缩略图生成启动失败:', thumbnailError)
-            // 不影响主流程，缩略图可以稍后重新生成
-          }
+          // 缩略图现在由浏览器原生 Media Fragments 处理，无需额外生成
 
           // console.log('[VEO3 SERVICE] 🎉 青云API视频处理完成:', {
           //   videoId: request.videoRecordId,
@@ -725,15 +716,7 @@ class Veo3Service {
           progressManager.markAsCompleted(request.videoRecordId, finalVideoUrl)
           // console.log('[VEO3 SERVICE] ✅ APICore Memory state updated via progressManager with final URL:', finalVideoUrl)
 
-          // 🎬 触发缩略图生成（使用最终URL）
-          // console.log('[VEO3 SERVICE] 🖼️ 触发APICore缩略图生成...')
-          try {
-            await thumbnailGenerationService.onVideoCompleted(request.videoRecordId, finalVideoUrl)
-            // console.log('[VEO3 SERVICE] ✅ APICore缩略图生成任务已启动')
-          } catch (thumbnailError) {
-            // console.error('[VEO3 SERVICE] ❌ APICore缩略图生成启动失败:', thumbnailError)
-            // 不影响主流程，缩略图可以稍后重新生成
-          }
+          // 缩略图现在由浏览器原生 Media Fragments 处理，无需额外生成
 
           // console.log('[VEO3 SERVICE] 🎉 APICore视频处理完成:', {
           //   videoId: request.videoRecordId,

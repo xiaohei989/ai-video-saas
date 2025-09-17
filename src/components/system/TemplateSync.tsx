@@ -35,10 +35,10 @@ export function TemplateSync() {
       const lastSync = new Date(cache.lastSync).getTime()
       const now = Date.now()
       
-      // 开发环境跳过缓存，生产环境使用24小时缓存
+      // 开发环境使用短缓存，生产环境使用24小时缓存
       if (process.env.NODE_ENV === 'development') {
-        // 开发环境完全禁用缓存，强制重新同步以测试点赞功能
-        return false
+        // 开发环境使用5分钟缓存减少频繁同步造成的闪烁
+        return (now - lastSync) < (5 * 60 * 1000)
       }
 
       return (now - lastSync) < CACHE_DURATION

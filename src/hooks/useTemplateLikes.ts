@@ -164,7 +164,7 @@ export function useTemplateLikes({
         is_liked: status.is_liked,
         like_count: status.like_count,
         cached_at: now,
-        ttl: 5 * 60 * 1000 // 5分钟
+        ttl: 30 * 60 * 1000 // 30分钟 - 进一步延长缓存时间减少闪烁
       }))
 
       // 存储到缓存

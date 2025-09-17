@@ -21,13 +21,13 @@ export function FullScreenLayout({
 }: FullScreenLayoutProps) {
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
-      {/* Header */}
+      {/* Header - 确保在移动端保持固定 */}
       {showHeader && (
-        <Header className={`relative z-50 bg-transparent backdrop-blur-sm border-b border-white/10 ${headerClassName}`} />
+        <Header className={`mobile-fixed-header z-50 bg-transparent backdrop-blur-sm border-b border-white/10 ${headerClassName}`} />
       )}
       
-      {/* Full Screen Content */}
-      <div className="relative w-full">
+      {/* Full Screen Content - 添加顶部间距避免被导航条遮挡 */}
+      <div className="relative w-full pt-16 md:pt-0">
         {children}
       </div>
     </div>

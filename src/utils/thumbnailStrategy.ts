@@ -121,6 +121,15 @@ export function createIOSVideoPreview(videoUrl: string): HTMLVideoElement | null
   video.playsInline = true
   video.setAttribute('poster', '')  // 清空poster避免默认图片
   
+  // 对需要CORS处理的URL设置crossOrigin
+  if (videoUrl.includes('cdn.veo3video.me') || 
+      videoUrl.includes('filesystem.site') ||
+      videoUrl.includes('heyoo.oss-ap-southeast-1.aliyuncs.com') ||
+      (videoUrl.startsWith('http://') || videoUrl.startsWith('https://'))) {
+    video.crossOrigin = 'anonymous'
+    video.setAttribute('crossorigin', 'anonymous')
+  }
+  
   // 监听元数据加载完成
   video.addEventListener('loadedmetadata', () => {
     if (video.duration > 1) {

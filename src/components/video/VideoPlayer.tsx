@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/utils/cn'
 import { extractVideoThumbnail } from '@/utils/videoThumbnail'
 import videoLoaderService, { type LoadProgress } from '@/services/VideoLoaderService'
-import thumbnailGenerator from '@/services/thumbnailGeneratorService'
+// thumbnailGenerator 服务已简化，现在使用浏览器原生 Media Fragments
 import ProtectedDownloadService from '@/services/protectedDownloadService'
 import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 import videoPlaybackManager from '@/utils/videoPlaybackManager'
@@ -111,23 +111,24 @@ export default function VideoPlayer({
         return
       }
       
-      thumbnailGenerator.ensureThumbnailCached(src, videoId)
-        .then(thumbnail => {
-          setExtractedPoster(thumbnail)
-        })
-        .catch(error => {
-          console.error('Failed to extract thumbnail:', error)
-          // 回退到原始方法
-          if (src && !poster) {
-            extractVideoThumbnail(src)
-              .then(thumbnail => {
-                setExtractedPoster(thumbnail)
-              })
-              .catch(e => {
-                console.error('Fallback thumbnail extraction failed:', e)
-              })
-          }
-        })
+      // 缩略图现在使用浏览器原生 Media Fragments，无需额外生成
+      // thumbnailGenerator.ensureThumbnailCached(src, videoId)
+      //   .then(thumbnail => {
+      //     setExtractedPoster(thumbnail)
+      //   })
+      // .catch(error => {
+      //   console.error('Failed to extract thumbnail:', error)
+      //   // 回退到原始方法
+      if (src && !poster) {
+        extractVideoThumbnail(src)
+          .then(thumbnail => {
+            setExtractedPoster(thumbnail)
+          })
+          .catch(e => {
+            console.error('Fallback thumbnail extraction failed:', e)
+          })
+      }
+      // })
     } else if (src && !poster && !enableThumbnailCache) {
       // 使用原始方法
       extractVideoThumbnail(src)

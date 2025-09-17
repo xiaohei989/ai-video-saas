@@ -34,9 +34,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import LazyVideoPlayer from '@/components/video/LazyVideoPlayer'
+import SimpleVideoPlayer from '@/components/video/SimpleVideoPlayer'
 import supabaseVideoService from '@/services/supabaseVideoService'
 import videoShareService from '@/services/videoShareService'
+import { getPlayerUrl, getUrlInfo, getBestVideoUrl } from '@/utils/videoUrlPriority'
 import VideoShareModal from '@/components/share/VideoShareModal'
 import { videoTaskManager, type VideoTask } from '@/services/VideoTaskManager'
 import { videoPollingService } from '@/services/VideoPollingService'
@@ -85,24 +86,9 @@ export default function VideosPageNew() {
   // 分页常量
   const ITEMS_PER_PAGE = 10
   
-  // LazyVideoPlayer 常量配置 - 避免每次渲染创建新对象，针对移动端优化
-  const lazyVideoPlayerConfig = useMemo(() => {
-    const isMobile = typeof window !== 'undefined' && 
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-      
-    return {
-      className: "w-full h-full",
-      objectFit: "cover" as const,
-      showPlayButton: true,
-      showVolumeControl: true,
-      autoPlayOnHover: !isMobile, // 移动端禁用自动播放
-      enableDownloadProtection: true,
-      enableLazyLoad: false,
-      enableThumbnailCache: true,
-      enableNetworkAdaptive: !isMobile, // 移动端禁用网络自适应
-      enableProgressiveLoading: !isMobile // 移动端禁用渐进式加载
-    }
-  }, [])
+  // 移动端检测
+  const isMobile = typeof window !== 'undefined' && 
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 
   // 通知状态（已移除，改用toast）
 
@@ -489,22 +475,27 @@ export default function VideosPageNew() {
       return
     }
 
-    // 付费用户 - 直接下载
-    if (!video.video_url) {
+    // 付费用户 - 直接下载，优先使用R2 URL
+    const bestUrl = getPlayerUrl(video)
+    if (!bestUrl) {
       toast.error(t('videos.videoUrlNotExists'))
       return
     }
 
     try {
-      // 使用代理URL进行下载
-      const proxyUrl = getProxyVideoUrl(video.video_url)
       const link = document.createElement('a')
-      link.href = proxyUrl
+      link.href = bestUrl
       link.download = `${video.title || 'video'}-${video.id}.mp4`
       link.target = '_blank'
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+      
+      // 记录URL使用情况（调试用）
+      const urlInfo = getUrlInfo(video)
+      if (urlInfo) {
+        console.log(`[VideosPage] 下载使用 ${urlInfo.source} URL:`, urlInfo.selected)
+      }
 
       // 更新下载计数
       await supabaseVideoService.incrementInteraction(video.id, 'download_count')
@@ -696,17 +687,33 @@ export default function VideosPageNew() {
               >
                 <div className="aspect-video relative bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-800 dark:via-slate-700 dark:to-slate-600">
                   {/* 视频渲染逻辑 - 添加额外的ID验证 */}
-                  {video.video_url && video.id ? (
-                    // 有视频URL - 显示视频播放器
-                    <LazyVideoPlayer
-                      {...lazyVideoPlayerConfig}
-                      src={getProxyVideoUrl(video.video_url)}
-                      poster={video.thumbnail_url || undefined}
-                      userId={user?.id}
-                      videoId={video.id}
-                      videoTitle={video.title || 'video'}
-                      alt={video.title || 'Video preview'}
-                    />
+                  {(video.video_url || video.r2_url) && video.id ? (
+                    (() => {
+                      const urlResult = getBestVideoUrl(video)
+                      const primaryUrl = getPlayerUrl(video) || getProxyVideoUrl(video.video_url || '')
+                      const fallbackUrl = urlResult?.fallbackUrl ? getProxyVideoUrl(urlResult.fallbackUrl) : undefined
+                      
+                      return (
+                        // 有视频URL - 显示视频播放器，优先使用R2 URL
+                        <SimpleVideoPlayer
+                          src={primaryUrl}
+                          fallbackSrc={fallbackUrl}
+                          poster={video.thumbnail_url || undefined}
+                          className="w-full h-full"
+                          autoPlayOnHover={!isMobile}
+                          showPlayButton={true}
+                          muted={false}
+                          objectFit="cover"
+                          videoId={video.id}
+                          videoTitle={video.title || 'video'}
+                          alt={video.title || 'Video preview'}
+                          onPlay={() => {
+                            // 增加播放计数
+                            supabaseVideoService.incrementInteraction(video.id, 'view_count')
+                          }}
+                        />
+                      )
+                    })()
                   ) : task && (task.status === 'processing' || task.status === 'pending') ? (
                     // 正在处理 - 显示进度（流体背景）
                     <div className="w-full h-full flowing-background flex items-center justify-center">
@@ -746,13 +753,6 @@ export default function VideosPageNew() {
                         </div>
                       </div>
                     </div>
-                  ) : video.thumbnail_url ? (
-                    // 有缩略图但无视频
-                    <img 
-                      src={video.thumbnail_url} 
-                      alt={video.title || 'Video thumbnail'}
-                      className="w-full h-full object-cover"
-                    />
                   ) : (
                     // 默认占位符 - 使用渐变背景
                     <div className="w-full h-full flex items-center justify-center">
