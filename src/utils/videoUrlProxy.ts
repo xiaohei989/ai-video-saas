@@ -54,19 +54,10 @@ export function needsCorsProxy(url: string): boolean {
            url.includes('cdn.veo3video.me');
   }
   
-  // 生产环境：更保守的CORS策略
-  // 只有确认支持CORS的域名才设置crossOrigin
-  const supportedCorsDomains = [
-    'cdn.veo3video.me', // R2存储，已配置CORS
-  ];
-  
-  // 检查是否为支持CORS的域名
-  const isSupportedDomain = supportedCorsDomains.some(domain => url.includes(domain));
-  
-  // 同时检查是否不是fallback重试请求
-  const isFallbackRequest = url.includes('?fallback=');
-  
-  return isSupportedDomain && !isFallbackRequest;
+  // 生产环境：暂时禁用CORS设置，避免浏览器CORS错误日志
+  // 虽然服务端CORS配置正确，但浏览器可能因为缓存或时序问题仍然报错
+  // 使用简单请求策略，避免触发CORS预检，确保用户体验
+  return false;
 }
 
 /**
