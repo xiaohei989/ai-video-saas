@@ -1,9 +1,27 @@
 {
   "id": "b7f4c8e1-2d9a-6f3b-8c5e-1a7d4b2f8e9c",
   "slug": "bigfoot-survival-vlog",
-  "name": "Bigfoot Survival Vlog",
+  "name": {
+    "en": "Bigfoot Survival Vlog",
+    "zh": "大脚怪生存视频博客",
+    "ja": "ビッグフット生存ブログ",
+    "ko": "빅풋 생존 브이로그",
+    "es": "Vlog de Supervivencia de Pie Grande",
+    "de": "Bigfoot Survival-Vlog",
+    "fr": "Vlog de Survie de Bigfoot",
+    "ar": "مدونة فيديو نجاة البيغ فوت"
+  },
   "icon": "🦶",
-  "description": "POV selfie footage of Bigfoot demonstrating wilderness survival skills with customizable voiceover content",
+  "description": {
+    "en": "Bigfoot documents survival techniques and daily life in the wilderness through vlogs",
+    "zh": "大脚怪通过视频博客记录荒野中的生存技巧和日常生活",
+    "ja": "ビッグフットが荒野での生存テクニックと日常生活をブログで記録する",
+    "ko": "빅풋이 브이로그를 통해 야생에서의 생존 기술과 일상생활을 기록한다",
+    "es": "Pie Grande documenta técnicas de supervivencia y vida diaria en la naturaleza a través de vlogs",
+    "de": "Bigfoot dokumentiert Überlebenstechniken und das tägliche Leben in der Wildnis durch Vlogs",
+    "fr": "Bigfoot documente les techniques de survie et la vie quotidienne dans la nature sauvage à travers des vlogs",
+    "ar": "يوثق البيغ فوت تقنيات البقاء والحياة اليومية في البرية من خلال مدونات الفيديو"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/bigfoot-survival-vlog.mp4?v=1758008502567",
   "tags": [
     "bigfoot",
@@ -16,7 +34,7 @@
   ],
   "createdAt": "2025-01-29T22:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.572Z",
+  "lastModified": "2025-09-18T03:33:06.776Z",
   "promptTemplate": "POV selfie of a realistic male Bigfoot in {weather_condition} conditions during {time_of_day}, holding a selfie stick with the camera at the end, and a GoPro mounted on forehead. {activity_description} The scene unfolds in a pristine wilderness setting with towering pine trees and ancient oaks forming a natural canopy overhead. Dappled sunlight filters through the dense foliage, creating dramatic light and shadow patterns on the forest floor covered with fallen leaves and moss-covered rocks. In the background, distant mountains rise majestically while a gentle breeze rustles through the branches. The air is crisp and clean, filled with the earthy scents of the wild forest. Natural sounds of chirping birds and rustling wildlife provide an authentic wilderness atmosphere. National Geographic style, HD quality with cinematic depth of field. Voiceover in deep, gruff voice: '{voiceover_content}'",
   "params": {
     "weather_condition": {
@@ -27,15 +45,42 @@
       "options": [
         {
           "value": "sunny",
-          "label": "Sunny ☀️"
+          "label": {
+            "en": "Sunny ☀️",
+            "zh": "sunny ☀️",
+            "ja": "sunny ☀️",
+            "ko": "sunny ☀️",
+            "es": "sunny ☀️",
+            "de": "sunny ☀️",
+            "fr": "sunny ☀️",
+            "ar": "sunny ☀️"
+          }
         },
         {
           "value": "rainy",
-          "label": "Rainy 🌧️"
+          "label": {
+            "en": "Rainy 🌧️",
+            "zh": "rainy 🌧️",
+            "ja": "rainy 🌧️",
+            "ko": "rainy 🌧️",
+            "es": "rainy 🌧️",
+            "de": "rainy 🌧️",
+            "fr": "rainy 🌧️",
+            "ar": "rainy 🌧️"
+          }
         },
         {
           "value": "snowy",
-          "label": "Snowy ❄️"
+          "label": {
+            "en": "Snowy ❄️",
+            "zh": "snowy ❄️",
+            "ja": "snowy ❄️",
+            "ko": "snowy ❄️",
+            "es": "snowy ❄️",
+            "de": "snowy ❄️",
+            "fr": "snowy ❄️",
+            "ar": "snowy ❄️"
+          }
         }
       ]
     },
@@ -47,23 +92,68 @@
       "options": [
         {
           "value": "morning",
-          "label": "Morning 🌅"
+          "label": {
+            "en": "Morning 🌅",
+            "zh": "morning 🌅",
+            "ja": "morning 🌅",
+            "ko": "morning 🌅",
+            "es": "morning 🌅",
+            "de": "morning 🌅",
+            "fr": "morning 🌅",
+            "ar": "morning 🌅"
+          }
         },
         {
           "value": "daytime",
-          "label": "Daytime ☀️"
+          "label": {
+            "en": "Daytime ☀️",
+            "zh": "daytime ☀️",
+            "ja": "daytime ☀️",
+            "ko": "daytime ☀️",
+            "es": "daytime ☀️",
+            "de": "daytime ☀️",
+            "fr": "daytime ☀️",
+            "ar": "daytime ☀️"
+          }
         },
         {
           "value": "dusk",
-          "label": "Dusk 🌇"
+          "label": {
+            "en": "Dusk 🌇",
+            "zh": "dusk 🌇",
+            "ja": "dusk 🌇",
+            "ko": "dusk 🌇",
+            "es": "dusk 🌇",
+            "de": "dusk 🌇",
+            "fr": "dusk 🌇",
+            "ar": "dusk 🌇"
+          }
         },
         {
           "value": "night",
-          "label": "Night 🌙"
+          "label": {
+            "en": "Night 🌙",
+            "zh": "night 🌙",
+            "ja": "night 🌙",
+            "ko": "night 🌙",
+            "es": "night 🌙",
+            "de": "night 🌙",
+            "fr": "night 🌙",
+            "ar": "night 🌙"
+          }
         },
         {
           "value": "late_night",
-          "label": "Late Night ⭐"
+          "label": {
+            "en": "Late Night ⭐",
+            "zh": "late_night ⭐",
+            "ja": "late_night ⭐",
+            "ko": "late_night ⭐",
+            "es": "late_night ⭐",
+            "de": "late_night ⭐",
+            "fr": "late_night ⭐",
+            "ar": "late_night ⭐"
+          }
         }
       ]
     },
@@ -75,97 +165,241 @@
       "options": [
         {
           "value": "foraging",
-          "label": "Foraging 🍇",
+          "label": {
+            "en": "Foraging 🍇",
+            "zh": "foraging 🍇",
+            "ja": "foraging 🍇",
+            "ko": "foraging 🍇",
+            "es": "foraging 🍇",
+            "de": "foraging 🍇",
+            "fr": "foraging 🍇",
+            "ar": "foraging 🍇"
+          },
           "activity_description": "He holds a large fern leaf filled with freshly picked, dew-covered wild berries. He brings a berry close to the camera lens to inspect it, a curious expression on his face.",
           "voiceover_content": "Alright, first thing's first... breakfast. Found some good ones today. You gotta know which ones to pick, though."
         },
         {
           "value": "morning_exercise",
-          "label": "Morning Exercise 💪",
+          "label": {
+            "en": "Morning Exercise 💪",
+            "zh": "morning_exercise 💪",
+            "ja": "morning_exercise 💪",
+            "ko": "morning_exercise 💪",
+            "es": "morning_exercise 💪",
+            "de": "morning_exercise 💪",
+            "fr": "morning_exercise 💪",
+            "ar": "morning_exercise 💪"
+          },
           "activity_description": "He performs stretching exercises and basic calisthenics, demonstrating impressive flexibility despite his massive frame. He does push-ups against a fallen log, his movements surprisingly graceful.",
           "voiceover_content": "Gotta stay in shape for survival out here. Stretching keeps me flexible and ready for anything."
         },
         {
           "value": "water_search",
-          "label": "Water Search 💧",
+          "label": {
+            "en": "Water Search 💧",
+            "zh": "water_search 💧",
+            "ja": "water_search 💧",
+            "ko": "water_search 💧",
+            "es": "water_search 💧",
+            "de": "water_search 💧",
+            "fr": "water_search 💧",
+            "ar": "water_search 💧"
+          },
           "activity_description": "He kneels by a crystal-clear stream, cupping water in his massive hands to taste it. He examines the flow and clarity, nodding approvingly at the quality.",
           "voiceover_content": "Clean water is life. Let's find a good stream nearby. This one's perfect - clear, cold, and flowing fast."
         },
         {
           "value": "shelter_building",
-          "label": "Shelter Building 🏠",
+          "label": {
+            "en": "Shelter Building 🏠",
+            "zh": "shelter_building 🏠",
+            "ja": "shelter_building 🏠",
+            "ko": "shelter_building 🏠",
+            "es": "shelter_building 🏠",
+            "de": "shelter_building 🏠",
+            "fr": "shelter_building 🏠",
+            "ar": "shelter_building 🏠"
+          },
           "activity_description": "He uses his immense strength to wedge a massive, heavy log into the frame of a lean-to. He grunts with effort, looking directly into the camera as if sharing the struggle.",
           "voiceover_content": "This one's a bit heavy. But, uh... gotta make sure the frame is solid. Should be pretty cozy tonight."
         },
         {
           "value": "tool_making",
-          "label": "Tool Making 🔨",
+          "label": {
+            "en": "Tool Making 🔨",
+            "zh": "tool_making 🔨",
+            "ja": "tool_making 🔨",
+            "ko": "tool_making 🔨",
+            "es": "tool_making 🔨",
+            "de": "tool_making 🔨",
+            "fr": "tool_making 🔨",
+            "ar": "tool_making 🔨"
+          },
           "activity_description": "He carefully sharpens a long wooden branch into a spear, using a rough stone to scrape and shape the tip. His precise movements show years of experience.",
           "voiceover_content": "A sharp spear makes all the difference in survival. Takes patience, but it's worth the effort."
         },
         {
           "value": "hunting_fishing",
-          "label": "Hunting/Fishing 🎣",
+          "label": {
+            "en": "Hunting/Fishing 🎣",
+            "zh": "hunting_fishing 🎣",
+            "ja": "hunting_fishing 🎣",
+            "ko": "hunting_fishing 🎣",
+            "es": "hunting_fishing 🎣",
+            "de": "hunting_fishing 🎣",
+            "fr": "hunting_fishing 🎣",
+            "ar": "hunting_fishing 🎣"
+          },
           "activity_description": "He stands waist-deep in a forest stream, holding a handmade spear with complete stillness, waiting for the perfect moment to strike at passing fish.",
           "voiceover_content": "Patience is key when you're fishing. Nature provides if you wait and stay perfectly still."
         },
         {
           "value": "territory_exploration",
-          "label": "Territory Exploration 🗺️",
+          "label": {
+            "en": "Territory Exploration 🗺️",
+            "zh": "territory_exploration 🗺️",
+            "ja": "territory_exploration 🗺️",
+            "ko": "territory_exploration 🗺️",
+            "es": "territory_exploration 🗺️",
+            "de": "territory_exploration 🗺️",
+            "fr": "territory_exploration 🗺️",
+            "ar": "territory_exploration 🗺️"
+          },
           "activity_description": "He climbs to a high vantage point, scanning the landscape with keen eyes. He points to different areas, mentally mapping the territory and resources.",
           "voiceover_content": "Never know what you'll find over that ridge. Adventure awaits, but smart exploration keeps you alive."
         },
         {
           "value": "fire_preparation",
-          "label": "Fire Preparation 🔥",
+          "label": {
+            "en": "Fire Preparation 🔥",
+            "zh": "fire_preparation 🔥",
+            "ja": "fire_preparation 🔥",
+            "ko": "fire_preparation 🔥",
+            "es": "fire_preparation 🔥",
+            "de": "fire_preparation 🔥",
+            "fr": "fire_preparation 🔥",
+            "ar": "fire_preparation 🔥"
+          },
           "activity_description": "He cups his massive hands around a small tinder bundle. He gently blows on a glowing ember he just created, and the first tiny flame flickers to life, illuminating his face with warm, orange glow.",
           "voiceover_content": "There we go... c'mon, c'mon... yes! We have fire. Now we can get cookin'."
         },
         {
           "value": "food_processing",
-          "label": "Food Processing 🥘",
+          "label": {
+            "en": "Food Processing 🥘",
+            "zh": "food_processing 🥘",
+            "ja": "food_processing 🥘",
+            "ko": "food_processing 🥘",
+            "es": "food_processing 🥘",
+            "de": "food_processing 🥘",
+            "fr": "food_processing 🥘",
+            "ar": "food_processing 🥘"
+          },
           "activity_description": "He skillfully cleans and prepares freshly caught fish, using a sharp stone knife to remove scales and prepare portions for cooking.",
           "voiceover_content": "Prep time is crucial for a good meal. Details matter when you're working with fresh catch."
         },
         {
           "value": "security_check",
-          "label": "Security Check 🛡️",
+          "label": {
+            "en": "Security Check 🛡️",
+            "zh": "security_check 🛡️",
+            "ja": "security_check 🛡️",
+            "ko": "security_check 🛡️",
+            "es": "security_check 🛡️",
+            "de": "security_check 🛡️",
+            "fr": "security_check 🛡️",
+            "ar": "security_check 🛡️"
+          },
           "activity_description": "He systematically checks the perimeter of his campsite, reinforcing the shelter and ensuring all food is properly stored away from potential threats.",
           "voiceover_content": "Better safe than sorry in the wilderness. Check everything twice before settling in for the night."
         },
         {
           "value": "cooking_dinner",
-          "label": "Cooking Dinner 🍖",
+          "label": {
+            "en": "Cooking Dinner 🍖",
+            "zh": "cooking_dinner 🍖",
+            "ja": "cooking_dinner 🍖",
+            "ko": "cooking_dinner 🍖",
+            "es": "cooking_dinner 🍖",
+            "de": "cooking_dinner 🍖",
+            "fr": "cooking_dinner 🍖",
+            "ar": "cooking_dinner 🍖"
+          },
           "activity_description": "He holds a large, freshly caught fish speared on a sharpened stick over a crackling campfire. He rotates the stick slowly, examining the cooking fish with a satisfied look.",
           "voiceover_content": "Nothing beats fresh-caught trout roasted over an open fire. Smells... amazing."
         },
         {
           "value": "food_storage",
-          "label": "Food Storage 🥓",
+          "label": {
+            "en": "Food Storage 🥓",
+            "zh": "food_storage 🥓",
+            "ja": "food_storage 🥓",
+            "ko": "food_storage 🥓",
+            "es": "food_storage 🥓",
+            "de": "food_storage 🥓",
+            "fr": "food_storage 🥓",
+            "ar": "food_storage 🥓"
+          },
           "activity_description": "He carefully wraps portions of cooked fish in large leaves and hangs them high in trees, creating a natural food cache for future meals.",
           "voiceover_content": "Tomorrow's meals start with tonight's prep. Smart planning keeps you fed in the wilderness."
         },
         {
           "value": "night_watch",
-          "label": "Night Watch 👁️",
+          "label": {
+            "en": "Night Watch 👁️",
+            "zh": "night_watch 👁️",
+            "ja": "night_watch 👁️",
+            "ko": "night_watch 👁️",
+            "es": "night_watch 👁️",
+            "de": "night_watch 👁️",
+            "fr": "night_watch 👁️",
+            "ar": "night_watch 👁️"
+          },
           "activity_description": "He sits alertly by the dying campfire, ears perked and eyes scanning the dark forest. Every sound is catalogued and assessed for potential threats.",
           "voiceover_content": "Forest gets different sounds at night. Stay alert, but don't let paranoia ruin your rest."
         },
         {
           "value": "stargazing",
-          "label": "Stargazing 🌌",
+          "label": {
+            "en": "Stargazing 🌌",
+            "zh": "stargazing 🌌",
+            "ja": "stargazing 🌌",
+            "ko": "stargazing 🌌",
+            "es": "stargazing 🌌",
+            "de": "stargazing 🌌",
+            "fr": "stargazing 🌌",
+            "ar": "stargazing 🌌"
+          },
           "activity_description": "He leans back against his log shelter and looks up in awe at a brilliant, star-filled sky. The camera is held low, capturing the bottom of his chin and the vast Milky Way above.",
           "voiceover_content": "Not a bad day's work. It's quiet out here. Stars remind you how small we really are."
         },
         {
           "value": "bedtime_prep",
-          "label": "Bedtime Prep 😴",
+          "label": {
+            "en": "Bedtime Prep 😴",
+            "zh": "bedtime_prep 😴",
+            "ja": "bedtime_prep 😴",
+            "ko": "bedtime_prep 😴",
+            "es": "bedtime_prep 😴",
+            "de": "bedtime_prep 😴",
+            "fr": "bedtime_prep 😴",
+            "ar": "bedtime_prep 😴"
+          },
           "activity_description": "He arranges his makeshift bedding and checks that the fire is properly banked for the night. He takes one last look around before settling in.",
           "voiceover_content": "Time to rest. Tomorrow's another adventure in the wild. Sleep well out there."
         },
         {
           "value": "custom",
-          "label": "Custom Activity ✏️",
+          "label": {
+            "en": "Custom Activity ✏️",
+            "zh": "custom ✏️",
+            "ja": "custom ✏️",
+            "ko": "custom ✏️",
+            "es": "custom ✏️",
+            "de": "custom ✏️",
+            "fr": "custom ✏️",
+            "ar": "custom ✏️"
+          },
           "activity_description": "He performs a custom survival activity. [Add your specific activity details here]",
           "voiceover_content": "[Add your custom Bigfoot commentary here]"
         }
@@ -191,7 +425,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

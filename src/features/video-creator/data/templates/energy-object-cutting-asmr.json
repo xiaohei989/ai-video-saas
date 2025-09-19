@@ -1,9 +1,27 @@
 {
   "id": "b8d9f3e2-6c4a-5f7b-0e1d-4a9c7b2e8f5a",
   "slug": "energy-object-cutting-asmr",
-  "name": "Energy Object Cutting ASMR",
+  "name": {
+    "en": "Energy Object Cutting ASMR",
+    "zh": "能量体切割ASMR",
+    "ja": "エネルギー体カットASMR",
+    "ko": "에너지 물체 자르기 ASMR",
+    "es": "Corte de Objetos de Energía ASMR",
+    "de": "Energie-Objekt Schneiden ASMR",
+    "fr": "Découpe d'Objets Énergétiques ASMR",
+    "ar": "قطع الأجسام الطاقية ASMR"
+  },
   "icon": "⚡",
-  "description": "Ultra-detailed HD ASMR experience of cutting through various energy objects and supernatural phenomena",
+  "description": {
+    "en": "Ultra-detailed HD ASMR experience of cutting through various energy objects and supernatural phenomena",
+    "zh": "超高清ASMR体验，切割各种能量体和超自然现象",
+    "ja": "様々なエネルギー体と超自然現象をカットする超高解像度ASMR体験",
+    "ko": "다양한 에너지 물체와 초자연 현상을 자르는 초고화질 ASMR 경험",
+    "es": "Experiencia ASMR ultra-detallada en HD de cortar varios objetos de energía y fenómenos sobrenaturales",
+    "de": "Ultra-detaillierte HD ASMR-Erfahrung beim Schneiden verschiedener Energieobjekte und übernatürlicher Phänomene",
+    "fr": "Expérience ASMR ultra-détaillée en HD de découpe de divers objets énergétiques et phénomènes surnaturels",
+    "ar": "تجربة ASMR فائقة التفاصيل عالية الوضوح لقطع أجسام الطاقة المختلفة والظواهر الخارقة"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/energy-object-cutting-asmr.mp4?v=1758008502567",
   "tags": [
     "asmr",
@@ -16,96 +34,276 @@
   ],
   "createdAt": "2025-01-29T15:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.574Z",
+  "lastModified": "2025-09-18T03:14:02.503Z",
   "promptTemplate": "Ultra-detailed HD ASMR video with a human hand slicing through an ultra-realistic {cutting_object} resting on a {cutting_surface}. The blade crackles when it comes into contact with the energy mass, cutting through perfectly to create clean slices with spectacular interior effects and immersive ASMR soundscape. Cinematic lighting accentuates the luminous effects and energy trails. No background distractions. Focus on visual detail and rich, atmospheric ASMR sounds in perfect harmony.",
   "params": {
     "cutting_object": {
       "type": "select",
-      "label": "Object to Cut",
+      "label": {
+        "en": "Object to Cut",
+        "zh": "切割对象",
+        "ja": "カットする物体",
+        "ko": "자를 물체",
+        "es": "Objeto a Cortar",
+        "de": "Zu schneidendes Objekt",
+        "fr": "Objet à Découper",
+        "ar": "الكائن المراد قطعه"
+      },
       "required": true,
       "default": "plasma ball",
       "options": [
         {
           "value": "plasma ball",
-          "label": "Plasma Ball 🔮"
+          "label": {
+            "en": "Plasma Ball 🔮",
+            "zh": "等离子球 🔮",
+            "ja": "プラズマボール 🔮",
+            "ko": "플라즈마 볼 🔮",
+            "es": "Bola de Plasma 🔮",
+            "de": "Plasma-Kugel 🔮",
+            "fr": "Boule de Plasma 🔮",
+            "ar": "كرة البلازما 🔮"
+          }
         },
         {
           "value": "lightning sphere",
-          "label": "Lightning Sphere ⚡"
+          "label": {
+            "en": "Lightning Sphere ⚡",
+            "zh": "闪电球 ⚡",
+            "ja": "雷の球体 ⚡",
+            "ko": "번개 구체 ⚡",
+            "es": "Esfera de Rayo ⚡",
+            "de": "Blitzkugel ⚡",
+            "fr": "Sphère de Foudre ⚡",
+            "ar": "كرة البرق ⚡"
+          }
         },
         {
           "value": "storm cloud",
-          "label": "Storm Cloud ⛈️"
+          "label": {
+            "en": "Storm Cloud ⛈️",
+            "zh": "风暴云 ⛈️",
+            "ja": "嵐雲 ⛈️",
+            "ko": "폭풍 구름 ⛈️",
+            "es": "Nube de Tormenta ⛈️",
+            "de": "Gewitterwolke ⛈️",
+            "fr": "Nuage d'Orage ⛈️",
+            "ar": "سحابة العاصفة ⛈️"
+          }
         },
         {
           "value": "nebula cloud",
-          "label": "Nebula Cloud 🌌"
+          "label": {
+            "en": "Nebula Cloud 🌌",
+            "zh": "星云 🌌",
+            "ja": "星雲雲 🌌",
+            "ko": "성운 구름 🌌",
+            "es": "Nube de Nebulosa 🌌",
+            "de": "Nebel-Wolke 🌌",
+            "fr": "Nuage de Nébuleuse 🌌",
+            "ar": "سحابة السديم 🌌"
+          }
         },
         {
           "value": "fire orb",
-          "label": "Fire Orb 🔥"
+          "label": {
+            "en": "Fire Orb 🔥",
+            "zh": "火球 🔥",
+            "ja": "火の玉 🔥",
+            "ko": "불 구체 🔥",
+            "es": "Orbe de Fuego 🔥",
+            "de": "Feuer-Orb 🔥",
+            "fr": "Orbe de Feu 🔥",
+            "ar": "كرة النار 🔥"
+          }
         },
         {
           "value": "water sphere",
-          "label": "Water Sphere 💧"
+          "label": {
+            "en": "Water Sphere 💧",
+            "zh": "水球 💧",
+            "ja": "水の球体 💧",
+            "ko": "물 구체 💧",
+            "es": "Esfera de Agua 💧",
+            "de": "Wasserkugel 💧",
+            "fr": "Sphère d'Eau 💧",
+            "ar": "كرة الماء 💧"
+          }
         },
         {
           "value": "crystal core",
-          "label": "Crystal Core 💎"
+          "label": {
+            "en": "Crystal Core 💎",
+            "zh": "水晶核心 💎",
+            "ja": "クリスタルコア 💎",
+            "ko": "크리스탈 코어 💎",
+            "es": "Núcleo de Cristal 💎",
+            "de": "Kristallkern 💎",
+            "fr": "Noyau de Cristal 💎",
+            "ar": "نواة الكريستال 💎"
+          }
         },
         {
           "value": "energy shield",
-          "label": "Energy Shield 🌐"
+          "label": {
+            "en": "Energy Shield 🌐",
+            "zh": "能量护盾 🌐",
+            "ja": "エネルギーシールド 🌐",
+            "ko": "에너지 실드 🌐",
+            "es": "Escudo de Energía 🌐",
+            "de": "Energie-Schild 🌐",
+            "fr": "Bouclier d'Énergie 🌐",
+            "ar": "درع الطاقة 🌐"
+          }
         },
         {
           "value": "antimatter orb",
-          "label": "Antimatter Orb 🛸"
+          "label": {
+            "en": "Antimatter Orb 🛸",
+            "zh": "反物质球 🛸",
+            "ja": "反物質オーブ 🛸",
+            "ko": "반물질 구체 🛸",
+            "es": "Orbe de Antimateria 🛸",
+            "de": "Antimaterie-Orb 🛸",
+            "fr": "Orbe d'Antimatière 🛸",
+            "ar": "كرة المضاد للمادة 🛸"
+          }
         },
         {
           "value": "black hole",
-          "label": "Black Hole 🕳️"
+          "label": {
+            "en": "Black Hole 🕳️",
+            "zh": "黑洞 🕳️",
+            "ja": "ブラックホール 🕳️",
+            "ko": "블랙홀 🕳️",
+            "es": "Agujero Negro 🕳️",
+            "de": "Schwarzes Loch 🕳️",
+            "fr": "Trou Noir 🕳️",
+            "ar": "الثقب الأسود 🕳️"
+          }
         },
         {
           "value": "tornado",
-          "label": "Tornado 🌪️"
+          "label": {
+            "en": "Tornado 🌪️",
+            "zh": "龙卷风 🌪️",
+            "ja": "トルネード 🌪️",
+            "ko": "토네이도 🌪️",
+            "es": "Tornado 🌪️",
+            "de": "Tornado 🌪️",
+            "fr": "Tornade 🌪️",
+            "ar": "الإعصار 🌪️"
+          }
         },
         {
           "value": "aurora field",
-          "label": "Aurora Field 🌅"
+          "label": {
+            "en": "Aurora Field 🌅",
+            "zh": "极光场 🌅",
+            "ja": "オーロラ場 🌅",
+            "ko": "오로라 필드 🌅",
+            "es": "Campo de Aurora 🌅",
+            "de": "Aurora-Feld 🌅",
+            "fr": "Champ d'Aurore 🌅",
+            "ar": "حقل الشفق القطبي 🌅"
+          }
         }
       ]
     },
     "cutting_surface": {
       "type": "select",
-      "label": "Cutting Surface",
+      "label": {
+        "en": "Cutting Surface",
+        "zh": "切割台面",
+        "ja": "カッティング面",
+        "ko": "자르기 표면",
+        "es": "Superficie de Corte",
+        "de": "Schnittfläche",
+        "fr": "Surface de Découpe",
+        "ar": "سطح القطع"
+      },
       "required": true,
       "default": "wooden cutting board",
       "options": [
         {
           "value": "wooden cutting board",
-          "label": "Wooden Cutting Board"
+          "label": {
+            "en": "Wooden Cutting Board",
+            "zh": "木制砧板",
+            "ja": "木製まな板",
+            "ko": "나무 도마",
+            "es": "Tabla de Cortar de Madera",
+            "de": "Holzschneidebrett",
+            "fr": "Planche à Découper en Bois",
+            "ar": "لوح تقطيع خشبي"
+          }
         },
         {
           "value": "marble countertop",
-          "label": "Marble Countertop"
+          "label": {
+            "en": "Marble Countertop",
+            "zh": "大理石台面",
+            "ja": "大理石カウンタートップ",
+            "ko": "대리석 조리대",
+            "es": "Encimera de Mármol",
+            "de": "Marmor-Arbeitsplatte",
+            "fr": "Plan de Travail en Marbre",
+            "ar": "سطح رخامي"
+          }
         },
         {
           "value": "glass surface",
-          "label": "Glass Surface"
+          "label": {
+            "en": "Glass Surface",
+            "zh": "玻璃表面",
+            "ja": "ガラス表面",
+            "ko": "유리 표면",
+            "es": "Superficie de Vidrio",
+            "de": "Glasoberfläche",
+            "fr": "Surface en Verre",
+            "ar": "سطح زجاجي"
+          }
         },
         {
           "value": "metal platform",
-          "label": "Metal Platform"
+          "label": {
+            "en": "Metal Platform",
+            "zh": "金属平台",
+            "ja": "金属プラットフォーム",
+            "ko": "금속 플랫폼",
+            "es": "Plataforma de Metal",
+            "de": "Metall-Plattform",
+            "fr": "Plateforme Métallique",
+            "ar": "منصة معدنية"
+          }
         },
         {
           "value": "stone slate",
-          "label": "Stone Slate"
+          "label": {
+            "en": "Stone Slate",
+            "zh": "石板",
+            "ja": "石製スレート",
+            "ko": "석판",
+            "es": "Pizarra de Piedra",
+            "de": "Steinschiefer",
+            "fr": "Ardoise de Pierre",
+            "ar": "لوح حجري"
+          }
         }
       ]
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

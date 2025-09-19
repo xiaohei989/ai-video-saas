@@ -1,9 +1,27 @@
 {
   "id": "5f7e8d9c-3b4a-5c6d-7e8f-9a0b1c2d3e4f",
   "slug": "fireplace-cozy-selfie",
-  "name": "Fireplace Cozy International Beauty Selfie",
+  "name": {
+    "en": "Fireplace Cozy Selfie",
+    "zh": "壁炉温馨自拍",
+    "ja": "暖炉コージー自撮り",
+    "ko": "벽난로 아늑한 셀카",
+    "es": "Selfie Acogedor de Chimenea",
+    "de": "Kamin Gemütliches Selfie",
+    "fr": "Selfie Confortable de Cheminée",
+    "ar": "سيلفي مدفأة مريح"
+  },
   "icon": "🔥",
-  "description": "Cozy POV selfie with international beauties in a warm fireplace-lit room",
+  "description": {
+    "en": "Cozy fireside selfie video with warm atmosphere, crackling fire sounds, and intimate lighting",
+    "zh": "温馨炉边自拍视频，营造温暖氛围，伴有劈啪燃烧声和亲密照明",
+    "ja": "暖かい雰囲気、薪の燃える音、親密な照明での居心地の良い炉端自撮りビデオ",
+    "ko": "따뜻한 분위기, 타닥거리는 불소리, 친밀한 조명이 있는 아늑한 난로 앞 셀카 영상",
+    "es": "Video selfie acogedor junto al fuego con ambiente cálido, sonidos de fuego crepitante e iluminación íntima",
+    "de": "Gemütliches Kamin-Selfie-Video mit warmer Atmosphäre, knisternden Feuergeräuschen und intimer Beleuchtung",
+    "fr": "Vidéo selfie confortable au coin du feu avec une atmosphère chaleureuse, des sons de feu crépitant et un éclairage intime",
+    "ar": "فيديو سيلفي مريح بجانب المدفأة مع أجواء دافئة وأصوات نار متفرقعة وإضاءة حميمة"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/fireplace-seduction-selfie.mp4?v=1758008502567",
   "credits": 8,
   "tags": [
@@ -18,7 +36,7 @@
   ],
   "createdAt": "2025-02-01T14:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.575Z",
+  "lastModified": "2025-09-18T03:33:06.781Z",
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
@@ -67,7 +85,16 @@
       "options": [
         {
           "value": "korean_beauty",
-          "label": "🇰🇷 Korean Beauty",
+          "label": {
+            "en": "🇰🇷 Korean Beauty",
+            "zh": "korean_beauty ",
+            "ja": "korean_beauty ",
+            "ko": "korean_beauty ",
+            "es": "korean_beauty ",
+            "de": "korean_beauty ",
+            "fr": "korean_beauty ",
+            "ar": "korean_beauty "
+          },
           "metadata": {
             "character": "Korean beauty",
             "character_description": "stunning 20-year-old Korean beauty with flawless skin and elegant features",
@@ -79,7 +106,16 @@
         },
         {
           "value": "japanese_beauty",
-          "label": "🇯🇵 Japanese Beauty",
+          "label": {
+            "en": "🇯🇵 Japanese Beauty",
+            "zh": "japanese_beauty ",
+            "ja": "japanese_beauty ",
+            "ko": "japanese_beauty ",
+            "es": "japanese_beauty ",
+            "de": "japanese_beauty ",
+            "fr": "japanese_beauty ",
+            "ar": "japanese_beauty "
+          },
           "metadata": {
             "character": "Japanese beauty",
             "character_description": "graceful 20-year-old Japanese beauty with delicate features and mysterious charm",
@@ -91,7 +127,16 @@
         },
         {
           "value": "chinese_beauty",
-          "label": "🇨🇳 Chinese Beauty",
+          "label": {
+            "en": "🇨🇳 Chinese Beauty",
+            "zh": "chinese_beauty ",
+            "ja": "chinese_beauty ",
+            "ko": "chinese_beauty ",
+            "es": "chinese_beauty ",
+            "de": "chinese_beauty ",
+            "fr": "chinese_beauty ",
+            "ar": "chinese_beauty "
+          },
           "metadata": {
             "character": "Chinese beauty",
             "character_description": "elegant 20-year-old Chinese beauty with classic features and alluring eyes",
@@ -103,7 +148,16 @@
         },
         {
           "value": "american_beauty",
-          "label": "🇺🇸 American Beauty",
+          "label": {
+            "en": "🇺🇸 American Beauty",
+            "zh": "american_beauty ",
+            "ja": "american_beauty ",
+            "ko": "american_beauty ",
+            "es": "american_beauty ",
+            "de": "american_beauty ",
+            "fr": "american_beauty ",
+            "ar": "american_beauty "
+          },
           "metadata": {
             "character": "American beauty",
             "character_description": "confident 20-year-old American beauty with sun-kissed skin and captivating smile",
@@ -115,7 +169,16 @@
         },
         {
           "value": "french_beauty",
-          "label": "🇫🇷 French Beauty",
+          "label": {
+            "en": "🇫🇷 French Beauty",
+            "zh": "french_beauty ",
+            "ja": "french_beauty ",
+            "ko": "french_beauty ",
+            "es": "french_beauty ",
+            "de": "french_beauty ",
+            "fr": "french_beauty ",
+            "ar": "french_beauty "
+          },
           "metadata": {
             "character": "French beauty",
             "character_description": "sophisticated 20-year-old French beauty with chic style and enchanting accent",
@@ -127,7 +190,16 @@
         },
         {
           "value": "brazilian_beauty",
-          "label": "🇧🇷 Brazilian Beauty",
+          "label": {
+            "en": "🇧🇷 Brazilian Beauty",
+            "zh": "brazilian_beauty ",
+            "ja": "brazilian_beauty ",
+            "ko": "brazilian_beauty ",
+            "es": "brazilian_beauty ",
+            "de": "brazilian_beauty ",
+            "fr": "brazilian_beauty ",
+            "ar": "brazilian_beauty "
+          },
           "metadata": {
             "character": "Brazilian beauty",
             "character_description": "vibrant 20-year-old Brazilian beauty with sun-bronzed skin and infectious energy",
@@ -139,7 +211,16 @@
         },
         {
           "value": "russian_beauty",
-          "label": "🇷🇺 Russian Beauty",
+          "label": {
+            "en": "🇷🇺 Russian Beauty",
+            "zh": "russian_beauty ",
+            "ja": "russian_beauty ",
+            "ko": "russian_beauty ",
+            "es": "russian_beauty ",
+            "de": "russian_beauty ",
+            "fr": "russian_beauty ",
+            "ar": "russian_beauty "
+          },
           "metadata": {
             "character": "Russian beauty",
             "character_description": "striking 20-year-old Russian beauty with piercing eyes and model-like features",
@@ -151,7 +232,16 @@
         },
         {
           "value": "italian_beauty",
-          "label": "🇮🇹 Italian Beauty",
+          "label": {
+            "en": "🇮🇹 Italian Beauty",
+            "zh": "italian_beauty ",
+            "ja": "italian_beauty ",
+            "ko": "italian_beauty ",
+            "es": "italian_beauty ",
+            "de": "italian_beauty ",
+            "fr": "italian_beauty ",
+            "ar": "italian_beauty "
+          },
           "metadata": {
             "character": "Italian beauty",
             "character_description": "passionate 20-year-old Italian beauty with Mediterranean charm and expressive eyes",
@@ -163,7 +253,16 @@
         },
         {
           "value": "indian_beauty",
-          "label": "🇮🇳 Indian Beauty",
+          "label": {
+            "en": "🇮🇳 Indian Beauty",
+            "zh": "indian_beauty ",
+            "ja": "indian_beauty ",
+            "ko": "indian_beauty ",
+            "es": "indian_beauty ",
+            "de": "indian_beauty ",
+            "fr": "indian_beauty ",
+            "ar": "indian_beauty "
+          },
           "metadata": {
             "character": "Indian beauty",
             "character_description": "exotic 20-year-old Indian beauty with captivating eyes and graceful movements",
@@ -175,7 +274,16 @@
         },
         {
           "value": "spanish_beauty",
-          "label": "🇪🇸 Spanish Beauty",
+          "label": {
+            "en": "🇪🇸 Spanish Beauty",
+            "zh": "spanish_beauty ",
+            "ja": "spanish_beauty ",
+            "ko": "spanish_beauty ",
+            "es": "spanish_beauty ",
+            "de": "spanish_beauty ",
+            "fr": "spanish_beauty ",
+            "ar": "spanish_beauty "
+          },
           "metadata": {
             "character": "Spanish beauty",
             "character_description": "fiery 20-year-old Spanish beauty with passionate spirit and mesmerizing presence",
@@ -228,7 +336,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   }

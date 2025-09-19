@@ -1,9 +1,27 @@
 {
   "id": "8c9d7e6f-2a3b-4c5d-6e7f-8a9b0c1d2e3f",
   "slug": "ocean-selfie-surprise",
-  "name": "Ocean Selfie Predator Surprise",
+  "name": {
+    "en": "Ocean Selfie Surprise",
+    "zh": "海洋自拍惊喜",
+    "ja": "海洋自撮りサプライズ",
+    "ko": "바다 셀카 서프라이즈",
+    "es": "Selfie Sorpresa del Océano",
+    "de": "Ozean-Selfie Überraschung",
+    "fr": "Selfie Surprise de l'Océan",
+    "ar": "مفاجأة سيلفي المحيط"
+  },
   "icon": "🦈",
-  "description": "POV selfie video on a speedboat with a surprise marine predator appearance",
+  "description": {
+    "en": "Ocean selfie video where unexpected sea creatures photobomb the shot with playful interactions",
+    "zh": "海洋自拍视频，意想不到的海洋生物顽皮地入镜互动",
+    "ja": "予期しない海洋生物が遊び心のある相互作用でフォトボムする海洋自撮りビデオ",
+    "ko": "예상치 못한 바다 생물들이 장난스러운 상호작용으로 사진을 폭격하는 바다 셀카 영상",
+    "es": "Video selfie del océano donde criaturas marinas inesperadas aparecen en la toma con interacciones juguetonas",
+    "de": "Ozean-Selfie-Video, bei dem unerwartete Meerestiere mit verspielten Interaktionen ins Bild platzen",
+    "fr": "Vidéo selfie d'océan où des créatures marines inattendues font irruption dans le plan avec des interactions joueuses",
+    "ar": "فيديو سيلفي المحيط حيث تظهر المخلوقات البحرية غير المتوقعة في اللقطة مع تفاعلات مرحة"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/ocean-selfie-surprise.mp4?v=1758008502567",
   "credits": 10,
   "tags": [
@@ -20,7 +38,7 @@
   ],
   "createdAt": "2025-02-01T12:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.578Z",
+  "lastModified": "2025-09-18T04:11:01.429Z",
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
@@ -59,13 +77,31 @@
   "params": {
     "marine_animal": {
       "type": "select",
-      "label": "Marine Predator",
+      "label": {
+        "en": "Marine Predator",
+        "zh": "海洋捕食者",
+        "ja": "海洋捕食者",
+        "ko": "바다 포식자",
+        "es": "Depredador Marino",
+        "de": "Meeresraubtier",
+        "fr": "Prédateur Marin",
+        "ar": "مفترس بحري"
+      },
       "required": true,
       "default": "megalodon",
       "options": [
         {
           "value": "megalodon",
-          "label": "🦈 Megalodon",
+          "label": {
+            "en": "🦈 Megalodon",
+            "zh": "🦈 巨齿鲨",
+            "ja": "🦈 メガロドン",
+            "ko": "🦈 메갈로돈",
+            "es": "🦈 Megalodón",
+            "de": "🦈 Megalodon",
+            "fr": "🦈 Mégalodon",
+            "ar": "🦈 ميجالودون"
+          },
           "metadata": {
             "animal_type": "massive prehistoric megalodon",
             "animal_action": "rises from the depths",
@@ -81,7 +117,16 @@
         },
         {
           "value": "great_white",
-          "label": "🦈 Great White Shark",
+          "label": {
+            "en": "🦈 Great White Shark",
+            "zh": "🦈 大白鲨",
+            "ja": "🦈 ホオジロザメ",
+            "ko": "🦈 백상아리",
+            "es": "🦈 Tiburón Blanco",
+            "de": "🦈 Weißer Hai",
+            "fr": "🦈 Grand Requin Blanc",
+            "ar": "🦈 قرش أبيض كبير"
+          },
           "metadata": {
             "animal_type": "massive great white shark",
             "animal_action": "breaches attacking",
@@ -97,7 +142,16 @@
         },
         {
           "value": "shark",
-          "label": "🦈 Shark",
+          "label": {
+            "en": "🦈 Shark",
+            "zh": "🦈 鲨鱼",
+            "ja": "🦈 サメ",
+            "ko": "🦈 상어",
+            "es": "🦈 Tiburón",
+            "de": "🦈 Hai",
+            "fr": "🦈 Requin",
+            "ar": "🦈 قرش"
+          },
           "metadata": {
             "animal_type": "large shark",
             "animal_action": "circles then breaches",
@@ -113,7 +167,16 @@
         },
         {
           "value": "giant_crocodile",
-          "label": "🐊 Giant Crocodile",
+          "label": {
+            "en": "🐊 Giant Crocodile",
+            "zh": "🐊 巨型鳄鱼",
+            "ja": "🐊 巨大ワニ",
+            "ko": "🐊 거대 악어",
+            "es": "🐊 Cocodrilo Gigante",
+            "de": "🐊 Riesenkrokodil",
+            "fr": "🐊 Crocodile Géant",
+            "ar": "🐊 تمساح عملاق"
+          },
           "metadata": {
             "animal_type": "gigantic saltwater crocodile",
             "animal_action": "explodes from water",
@@ -129,7 +192,16 @@
         },
         {
           "value": "giant_squid",
-          "label": "🦑 Giant Squid",
+          "label": {
+            "en": "🦑 Giant Squid",
+            "zh": "🦑 巨型乌贼",
+            "ja": "🦑 ダイオウイカ",
+            "ko": "🦑 대왕오징어",
+            "es": "🦑 Calamar Gigante",
+            "de": "🦑 Riesenkalmar",
+            "fr": "🦑 Calmar Géant",
+            "ar": "🦑 حبار عملاق"
+          },
           "metadata": {
             "animal_type": "colossal giant squid",
             "animal_action": "tentacles rise from depths",
@@ -147,13 +219,31 @@
     },
     "character_style": {
       "type": "select",
-      "label": "Character Style",
+      "label": {
+        "en": "Character Style",
+        "zh": "角色风格",
+        "ja": "キャラクタースタイル",
+        "ko": "캐릭터 스타일",
+        "es": "Estilo de Personaje",
+        "de": "Charakterstil",
+        "fr": "Style de Personnage",
+        "ar": "نمط الشخصية"
+      },
       "required": true,
       "default": "kpop_girl",
       "options": [
         {
           "value": "female_influencer",
-          "label": "💃 Female Influencer",
+          "label": {
+            "en": "💃 Female Influencer",
+            "zh": "💃 女性网红",
+            "ja": "💃 女性インフルエンサー",
+            "ko": "💃 여성 인플루언서",
+            "es": "💃 Influencer Femenina",
+            "de": "💃 Weibliche Influencerin",
+            "fr": "💃 Influenceuse",
+            "ar": "💃 مؤثرة أنثى"
+          },
           "metadata": {
             "character": "female influencer",
             "character_description": "trendy female influencer with stylish outfit",
@@ -166,7 +256,16 @@
         },
         {
           "value": "male_influencer",
-          "label": "🕺 Male Influencer",
+          "label": {
+            "en": "🕺 Male Influencer",
+            "zh": "🕺 男性网红",
+            "ja": "🕺 男性インフルエンサー",
+            "ko": "🕺 남성 인플루언서",
+            "es": "🕺 Influencer Masculino",
+            "de": "🕺 Männlicher Influencer",
+            "fr": "🕺 Influenceur",
+            "ar": "🕺 مؤثر ذكر"
+          },
           "metadata": {
             "character": "male influencer",
             "character_description": "confident male influencer with trendy style",
@@ -179,7 +278,16 @@
         },
         {
           "value": "bigfoot",
-          "label": "🦶 Bigfoot",
+          "label": {
+            "en": "🦶 Bigfoot",
+            "zh": "🦶 大脚怪",
+            "ja": "🦶 ビッグフット",
+            "ko": "🦶 빅풋",
+            "es": "🦶 Pie Grande",
+            "de": "🦶 Bigfoot",
+            "fr": "🦶 Bigfoot",
+            "ar": "🦶 بيغ فوت"
+          },
           "metadata": {
             "character": "Bigfoot",
             "character_description": "Bigfoot holding a smartphone awkwardly with massive hairy hands",
@@ -192,7 +300,16 @@
         },
         {
           "value": "yeti",
-          "label": "❄️ Yeti",
+          "label": {
+            "en": "❄️ Yeti",
+            "zh": "❄️ 雪人",
+            "ja": "❄️ イエティ",
+            "ko": "❄️ 예티",
+            "es": "❄️ Yeti",
+            "de": "❄️ Yeti",
+            "fr": "❄️ Yéti",
+            "ar": "❄️ يتي"
+          },
           "metadata": {
             "character": "Yeti",
             "character_description": "white-furred Yeti wearing sunglasses on vacation",
@@ -205,7 +322,16 @@
         },
         {
           "value": "tourist",
-          "label": "📸 Tourist",
+          "label": {
+            "en": "📸 Tourist",
+            "zh": "📸 游客",
+            "ja": "📸 観光客",
+            "ko": "📸 관광객",
+            "es": "📸 Turista",
+            "de": "📸 Tourist",
+            "fr": "📸 Touriste",
+            "ar": "📸 سائح"
+          },
           "metadata": {
             "character": "excited tourist",
             "character_description": "enthusiastic tourist with sunhat",
@@ -220,7 +346,16 @@
     },
     "dialogue_content": {
       "type": "textarea",
-      "label": "Dialogue Content",
+      "label": {
+        "en": "Dialogue Content",
+        "zh": "对话内容",
+        "ja": "対話内容",
+        "ko": "대화 내용",
+        "es": "Contenido del Diálogo",
+        "de": "Dialog-Inhalt",
+        "fr": "Contenu du Dialogue",
+        "ar": "محتوى الحوار"
+      },
       "required": true,
       "placeholder": "Enter what the character says to the camera...",
       "maxLength": 200,
@@ -314,7 +449,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

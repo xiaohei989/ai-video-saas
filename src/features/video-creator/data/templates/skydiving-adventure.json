@@ -1,9 +1,27 @@
 {
   "id": "b8c7d6e5-f4a3-2918-7b6c-9e8d7c6b5a43",
   "slug": "skydiving-adventure",
-  "name": "Extreme Skydiving Adventure",
+  "name": {
+    "en": "Skydiving Adventure",
+    "zh": "跳伞冒险",
+    "ja": "スカイダイビングアドベンチャー",
+    "ko": "스카이다이빙 모험",
+    "es": "Aventura de Paracaidismo",
+    "de": "Fallschirmsprung-Abenteuer",
+    "fr": "Aventure de Parachutisme",
+    "ar": "مغامرة القفز بالمظلات"
+  },
   "icon": "🪂",
-  "description": "Create a cinematic skydiving scene with customizable character and dialogue",
+  "description": {
+    "en": "Thrilling first-person perspective skydiving video with breathtaking aerial views and adrenaline rush",
+    "zh": "惊险刺激的第一人称视角跳伞视频，展现令人屏息的空中景色和肾上腺素飙升",
+    "ja": "息をのむような空中景色とアドレナリンラッシュを伴うスリリングな一人称視点スカイダイビングビデオ",
+    "ko": "숨막히는 공중 전망과 아드레날린 러시가 있는 스릴 넘치는 1인칭 시점 스카이다이빙 영상",
+    "es": "Emocionante video de paracaidismo en primera persona con vistas aéreas impresionantes y descarga de adrenalina",
+    "de": "Aufregendes Fallschirmsprung-Video aus der Erste-Person-Perspektive mit atemberaubenden Luftaufnahmen und Adrenalinschub",
+    "fr": "Vidéo de parachutisme palpitante à la première personne avec des vues aériennes à couper le souffle et une montée d'adrénaline",
+    "ar": "فيديو مثير للقفز بالمظلات من منظور الشخص الأول مع مناظر جوية خلابة واندفاع الأدرينالين"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/skydiving-adventure.mp4?v=1758008502567",
   "credits": 10,
   "tags": [
@@ -17,7 +35,7 @@
   ],
   "createdAt": "2025-01-30T15:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.580Z",
+  "lastModified": "2025-09-18T04:11:01.431Z",
   "promptTemplate": {
     "model": "veo3",
     "duration": "5s",
@@ -96,51 +114,159 @@
       "options": [
         {
           "value": "fluffy cat",
-          "label": "🐱 Fluffy Cat"
+          "label": {
+            "en": "🐱 Fluffy Cat",
+            "zh": "fluffy cat ",
+            "ja": "fluffy cat ",
+            "ko": "fluffy cat ",
+            "es": "fluffy cat ",
+            "de": "fluffy cat ",
+            "fr": "fluffy cat ",
+            "ar": "fluffy cat "
+          }
         },
         {
           "value": "golden retriever",
-          "label": "🐕 Golden Retriever"
+          "label": {
+            "en": "🐕 Golden Retriever",
+            "zh": "golden retriever ",
+            "ja": "golden retriever ",
+            "ko": "golden retriever ",
+            "es": "golden retriever ",
+            "de": "golden retriever ",
+            "fr": "golden retriever ",
+            "ar": "golden retriever "
+          }
         },
         {
           "value": "chubby hamster",
-          "label": "🐹 Chubby Hamster"
+          "label": {
+            "en": "🐹 Chubby Hamster",
+            "zh": "chubby hamster ",
+            "ja": "chubby hamster ",
+            "ko": "chubby hamster ",
+            "es": "chubby hamster ",
+            "de": "chubby hamster ",
+            "fr": "chubby hamster ",
+            "ar": "chubby hamster "
+          }
         },
         {
           "value": "white rabbit",
-          "label": "🐰 White Rabbit"
+          "label": {
+            "en": "🐰 White Rabbit",
+            "zh": "white rabbit ",
+            "ja": "white rabbit ",
+            "ko": "white rabbit ",
+            "es": "white rabbit ",
+            "de": "white rabbit ",
+            "fr": "white rabbit ",
+            "ar": "white rabbit "
+          }
         },
         {
           "value": "raccoon",
-          "label": "🦝 Raccoon"
+          "label": {
+            "en": "🦝 Raccoon",
+            "zh": "raccoon ",
+            "ja": "raccoon ",
+            "ko": "raccoon ",
+            "es": "raccoon ",
+            "de": "raccoon ",
+            "fr": "raccoon ",
+            "ar": "raccoon "
+          }
         },
         {
           "value": "corgi",
-          "label": "🐶 Corgi"
+          "label": {
+            "en": "🐶 Corgi",
+            "zh": "corgi ",
+            "ja": "corgi ",
+            "ko": "corgi ",
+            "es": "corgi ",
+            "de": "corgi ",
+            "fr": "corgi ",
+            "ar": "corgi "
+          }
         },
         {
           "value": "penguin",
-          "label": "🐧 Penguin"
+          "label": {
+            "en": "🐧 Penguin",
+            "zh": "penguin ",
+            "ja": "penguin ",
+            "ko": "penguin ",
+            "es": "penguin ",
+            "de": "penguin ",
+            "fr": "penguin ",
+            "ar": "penguin "
+          }
         },
         {
           "value": "red panda",
-          "label": "🐾 Red Panda"
+          "label": {
+            "en": "🐾 Red Panda",
+            "zh": "red panda ",
+            "ja": "red panda ",
+            "ko": "red panda ",
+            "es": "red panda ",
+            "de": "red panda ",
+            "fr": "red panda ",
+            "ar": "red panda "
+          }
         },
         {
           "value": "hedgehog",
-          "label": "🦔 Hedgehog"
+          "label": {
+            "en": "🦔 Hedgehog",
+            "zh": "hedgehog ",
+            "ja": "hedgehog ",
+            "ko": "hedgehog ",
+            "es": "hedgehog ",
+            "de": "hedgehog ",
+            "fr": "hedgehog ",
+            "ar": "hedgehog "
+          }
         },
         {
           "value": "bigfoot",
-          "label": "🦶 Bigfoot"
+          "label": {
+            "en": "🦶 Bigfoot",
+            "zh": "🦶 大脚怪",
+            "ja": "🦶 ビッグフット",
+            "ko": "🦶 빅풋",
+            "es": "🦶 Pie Grande",
+            "de": "🦶 Bigfoot",
+            "fr": "🦶 Bigfoot",
+            "ar": "🦶 بيغ فوت"
+          }
         },
         {
           "value": "yeti",
-          "label": "☃️ Yeti"
+          "label": {
+            "en": "❄️ Yeti",
+            "zh": "❄️ 雪人",
+            "ja": "❄️ イエティ",
+            "ko": "❄️ 예티",
+            "es": "❄️ Yeti",
+            "de": "❄️ Yeti",
+            "fr": "❄️ Yéti",
+            "ar": "❄️ يتي"
+          }
         },
         {
           "value": "capybara",
-          "label": "🦫 Capybara"
+          "label": {
+            "en": "🦫 Capybara",
+            "zh": "capybara ",
+            "ja": "capybara ",
+            "ko": "capybara ",
+            "es": "capybara ",
+            "de": "capybara ",
+            "fr": "capybara ",
+            "ar": "capybara "
+          }
         }
       ]
     },
@@ -152,63 +278,198 @@
       "options": [
         {
           "value": "YOLO, bitches!",
-          "label": "🤘 YOLO, bitches!"
+          "label": {
+            "en": "🤘 YOLO, bitches!",
+            "zh": "YOLO, bitches! !",
+            "ja": "YOLO, bitches! !",
+            "ko": "YOLO, bitches! !",
+            "es": "YOLO, bitches! !",
+            "de": "YOLO, bitches! !",
+            "fr": "YOLO, bitches! !",
+            "ar": "YOLO, bitches! !"
+          }
         },
         {
           "value": "This is insane!",
-          "label": "🤯 This is insane!"
+          "label": {
+            "en": "🤯 This is insane!",
+            "zh": "This is insane! !",
+            "ja": "This is insane! !",
+            "ko": "This is insane! !",
+            "es": "This is insane! !",
+            "de": "This is insane! !",
+            "fr": "This is insane! !",
+            "ar": "This is insane! !"
+          }
         },
         {
           "value": "Oh shit, I'm flying!",
-          "label": "✈️ Oh shit, I'm flying!"
+          "label": {
+            "en": "✈️ Oh shit, I'm flying!",
+            "zh": "Oh shit, I'm flying! !",
+            "ja": "Oh shit, I'm flying! !",
+            "ko": "Oh shit, I'm flying! !",
+            "es": "Oh shit, I'm flying! !",
+            "de": "Oh shit, I'm flying! !",
+            "fr": "Oh shit, I'm flying! !",
+            "ar": "Oh shit, I'm flying! !"
+          }
         },
         {
           "value": "Worth it... NOT!",
-          "label": "😅 Worth it... NOT!"
+          "label": {
+            "en": "😅 Worth it... NOT!",
+            "zh": "Worth it... NOT! !",
+            "ja": "Worth it... NOT! !",
+            "ko": "Worth it... NOT! !",
+            "es": "Worth it... NOT! !",
+            "de": "Worth it... NOT! !",
+            "fr": "Worth it... NOT! !",
+            "ar": "Worth it... NOT! !"
+          }
         },
         {
           "value": "Best day ever!",
-          "label": "🎉 Best day ever!"
+          "label": {
+            "en": "🎉 Best day ever!",
+            "zh": "Best day ever! !",
+            "ja": "Best day ever! !",
+            "ko": "Best day ever! !",
+            "es": "Best day ever! !",
+            "de": "Best day ever! !",
+            "fr": "Best day ever! !",
+            "ar": "Best day ever! !"
+          }
         },
         {
           "value": "Mom was right!",
-          "label": "👩 Mom was right!"
+          "label": {
+            "en": "👩 Mom was right!",
+            "zh": "Mom was right! !",
+            "ja": "Mom was right! !",
+            "ko": "Mom was right! !",
+            "es": "Mom was right! !",
+            "de": "Mom was right! !",
+            "fr": "Mom was right! !",
+            "ar": "Mom was right! !"
+          }
         },
         {
           "value": "Holy shit balls!",
-          "label": "😱 Holy shit balls!"
+          "label": {
+            "en": "😱 Holy shit balls!",
+            "zh": "Holy shit balls! !",
+            "ja": "Holy shit balls! !",
+            "ko": "Holy shit balls! !",
+            "es": "Holy shit balls! !",
+            "de": "Holy shit balls! !",
+            "fr": "Holy shit balls! !",
+            "ar": "Holy shit balls! !"
+          }
         },
         {
           "value": "I want my mommy!",
-          "label": "🍼 I want my mommy!"
+          "label": {
+            "en": "🍼 I want my mommy!",
+            "zh": "I want my mommy! !",
+            "ja": "I want my mommy! !",
+            "ko": "I want my mommy! !",
+            "es": "I want my mommy! !",
+            "de": "I want my mommy! !",
+            "fr": "I want my mommy! !",
+            "ar": "I want my mommy! !"
+          }
         },
         {
           "value": "Catch me if you can!",
-          "label": "😈 Catch me if you can!"
+          "label": {
+            "en": "😈 Catch me if you can!",
+            "zh": "Catch me if you can! !",
+            "ja": "Catch me if you can! !",
+            "ko": "Catch me if you can! !",
+            "es": "Catch me if you can! !",
+            "de": "Catch me if you can! !",
+            "fr": "Catch me if you can! !",
+            "ar": "Catch me if you can! !"
+          }
         },
         {
           "value": "Bad idea, BAD IDEA!",
-          "label": "🚫 Bad idea, BAD IDEA!"
+          "label": {
+            "en": "🚫 Bad idea, BAD IDEA!",
+            "zh": "Bad idea, BAD IDEA! !",
+            "ja": "Bad idea, BAD IDEA! !",
+            "ko": "Bad idea, BAD IDEA! !",
+            "es": "Bad idea, BAD IDEA! !",
+            "de": "Bad idea, BAD IDEA! !",
+            "fr": "Bad idea, BAD IDEA! !",
+            "ar": "Bad idea, BAD IDEA! !"
+          }
         },
         {
           "value": "No regrets... maybe!",
-          "label": "🤔 No regrets... maybe!"
+          "label": {
+            "en": "🤔 No regrets... maybe!",
+            "zh": "No regrets... maybe! !",
+            "ja": "No regrets... maybe! !",
+            "ko": "No regrets... maybe! !",
+            "es": "No regrets... maybe! !",
+            "de": "No regrets... maybe! !",
+            "fr": "No regrets... maybe! !",
+            "ar": "No regrets... maybe! !"
+          }
         },
         {
           "value": "Living the dream!",
-          "label": "✨ Living the dream!"
+          "label": {
+            "en": "✨ Living the dream!",
+            "zh": "Living the dream! !",
+            "ja": "Living the dream! !",
+            "ko": "Living the dream! !",
+            "es": "Living the dream! !",
+            "de": "Living the dream! !",
+            "fr": "Living the dream! !",
+            "ar": "Living the dream! !"
+          }
         },
         {
           "value": "See ya, suckers!",
-          "label": "👋 See ya, suckers!"
+          "label": {
+            "en": "👋 See ya, suckers!",
+            "zh": "See ya, suckers! !",
+            "ja": "See ya, suckers! !",
+            "ko": "See ya, suckers! !",
+            "es": "See ya, suckers! !",
+            "de": "See ya, suckers! !",
+            "fr": "See ya, suckers! !",
+            "ar": "See ya, suckers! !"
+          }
         },
         {
           "value": "Thug life chose me!",
-          "label": "😎 Thug life chose me!"
+          "label": {
+            "en": "😎 Thug life chose me!",
+            "zh": "Thug life chose me! !",
+            "ja": "Thug life chose me! !",
+            "ko": "Thug life chose me! !",
+            "es": "Thug life chose me! !",
+            "de": "Thug life chose me! !",
+            "fr": "Thug life chose me! !",
+            "ar": "Thug life chose me! !"
+          }
         },
         {
           "value": "Plot twist: I survive!",
-          "label": "🎬 Plot twist: I survive!"
+          "label": {
+            "en": "🎬 Plot twist: I survive!",
+            "zh": "Plot twist: I survive! !",
+            "ja": "Plot twist: I survive! !",
+            "ko": "Plot twist: I survive! !",
+            "es": "Plot twist: I survive! !",
+            "de": "Plot twist: I survive! !",
+            "fr": "Plot twist: I survive! !",
+            "ar": "Plot twist: I survive! !"
+          }
         }
       ]
     },
@@ -220,57 +481,174 @@
       "options": [
         {
           "value": "slowly raises its right front paw and extends its middle finger with a hint of mockery",
-          "label": "🖕 Middle Finger"
+          "label": {
+            "en": "🖕 Middle Finger",
+            "zh": "slowly raises its right front paw and extends its middle finger with a hint of mockery ",
+            "ja": "slowly raises its right front paw and extends its middle finger with a hint of mockery ",
+            "ko": "slowly raises its right front paw and extends its middle finger with a hint of mockery ",
+            "es": "slowly raises its right front paw and extends its middle finger with a hint of mockery ",
+            "de": "slowly raises its right front paw and extends its middle finger with a hint of mockery ",
+            "fr": "slowly raises its right front paw and extends its middle finger with a hint of mockery ",
+            "ar": "slowly raises its right front paw and extends its middle finger with a hint of mockery "
+          }
         },
         {
           "value": "gives an enthusiastic double thumbs up with both paws",
-          "label": "👍 Double Thumbs Up"
+          "label": {
+            "en": "👍 Double Thumbs Up",
+            "zh": "gives an enthusiastic double thumbs up with both paws ",
+            "ja": "gives an enthusiastic double thumbs up with both paws ",
+            "ko": "gives an enthusiastic double thumbs up with both paws ",
+            "es": "gives an enthusiastic double thumbs up with both paws ",
+            "de": "gives an enthusiastic double thumbs up with both paws ",
+            "fr": "gives an enthusiastic double thumbs up with both paws ",
+            "ar": "gives an enthusiastic double thumbs up with both paws "
+          }
         },
         {
           "value": "makes a peace sign with its right paw while winking",
-          "label": "✌️ Peace Sign"
+          "label": {
+            "en": "✌️ Peace Sign",
+            "zh": "makes a peace sign with its right paw while winking ",
+            "ja": "makes a peace sign with its right paw while winking ",
+            "ko": "makes a peace sign with its right paw while winking ",
+            "es": "makes a peace sign with its right paw while winking ",
+            "de": "makes a peace sign with its right paw while winking ",
+            "fr": "makes a peace sign with its right paw while winking ",
+            "ar": "makes a peace sign with its right paw while winking "
+          }
         },
         {
           "value": "waves frantically at the camera with both paws",
-          "label": "👋 Frantic Wave"
+          "label": {
+            "en": "👋 Frantic Wave",
+            "zh": "waves frantically at the camera with both paws ",
+            "ja": "waves frantically at the camera with both paws ",
+            "ko": "waves frantically at the camera with both paws ",
+            "es": "waves frantically at the camera with both paws ",
+            "de": "waves frantically at the camera with both paws ",
+            "fr": "waves frantically at the camera with both paws ",
+            "ar": "waves frantically at the camera with both paws "
+          }
         },
         {
           "value": "makes rock and roll horns with both paws",
-          "label": "🤘 Rock Horns"
+          "label": {
+            "en": "🤘 Rock Horns",
+            "zh": "makes rock and roll horns with both paws ",
+            "ja": "makes rock and roll horns with both paws ",
+            "ko": "makes rock and roll horns with both paws ",
+            "es": "makes rock and roll horns with both paws ",
+            "de": "makes rock and roll horns with both paws ",
+            "fr": "makes rock and roll horns with both paws ",
+            "ar": "makes rock and roll horns with both paws "
+          }
         },
         {
           "value": "blows a dramatic kiss to the camera",
-          "label": "😘 Blow Kiss"
+          "label": {
+            "en": "😘 Blow Kiss",
+            "zh": "blows a dramatic kiss to the camera ",
+            "ja": "blows a dramatic kiss to the camera ",
+            "ko": "blows a dramatic kiss to the camera ",
+            "es": "blows a dramatic kiss to the camera ",
+            "de": "blows a dramatic kiss to the camera ",
+            "fr": "blows a dramatic kiss to the camera ",
+            "ar": "blows a dramatic kiss to the camera "
+          }
         },
         {
           "value": "salutes military style with perfect form",
-          "label": "🫡 Military Salute"
+          "label": {
+            "en": "🫡 Military Salute",
+            "zh": "salutes military style with perfect form ",
+            "ja": "salutes military style with perfect form ",
+            "ko": "salutes military style with perfect form ",
+            "es": "salutes military style with perfect form ",
+            "de": "salutes military style with perfect form ",
+            "fr": "salutes military style with perfect form ",
+            "ar": "salutes military style with perfect form "
+          }
         },
         {
           "value": "points finger guns at the camera with both paws",
-          "label": "👉 Finger Guns"
+          "label": {
+            "en": "👉 Finger Guns",
+            "zh": "points finger guns at the camera with both paws ",
+            "ja": "points finger guns at the camera with both paws ",
+            "ko": "points finger guns at the camera with both paws ",
+            "es": "points finger guns at the camera with both paws ",
+            "de": "points finger guns at the camera with both paws ",
+            "fr": "points finger guns at the camera with both paws ",
+            "ar": "points finger guns at the camera with both paws "
+          }
         },
         {
           "value": "crosses arms defiantly over chest",
-          "label": "💪 Arms Crossed"
+          "label": {
+            "en": "💪 Arms Crossed",
+            "zh": "crosses arms defiantly over chest ",
+            "ja": "crosses arms defiantly over chest ",
+            "ko": "crosses arms defiantly over chest ",
+            "es": "crosses arms defiantly over chest ",
+            "de": "crosses arms defiantly over chest ",
+            "fr": "crosses arms defiantly over chest ",
+            "ar": "crosses arms defiantly over chest "
+          }
         },
         {
           "value": "does a dab move mid-air",
-          "label": "🕺 Dab"
+          "label": {
+            "en": "🕺 Dab",
+            "zh": "does a dab move mid-air ",
+            "ja": "does a dab move mid-air ",
+            "ko": "does a dab move mid-air ",
+            "es": "does a dab move mid-air ",
+            "de": "does a dab move mid-air ",
+            "fr": "does a dab move mid-air ",
+            "ar": "does a dab move mid-air "
+          }
         },
         {
           "value": "makes heart shape with both paws",
-          "label": "❤️ Heart Hands"
+          "label": {
+            "en": "❤️ Heart Hands",
+            "zh": "makes heart shape with both paws ",
+            "ja": "makes heart shape with both paws ",
+            "ko": "makes heart shape with both paws ",
+            "es": "makes heart shape with both paws ",
+            "de": "makes heart shape with both paws ",
+            "fr": "makes heart shape with both paws ",
+            "ar": "makes heart shape with both paws "
+          }
         },
         {
           "value": "gives a sarcastic slow clap",
-          "label": "👏 Slow Clap"
+          "label": {
+            "en": "👏 Slow Clap",
+            "zh": "gives a sarcastic slow clap ",
+            "ja": "gives a sarcastic slow clap ",
+            "ko": "gives a sarcastic slow clap ",
+            "es": "gives a sarcastic slow clap ",
+            "de": "gives a sarcastic slow clap ",
+            "fr": "gives a sarcastic slow clap ",
+            "ar": "gives a sarcastic slow clap "
+          }
         }
       ]
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

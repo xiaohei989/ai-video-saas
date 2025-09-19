@@ -1,0 +1,1094 @@
+{
+  "batch": 1,
+  "description": "第一批模板翻译 - 5个模板的完整8种语言翻译",
+  "templates": {
+    "energy-object-cutting-asmr": {
+      "name": {
+        "en": "Energy Object Cutting ASMR",
+        "zh": "能量体切割ASMR",
+        "ja": "エネルギー体カットASMR",
+        "ko": "에너지 물체 자르기 ASMR",
+        "es": "Corte de Objetos de Energía ASMR",
+        "de": "Energie-Objekt Schneiden ASMR",
+        "fr": "Découpe d'Objets Énergétiques ASMR",
+        "ar": "قطع الأجسام الطاقية ASMR"
+      },
+      "description": {
+        "en": "Ultra-detailed HD ASMR experience of cutting through various energy objects and supernatural phenomena",
+        "zh": "超高清ASMR体验，切割各种能量体和超自然现象",
+        "ja": "様々なエネルギー体と超自然現象をカットする超高解像度ASMR体験",
+        "ko": "다양한 에너지 물체와 초자연 현상을 자르는 초고화질 ASMR 경험",
+        "es": "Experiencia ASMR ultra-detallada en HD de cortar varios objetos de energía y fenómenos sobrenaturales",
+        "de": "Ultra-detaillierte HD ASMR-Erfahrung beim Schneiden verschiedener Energieobjekte und übernatürlicher Phänomene",
+        "fr": "Expérience ASMR ultra-détaillée en HD de découpe de divers objets énergétiques et phénomènes surnaturels",
+        "ar": "تجربة ASMR فائقة التفاصيل عالية الوضوح لقطع أجسام الطاقة المختلفة والظواهر الخارقة"
+      },
+      "params": {
+        "cutting_object": {
+          "label": {
+            "en": "Object to Cut",
+            "zh": "切割对象",
+            "ja": "カットする物体",
+            "ko": "자를 물체",
+            "es": "Objeto a Cortar",
+            "de": "Zu schneidendes Objekt",
+            "fr": "Objet à Découper",
+            "ar": "الكائن المراد قطعه"
+          },
+          "options": {
+            "plasma_ball": {
+              "en": "Plasma Ball 🔮",
+              "zh": "等离子球 🔮",
+              "ja": "プラズマボール 🔮",
+              "ko": "플라즈마 볼 🔮",
+              "es": "Bola de Plasma 🔮",
+              "de": "Plasmaball 🔮",
+              "fr": "Boule de Plasma 🔮",
+              "ar": "كرة البلازما 🔮"
+            },
+            "lightning_sphere": {
+              "en": "Lightning Sphere ⚡",
+              "zh": "闪电球 ⚡",
+              "ja": "ライトニングスフィア ⚡",
+              "ko": "번개 구체 ⚡",
+              "es": "Esfera de Rayos ⚡",
+              "de": "Blitzkugel ⚡",
+              "fr": "Sphère de Foudre ⚡",
+              "ar": "كرة البرق ⚡"
+            },
+            "storm_cloud": {
+              "en": "Storm Cloud ⛈️",
+              "zh": "风暴云 ⛈️",
+              "ja": "嵐雲 ⛈️",
+              "ko": "폭풍 구름 ⛈️",
+              "es": "Nube de Tormenta ⛈️",
+              "de": "Gewitterwolke ⛈️",
+              "fr": "Nuage d'Orage ⛈️",
+              "ar": "سحابة العاصفة ⛈️"
+            },
+            "nebula_cloud": {
+              "en": "Nebula Cloud 🌌",
+              "zh": "星云 🌌",
+              "ja": "星雲 🌌",
+              "ko": "성운 🌌",
+              "es": "Nube de Nebulosa 🌌",
+              "de": "Nebelwolke 🌌",
+              "fr": "Nuage de Nébuleuse 🌌",
+              "ar": "سحابة السديم 🌌"
+            },
+            "fire_orb": {
+              "en": "Fire Orb 🔥",
+              "zh": "火球 🔥",
+              "ja": "ファイアオーブ 🔥",
+              "ko": "화염 구체 🔥",
+              "es": "Orbe de Fuego 🔥",
+              "de": "Feuerkugel 🔥",
+              "fr": "Orbe de Feu 🔥",
+              "ar": "كرة النار 🔥"
+            },
+            "water_sphere": {
+              "en": "Water Sphere 💧",
+              "zh": "水球 💧",
+              "ja": "ウォータースフィア 💧",
+              "ko": "물 구체 💧",
+              "es": "Esfera de Agua 💧",
+              "de": "Wasserkugel 💧",
+              "fr": "Sphère d'Eau 💧",
+              "ar": "كرة الماء 💧"
+            },
+            "crystal_core": {
+              "en": "Crystal Core 💎",
+              "zh": "水晶核心 💎",
+              "ja": "クリスタルコア 💎",
+              "ko": "크리스탈 코어 💎",
+              "es": "Núcleo de Cristal 💎",
+              "de": "Kristallkern 💎",
+              "fr": "Noyau de Cristal 💎",
+              "ar": "نواة البلورة 💎"
+            },
+            "energy_shield": {
+              "en": "Energy Shield 🌐",
+              "zh": "能量护盾 🌐",
+              "ja": "エネルギーシールド 🌐",
+              "ko": "에너지 방패 🌐",
+              "es": "Escudo de Energía 🌐",
+              "de": "Energieschild 🌐",
+              "fr": "Bouclier d'Énergie 🌐",
+              "ar": "درع الطاقة 🌐"
+            },
+            "antimatter_orb": {
+              "en": "Antimatter Orb 🛸",
+              "zh": "反物质球 🛸",
+              "ja": "反物質オーブ 🛸",
+              "ko": "반물질 구체 🛸",
+              "es": "Orbe de Antimateria 🛸",
+              "de": "Antimaterie-Kugel 🛸",
+              "fr": "Orbe d'Antimatière 🛸",
+              "ar": "كرة المادة المضادة 🛸"
+            },
+            "black_hole": {
+              "en": "Black Hole 🕳️",
+              "zh": "黑洞 🕳️",
+              "ja": "ブラックホール 🕳️",
+              "ko": "블랙홀 🕳️",
+              "es": "Agujero Negro 🕳️",
+              "de": "Schwarzes Loch 🕳️",
+              "fr": "Trou Noir 🕳️",
+              "ar": "الثقب الأسود 🕳️"
+            },
+            "tornado": {
+              "en": "Tornado 🌪️",
+              "zh": "龙卷风 🌪️",
+              "ja": "トルネード 🌪️",
+              "ko": "토네이도 🌪️",
+              "es": "Tornado 🌪️",
+              "de": "Tornado 🌪️",
+              "fr": "Tornade 🌪️",
+              "ar": "الإعصار 🌪️"
+            },
+            "aurora_field": {
+              "en": "Aurora Field 🌅",
+              "zh": "极光场 🌅",
+              "ja": "オーロラフィールド 🌅",
+              "ko": "오로라 필드 🌅",
+              "es": "Campo de Aurora 🌅",
+              "de": "Aurorafeld 🌅",
+              "fr": "Champ d'Aurore 🌅",
+              "ar": "حقل الشفق 🌅"
+            }
+          }
+        },
+        "cutting_surface": {
+          "label": {
+            "en": "Cutting Surface",
+            "zh": "切割台面",
+            "ja": "カッティング面",
+            "ko": "자르기 표면",
+            "es": "Superficie de Corte",
+            "de": "Schnittfläche",
+            "fr": "Surface de Découpe",
+            "ar": "سطح القطع"
+          },
+          "options": {
+            "wooden_cutting_board": {
+              "en": "Wooden Cutting Board",
+              "zh": "木质砧板",
+              "ja": "木製まな板",
+              "ko": "나무 도마",
+              "es": "Tabla de Cortar de Madera",
+              "de": "Holzschneidebrett",
+              "fr": "Planche à Découper en Bois",
+              "ar": "لوح تقطيع خشبي"
+            },
+            "marble_countertop": {
+              "en": "Marble Countertop",
+              "zh": "大理石台面",
+              "ja": "大理石カウンタートップ",
+              "ko": "대리석 조리대",
+              "es": "Encimera de Mármol",
+              "de": "Marmor-Arbeitsplatte",
+              "fr": "Plan de Travail en Marbre",
+              "ar": "سطح عمل رخامي"
+            },
+            "glass_surface": {
+              "en": "Glass Surface",
+              "zh": "玻璃表面",
+              "ja": "ガラス面",
+              "ko": "유리 표면",
+              "es": "Superficie de Vidrio",
+              "de": "Glasfläche",
+              "fr": "Surface en Verre",
+              "ar": "سطح زجاجي"
+            },
+            "metal_platform": {
+              "en": "Metal Platform",
+              "zh": "金属平台",
+              "ja": "金属プラットフォーム",
+              "ko": "금속 플랫폼",
+              "es": "Plataforma Metálica",
+              "de": "Metallplattform",
+              "fr": "Plateforme Métallique",
+              "ar": "منصة معدنية"
+            },
+            "stone_slate": {
+              "en": "Stone Slate",
+              "zh": "石板",
+              "ja": "石のスレート",
+              "ko": "돌 판",
+              "es": "Pizarra de Piedra",
+              "de": "Steinplatte",
+              "fr": "Ardoise de Pierre",
+              "ar": "لوح حجري"
+            }
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "finger-touch-activation": {
+      "name": {
+        "en": "Finger Touch Book Magic",
+        "zh": "手指触碰书本魔法",
+        "ja": "指タッチブック魔法",
+        "ko": "손가락 터치 책 마법",
+        "es": "Magia de Libro con Toque de Dedo",
+        "de": "Finger-Berührung Buch-Magie",
+        "fr": "Magie de Livre au Toucher du Doigt",
+        "ar": "سحر كتاب بلمسة الإصبع"
+      },
+      "description": {
+        "en": "Touch an illustration in a book to bring it to life with spectacular magical effects",
+        "zh": "触碰书中的插图，通过壮观的魔法效果让它栩栩如生",
+        "ja": "本の挿絵に触れると、壮大な魔法効果で命を吹き込まれる",
+        "ko": "책의 삽화를 터치하여 장대한 마법 효과로 생명을 불어넣기",
+        "es": "Toca una ilustración en un libro para darle vida con efectos mágicos espectaculares",
+        "de": "Berühren Sie eine Illustration in einem Buch, um sie mit spektakulären magischen Effekten zum Leben zu erwecken",
+        "fr": "Touchez une illustration dans un livre pour lui donner vie avec des effets magiques spectaculaires",
+        "ar": "المس رسمة في كتاب لإحيائها بتأثيرات سحرية مذهلة"
+      },
+      "params": {
+        "subject": {
+          "label": {
+            "en": "Choose Subject to Activate",
+            "zh": "选择要激活的对象",
+            "ja": "アクティベートする対象を選択",
+            "ko": "활성화할 대상 선택",
+            "es": "Elegir Sujeto a Activar",
+            "de": "Zu aktivierendes Objekt wählen",
+            "fr": "Choisir le Sujet à Activer",
+            "ar": "اختر الموضوع المراد تنشيطه"
+          },
+          "options": {
+            "dragon_egg": {
+              "en": "🥚 Dragon Egg",
+              "zh": "🥚 龙蛋",
+              "ja": "🥚 ドラゴンの卵",
+              "ko": "🥚 드래곤 알",
+              "es": "🥚 Huevo de Dragón",
+              "de": "🥚 Drachenei",
+              "fr": "🥚 Œuf de Dragon",
+              "ar": "🥚 بيضة التنين"
+            },
+            "butterfly": {
+              "en": "🦋 Butterfly",
+              "zh": "🦋 蝴蝶",
+              "ja": "🦋 蝶",
+              "ko": "🦋 나비",
+              "es": "🦋 Mariposa",
+              "de": "🦋 Schmetterling",
+              "fr": "🦋 Papillon",
+              "ar": "🦋 فراشة"
+            },
+            "octopus": {
+              "en": "🐙 Octopus",
+              "zh": "🐙 章鱼",
+              "ja": "🐙 タコ",
+              "ko": "🐙 문어",
+              "es": "🐙 Pulpo",
+              "de": "🐙 Tintenfisch",
+              "fr": "🐙 Poulpe",
+              "ar": "🐙 أخطبوط"
+            },
+            "phoenix_feather": {
+              "en": "🔥 Phoenix Feather",
+              "zh": "🔥 凤凰羽毛",
+              "ja": "🔥 フェニックスの羽",
+              "ko": "🔥 불사조 깃털",
+              "es": "🔥 Pluma de Fénix",
+              "de": "🔥 Phönix-Feder",
+              "fr": "🔥 Plume de Phénix",
+              "ar": "🔥 ريشة العنقاء"
+            },
+            "hummingbird": {
+              "en": "🐦 Hummingbird",
+              "zh": "🐦 蜂鸟",
+              "ja": "🐦 ハチドリ",
+              "ko": "🐦 벌새",
+              "es": "🐦 Colibrí",
+              "de": "🐦 Kolibri",
+              "fr": "🐦 Colibri",
+              "ar": "🐦 طائر الطنان"
+            },
+            "campfire": {
+              "en": "🔥 Campfire",
+              "zh": "🔥 篝火",
+              "ja": "🔥 キャンプファイア",
+              "ko": "🔥 캠프파이어",
+              "es": "🔥 Fogata",
+              "de": "🔥 Lagerfeuer",
+              "fr": "🔥 Feu de Camp",
+              "ar": "🔥 نار المخيم"
+            },
+            "cabin": {
+              "en": "🏠 Cabin",
+              "zh": "🏠 小屋",
+              "ja": "🏠 小屋",
+              "ko": "🏠 오두막",
+              "es": "🏠 Cabaña",
+              "de": "🏠 Hütte",
+              "fr": "🏠 Cabane",
+              "ar": "🏠 كوخ"
+            },
+            "gold_coins": {
+              "en": "🪙 Gold Coins",
+              "zh": "🪙 金币",
+              "ja": "🪙 金貨",
+              "ko": "🪙 금화",
+              "es": "🪙 Monedas de Oro",
+              "de": "🪙 Goldmünzen",
+              "fr": "🪙 Pièces d'Or",
+              "ar": "🪙 عملات ذهبية"
+            },
+            "gemstone": {
+              "en": "💎 Magic Gemstone",
+              "zh": "💎 魔法宝石",
+              "ja": "💎 魔法の宝石",
+              "ko": "💎 마법 보석",
+              "es": "💎 Gema Mágica",
+              "de": "💎 Magischer Edelstein",
+              "fr": "💎 Pierre Précieuse Magique",
+              "ar": "💎 حجر كريم سحري"
+            },
+            "seed_bloom": {
+              "en": "🌱 Blooming Seed",
+              "zh": "🌱 开花种子",
+              "ja": "🌱 開花する種",
+              "ko": "🌱 피어나는 씨앗",
+              "es": "🌱 Semilla Floreciente",
+              "de": "🌱 Blühender Samen",
+              "fr": "🌱 Graine qui Fleurit",
+              "ar": "🌱 بذرة متفتحة"
+            },
+            "portal": {
+              "en": "🌀 Time Portal",
+              "zh": "🌀 时间传送门",
+              "ja": "🌀 時のポータル",
+              "ko": "🌀 시간 포털",
+              "es": "🌀 Portal del Tiempo",
+              "de": "🌀 Zeitportal",
+              "fr": "🌀 Portail Temporel",
+              "ar": "🌀 بوابة الزمن"
+            },
+            "tornado": {
+              "en": "🌪️ Tornado",
+              "zh": "🌪️ 龙卷风",
+              "ja": "🌪️ 竜巻",
+              "ko": "🌪️ 토네이도",
+              "es": "🌪️ Tornado",
+              "de": "🌪️ Tornado",
+              "fr": "🌪️ Tornade",
+              "ar": "🌪️ إعصار"
+            }
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "surveillance-animal-encounter": {
+      "name": {
+        "en": "Surveillance Animal Encounter",
+        "zh": "监控动物偶遇",
+        "ja": "監視カメラ動物遭遇",
+        "ko": "감시 카메라 동물 조우",
+        "es": "Encuentro Animal de Vigilancia",
+        "de": "Überwachungs-Tier-Begegnung",
+        "fr": "Rencontre Animale de Surveillance",
+        "ar": "لقاء حيوان المراقبة"
+      },
+      "description": {
+        "en": "Security camera footage of unexpected animal encounters in urban environments",
+        "zh": "城市环境中意外动物遭遇的安防摄像头画面",
+        "ja": "都市環境での予期しない動物との遭遇を撮影した防犯カメラ映像",
+        "ko": "도시 환경에서 예상치 못한 동물 조우의 보안 카메라 영상",
+        "es": "Grabaciones de cámaras de seguridad de encuentros inesperados con animales en entornos urbanos",
+        "de": "Überwachungskamera-Aufnahmen von unerwarteten Tierbegegnungen in städtischen Umgebungen",
+        "fr": "Images de caméras de sécurité de rencontres inattendues avec des animaux dans des environnements urbains",
+        "ar": "لقطات كاميرا أمنية للقاءات حيوانية غير متوقعة في البيئات الحضرية"
+      },
+      "params": {
+        "animal": {
+          "label": {
+            "en": "Animal Type",
+            "zh": "动物类型",
+            "ja": "動物の種類",
+            "ko": "동물 종류",
+            "es": "Tipo de Animal",
+            "de": "Tierart",
+            "fr": "Type d'Animal",
+            "ar": "نوع الحيوان"
+          }
+        },
+        "location": {
+          "label": {
+            "en": "Location",
+            "zh": "地点",
+            "ja": "場所",
+            "ko": "위치",
+            "es": "Ubicación",
+            "de": "Standort",
+            "fr": "Lieu",
+            "ar": "الموقع"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "miniature-animals-surprise": {
+      "name": {
+        "en": "Miniature Animals Surprise Box",
+        "zh": "微型动物惊喜盒",
+        "ja": "ミニチュア動物サプライズボックス",
+        "ko": "미니어처 동물 서프라이즈 박스",
+        "es": "Caja Sorpresa de Animales en Miniatura",
+        "de": "Miniatur-Tiere Überraschungsbox",
+        "fr": "Boîte Surprise d'Animaux Miniatures",
+        "ar": "صندوق مفاجأة الحيوانات المصغرة"
+      },
+      "description": {
+        "en": "Hyper-realistic miniature animals hidden in unexpected containers, revealing surprise moments when doors open",
+        "zh": "隐藏在意想不到容器中的超逼真微型动物，开门时展现惊喜时刻",
+        "ja": "予期しないコンテナに隠された超リアルなミニチュア動物が、扉を開けるときにサプライズの瞬間を明かす",
+        "ko": "예상치 못한 용기에 숨겨진 초현실적인 미니어처 동물들이 문을 열 때 놀라운 순간을 드러냄",
+        "es": "Animales en miniatura hiperrealistas escondidos en contenedores inesperados, revelando momentos sorpresa cuando se abren las puertas",
+        "de": "Hyperrealistische Miniatur-Tiere, die in unerwarteten Behältern versteckt sind und überraschende Momente offenbaren, wenn sich die Türen öffnen",
+        "fr": "Animaux miniatures hyperréalistes cachés dans des contenants inattendus, révélant des moments de surprise à l'ouverture des portes",
+        "ar": "حيوانات مصغرة فائقة الواقعية مخفية في حاويات غير متوقعة، تكشف لحظات مفاجئة عند فتح الأبواب"
+      },
+      "params": {
+        "animal_type": {
+          "label": {
+            "en": "Animal Type",
+            "zh": "动物类型",
+            "ja": "動物の種類",
+            "ko": "동물 종류",
+            "es": "Tipo de Animal",
+            "de": "Tierart",
+            "fr": "Type d'Animal",
+            "ar": "نوع الحيوان"
+          },
+          "options": {
+            "baby_giraffes": {
+              "en": "Baby Giraffes 🦒",
+              "zh": "小长颈鹿 🦒",
+              "ja": "子キリン 🦒",
+              "ko": "아기 기린 🦒",
+              "es": "Jirafas Bebé 🦒",
+              "de": "Baby-Giraffen 🦒",
+              "fr": "Bébés Girafes 🦒",
+              "ar": "صغار الزرافة 🦒"
+            },
+            "baby_elephants": {
+              "en": "Baby Elephants 🐘",
+              "zh": "小象 🐘",
+              "ja": "子ゾウ 🐘",
+              "ko": "아기 코끼리 🐘",
+              "es": "Elefantes Bebé 🐘",
+              "de": "Baby-Elefanten 🐘",
+              "fr": "Bébés Éléphants 🐘",
+              "ar": "صغار الفيل 🐘"
+            },
+            "baby_pandas": {
+              "en": "Baby Pandas 🐼",
+              "zh": "小熊猫 🐼",
+              "ja": "子パンダ 🐼",
+              "ko": "아기 판다 🐼",
+              "es": "Pandas Bebé 🐼",
+              "de": "Baby-Pandas 🐼",
+              "fr": "Bébés Pandas 🐼",
+              "ar": "صغار الباندا 🐼"
+            },
+            "baby_lions": {
+              "en": "Baby Lions 🦁",
+              "zh": "小狮子 🦁",
+              "ja": "子ライオン 🦁",
+              "ko": "아기 사자 🦁",
+              "es": "Leones Bebé 🦁",
+              "de": "Baby-Löwen 🦁",
+              "fr": "Bébés Lions 🦁",
+              "ar": "صغار الأسد 🦁"
+            },
+            "baby_dragons": {
+              "en": "Baby Dragons 🐉",
+              "zh": "小龙 🐉",
+              "ja": "子ドラゴン 🐉",
+              "ko": "아기 용 🐉",
+              "es": "Dragones Bebé 🐉",
+              "de": "Baby-Drachen 🐉",
+              "fr": "Bébés Dragons 🐉",
+              "ar": "صغار التنين 🐉"
+            },
+            "baby_phoenixes": {
+              "en": "Baby Phoenixes 🔥",
+              "zh": "小凤凰 🔥",
+              "ja": "子フェニックス 🔥",
+              "ko": "아기 불사조 🔥",
+              "es": "Fénix Bebé 🔥",
+              "de": "Baby-Phönixe 🔥",
+              "fr": "Bébés Phénix 🔥",
+              "ar": "صغار العنقاء 🔥"
+            },
+            "baby_unicorns": {
+              "en": "Baby Unicorns 🦄",
+              "zh": "小独角兽 🦄",
+              "ja": "子ユニコーン 🦄",
+              "ko": "아기 유니콘 🦄",
+              "es": "Unicornios Bebé 🦄",
+              "de": "Baby-Einhörner 🦄",
+              "fr": "Bébés Licornes 🦄",
+              "ar": "صغار وحيد القرن 🦄"
+            },
+            "baby_griffins": {
+              "en": "Baby Griffins 🦅",
+              "zh": "小狮鹫 🦅",
+              "ja": "子グリフィン 🦅",
+              "ko": "아기 그리폰 🦅",
+              "es": "Grifos Bebé 🦅",
+              "de": "Baby-Greifen 🦅",
+              "fr": "Bébés Griffons 🦅",
+              "ar": "صغار الغريفين 🦅"
+            },
+            "baby_pegasus": {
+              "en": "Baby Pegasus ✨",
+              "zh": "小飞马 ✨",
+              "ja": "子ペガサス ✨",
+              "ko": "아기 페가수스 ✨",
+              "es": "Pegaso Bebé ✨",
+              "de": "Baby-Pegasus ✨",
+              "fr": "Bébé Pégase ✨",
+              "ar": "صغير الحصان المجنح ✨"
+            },
+            "baby_nine_tailed_foxes": {
+              "en": "Baby Nine-tailed Foxes 🦊",
+              "zh": "小九尾狐 🦊",
+              "ja": "子九尾狐 🦊",
+              "ko": "아기 구미호 🦊",
+              "es": "Zorros de Nueve Colas Bebé 🦊",
+              "de": "Baby-Neunschweiffüchse 🦊",
+              "fr": "Bébés Renards à Neuf Queues 🦊",
+              "ar": "صغار الثعلب ذو التسعة ذيول 🦊"
+            },
+            "baby_zebras": {
+              "en": "Baby Zebras 🦓",
+              "zh": "小斑马 🦓",
+              "ja": "子シマウマ 🦓",
+              "ko": "아기 얼룩말 🦓",
+              "es": "Cebras Bebé 🦓",
+              "de": "Baby-Zebras 🦓",
+              "fr": "Bébés Zèbres 🦓",
+              "ar": "صغار الحمار الوحشي 🦓"
+            },
+            "baby_koalas": {
+              "en": "Baby Koalas 🐨",
+              "zh": "小考拉 🐨",
+              "ja": "子コアラ 🐨",
+              "ko": "아기 코알라 🐨",
+              "es": "Koalas Bebé 🐨",
+              "de": "Baby-Koalas 🐨",
+              "fr": "Bébés Koalas 🐨",
+              "ar": "صغار الكوالا 🐨"
+            },
+            "baby_penguins": {
+              "en": "Baby Penguins 🐧",
+              "zh": "小企鹅 🐧",
+              "ja": "子ペンギン 🐧",
+              "ko": "아기 펭귄 🐧",
+              "es": "Pingüinos Bebé 🐧",
+              "de": "Baby-Pinguine 🐧",
+              "fr": "Bébés Pingouins 🐧",
+              "ar": "صغار البطريق 🐧"
+            },
+            "baby_owls": {
+              "en": "Baby Owls 🦉",
+              "zh": "小猫头鹰 🦉",
+              "ja": "子フクロウ 🦉",
+              "ko": "아기 올빼미 🦉",
+              "es": "Búhos Bebé 🦉",
+              "de": "Baby-Eulen 🦉",
+              "fr": "Bébés Hiboux 🦉",
+              "ar": "صغار البومة 🦉"
+            },
+            "baby_cerberus_puppies": {
+              "en": "Baby Cerberus Puppies 🐺",
+              "zh": "小地狱犬幼崽 🐺",
+              "ja": "子ケルベロス 🐺",
+              "ko": "아기 케르베로스 🐺",
+              "es": "Cachorros de Cerbero Bebé 🐺",
+              "de": "Baby-Zerberus-Welpen 🐺",
+              "fr": "Bébés Chiots Cerbère 🐺",
+              "ar": "صغار كلب الجحيم 🐺"
+            },
+            "baby_hippogriffs": {
+              "en": "Baby Hippogriffs 🦋",
+              "zh": "小鹰头马身兽 🦋",
+              "ja": "子ヒッポグリフ 🦋",
+              "ko": "아기 히포그리프 🦋",
+              "es": "Hipogrifos Bebé 🦋",
+              "de": "Baby-Hippogreife 🦋",
+              "fr": "Bébés Hippogriffes 🦋",
+              "ar": "صغار الهيبوغريف 🦋"
+            },
+            "baby_qilins": {
+              "en": "Baby Qilins 🦌",
+              "zh": "小麒麟 🦌",
+              "ja": "子麒麟 🦌",
+              "ko": "아기 기린 🦌",
+              "es": "Qilins Bebé 🦌",
+              "de": "Baby-Qilins 🦌",
+              "fr": "Bébés Qilins 🦌",
+              "ar": "صغار التشيلين 🦌"
+            },
+            "baby_white_tigers": {
+              "en": "Baby White Tigers 🐅",
+              "zh": "小白虎 🐅",
+              "ja": "子白虎 🐅",
+              "ko": "아기 백호 🐅",
+              "es": "Tigres Blancos Bebé 🐅",
+              "de": "Baby-Weiße Tiger 🐅",
+              "fr": "Bébés Tigres Blancs 🐅",
+              "ar": "صغار النمر الأبيض 🐅"
+            }
+          }
+        },
+        "animal_count": {
+          "label": {
+            "en": "Animal Count",
+            "zh": "动物数量",
+            "ja": "動物の数",
+            "ko": "동물 수",
+            "es": "Cantidad de Animales",
+            "de": "Anzahl der Tiere",
+            "fr": "Nombre d'Animaux",
+            "ar": "عدد الحيوانات"
+          },
+          "options": {
+            "one": {
+              "en": "One",
+              "zh": "一只",
+              "ja": "一匹",
+              "ko": "한 마리",
+              "es": "Uno",
+              "de": "Eins",
+              "fr": "Un",
+              "ar": "واحد"
+            },
+            "two": {
+              "en": "Two",
+              "zh": "两只",
+              "ja": "二匹",
+              "ko": "두 마리",
+              "es": "Dos",
+              "de": "Zwei",
+              "fr": "Deux",
+              "ar": "اثنان"
+            },
+            "three": {
+              "en": "Three",
+              "zh": "三只",
+              "ja": "三匹",
+              "ko": "세 마리",
+              "es": "Tres",
+              "de": "Drei",
+              "fr": "Trois",
+              "ar": "ثلاثة"
+            },
+            "a_family_of_four": {
+              "en": "A Family of Four",
+              "zh": "四口之家",
+              "ja": "四匹家族",
+              "ko": "네 마리 가족",
+              "es": "Una Familia de Cuatro",
+              "de": "Eine Familie von Vier",
+              "fr": "Une Famille de Quatre",
+              "ar": "أسرة من أربعة"
+            }
+          }
+        },
+        "container_type": {
+          "label": {
+            "en": "Container Type",
+            "zh": "容器类型",
+            "ja": "コンテナの種類",
+            "ko": "용기 종류",
+            "es": "Tipo de Contenedor",
+            "de": "Behältertyp",
+            "fr": "Type de Conteneur",
+            "ar": "نوع الحاوية"
+          },
+          "options": {
+            "birdhouse": {
+              "en": "Birdhouse 🏠",
+              "zh": "鸟舍 🏠",
+              "ja": "鳥小屋 🏠",
+              "ko": "새집 🏠",
+              "es": "Casa de Pájaros 🏠",
+              "de": "Vogelhaus 🏠",
+              "fr": "Nichoir 🏠",
+              "ar": "بيت الطيور 🏠"
+            },
+            "vintage_mailbox": {
+              "en": "Vintage Mailbox 📮",
+              "zh": "复古邮箱 📮",
+              "ja": "ヴィンテージメールボックス 📮",
+              "ko": "빈티지 우편함 📮",
+              "es": "Buzón Vintage 📮",
+              "de": "Vintage-Briefkasten 📮",
+              "fr": "Boîte aux Lettres Vintage 📮",
+              "ar": "صندوق بريد عتيق 📮"
+            },
+            "large_flower_pot": {
+              "en": "Large Flower Pot 🪴",
+              "zh": "大花盆 🪴",
+              "ja": "大きな植木鉢 🪴",
+              "ko": "큰 화분 🪴",
+              "es": "Maceta Grande 🪴",
+              "de": "Großer Blumentopf 🪴",
+              "fr": "Grand Pot de Fleurs 🪴",
+              "ar": "إناء زهور كبير 🪴"
+            },
+            "antique_teacup": {
+              "en": "Antique Teacup ☕",
+              "zh": "古董茶杯 ☕",
+              "ja": "アンティークティーカップ ☕",
+              "ko": "골동품 찻잔 ☕",
+              "es": "Taza de Té Antigua ☕",
+              "de": "Antike Teetasse ☕",
+              "fr": "Tasse à Thé Antique ☕",
+              "ar": "كوب شاي عتيق ☕"
+            },
+            "old_shoebox": {
+              "en": "Old Shoebox 📦",
+              "zh": "旧鞋盒 📦",
+              "ja": "古い靴箱 📦",
+              "ko": "오래된 신발상자 📦",
+              "es": "Caja de Zapatos Vieja 📦",
+              "de": "Alter Schuhkarton 📦",
+              "fr": "Vieille Boîte à Chaussures 📦",
+              "ar": "علبة أحذية قديمة 📦"
+            },
+            "tree_hollow": {
+              "en": "Tree Hollow 🌳",
+              "zh": "树洞 🌳",
+              "ja": "木の洞 🌳",
+              "ko": "나무 구멍 🌳",
+              "es": "Hueco de Árbol 🌳",
+              "de": "Baumhöhle 🌳",
+              "fr": "Creux d'Arbre 🌳",
+              "ar": "تجويف الشجرة 🌳"
+            },
+            "miniature_castle": {
+              "en": "Miniature Castle 🏰",
+              "zh": "微型城堡 🏰",
+              "ja": "ミニチュア城 🏰",
+              "ko": "미니어처 성 🏰",
+              "es": "Castillo en Miniatura 🏰",
+              "de": "Miniatur-Schloss 🏰",
+              "fr": "Château Miniature 🏰",
+              "ar": "قلعة مصغرة 🏰"
+            },
+            "glass_terrarium": {
+              "en": "Glass Terrarium 🔮",
+              "zh": "玻璃生态箱 🔮",
+              "ja": "ガラステラリウム 🔮",
+              "ko": "유리 테라리움 🔮",
+              "es": "Terrario de Vidrio 🔮",
+              "de": "Glas-Terrarium 🔮",
+              "fr": "Terrarium en Verre 🔮",
+              "ar": "حوض زجاجي 🔮"
+            },
+            "ancient_treasure_chest": {
+              "en": "Ancient Treasure Chest 💎",
+              "zh": "古代宝箱 💎",
+              "ja": "古代の宝箱 💎",
+              "ko": "고대 보물상자 💎",
+              "es": "Cofre del Tesoro Antiguo 💎",
+              "de": "Antike Schatztruhe 💎",
+              "fr": "Coffre au Trésor Ancien 💎",
+              "ar": "صندوق كنز قديم 💎"
+            },
+            "mushroom_house": {
+              "en": "Mushroom House 🍄",
+              "zh": "蘑菇屋 🍄",
+              "ja": "キノコの家 🍄",
+              "ko": "버섯집 🍄",
+              "es": "Casa de Hongo 🍄",
+              "de": "Pilzhaus 🍄",
+              "fr": "Maison Champignon 🍄",
+              "ar": "بيت الفطر 🍄"
+            }
+          }
+        },
+        "animal_action": {
+          "label": {
+            "en": "Animal Action",
+            "zh": "动物行为",
+            "ja": "動物の行動",
+            "ko": "동물 행동",
+            "es": "Acción del Animal",
+            "de": "Tierverhalten",
+            "fr": "Action de l'Animal",
+            "ar": "حركة الحيوان"
+          },
+          "options": {
+            "alert_and_waiting_yawning": {
+              "en": "Alert and Waiting, Yawning",
+              "zh": "警觉等待，打哈欠",
+              "ja": "警戒して待機、あくび",
+              "ko": "경계하며 대기, 하품",
+              "es": "Alerta y Esperando, Bostezando",
+              "de": "Aufmerksam und Wartend, Gähnend",
+              "fr": "Alerte et Attendant, Bâillant",
+              "ar": "متيقظ ومنتظر، يتثاءب"
+            },
+            "sleeping_peacefully_waking_up": {
+              "en": "Sleeping Peacefully, Waking Up",
+              "zh": "安静睡觉，慢慢醒来",
+              "ja": "平和に眠って、目覚める",
+              "ko": "평화롭게 잠들어 있다가 깨어남",
+              "es": "Durmiendo Pacíficamente, Despertando",
+              "de": "Friedlich Schlafend, Aufwachend",
+              "fr": "Dormant Paisiblement, Se Réveillant",
+              "ar": "نائم بسلام، يستيقظ"
+            },
+            "looking_curiously_at_camera": {
+              "en": "Looking Curiously at Camera",
+              "zh": "好奇地看着镜头",
+              "ja": "カメラを好奇心いっぱいに見る",
+              "ko": "호기심어린 눈으로 카메라 바라보기",
+              "es": "Mirando Curiosamente a la Cámara",
+              "de": "Neugierig in die Kamera Schauen",
+              "fr": "Regardant Curieusement la Caméra",
+              "ar": "ينظر بفضول إلى الكاميرا"
+            },
+            "playing_with_each_other": {
+              "en": "Playing with Each Other",
+              "zh": "彼此玩耍",
+              "ja": "お互いに遊ぶ",
+              "ko": "서로 놀기",
+              "es": "Jugando Entre Ellos",
+              "de": "Miteinander Spielen",
+              "fr": "Jouant Ensemble",
+              "ar": "يلعبون مع بعضهم البعض"
+            },
+            "eating_from_tiny_bowls": {
+              "en": "Eating from Tiny Bowls",
+              "zh": "从小碗里吃东西",
+              "ja": "小さなボウルから食べる",
+              "ko": "작은 그릇에서 먹기",
+              "es": "Comiendo de Tazones Pequeños",
+              "de": "Aus Winzigen Schüsseln Essen",
+              "fr": "Mangeant dans de Petits Bols",
+              "ar": "يأكل من أوعية صغيرة"
+            },
+            "standing_up_excitedly_when_door_opens": {
+              "en": "Standing Up Excitedly When Door Opens",
+              "zh": "开门时兴奋地站起来",
+              "ja": "ドアが開くと興奮して立ち上がる",
+              "ko": "문이 열리면 흥분해서 일어서기",
+              "es": "Levantándose Emocionados Cuando se Abre la Puerta",
+              "de": "Aufgeregt Aufstehen Wenn die Tür Öffnet",
+              "fr": "Se Levant Avec Excitation Quand la Porte S'ouvre",
+              "ar": "يقف بحماس عند فتح الباب"
+            },
+            "practicing_tiny_roars_or_chirps": {
+              "en": "Practicing Tiny Roars or Chirps",
+              "zh": "练习小小的咆哮或啁啾声",
+              "ja": "小さな吠え声や鳴き声を練習する",
+              "ko": "작은 포효나 지저귐 연습하기",
+              "es": "Practicando Rugidos o Chirridos Pequeños",
+              "de": "Winzige Brüllen oder Zwitschern Üben",
+              "fr": "Pratiquant de Petits Rugissements ou Gazouillis",
+              "ar": "يمارس الزئير الصغير أو التغريد"
+            },
+            "reading_tiny_magical_books": {
+              "en": "Reading Tiny Magical Books",
+              "zh": "阅读小小的魔法书",
+              "ja": "小さな魔法の本を読む",
+              "ko": "작은 마법책 읽기",
+              "es": "Leyendo Libros Mágicos Pequeños",
+              "de": "Winzige Magische Bücher Lesen",
+              "fr": "Lisant de Petits Livres Magiques",
+              "ar": "يقرأ كتب سحرية صغيرة"
+            }
+          }
+        },
+        "environment": {
+          "label": {
+            "en": "Environment Scene",
+            "zh": "环境场景",
+            "ja": "環境シーン",
+            "ko": "환경 장면",
+            "es": "Escena del Entorno",
+            "de": "Umgebungsszene",
+            "fr": "Scène d'Environnement",
+            "ar": "مشهد البيئة"
+          },
+          "options": {
+            "open_field_with_lush_green_grass_and_blue_sky": {
+              "en": "Open Field with Green Grass and Blue Sky",
+              "zh": "青草绿地蓝天开阔田野",
+              "ja": "緑の草と青空の開けた野原",
+              "ko": "푸른 잔디와 파란 하늘의 열린 들판",
+              "es": "Campo Abierto con Hierba Verde y Cielo Azul",
+              "de": "Offenes Feld mit Grünem Gras und Blauem Himmel",
+              "fr": "Champ Ouvert avec Herbe Verte et Ciel Bleu",
+              "ar": "حقل مفتوح بعشب أخضر وسماء زرقاء"
+            },
+            "blooming_garden_with_colorful_flowers": {
+              "en": "Blooming Garden with Colorful Flowers",
+              "zh": "色彩缤纷的花园",
+              "ja": "カラフルな花の咲く庭",
+              "ko": "화려한 꽃이 피는 정원",
+              "es": "Jardín Floreciente con Flores Coloridas",
+              "de": "Blühender Garten mit Bunten Blumen",
+              "fr": "Jardin Fleuri avec Fleurs Colorées",
+              "ar": "حديقة مزهرة بأزهار ملونة"
+            },
+            "peaceful_forest_clearing_with_dappled_sunlight": {
+              "en": "Peaceful Forest Clearing with Dappled Sunlight",
+              "zh": "斑驳阳光的宁静森林空地",
+              "ja": "木漏れ日の差す平和な森の空き地",
+              "ko": "얼룩진 햇빛이 드는 평화로운 숲 공터",
+              "es": "Claro de Bosque Pacífico con Luz Solar Moteada",
+              "de": "Friedliche Waldlichtung mit Gesprenkeltem Sonnenlicht",
+              "fr": "Clairière Forestière Paisible avec Lumière Tachetée",
+              "ar": "منطقة غابة هادئة بأشعة شمس متقطعة"
+            },
+            "cozy_backyard_with_wooden_fence": {
+              "en": "Cozy Backyard with Wooden Fence",
+              "zh": "带木栅栏的温馨后院",
+              "ja": "木製フェンスのある居心地の良い裏庭",
+              "ko": "나무 울타리가 있는 아늑한 뒷마당",
+              "es": "Patio Trasero Acogedor con Cerca de Madera",
+              "de": "Gemütlicher Hinterhof mit Holzzaun",
+              "fr": "Cour Arrière Confortable avec Clôture en Bois",
+              "ar": "فناء خلفي مريح بسياج خشبي"
+            },
+            "magical_garden_with_floating_lights_and_mystical_fog": {
+              "en": "Magical Garden with Floating Lights and Mystical Fog",
+              "zh": "有浮动灯光和神秘雾气的魔法花园",
+              "ja": "浮遊する光と神秘的な霧のある魔法の庭",
+              "ko": "떠다니는 빛과 신비한 안개가 있는 마법 정원",
+              "es": "Jardín Mágico con Luces Flotantes y Niebla Mística",
+              "de": "Magischer Garten mit Schwebenden Lichtern und Mystischem Nebel",
+              "fr": "Jardin Magique avec Lumières Flottantes et Brouillard Mystique",
+              "ar": "حديقة سحرية بأضواء عائمة وضباب صوفي"
+            },
+            "enchanted_forest_with_glowing_mushrooms": {
+              "en": "Enchanted Forest with Glowing Mushrooms",
+              "zh": "有发光蘑菇的魔法森林",
+              "ja": "光るキノコのある魅惑の森",
+              "ko": "빛나는 버섯이 있는 마법의 숲",
+              "es": "Bosque Encantado con Hongos Brillantes",
+              "de": "Verzauberter Wald mit Leuchtenden Pilzen",
+              "fr": "Forêt Enchantée avec Champignons Lumineux",
+              "ar": "غابة ساحرة بفطر متوهج"
+            },
+            "cloud_kingdom_floating_in_the_sky": {
+              "en": "Cloud Kingdom Floating in the Sky",
+              "zh": "漂浮在天空中的云朵王国",
+              "ja": "空に浮かぶ雲の王国",
+              "ko": "하늘에 떠 있는 구름 왕국",
+              "es": "Reino de Nubes Flotando en el Cielo",
+              "de": "Wolkenkönigreich Schwebend im Himmel",
+              "fr": "Royaume de Nuages Flottant dans le Ciel",
+              "ar": "مملكة السحاب العائمة في السماء"
+            }
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "glass-cutting-asmr": {
+      "name": {
+        "en": "Glass Cutting ASMR",
+        "zh": "玻璃切割ASMR",
+        "ja": "ガラスカットASMR",
+        "ko": "유리 자르기 ASMR",
+        "es": "Corte de Vidrio ASMR",
+        "de": "Glas Schneiden ASMR",
+        "fr": "Découpe de Verre ASMR",
+        "ar": "قطع الزجاج ASMR"
+      },
+      "description": {
+        "en": "Satisfying ASMR experience of cutting through various types of glass with crystal-clear sound effects",
+        "zh": "令人满足的ASMR体验，切割各种类型的玻璃并带有水晶般清澈的音效",
+        "ja": "クリスタルクリアな音響効果で様々なタイプのガラスをカットする満足感のあるASMR体験",
+        "ko": "수정처럼 맑은 음향 효과로 다양한 유형의 유리를 자르는 만족스러운 ASMR 경험",
+        "es": "Experiencia ASMR satisfactoria de cortar varios tipos de vidrio con efectos de sonido cristalinos",
+        "de": "Befriedigende ASMR-Erfahrung beim Schneiden verschiedener Glasarten mit kristallklaren Soundeffekten",
+        "fr": "Expérience ASMR satisfaisante de découpe de différents types de verre avec des effets sonores cristallins",
+        "ar": "تجربة ASMR مرضية لقطع أنواع مختلفة من الزجاج بتأثيرات صوتية صافية كالكريستال"
+      },
+      "params": {
+        "glass_type": {
+          "label": {
+            "en": "Glass Type",
+            "zh": "玻璃类型",
+            "ja": "ガラスの種類",
+            "ko": "유리 종류",
+            "es": "Tipo de Vidrio",
+            "de": "Glasart",
+            "fr": "Type de Verre",
+            "ar": "نوع الزجاج"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    }
+  }
+}

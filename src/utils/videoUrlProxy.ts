@@ -4,7 +4,7 @@
  */
 
 /**
- * 将第三方视频URL转换为代理URL，解决CORS问题
+ * 将R2视频URL转换为代理URL，解决CORS问题
  * @param originalUrl 原始视频URL
  * @returns 代理后的URL或原始URL
  */
@@ -15,21 +15,17 @@ export function getProxyVideoUrl(originalUrl: string): string {
 
   // 开发环境使用代理
   if (import.meta.env.DEV) {
-    // 代理filesystem.site域名
-    if (originalUrl.includes('filesystem.site')) {
-      const path = originalUrl.replace('https://filesystem.site', '');
-      return `/api/filesystem${path}`;
-    }
-    
-    // 代理heyoo.oss域名  
-    if (originalUrl.includes('heyoo.oss-ap-southeast-1.aliyuncs.com')) {
-      const path = originalUrl.replace('https://heyoo.oss-ap-southeast-1.aliyuncs.com', '');
-      return `/api/heyoo${path}`;
-    }
-    
     // 代理R2存储域名，解决CORS问题
     if (originalUrl.includes('cdn.veo3video.me')) {
       const path = originalUrl.replace('https://cdn.veo3video.me', '');
+      return `/api/r2${path}`;
+    }
+    
+    // 🚀 代理原始R2域名（pub-*.r2.dev），确保所有R2视频都通过本地代理
+    if (originalUrl.includes('.r2.dev')) {
+      // 提取视频文件路径（通常是 /videos/xxx.mp4）
+      const urlObj = new URL(originalUrl);
+      const path = urlObj.pathname;
       return `/api/r2${path}`;
     }
   }
@@ -47,11 +43,9 @@ export function needsCorsProxy(url: string): boolean {
     return false;
   }
   
-  // 开发环境：需要代理的域名
+  // 开发环境：R2域名需要代理
   if (import.meta.env.DEV) {
-    return url.includes('filesystem.site') || 
-           url.includes('heyoo.oss-ap-southeast-1.aliyuncs.com') ||
-           url.includes('cdn.veo3video.me');
+    return url.includes('cdn.veo3video.me') || url.includes('.r2.dev');
   }
   
   // 生产环境：暂时禁用CORS设置，避免浏览器CORS错误日志

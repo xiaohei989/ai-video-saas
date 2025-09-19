@@ -31,6 +31,7 @@ import { initializeSmartPreloading } from './utils/smartPreloader'
 import { initPreloadCleanup } from './utils/removePreloadLinks'
 import './utils/quickCacheClear' // 加载缓存清除工具到全局
 import './utils/apicoreDebugUtils' // 加载APICore调试工具
+import { initializeTemplateSync } from './utils/templateSyncInitializer' // 模板同步初始化
 
 // 立即清理不必要的预加载链接
 initPreloadCleanup()
@@ -46,8 +47,27 @@ if (typeof window !== 'undefined') {
   initCloudflareOptimizations()
 }
 
+// 模板同步已禁用 - 使用 window.templateSyncDebug.manual() 手动同步
+// 如需自动同步，取消注释以下代码：
+/*
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+  setTimeout(() => {
+    initializeTemplateSync({
+      skipInProduction: true,
+      silent: false
+    }).catch(error => {
+      console.warn('[MAIN] 模板同步初始化失败，但不影响应用运行:', error)
+    })
+  }, 2000)
+}
+*/
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  import.meta.env.DEV ? (
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  ) : (
     <App />
-  </React.StrictMode>,
+  )
 )

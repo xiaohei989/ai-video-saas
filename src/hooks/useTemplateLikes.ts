@@ -12,6 +12,7 @@ interface UseTemplateLikesOptions {
   templateIds: string[]
   enableAutoRefresh?: boolean
   refreshInterval?: number
+  priority?: 'high' | 'normal' | 'low' // 🚀 添加优先级支持
 }
 
 interface UseTemplateLikesReturn {
@@ -26,7 +27,8 @@ interface UseTemplateLikesReturn {
 export function useTemplateLikes({
   templateIds,
   enableAutoRefresh = false,
-  refreshInterval = 60000 // 1分钟
+  refreshInterval = 60000, // 1分钟
+  priority = 'normal' // 🚀 默认优先级
 }: UseTemplateLikesOptions): UseTemplateLikesReturn {
   const { user } = useAuthState()
   const [likeStatuses, setLikeStatuses] = useState<Map<string, LikeStatus>>(new Map())
@@ -45,7 +47,12 @@ export function useTemplateLikes({
 
   // 获取点赞状态
   const getLikeStatus = useCallback((templateId: string): LikeStatus | undefined => {
-    return likeStatuses.get(templateId)
+    const status = likeStatuses.get(templateId)
+    // 🚀 智能缓存：标记为已访问，用于热度分析
+    if (status) {
+      likesCacheService.markAsAccessed(templateId)
+    }
+    return status
   }, [likeStatuses])
 
   // 更新单个模板的点赞状态（同步缓存）
@@ -158,13 +165,16 @@ export function useTemplateLikes({
 
       const statuses = await templateLikeService.checkMultipleLikeStatus(stableTemplateIds)
       
+      // 🚀 使用缓存服务的TTL管理
+      const ttl = likesCacheService.getTTLByPriority(priority)
+
       // 转换为缓存格式并存储
       const cachedStatuses: CachedLikeStatus[] = statuses.map(status => ({
         template_id: status.template_id,
         is_liked: status.is_liked,
         like_count: status.like_count,
         cached_at: now,
-        ttl: 30 * 60 * 1000 // 30分钟 - 进一步延长缓存时间减少闪烁
+        ttl: ttl
       }))
 
       // 存储到缓存
@@ -192,6 +202,11 @@ export function useTemplateLikes({
       })
 
       setLikeStatuses(newMap)
+      
+      // 🚀 智能预加载：成功加载高优先级数据后，触发后台预加载
+      if (priority === 'high' && stableTemplateIds.length > 0) {
+        // 实际的预加载逻辑将由TemplatesPage组件根据分页信息调用
+      }
       
     } catch (err) {
       console.error('Error refreshing template likes:', err)

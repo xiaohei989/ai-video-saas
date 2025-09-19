@@ -131,7 +131,7 @@ class TemplateHotReload {
       }
 
       // 动态导入模板列表
-      const { templateList } = await import('/src/features/video-creator/data/templates/index?t=' + Date.now())
+      const { templateList } = await import(/* @vite-ignore */ '/src/features/video-creator/data/templates/index?t=' + Date.now())
       
       // 基于模板内容计算哈希值
       templateList.forEach((template: any) => {
@@ -157,7 +157,7 @@ class TemplateHotReload {
       console.log('🔄 强制重新初始化模板哈希值...')
 
       // 动态导入模板列表
-      const { templateList } = await import('/src/features/video-creator/data/templates/index?t=' + Date.now())
+      const { templateList } = await import(/* @vite-ignore */ '/src/features/video-creator/data/templates/index?t=' + Date.now())
       
       // 清除现有哈希值
       this.detector.templateHashes.clear()
@@ -188,7 +188,7 @@ class TemplateHotReload {
       }
 
       // 动态重新导入模板索引，检查是否有新文件
-      const { templateList } = await import('/src/features/video-creator/data/templates/index?t=' + Date.now())
+      const { templateList } = await import(/* @vite-ignore */ '/src/features/video-creator/data/templates/index?t=' + Date.now())
       
       const currentTemplateCount = templateList.length
       const cachedTemplateCount = this.detector.templateHashes.size

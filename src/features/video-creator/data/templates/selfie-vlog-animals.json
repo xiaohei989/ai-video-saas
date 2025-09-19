@@ -1,9 +1,27 @@
 {
   "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "slug": "selfie-vlog-animals",
-  "name": "Selfie Vlog Animals",
+  "name": {
+    "en": "Selfie Vlog Animals",
+    "zh": "自拍视频博客动物",
+    "ja": "自撮りブログ動物",
+    "ko": "셀카 브이로그 동물",
+    "es": "Selfie Vlog de Animales",
+    "de": "Selfie-Vlog Tiere",
+    "fr": "Selfie Vlog Animaux",
+    "ar": "سيلفي مدونة فيديو الحيوانات"
+  },
   "icon": "📱",
-  "description": "Two anthropomorphic animals having a casual conversation in selfie-style video format",
+  "description": {
+    "en": "Animals creating their own vlog content with selfie cameras, sharing their daily adventures",
+    "zh": "动物用自拍相机制作自己的视频博客内容，分享他们的日常冒险",
+    "ja": "動物が自撮りカメラで独自のブログコンテンツを作成し、日常の冒険を共有する",
+    "ko": "동물들이 셀카 카메라로 자신만의 브이로그 콘텐츠를 만들며 일상 모험을 공유하는",
+    "es": "Animales creando su propio contenido de vlog con cámaras selfie, compartiendo sus aventuras diarias",
+    "de": "Tiere erstellen ihre eigenen Vlog-Inhalte mit Selfie-Kameras und teilen ihre täglichen Abenteuer",
+    "fr": "Animaux créant leur propre contenu de vlog avec des caméras selfie, partageant leurs aventures quotidiennes",
+    "ar": "الحيوانات تنشئ محتوى مدونة الفيديو الخاص بها بكاميرات السيلفي، تشارك مغامراتها اليومية"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/selfie-vlog-animals.mp4?v=1758008502567",
   "credits": 20,
   "tags": [
@@ -17,7 +35,7 @@
   ],
   "createdAt": "2025-01-21T12:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.579Z",
+  "lastModified": "2025-09-18T04:11:01.430Z",
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
@@ -96,91 +114,208 @@
       "options": [
         {
           "value": "tiger",
-          "label": "🐯 Tiger",
+          "label": {
+            "en": "🐯 Tiger",
+            "zh": "tiger ",
+            "ja": "tiger ",
+            "ko": "tiger ",
+            "es": "tiger ",
+            "de": "tiger ",
+            "fr": "tiger ",
+            "ar": "tiger "
+          },
           "metadata": {
             "main_character_description": "Realistic anthropomorphic tiger"
           }
         },
         {
           "value": "lion",
-          "label": "🦁 Lion",
+          "label": {
+            "en": "Lion 🦁",
+            "zh": "狮子 🦁",
+            "ja": "ライオン 🦁",
+            "ko": "사자 🦁",
+            "es": "León 🦁",
+            "de": "Löwe 🦁",
+            "fr": "Lion 🦁",
+            "ar": "أسد 🦁"
+          },
           "metadata": {
             "main_character_description": "Majestic anthropomorphic lion"
           }
         },
         {
           "value": "wolf",
-          "label": "🐺 Wolf",
+          "label": {
+            "en": "🐺 Wolf",
+            "zh": "wolf ",
+            "ja": "wolf ",
+            "ko": "wolf ",
+            "es": "wolf ",
+            "de": "wolf ",
+            "fr": "wolf ",
+            "ar": "wolf "
+          },
           "metadata": {
             "main_character_description": "Cool anthropomorphic wolf"
           }
         },
         {
           "value": "yeti",
-          "label": "❄️ Yeti",
+          "label": {
+            "en": "❄️ Yeti",
+            "zh": "❄️ 雪人",
+            "ja": "❄️ イエティ",
+            "ko": "❄️ 예티",
+            "es": "❄️ Yeti",
+            "de": "❄️ Yeti",
+            "fr": "❄️ Yéti",
+            "ar": "❄️ يتي"
+          },
           "metadata": {
             "main_character_description": "Fluffy white anthropomorphic yeti"
           }
         },
         {
           "value": "bigfoot",
-          "label": "🦶 Bigfoot",
+          "label": {
+            "en": "🦶 Bigfoot",
+            "zh": "🦶 大脚怪",
+            "ja": "🦶 ビッグフット",
+            "ko": "🦶 빅풋",
+            "es": "🦶 Pie Grande",
+            "de": "🦶 Bigfoot",
+            "fr": "🦶 Bigfoot",
+            "ar": "🦶 بيغ فوت"
+          },
           "metadata": {
             "main_character_description": "Mysterious anthropomorphic bigfoot"
           }
         },
         {
           "value": "capybara",
-          "label": "🦫 Capybara",
+          "label": {
+            "en": "🦫 Capybara",
+            "zh": "capybara ",
+            "ja": "capybara ",
+            "ko": "capybara ",
+            "es": "capybara ",
+            "de": "capybara ",
+            "fr": "capybara ",
+            "ar": "capybara "
+          },
           "metadata": {
             "main_character_description": "Chill anthropomorphic capybara"
           }
         },
         {
           "value": "cat",
-          "label": "🐱 Cat",
+          "label": {
+            "en": "Cat 🐱",
+            "zh": "猫 🐱",
+            "ja": "猫 🐱",
+            "ko": "고양이 🐱",
+            "es": "Gato 🐱",
+            "de": "Katze 🐱",
+            "fr": "Chat 🐱",
+            "ar": "قطة 🐱"
+          },
           "metadata": {
             "main_character_description": "Elegant anthropomorphic cat"
           }
         },
         {
           "value": "dog",
-          "label": "🐕 Dog",
+          "label": {
+            "en": "Dog 🐶",
+            "zh": "狗 🐶",
+            "ja": "犬 🐶",
+            "ko": "개 🐶",
+            "es": "Perro 🐶",
+            "de": "Hund 🐶",
+            "fr": "Chien 🐶",
+            "ar": "كلب 🐶"
+          },
           "metadata": {
             "main_character_description": "Friendly anthropomorphic dog"
           }
         },
         {
           "value": "panda",
-          "label": "🐼 Panda",
+          "label": {
+            "en": "Panda 🐼",
+            "zh": "熊猫 🐼",
+            "ja": "パンダ 🐼",
+            "ko": "판다 🐼",
+            "es": "Panda 🐼",
+            "de": "Panda 🐼",
+            "fr": "Panda 🐼",
+            "ar": "باندا 🐼"
+          },
           "metadata": {
             "main_character_description": "Cheerful anthropomorphic panda"
           }
         },
         {
           "value": "rabbit",
-          "label": "🐰 Rabbit",
+          "label": {
+            "en": "Rabbit 🐰",
+            "zh": "兔子 🐰",
+            "ja": "ウサギ 🐰",
+            "ko": "토끼 🐰",
+            "es": "Conejo 🐰",
+            "de": "Kaninchen 🐰",
+            "fr": "Lapin 🐰",
+            "ar": "أرنب 🐰"
+          },
           "metadata": {
             "main_character_description": "Energetic anthropomorphic rabbit"
           }
         },
         {
           "value": "bear",
-          "label": "🐻 Bear",
+          "label": {
+            "en": "Bear 🐻",
+            "zh": "熊 🐻",
+            "ja": "クマ 🐻",
+            "ko": "곰 🐻",
+            "es": "Oso 🐻",
+            "de": "Bär 🐻",
+            "fr": "Ours 🐻",
+            "ar": "دب 🐻"
+          },
           "metadata": {
             "main_character_description": "Strong anthropomorphic bear"
           }
         },
         {
           "value": "koala",
-          "label": "🐨 Koala",
+          "label": {
+            "en": "🐨 Koala",
+            "zh": "koala ",
+            "ja": "koala ",
+            "ko": "koala ",
+            "es": "koala ",
+            "de": "koala ",
+            "fr": "koala ",
+            "ar": "koala "
+          },
           "metadata": {
             "main_character_description": "Relaxed anthropomorphic koala"
           }
         },
         {
           "value": "penguin",
-          "label": "🐧 Penguin",
+          "label": {
+            "en": "🐧 Penguin",
+            "zh": "penguin ",
+            "ja": "penguin ",
+            "ko": "penguin ",
+            "es": "penguin ",
+            "de": "penguin ",
+            "fr": "penguin ",
+            "ar": "penguin "
+          },
           "metadata": {
             "main_character_description": "Cute anthropomorphic penguin"
           }
@@ -195,91 +330,208 @@
       "options": [
         {
           "value": "tiger",
-          "label": "🐯 Tiger",
+          "label": {
+            "en": "🐯 Tiger",
+            "zh": "tiger ",
+            "ja": "tiger ",
+            "ko": "tiger ",
+            "es": "tiger ",
+            "de": "tiger ",
+            "fr": "tiger ",
+            "ar": "tiger "
+          },
           "metadata": {
             "side_character_description": "Realistic anthropomorphic tiger"
           }
         },
         {
           "value": "lion",
-          "label": "🦁 Lion",
+          "label": {
+            "en": "Lion 🦁",
+            "zh": "狮子 🦁",
+            "ja": "ライオン 🦁",
+            "ko": "사자 🦁",
+            "es": "León 🦁",
+            "de": "Löwe 🦁",
+            "fr": "Lion 🦁",
+            "ar": "أسد 🦁"
+          },
           "metadata": {
             "side_character_description": "Majestic anthropomorphic lion"
           }
         },
         {
           "value": "wolf",
-          "label": "🐺 Wolf",
+          "label": {
+            "en": "🐺 Wolf",
+            "zh": "wolf ",
+            "ja": "wolf ",
+            "ko": "wolf ",
+            "es": "wolf ",
+            "de": "wolf ",
+            "fr": "wolf ",
+            "ar": "wolf "
+          },
           "metadata": {
             "side_character_description": "Cool anthropomorphic wolf"
           }
         },
         {
           "value": "yeti",
-          "label": "❄️ Yeti",
+          "label": {
+            "en": "❄️ Yeti",
+            "zh": "❄️ 雪人",
+            "ja": "❄️ イエティ",
+            "ko": "❄️ 예티",
+            "es": "❄️ Yeti",
+            "de": "❄️ Yeti",
+            "fr": "❄️ Yéti",
+            "ar": "❄️ يتي"
+          },
           "metadata": {
             "side_character_description": "Fluffy white anthropomorphic yeti"
           }
         },
         {
           "value": "bigfoot",
-          "label": "🦶 Bigfoot",
+          "label": {
+            "en": "🦶 Bigfoot",
+            "zh": "🦶 大脚怪",
+            "ja": "🦶 ビッグフット",
+            "ko": "🦶 빅풋",
+            "es": "🦶 Pie Grande",
+            "de": "🦶 Bigfoot",
+            "fr": "🦶 Bigfoot",
+            "ar": "🦶 بيغ فوت"
+          },
           "metadata": {
             "side_character_description": "Mysterious anthropomorphic bigfoot"
           }
         },
         {
           "value": "capybara",
-          "label": "🦫 Capybara",
+          "label": {
+            "en": "🦫 Capybara",
+            "zh": "capybara ",
+            "ja": "capybara ",
+            "ko": "capybara ",
+            "es": "capybara ",
+            "de": "capybara ",
+            "fr": "capybara ",
+            "ar": "capybara "
+          },
           "metadata": {
             "side_character_description": "Chill anthropomorphic capybara"
           }
         },
         {
           "value": "cat",
-          "label": "🐱 Cat",
+          "label": {
+            "en": "Cat 🐱",
+            "zh": "猫 🐱",
+            "ja": "猫 🐱",
+            "ko": "고양이 🐱",
+            "es": "Gato 🐱",
+            "de": "Katze 🐱",
+            "fr": "Chat 🐱",
+            "ar": "قطة 🐱"
+          },
           "metadata": {
             "side_character_description": "Elegant anthropomorphic cat"
           }
         },
         {
           "value": "dog",
-          "label": "🐕 Dog",
+          "label": {
+            "en": "Dog 🐶",
+            "zh": "狗 🐶",
+            "ja": "犬 🐶",
+            "ko": "개 🐶",
+            "es": "Perro 🐶",
+            "de": "Hund 🐶",
+            "fr": "Chien 🐶",
+            "ar": "كلب 🐶"
+          },
           "metadata": {
             "side_character_description": "Friendly anthropomorphic dog"
           }
         },
         {
           "value": "panda",
-          "label": "🐼 Panda",
+          "label": {
+            "en": "Panda 🐼",
+            "zh": "熊猫 🐼",
+            "ja": "パンダ 🐼",
+            "ko": "판다 🐼",
+            "es": "Panda 🐼",
+            "de": "Panda 🐼",
+            "fr": "Panda 🐼",
+            "ar": "باندا 🐼"
+          },
           "metadata": {
             "side_character_description": "Cheerful anthropomorphic panda"
           }
         },
         {
           "value": "rabbit",
-          "label": "🐰 Rabbit",
+          "label": {
+            "en": "Rabbit 🐰",
+            "zh": "兔子 🐰",
+            "ja": "ウサギ 🐰",
+            "ko": "토끼 🐰",
+            "es": "Conejo 🐰",
+            "de": "Kaninchen 🐰",
+            "fr": "Lapin 🐰",
+            "ar": "أرنب 🐰"
+          },
           "metadata": {
             "side_character_description": "Energetic anthropomorphic rabbit"
           }
         },
         {
           "value": "bear",
-          "label": "🐻 Bear",
+          "label": {
+            "en": "Bear 🐻",
+            "zh": "熊 🐻",
+            "ja": "クマ 🐻",
+            "ko": "곰 🐻",
+            "es": "Oso 🐻",
+            "de": "Bär 🐻",
+            "fr": "Ours 🐻",
+            "ar": "دب 🐻"
+          },
           "metadata": {
             "side_character_description": "Strong anthropomorphic bear"
           }
         },
         {
           "value": "koala",
-          "label": "🐨 Koala",
+          "label": {
+            "en": "🐨 Koala",
+            "zh": "koala ",
+            "ja": "koala ",
+            "ko": "koala ",
+            "es": "koala ",
+            "de": "koala ",
+            "fr": "koala ",
+            "ar": "koala "
+          },
           "metadata": {
             "side_character_description": "Relaxed anthropomorphic koala"
           }
         },
         {
           "value": "penguin",
-          "label": "🐧 Penguin",
+          "label": {
+            "en": "🐧 Penguin",
+            "zh": "penguin ",
+            "ja": "penguin ",
+            "ko": "penguin ",
+            "es": "penguin ",
+            "de": "penguin ",
+            "fr": "penguin ",
+            "ar": "penguin "
+          },
           "metadata": {
             "side_character_description": "Cute anthropomorphic penguin"
           }
@@ -326,7 +578,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

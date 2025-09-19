@@ -1,9 +1,27 @@
 {
   "id": "8d6dbb97-75a2-422d-8bf2-f5cdd6fd2279",
   "slug": "finger-touch-activation",
-  "name": "Finger Touch Book Magic",
+  "name": {
+    "en": "Finger Touch Book Magic",
+    "zh": "手指触碰书本魔法",
+    "ja": "指タッチブック魔法",
+    "ko": "손가락 터치 책 마법",
+    "es": "Magia de Libro con Toque de Dedo",
+    "de": "Finger-Berührung Buch-Magie",
+    "fr": "Magie de Livre au Toucher du Doigt",
+    "ar": "سحر كتاب بلمسة الإصبع"
+  },
   "icon": "👆",
-  "description": "Touch an illustration in a book to bring it to life with spectacular magical effects",
+  "description": {
+    "en": "Touch an illustration in a book to bring it to life with spectacular magical effects",
+    "zh": "触碰书中的插图，通过壮观的魔法效果让它栩栩如生",
+    "ja": "本の挿絵に触れると、壮大な魔法効果で命を吹き込まれる",
+    "ko": "책의 삽화를 터치하여 장대한 마법 효과로 생명을 불어넣기",
+    "es": "Toca una ilustración en un libro para darle vida con efectos mágicos espectaculares",
+    "de": "Berühren Sie eine Illustration in einem Buch, um sie mit spektakulären magischen Effekten zum Leben zu erwecken",
+    "fr": "Touchez une illustration dans un livre pour lui donner vie avec des effets magiques spectaculaires",
+    "ar": "المس رسمة في كتاب لإحيائها بتأثيرات سحرية مذهلة"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/finger-touch-activation.mp4?v=1758008502567",
   "credits": 10,
   "tags": [
@@ -79,13 +97,31 @@
   "params": {
     "subject": {
       "type": "select",
-      "label": "Choose Subject to Activate",
+      "label": {
+        "en": "Choose Subject to Activate",
+        "zh": "选择要激活的对象",
+        "ja": "アクティベートする対象を選択",
+        "ko": "활성화할 대상 선택",
+        "es": "Elegir Sujeto a Activar",
+        "de": "Zu aktivierendes Objekt wählen",
+        "fr": "Choisir le Sujet à Activer",
+        "ar": "اختر الموضوع المراد تنشيطه"
+      },
       "required": true,
       "default": "dragon_egg",
       "options": [
         {
           "value": "dragon_egg",
-          "label": "🥚 Dragon Egg",
+          "label": {
+            "en": "🥚 Dragon Egg",
+            "zh": "🥚 龙蛋",
+            "ja": "🥚 ドラゴンの卵",
+            "ko": "🥚 드래곤 알",
+            "es": "🥚 Huevo de Dragón",
+            "de": "🥚 Drachenei",
+            "fr": "🥚 Œuf de Dragon",
+            "ar": "🥚 بيضة التنين"
+          },
           "metadata": {
             "subject_keyword": "dragon egg",
             "visual_description": "Close-up on an ink illustration of an egg in a nest within a fantasy book. A finger touches the egg, causing bright orange electrical energy sparks and lightning VFX to crackle at the point of contact. The egg rapidly transforms into a 3D, molten-hot dragon egg with glowing lava cracks. The nest smolders slightly. The egg hatches dramatically, and a detailed, miniature red baby dragon emerges from the shell.",
@@ -119,7 +155,16 @@
         },
         {
           "value": "butterfly",
-          "label": "🦋 Butterfly",
+          "label": {
+            "en": "🦋 Butterfly",
+            "zh": "🦋 蝴蝶",
+            "ja": "🦋 蝶",
+            "ko": "🦋 나비",
+            "es": "🦋 Mariposa",
+            "de": "🦋 Schmetterling",
+            "fr": "🦋 Papillon",
+            "ar": "🦋 فراشة"
+          },
           "metadata": {
             "subject_keyword": "butterfly",
             "visual_description": "Close-up on a delicate ink sketch of a butterfly with folded wings in a nature journal. A finger touches the butterfly's body, creating rippling rainbow light waves that spread outward. The butterfly illustration gains dimension and color, wings slowly unfurling with iridescent patterns. It lifts gracefully from the page, becoming a living, breathing 3D miniature butterfly with detailed wing textures.",
@@ -153,7 +198,16 @@
         },
         {
           "value": "octopus",
-          "label": "🐙 Octopus",
+          "label": {
+            "en": "🐙 Octopus",
+            "zh": "🐙 章鱼",
+            "ja": "🐙 タコ",
+            "ko": "🐙 문어",
+            "es": "🐙 Pulpo",
+            "de": "🐙 Tintenfisch",
+            "fr": "🐙 Poulpe",
+            "ar": "🐙 أخطبوط"
+          },
           "metadata": {
             "subject_keyword": "octopus",
             "visual_description": "Close-up shot of a detailed sketch of an octopus in an old nautical logbook. A finger touches the drawing. The ink instantly liquefies and begins flowing, and the octopus rises from the page, transforming into a living, hyper-realistic 3D miniature octopus. Its skin is wet, textured, and shimmering under the warm light. Tentacles curl slowly and gracefully. Small water droplets splash around it on the paper.",
@@ -187,7 +241,16 @@
         },
         {
           "value": "phoenix_feather",
-          "label": "🔥 Phoenix Feather",
+          "label": {
+            "en": "🔥 Phoenix Feather",
+            "zh": "🔥 凤凰羽毛",
+            "ja": "🔥 フェニックスの羽",
+            "ko": "🔥 불사조 깃털",
+            "es": "🔥 Pluma de Fénix",
+            "de": "🔥 Phönix-Feder",
+            "fr": "🔥 Plume de Phénix",
+            "ar": "🔥 ريشة العنقاء"
+          },
           "metadata": {
             "subject_keyword": "phoenix feather",
             "visual_description": "Close-up on an elegant ink drawing of a single phoenix feather in an ancient mythology book. A finger touches the feather's quill, instantly igniting it with golden flames. The feather lifts from the page, becoming three-dimensional with intricate barbs and burning edges. As it rises, the feather transforms into a miniature phoenix with spread wings, glowing with inner fire and trailing ember particles.",
@@ -221,7 +284,16 @@
         },
         {
           "value": "hummingbird",
-          "label": "🐦 Hummingbird",
+          "label": {
+            "en": "🐦 Hummingbird",
+            "zh": "🐦 蜂鸟",
+            "ja": "🐦 ハチドリ",
+            "ko": "🐦 벌새",
+            "es": "🐦 Colibrí",
+            "de": "🐦 Kolibri",
+            "fr": "🐦 Colibri",
+            "ar": "🐦 طائر الطنان"
+          },
           "metadata": {
             "subject_keyword": "hummingbird",
             "visual_description": "Close-up on a detailed botanical illustration of a hummingbird hovering near a flower in a field guide. A finger touches the bird's tiny body, creating a soft nectar-golden glow that spreads outward. The hummingbird gains dimension and begins moving, wings becoming a blur of rapid motion. It lifts from the page as a living 3D miniature bird, hovering with characteristic precision and occasionally darting to nearby illustrated flowers.",
@@ -255,7 +327,16 @@
         },
         {
           "value": "campfire",
-          "label": "🔥 Campfire",
+          "label": {
+            "en": "🔥 Campfire",
+            "zh": "🔥 篝火",
+            "ja": "🔥 キャンプファイア",
+            "ko": "🔥 캠프파이어",
+            "es": "🔥 Fogata",
+            "de": "🔥 Lagerfeuer",
+            "fr": "🔥 Feu de Camp",
+            "ar": "🔥 نار المخيم"
+          },
           "metadata": {
             "subject_keyword": "campfire",
             "visual_description": "A macro close-up shot of an open vintage book. A human finger touches an ink illustration of a campfire on the page. Upon contact, the illustration magically ignites, transforming seamlessly from a 2D drawing into a hyper-realistic, miniature 3D campfire. The wood chars and becomes three-dimensional. Realistic flame simulation with dancing fire, sparks fly upward, and subtle smoke rises. The fire casts warm, flickering dynamic lighting on the paper and finger.",
@@ -289,7 +370,16 @@
         },
         {
           "value": "cabin",
-          "label": "🏠 Cabin",
+          "label": {
+            "en": "🏠 Cabin",
+            "zh": "🏠 小屋",
+            "ja": "🏠 小屋",
+            "ko": "🏠 오두막",
+            "es": "🏠 Cabaña",
+            "de": "🏠 Hütte",
+            "fr": "🏠 Cabane",
+            "ar": "🏠 كوخ"
+          },
           "metadata": {
             "subject_keyword": "cabin",
             "visual_description": "A macro shot of a simple ink line drawing of a house in an open book. A human finger approaches the chimney, and realistic smoke begins to rise. The illustration then swells and rises from the page in one fluid, seamless motion. The 2D ink lines organically expand into a 3D structure, simultaneously transforming into a photorealistic, detailed miniature wooden cabin. Windows glow with warm, inviting interior light and smoke wisps from the chimney.",
@@ -323,7 +413,16 @@
         },
         {
           "value": "gold_coins",
-          "label": "🪙 Gold Coins",
+          "label": {
+            "en": "🪙 Gold Coins",
+            "zh": "🪙 金币",
+            "ja": "🪙 金貨",
+            "ko": "🪙 금화",
+            "es": "🪙 Monedas de Oro",
+            "de": "🪙 Goldmünzen",
+            "fr": "🪙 Pièces d'Or",
+            "ar": "🪙 عملات ذهبية"
+          },
           "metadata": {
             "subject_keyword": "gold coins",
             "visual_description": "Close-up on an ink illustration of a pile of coins in a treasure map book. A finger touches the coin pile, causing brilliant golden light waves to ripple outward. The coins begin to rise and become three-dimensional, transforming from flat ink into gleaming metallic gold pieces. They bounce and clink as they stack upon each other, creating a small treasure pile that sparkles and reflects light with each movement.",
@@ -357,7 +456,16 @@
         },
         {
           "value": "gemstone",
-          "label": "💎 Magic Gemstone",
+          "label": {
+            "en": "💎 Magic Gemstone",
+            "zh": "💎 魔法宝石",
+            "ja": "💎 魔法の宝石",
+            "ko": "💎 마법 보석",
+            "es": "💎 Gema Mágica",
+            "de": "💎 Magischer Edelstein",
+            "fr": "💎 Pierre Précieuse Magique",
+            "ar": "💎 حجر كريم سحري"
+          },
           "metadata": {
             "subject_keyword": "magic gemstone",
             "visual_description": "Close-up on 2D illustrations of various gemstones in a mineralogy book - flat drawings of a diamond, ruby, sapphire, and emerald. A finger touches the gemstone collection, causing brilliant prismatic light waves to ripple outward. Each 2D gemstone illustration transforms and bounces out as a real 3D precious stone - the flat diamond drawing becomes a sparkling 3D diamond, the ruby illustration pops out as a glowing 3D ruby, and so on, creating a treasure pile of real gemstones.",
@@ -391,7 +499,16 @@
         },
         {
           "value": "seed_bloom",
-          "label": "🌱 Blooming Seed",
+          "label": {
+            "en": "🌱 Blooming Seed",
+            "zh": "🌱 开花种子",
+            "ja": "🌱 開花する種",
+            "ko": "🌱 피어나는 씨앗",
+            "es": "🌱 Semilla Floreciente",
+            "de": "🌱 Blühender Samen",
+            "fr": "🌱 Graine qui Fleurit",
+            "ar": "🌱 بذرة متفتحة"
+          },
           "metadata": {
             "subject_keyword": "blooming seed",
             "visual_description": "Close-up on an already open, flat gardening manual displaying a seed illustration on the visible page. The book remains completely still with NO page turning. A finger touches the seed, infusing it with vibrant green life energy that pulses outward. The seed immediately begins to sprout, rapidly growing into a three-dimensional rose plant that rises from the page. Leaves unfurl, a thorned stem extends upward, and finally a magnificent red rose blooms in fast-motion, with layered petals opening to reveal intricate details and releasing floating pollen particles.",
@@ -425,7 +542,16 @@
         },
         {
           "value": "portal",
-          "label": "🌀 Time Portal",
+          "label": {
+            "en": "🌀 Time Portal",
+            "zh": "🌀 时间传送门",
+            "ja": "🌀 時のポータル",
+            "ko": "🌀 시간 포털",
+            "es": "🌀 Portal del Tiempo",
+            "de": "🌀 Zeitportal",
+            "fr": "🌀 Portail Temporel",
+            "ar": "🌀 بوابة الزمن"
+          },
           "metadata": {
             "subject_keyword": "time portal",
             "visual_description": "Close-up on an ink illustration of a mysterious circular symbol in an ancient mystical tome. A finger touches the center, causing purple energy waves to ripple outward with space-time distortion effects. The illustration begins spinning and glowing, tearing through dimensional barriers as it becomes a three-dimensional portal. The gateway stabilizes with continuously flowing energy waves pulsing along its edge, revealing dynamic visions of living alien worlds within - swirling galaxies with moving stars, bustling future cities with flying vehicles, magical realms with flowing elements - all in constant motion while energy streams spiral around the portal's perimeter.",
@@ -459,7 +585,16 @@
         },
         {
           "value": "tornado",
-          "label": "🌪️ Tornado",
+          "label": {
+            "en": "🌪️ Tornado",
+            "zh": "🌪️ 龙卷风",
+            "ja": "🌪️ 竜巻",
+            "ko": "🌪️ 토네이도",
+            "es": "🌪️ Tornado",
+            "de": "🌪️ Tornado",
+            "fr": "🌪️ Tornade",
+            "ar": "🌪️ إعصار"
+          },
           "metadata": {
             "subject_keyword": "tornado",
             "visual_description": "Close-up on an ink illustration of a simple spiral in a weather manual. A finger touches the center, causing immediate air pressure changes and swirling effects. The spiral begins spinning rapidly, lifting from the page as it transforms into a three-dimensional tornado funnel. Debris particles and paper fragments get caught in the vortex, creating a realistic miniature tornado with incredible detail and dynamic movement.",
@@ -635,7 +770,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

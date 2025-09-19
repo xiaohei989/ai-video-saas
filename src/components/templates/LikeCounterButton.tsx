@@ -21,6 +21,8 @@ interface LikeCounterButtonProps {
   showIcon?: boolean
   animated?: boolean
   onLikeChange?: (isLiked: boolean, likeCount: number) => void
+  dataLoading?: boolean // 🚀 新增：数据加载中状态（区别于点赞操作加载）
+  skeleton?: boolean   // 🚀 新增：显示骨架屏
 }
 
 export function LikeCounterButton({
@@ -32,7 +34,9 @@ export function LikeCounterButton({
   className,
   showIcon = true,
   animated = true,
-  onLikeChange
+  onLikeChange,
+  dataLoading = false,
+  skeleton = false
 }: LikeCounterButtonProps) {
   const { user } = useAuthState()
   const navigate = useNavigate()
@@ -148,18 +152,54 @@ export function LikeCounterButton({
     }
   }
 
+  // 渲染骨架屏
+  if (skeleton) {
+    return (
+      <div className={cn(
+        'like-counter-button flex items-center font-medium tabular-nums select-none',
+        config.text,
+        config.gap,
+        variantStyle,
+        config.padding,
+        'animate-pulse',
+        className
+      )}>
+        {showIcon && (
+          <div className={cn(
+            config.icon,
+            'bg-gray-300 rounded-full',
+            variant === 'default' ? 'bg-gray-400' : 'bg-gray-300'
+          )} />
+        )}
+        <div className={cn(
+          'h-4 bg-gray-300 rounded',
+          size === 'sm' ? 'w-6' : size === 'md' ? 'w-8' : 'w-10',
+          variant === 'default' ? 'bg-gray-400' : 'bg-gray-300'
+        )} />
+      </div>
+    )
+  }
+
   return (
     <div 
-      className={containerClass}
+      className={cn(
+        containerClass,
+        {
+          'opacity-60': dataLoading, // 数据加载时降低透明度
+          'pointer-events-none': dataLoading && !user // 数据加载且未登录时禁用交互
+        }
+      )}
       onClick={handleClick}
       title={
-        !user 
-          ? t('like.loginToLike') 
-          : loading 
-            ? t('like.processing') 
-            : isLiked 
-              ? t('like.unlike') 
-              : t('like.like')
+        dataLoading 
+          ? '加载中...'
+          : !user 
+            ? t('like.loginToLike') 
+            : loading 
+              ? t('like.processing') 
+              : isLiked 
+                ? t('like.unlike') 
+                : t('like.like')
       }
       role="button"
       tabIndex={0}
@@ -176,13 +216,27 @@ export function LikeCounterButton({
         <>
           {loading ? (
             <Loader2 className={cn(config.icon, 'animate-spin')} />
+          ) : dataLoading ? (
+            <div className={cn(config.icon, 'animate-pulse bg-gray-300 rounded-full')} />
           ) : (
             <Heart className={iconClass} />
           )}
         </>
       )}
-      <span className="font-medium tabular-nums">
-        {formatCount(likeCount)}
+      <span className={cn(
+        'font-medium tabular-nums',
+        {
+          'animate-pulse': dataLoading
+        }
+      )}>
+        {dataLoading ? (
+          <div className={cn(
+            'h-4 bg-gray-300 rounded inline-block',
+            size === 'sm' ? 'w-6' : size === 'md' ? 'w-8' : 'w-10'
+          )} />
+        ) : (
+          formatCount(likeCount)
+        )}
       </span>
     </div>
   )

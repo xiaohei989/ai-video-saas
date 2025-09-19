@@ -1,9 +1,27 @@
 {
   "id": "e1a2c6f5-9d7a-8b0e-3f4c-7e2a5b9d8c1f",
   "slug": "olympic-animal-diving-broadcast",
-  "name": "Olympic Animal Diving Broadcast",
+  "name": {
+    "en": "Olympic Animal Diving Broadcast",
+    "zh": "奥运动物跳水转播",
+    "ja": "オリンピック動物ダイビング放送",
+    "ko": "올림픽 동물 다이빙 방송",
+    "es": "Transmisión de Clavados de Animales Olímpicos",
+    "de": "Olympische Tier-Tauchen Übertragung",
+    "fr": "Diffusion de Plongeon Animal Olympique",
+    "ar": "بث الغوص الحيواني الأولمبي"
+  },
   "icon": "🏊‍♀️",
-  "description": "Television broadcast style footage of various animals performing Olympic diving with audience reactions and commentary",
+  "description": {
+    "en": "Professional sports broadcast of animals competing in Olympic-style diving competitions with commentary",
+    "zh": "动物参加奥运式跳水比赛的专业体育转播，带有解说",
+    "ja": "オリンピック式ダイビング競技で競う動物の解説付きプロスポーツ放送",
+    "ko": "올림픽 스타일 다이빙 경기에서 경쟁하는 동물들의 해설이 있는 전문 스포츠 방송",
+    "es": "Transmisión deportiva profesional de animales compitiendo en competencias de clavados estilo olímpico con comentario",
+    "de": "Professionelle Sportübertragung von Tieren, die in olympischen Taucherwettbewerben mit Kommentar antreten",
+    "fr": "Diffusion sportive professionnelle d'animaux en compétition dans des compétitions de plongeon de style olympique avec commentaire",
+    "ar": "بث رياضي محترف للحيوانات تتنافس في مسابقات الغوص بأسلوب أولمبي مع التعليق"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/olympic-animal-diving-broadcast.mp4?v=1758008502567",
   "tags": [
     "olympic",
@@ -17,90 +35,270 @@
   ],
   "createdAt": "2025-01-29T18:30:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.579Z",
+  "lastModified": "2025-09-18T03:33:06.805Z",
   "promptTemplate": "Olympic diving pool in television broadcast style, showing a {animal} diving from a {platform_height} platform into the swimming pool, performing graceful flips in mid-air with limbs spread like wings, at normal speed, not slow motion. The crowd bursts into laughter at this adorable scene, while the commentator can't help but exclaim \"So cute!\" Audio: gentle water splash sounds, audience laughter and \"aww\" sounds, commentator's warm and humorous commentary.",
   "params": {
     "animal": {
       "type": "select",
-      "label": "Animal Diver",
+      "label": {
+        "en": "Diving Animal",
+        "zh": "跳水动物",
+        "ja": "ダイビング動物",
+        "ko": "다이빙 동물",
+        "es": "Animal de Clavados",
+        "de": "Tauchtier",
+        "fr": "Animal de Plongeon",
+        "ar": "حيوان الغوص"
+      },
       "required": true,
       "default": "fluffy white dog",
       "options": [
         {
           "value": "fluffy white dog",
-          "label": "Fluffy White Dog 🐶"
+          "label": {
+            "en": "Fluffy White Dog 🐶",
+            "zh": "fluffy white dog 🐶",
+            "ja": "fluffy white dog 🐶",
+            "ko": "fluffy white dog 🐶",
+            "es": "fluffy white dog 🐶",
+            "de": "fluffy white dog 🐶",
+            "fr": "fluffy white dog 🐶",
+            "ar": "fluffy white dog 🐶"
+          }
         },
         {
           "value": "elegant cat",
-          "label": "Elegant Cat 🐱"
+          "label": {
+            "en": "Elegant Cat 🐱",
+            "zh": "elegant cat 🐱",
+            "ja": "elegant cat 🐱",
+            "ko": "elegant cat 🐱",
+            "es": "elegant cat 🐱",
+            "de": "elegant cat 🐱",
+            "fr": "elegant cat 🐱",
+            "ar": "elegant cat 🐱"
+          }
         },
         {
           "value": "bouncy rabbit",
-          "label": "Bouncy Rabbit 🐰"
+          "label": {
+            "en": "Bouncy Rabbit 🐰",
+            "zh": "bouncy rabbit 🐰",
+            "ja": "bouncy rabbit 🐰",
+            "ko": "bouncy rabbit 🐰",
+            "es": "bouncy rabbit 🐰",
+            "de": "bouncy rabbit 🐰",
+            "fr": "bouncy rabbit 🐰",
+            "ar": "bouncy rabbit 🐰"
+          }
         },
         {
           "value": "clever raccoon",
-          "label": "Clever Raccoon 🦝"
+          "label": {
+            "en": "Clever Raccoon 🦝",
+            "zh": "clever raccoon 🦝",
+            "ja": "clever raccoon 🦝",
+            "ko": "clever raccoon 🦝",
+            "es": "clever raccoon 🦝",
+            "de": "clever raccoon 🦝",
+            "fr": "clever raccoon 🦝",
+            "ar": "clever raccoon 🦝"
+          }
         },
         {
           "value": "professional penguin",
-          "label": "Professional Penguin 🐧"
+          "label": {
+            "en": "Professional Penguin 🐧",
+            "zh": "professional penguin 🐧",
+            "ja": "professional penguin 🐧",
+            "ko": "professional penguin 🐧",
+            "es": "professional penguin 🐧",
+            "de": "professional penguin 🐧",
+            "fr": "professional penguin 🐧",
+            "ar": "professional penguin 🐧"
+          }
         },
         {
           "value": "natural duck",
-          "label": "Natural Duck 🦆"
+          "label": {
+            "en": "Natural Duck 🦆",
+            "zh": "natural duck 🦆",
+            "ja": "natural duck 🦆",
+            "ko": "natural duck 🦆",
+            "es": "natural duck 🦆",
+            "de": "natural duck 🦆",
+            "fr": "natural duck 🦆",
+            "ar": "natural duck 🦆"
+          }
         },
         {
           "value": "majestic elephant",
-          "label": "Majestic Elephant 🐘"
+          "label": {
+            "en": "Majestic Elephant 🐘",
+            "zh": "majestic elephant 🐘",
+            "ja": "majestic elephant 🐘",
+            "ko": "majestic elephant 🐘",
+            "es": "majestic elephant 🐘",
+            "de": "majestic elephant 🐘",
+            "fr": "majestic elephant 🐘",
+            "ar": "majestic elephant 🐘"
+          }
         },
         {
           "value": "powerful rhino",
-          "label": "Powerful Rhino 🦏"
+          "label": {
+            "en": "Powerful Rhino 🦏",
+            "zh": "powerful rhino 🦏",
+            "ja": "powerful rhino 🦏",
+            "ko": "powerful rhino 🦏",
+            "es": "powerful rhino 🦏",
+            "de": "powerful rhino 🦏",
+            "fr": "powerful rhino 🦏",
+            "ar": "powerful rhino 🦏"
+          }
         },
         {
           "value": "swimming hippo",
-          "label": "Swimming Hippo 🦛"
+          "label": {
+            "en": "Swimming Hippo 🦛",
+            "zh": "swimming hippo 🦛",
+            "ja": "swimming hippo 🦛",
+            "ko": "swimming hippo 🦛",
+            "es": "swimming hippo 🦛",
+            "de": "swimming hippo 🦛",
+            "fr": "swimming hippo 🦛",
+            "ar": "swimming hippo 🦛"
+          }
         },
         {
           "value": "gentle cow",
-          "label": "Gentle Cow 🐄"
+          "label": {
+            "en": "Gentle Cow 🐄",
+            "zh": "gentle cow 🐄",
+            "ja": "gentle cow 🐄",
+            "ko": "gentle cow 🐄",
+            "es": "gentle cow 🐄",
+            "de": "gentle cow 🐄",
+            "fr": "gentle cow 🐄",
+            "ar": "gentle cow 🐄"
+          }
         },
         {
           "value": "graceful horse",
-          "label": "Graceful Horse 🐎"
+          "label": {
+            "en": "Graceful Horse 🐎",
+            "zh": "graceful horse 🐎",
+            "ja": "graceful horse 🐎",
+            "ko": "graceful horse 🐎",
+            "es": "graceful horse 🐎",
+            "de": "graceful horse 🐎",
+            "fr": "graceful horse 🐎",
+            "ar": "graceful horse 🐎"
+          }
         },
         {
           "value": "elegant deer",
-          "label": "Elegant Deer 🦌"
+          "label": {
+            "en": "Elegant Deer 🦌",
+            "zh": "elegant deer 🦌",
+            "ja": "elegant deer 🦌",
+            "ko": "elegant deer 🦌",
+            "es": "elegant deer 🦌",
+            "de": "elegant deer 🦌",
+            "fr": "elegant deer 🦌",
+            "ar": "elegant deer 🦌"
+          }
         },
         {
           "value": "mighty brown bear",
-          "label": "Mighty Brown Bear 🐻"
+          "label": {
+            "en": "Mighty Brown Bear 🐻",
+            "zh": "mighty brown bear 🐻",
+            "ja": "mighty brown bear 🐻",
+            "ko": "mighty brown bear 🐻",
+            "es": "mighty brown bear 🐻",
+            "de": "mighty brown bear 🐻",
+            "fr": "mighty brown bear 🐻",
+            "ar": "mighty brown bear 🐻"
+          }
         },
         {
           "value": "polar bear",
-          "label": "Polar Bear 🐻‍❄️"
+          "label": {
+            "en": "Polar Bear 🐻‍❄️",
+            "zh": "polar bear 🐻‍❄️",
+            "ja": "polar bear 🐻‍❄️",
+            "ko": "polar bear 🐻‍❄️",
+            "es": "polar bear 🐻‍❄️",
+            "de": "polar bear 🐻‍❄️",
+            "fr": "polar bear 🐻‍❄️",
+            "ar": "polar bear 🐻‍❄️"
+          }
         },
         {
           "value": "adorable panda",
-          "label": "Adorable Panda 🐼"
+          "label": {
+            "en": "Adorable Panda 🐼",
+            "zh": "adorable panda 🐼",
+            "ja": "adorable panda 🐼",
+            "ko": "adorable panda 🐼",
+            "es": "adorable panda 🐼",
+            "de": "adorable panda 🐼",
+            "fr": "adorable panda 🐼",
+            "ar": "adorable panda 🐼"
+          }
         },
         {
           "value": "ocean whale",
-          "label": "Ocean Whale 🐳"
+          "label": {
+            "en": "Ocean Whale 🐳",
+            "zh": "ocean whale 🐳",
+            "ja": "ocean whale 🐳",
+            "ko": "ocean whale 🐳",
+            "es": "ocean whale 🐳",
+            "de": "ocean whale 🐳",
+            "fr": "ocean whale 🐳",
+            "ar": "ocean whale 🐳"
+          }
         },
         {
           "value": "humpback whale",
-          "label": "Humpback Whale 🐋"
+          "label": {
+            "en": "Humpback Whale 🐋",
+            "zh": "humpback whale 🐋",
+            "ja": "humpback whale 🐋",
+            "ko": "humpback whale 🐋",
+            "es": "humpback whale 🐋",
+            "de": "humpback whale 🐋",
+            "fr": "humpback whale 🐋",
+            "ar": "humpback whale 🐋"
+          }
         },
         {
           "value": "athletic kangaroo",
-          "label": "Athletic Kangaroo 🦘"
+          "label": {
+            "en": "Athletic Kangaroo 🦘",
+            "zh": "athletic kangaroo 🦘",
+            "ja": "athletic kangaroo 🦘",
+            "ko": "athletic kangaroo 🦘",
+            "es": "athletic kangaroo 🦘",
+            "de": "athletic kangaroo 🦘",
+            "fr": "athletic kangaroo 🦘",
+            "ar": "athletic kangaroo 🦘"
+          }
         },
         {
           "value": "fluffy llama",
-          "label": "Fluffy Llama 🦙"
+          "label": {
+            "en": "Fluffy Llama 🦙",
+            "zh": "fluffy llama 🦙",
+            "ja": "fluffy llama 🦙",
+            "ko": "fluffy llama 🦙",
+            "es": "fluffy llama 🦙",
+            "de": "fluffy llama 🦙",
+            "fr": "fluffy llama 🦙",
+            "ar": "fluffy llama 🦙"
+          }
         }
       ]
     },
@@ -112,29 +310,83 @@
       "options": [
         {
           "value": "1-meter",
-          "label": "1-Meter Platform (Beginner)"
+          "label": {
+            "en": "1-Meter Platform (Beginner)",
+            "zh": "1-meter )",
+            "ja": "1-meter )",
+            "ko": "1-meter )",
+            "es": "1-meter )",
+            "de": "1-meter )",
+            "fr": "1-meter )",
+            "ar": "1-meter )"
+          }
         },
         {
           "value": "3-meter",
-          "label": "3-Meter Springboard (Standard)"
+          "label": {
+            "en": "3-Meter Springboard (Standard)",
+            "zh": "3-meter )",
+            "ja": "3-meter )",
+            "ko": "3-meter )",
+            "es": "3-meter )",
+            "de": "3-meter )",
+            "fr": "3-meter )",
+            "ar": "3-meter )"
+          }
         },
         {
           "value": "5-meter",
-          "label": "5-Meter Platform (Advanced)"
+          "label": {
+            "en": "5-Meter Platform (Advanced)",
+            "zh": "5-meter )",
+            "ja": "5-meter )",
+            "ko": "5-meter )",
+            "es": "5-meter )",
+            "de": "5-meter )",
+            "fr": "5-meter )",
+            "ar": "5-meter )"
+          }
         },
         {
           "value": "8-meter",
-          "label": "8-Meter Platform (Expert)"
+          "label": {
+            "en": "8-Meter Platform (Expert)",
+            "zh": "8-meter )",
+            "ja": "8-meter )",
+            "ko": "8-meter )",
+            "es": "8-meter )",
+            "de": "8-meter )",
+            "fr": "8-meter )",
+            "ar": "8-meter )"
+          }
         },
         {
           "value": "10-meter",
-          "label": "10-Meter Platform (Olympic)"
+          "label": {
+            "en": "10-Meter Platform (Olympic)",
+            "zh": "10-meter )",
+            "ja": "10-meter )",
+            "ko": "10-meter )",
+            "es": "10-meter )",
+            "de": "10-meter )",
+            "fr": "10-meter )",
+            "ar": "10-meter )"
+          }
         }
       ]
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

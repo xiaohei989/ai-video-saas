@@ -2,6 +2,7 @@ import { useMemo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Play, Loader2, Clock, Zap, Monitor, Smartphone, Lock } from 'lucide-react'
 import { Template } from '../data/templates'
+import { localizeTemplate } from '../data/templates/index'
 import { Progress } from '@/components/ui/progress'
 import { CustomSelect } from '@/components/ui/custom-select'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -17,6 +18,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import SimpleVideoPlayer from '@/components/video/SimpleVideoPlayer'
 import LikeCounterButton from '@/components/templates/LikeCounterButton'
+import CachedImage from '@/components/ui/CachedImage'
 import { useTemplateLikes } from '@/hooks/useTemplateLikes'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useQuery } from '@tanstack/react-query'
@@ -48,8 +50,17 @@ export default function PreviewPanel({
   onQualityChange,
   onAspectRatioChange
 }: PreviewPanelProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { user } = useAuthContext()
+  
+  // 移动端检测（和TemplatesPage保持一致）
+  const isMobile = useMemo(() => {
+    if (typeof window === 'undefined') return false
+    return window.innerWidth <= 768
+  }, [])
+  
+  // 本地化模板
+  const localizedTemplate = localizeTemplate(template, i18n.language)
   const navigate = useNavigate()
   // Force re-render every second to update time
   const [, setTick] = useState(0)
@@ -237,18 +248,32 @@ export default function PreviewPanel({
                   </p>
                 </div>
               ) : videoUrl || template.previewUrl ? (
-                <SimpleVideoPlayer
-                  key={`${template.id}-${videoUrl || template.previewUrl || ''}`}
-                  src={videoUrl || template.previewUrl || ''}
-                  poster={template.thumbnailUrl}
-                  className="w-full h-full"
-                  showPlayButton={true}
-                  autoPlayOnHover={false}
-                  objectFit="cover"
-                  alt={template.name}
-                  videoId={template.id}
-                  videoTitle={template.name}
-                />
+                <div className="relative w-full h-full">
+                  {/* 缓存的缩略图作为背景层 */}
+                  {template.thumbnailUrl && (
+                    <CachedImage 
+                      src={template.thumbnailUrl}
+                      alt={localizedTemplate.name}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      cacheKey={`template_${template.id}`}
+                      maxAge={24 * 60 * 60 * 1000} // 24小时缓存
+                    />
+                  )}
+                  {/* 视频播放器在前景层 */}
+                  <SimpleVideoPlayer
+                    key={`${template.id}-${videoUrl || template.previewUrl || ''}`}
+                    src={videoUrl || template.previewUrl || ''}
+                    poster={template.thumbnailUrl}
+                    className="relative z-10 w-full h-full"
+                    objectFit="cover"
+                    showPlayButton={true}
+                    autoPlayOnHover={!isMobile} // 移动端禁用自动播放，和TemplatesPage保持一致
+                    muted={false} // 默认有声音播放
+                    alt={localizedTemplate.name}
+                    videoId={template.id}
+                    videoTitle={localizedTemplate.name}
+                  />
+                </div>
               ) : (
                 <div className="flex flex-col items-center gap-3 text-muted-foreground">
                   <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center">
@@ -259,9 +284,9 @@ export default function PreviewPanel({
               )}
             </div>
         
-        {template.description && (
+        {localizedTemplate.description && (
           <p className="mt-3 text-center text-sm text-muted-foreground max-w-2xl mx-auto">
-            {template.description}
+            {localizedTemplate.description}
           </p>
         )}
         

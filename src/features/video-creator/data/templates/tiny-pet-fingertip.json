@@ -1,9 +1,27 @@
 {
   "id": "c9605a16-353e-4c6a-ac7a-d5b327dab9fd",
   "slug": "tiny-pet-fingertip",
-  "name": "Tiny Pet on Fingertip",
+  "name": {
+    "en": "Tiny Pet on Fingertip",
+    "zh": "指尖微型宠物",
+    "ja": "指先の小さなペット",
+    "ko": "손끝의 작은 펫",
+    "es": "Mascota Diminuta en la Punta del Dedo",
+    "de": "Winziges Haustier auf der Fingerspitze",
+    "fr": "Animal de Compagnie Minuscule sur le Bout du Doigt",
+    "ar": "حيوان أليف صغير على طرف الإصبع"
+  },
   "icon": "🐾",
-  "description": "Capture an ultra-miniature adorable animal standing on fingertip, creating a heartwarming and healing scene",
+  "description": {
+    "en": "Ultra-realistic miniature pets that can comfortably sit on your fingertip with incredible detail",
+    "zh": "超逼真的微型宠物，可以舒适地坐在你的指尖上，细节令人难以置信",
+    "ja": "信じられないほどの細部を持つ、指先に快適に座ることができる超リアルなミニチュアペット",
+    "ko": "믿을 수 없을 정도로 디테일한, 손끝에 편안히 앉을 수 있는 초현실적인 미니어처 펫",
+    "es": "Mascotas en miniatura ultrarrealistas que pueden sentarse cómodamente en tu dedo con detalles increíbles",
+    "de": "Ultrarrealistische Miniatur-Haustiere, die bequem auf Ihrer Fingerspitze sitzen können mit unglaublichen Details",
+    "fr": "Animaux de compagnie miniatures ultra-réalistes qui peuvent confortablement s'asseoir sur votre bout de doigt avec des détails incroyables",
+    "ar": "حيوانات أليفة مصغرة فائقة الواقعية يمكنها الجلوس براحة على طرف إصبعك بتفاصيل مذهلة"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/tiny-pet-fingertip.mp4?v=1758008502567",
   "tags": [
     "cute pets",
@@ -18,7 +36,7 @@
   "category": "Animals/Pets",
   "createdAt": "2024-02-01T14:30:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.581Z",
+  "lastModified": "2025-09-18T03:33:06.821Z",
   "promptTemplate": "Extreme macro close-up, professional camera, ultra-shallow depth of field focusing on a tiny {animal_type} with {animal_color} coloring balanced on a fingertip. The {size_adjective} {animal_type} has {special_feature}. Scene: {scene_setting} with warm natural lighting. The {animal_type} {animal_action}, creating a heartwarming and peaceful atmosphere.",
   "params": {
     "animal_type": {
@@ -29,103 +47,328 @@
       "options": [
         {
           "value": "kitten",
-          "label": "Kitten 🐱"
+          "label": {
+            "en": "Kitten 🐱",
+            "zh": "kitten 🐱",
+            "ja": "kitten 🐱",
+            "ko": "kitten 🐱",
+            "es": "kitten 🐱",
+            "de": "kitten 🐱",
+            "fr": "kitten 🐱",
+            "ar": "kitten 🐱"
+          }
         },
         {
           "value": "puppy",
-          "label": "Puppy 🐶"
+          "label": {
+            "en": "Puppy 🐶",
+            "zh": "puppy 🐶",
+            "ja": "puppy 🐶",
+            "ko": "puppy 🐶",
+            "es": "puppy 🐶",
+            "de": "puppy 🐶",
+            "fr": "puppy 🐶",
+            "ar": "puppy 🐶"
+          }
         },
         {
           "value": "bunny",
-          "label": "Bunny 🐰"
+          "label": {
+            "en": "Bunny 🐰",
+            "zh": "bunny 🐰",
+            "ja": "bunny 🐰",
+            "ko": "bunny 🐰",
+            "es": "bunny 🐰",
+            "de": "bunny 🐰",
+            "fr": "bunny 🐰",
+            "ar": "bunny 🐰"
+          }
         },
         {
           "value": "hamster",
-          "label": "Hamster 🐹"
+          "label": {
+            "en": "Hamster 🐹",
+            "zh": "仓鼠 🐹",
+            "ja": "ハムスター 🐹",
+            "ko": "햄스터 🐹",
+            "es": "Hámster 🐹",
+            "de": "Hamster 🐹",
+            "fr": "Hamster 🐹",
+            "ar": "هامستر 🐹"
+          }
         },
         {
           "value": "baby panda",
-          "label": "Baby Panda 🐼"
+          "label": {
+            "en": "Baby Panda 🐼",
+            "zh": "baby panda 🐼",
+            "ja": "baby panda 🐼",
+            "ko": "baby panda 🐼",
+            "es": "baby panda 🐼",
+            "de": "baby panda 🐼",
+            "fr": "baby panda 🐼",
+            "ar": "baby panda 🐼"
+          }
         },
         {
           "value": "baby tiger",
-          "label": "Baby Tiger 🐅"
+          "label": {
+            "en": "Baby Tiger 🐅",
+            "zh": "baby tiger 🐅",
+            "ja": "baby tiger 🐅",
+            "ko": "baby tiger 🐅",
+            "es": "baby tiger 🐅",
+            "de": "baby tiger 🐅",
+            "fr": "baby tiger 🐅",
+            "ar": "baby tiger 🐅"
+          }
         },
         {
           "value": "baby lion",
-          "label": "Baby Lion 🦁"
+          "label": {
+            "en": "Baby Lion 🦁",
+            "zh": "baby lion 🦁",
+            "ja": "baby lion 🦁",
+            "ko": "baby lion 🦁",
+            "es": "baby lion 🦁",
+            "de": "baby lion 🦁",
+            "fr": "baby lion 🦁",
+            "ar": "baby lion 🦁"
+          }
         },
         {
           "value": "baby wolf",
-          "label": "Baby Wolf 🐺"
+          "label": {
+            "en": "Baby Wolf 🐺",
+            "zh": "baby wolf 🐺",
+            "ja": "baby wolf 🐺",
+            "ko": "baby wolf 🐺",
+            "es": "baby wolf 🐺",
+            "de": "baby wolf 🐺",
+            "fr": "baby wolf 🐺",
+            "ar": "baby wolf 🐺"
+          }
         },
         {
           "value": "baby bear",
-          "label": "Baby Bear 🐻"
+          "label": {
+            "en": "Baby Bear 🐻",
+            "zh": "baby bear 🐻",
+            "ja": "baby bear 🐻",
+            "ko": "baby bear 🐻",
+            "es": "baby bear 🐻",
+            "de": "baby bear 🐻",
+            "fr": "baby bear 🐻",
+            "ar": "baby bear 🐻"
+          }
         },
         {
           "value": "baby leopard",
-          "label": "Baby Leopard 🐆"
+          "label": {
+            "en": "Baby Leopard 🐆",
+            "zh": "baby leopard 🐆",
+            "ja": "baby leopard 🐆",
+            "ko": "baby leopard 🐆",
+            "es": "baby leopard 🐆",
+            "de": "baby leopard 🐆",
+            "fr": "baby leopard 🐆",
+            "ar": "baby leopard 🐆"
+          }
         },
         {
           "value": "baby dragon",
-          "label": "Baby Dragon 🐉"
+          "label": {
+            "en": "Baby Dragon 🐉",
+            "zh": "baby dragon 🐉",
+            "ja": "baby dragon 🐉",
+            "ko": "baby dragon 🐉",
+            "es": "baby dragon 🐉",
+            "de": "baby dragon 🐉",
+            "fr": "baby dragon 🐉",
+            "ar": "baby dragon 🐉"
+          }
         },
         {
           "value": "baby phoenix",
-          "label": "Baby Phoenix 🔥"
+          "label": {
+            "en": "Baby Phoenix 🔥",
+            "zh": "baby phoenix 🔥",
+            "ja": "baby phoenix 🔥",
+            "ko": "baby phoenix 🔥",
+            "es": "baby phoenix 🔥",
+            "de": "baby phoenix 🔥",
+            "fr": "baby phoenix 🔥",
+            "ar": "baby phoenix 🔥"
+          }
         },
         {
           "value": "baby unicorn",
-          "label": "Baby Unicorn 🦄"
+          "label": {
+            "en": "Baby Unicorn 🦄",
+            "zh": "baby unicorn 🦄",
+            "ja": "baby unicorn 🦄",
+            "ko": "baby unicorn 🦄",
+            "es": "baby unicorn 🦄",
+            "de": "baby unicorn 🦄",
+            "fr": "baby unicorn 🦄",
+            "ar": "baby unicorn 🦄"
+          }
         },
         {
           "value": "baby griffin",
-          "label": "Baby Griffin 🦅"
+          "label": {
+            "en": "Baby Griffin 🦅",
+            "zh": "baby griffin 🦅",
+            "ja": "baby griffin 🦅",
+            "ko": "baby griffin 🦅",
+            "es": "baby griffin 🦅",
+            "de": "baby griffin 🦅",
+            "fr": "baby griffin 🦅",
+            "ar": "baby griffin 🦅"
+          }
         },
         {
           "value": "fairy dragon",
-          "label": "Fairy Dragon ✨"
+          "label": {
+            "en": "Fairy Dragon ✨",
+            "zh": "fairy dragon ✨",
+            "ja": "fairy dragon ✨",
+            "ko": "fairy dragon ✨",
+            "es": "fairy dragon ✨",
+            "de": "fairy dragon ✨",
+            "fr": "fairy dragon ✨",
+            "ar": "fairy dragon ✨"
+          }
         },
         {
           "value": "baby pegasus",
-          "label": "Baby Pegasus 🦋"
+          "label": {
+            "en": "Baby Pegasus 🦋",
+            "zh": "baby pegasus 🦋",
+            "ja": "baby pegasus 🦋",
+            "ko": "baby pegasus 🦋",
+            "es": "baby pegasus 🦋",
+            "de": "baby pegasus 🦋",
+            "fr": "baby pegasus 🦋",
+            "ar": "baby pegasus 🦋"
+          }
         },
         {
           "value": "baby nine-tailed fox",
-          "label": "Baby Nine-tailed Fox 🦊"
+          "label": {
+            "en": "Baby Nine-tailed Fox 🦊",
+            "zh": "baby nine-tailed fox 🦊",
+            "ja": "baby nine-tailed fox 🦊",
+            "ko": "baby nine-tailed fox 🦊",
+            "es": "baby nine-tailed fox 🦊",
+            "de": "baby nine-tailed fox 🦊",
+            "fr": "baby nine-tailed fox 🦊",
+            "ar": "baby nine-tailed fox 🦊"
+          }
         },
         {
           "value": "baby owl",
-          "label": "Baby Owl 🦉"
+          "label": {
+            "en": "Baby Owl 🦉",
+            "zh": "baby owl 🦉",
+            "ja": "baby owl 🦉",
+            "ko": "baby owl 🦉",
+            "es": "baby owl 🦉",
+            "de": "baby owl 🦉",
+            "fr": "baby owl 🦉",
+            "ar": "baby owl 🦉"
+          }
         },
         {
           "value": "hedgehog",
-          "label": "Hedgehog 🦔"
+          "label": {
+            "en": "Hedgehog 🦔",
+            "zh": "hedgehog 🦔",
+            "ja": "hedgehog 🦔",
+            "ko": "hedgehog 🦔",
+            "es": "hedgehog 🦔",
+            "de": "hedgehog 🦔",
+            "fr": "hedgehog 🦔",
+            "ar": "hedgehog 🦔"
+          }
         },
         {
           "value": "sugar glider",
-          "label": "Sugar Glider 🐿️"
+          "label": {
+            "en": "Sugar Glider 🐿️",
+            "zh": "sugar glider 🐿️",
+            "ja": "sugar glider 🐿️",
+            "ko": "sugar glider 🐿️",
+            "es": "sugar glider 🐿️",
+            "de": "sugar glider 🐿️",
+            "fr": "sugar glider 🐿️",
+            "ar": "sugar glider 🐿️"
+          }
         },
         {
           "value": "baby fox",
-          "label": "Baby Fox 🦊"
+          "label": {
+            "en": "Baby Fox 🦊",
+            "zh": "baby fox 🦊",
+            "ja": "baby fox 🦊",
+            "ko": "baby fox 🦊",
+            "es": "baby fox 🦊",
+            "de": "baby fox 🦊",
+            "fr": "baby fox 🦊",
+            "ar": "baby fox 🦊"
+          }
         },
         {
           "value": "baby raccoon",
-          "label": "Baby Raccoon 🦝"
+          "label": {
+            "en": "Baby Raccoon 🦝",
+            "zh": "baby raccoon 🦝",
+            "ja": "baby raccoon 🦝",
+            "ko": "baby raccoon 🦝",
+            "es": "baby raccoon 🦝",
+            "de": "baby raccoon 🦝",
+            "fr": "baby raccoon 🦝",
+            "ar": "baby raccoon 🦝"
+          }
         },
         {
           "value": "chinchilla",
-          "label": "Chinchilla 🐭"
+          "label": {
+            "en": "Chinchilla 🐭",
+            "zh": "chinchilla 🐭",
+            "ja": "chinchilla 🐭",
+            "ko": "chinchilla 🐭",
+            "es": "chinchilla 🐭",
+            "de": "chinchilla 🐭",
+            "fr": "chinchilla 🐭",
+            "ar": "chinchilla 🐭"
+          }
         },
         {
           "value": "baby koala",
-          "label": "Baby Koala 🐨"
+          "label": {
+            "en": "Baby Koala 🐨",
+            "zh": "baby koala 🐨",
+            "ja": "baby koala 🐨",
+            "ko": "baby koala 🐨",
+            "es": "baby koala 🐨",
+            "de": "baby koala 🐨",
+            "fr": "baby koala 🐨",
+            "ar": "baby koala 🐨"
+          }
         },
         {
           "value": "baby elephant",
-          "label": "Baby Elephant 🐘"
+          "label": {
+            "en": "Baby Elephant 🐘",
+            "zh": "baby elephant 🐘",
+            "ja": "baby elephant 🐘",
+            "ko": "baby elephant 🐘",
+            "es": "baby elephant 🐘",
+            "de": "baby elephant 🐘",
+            "fr": "baby elephant 🐘",
+            "ar": "baby elephant 🐘"
+          }
         }
       ]
     },
@@ -137,31 +380,94 @@
       "options": [
         {
           "value": "natural",
-          "label": "Natural"
+          "label": {
+            "en": "Natural",
+            "zh": "natural ",
+            "ja": "natural ",
+            "ko": "natural ",
+            "es": "natural ",
+            "de": "natural ",
+            "fr": "natural ",
+            "ar": "natural "
+          }
         },
         {
           "value": "pure white",
-          "label": "Pure White"
+          "label": {
+            "en": "Pure White",
+            "zh": "pure white ",
+            "ja": "pure white ",
+            "ko": "pure white ",
+            "es": "pure white ",
+            "de": "pure white ",
+            "fr": "pure white ",
+            "ar": "pure white "
+          }
         },
         {
           "value": "golden",
-          "label": "Golden"
+          "label": {
+            "en": "Golden",
+            "zh": "golden ",
+            "ja": "golden ",
+            "ko": "golden ",
+            "es": "golden ",
+            "de": "golden ",
+            "fr": "golden ",
+            "ar": "golden "
+          }
         },
         {
           "value": "grey",
-          "label": "Grey"
+          "label": {
+            "en": "Grey",
+            "zh": "grey ",
+            "ja": "grey ",
+            "ko": "grey ",
+            "es": "grey ",
+            "de": "grey ",
+            "fr": "grey ",
+            "ar": "grey "
+          }
         },
         {
           "value": "brown",
-          "label": "Brown"
+          "label": {
+            "en": "Brown",
+            "zh": "brown ",
+            "ja": "brown ",
+            "ko": "brown ",
+            "es": "brown ",
+            "de": "brown ",
+            "fr": "brown ",
+            "ar": "brown "
+          }
         },
         {
           "value": "black and white",
-          "label": "Black and White"
+          "label": {
+            "en": "Black and White",
+            "zh": "black and white ",
+            "ja": "black and white ",
+            "ko": "black and white ",
+            "es": "black and white ",
+            "de": "black and white ",
+            "fr": "black and white ",
+            "ar": "black and white "
+          }
         },
         {
           "value": "multicolored",
-          "label": "Multicolored"
+          "label": {
+            "en": "Multicolored",
+            "zh": "multicolored ",
+            "ja": "multicolored ",
+            "ko": "multicolored ",
+            "es": "multicolored ",
+            "de": "multicolored ",
+            "fr": "multicolored ",
+            "ar": "multicolored "
+          }
         }
       ]
     },
@@ -173,19 +479,55 @@
       "options": [
         {
           "value": "impossibly tiny",
-          "label": "Impossibly Tiny"
+          "label": {
+            "en": "Impossibly Tiny",
+            "zh": "impossibly tiny ",
+            "ja": "impossibly tiny ",
+            "ko": "impossibly tiny ",
+            "es": "impossibly tiny ",
+            "de": "impossibly tiny ",
+            "fr": "impossibly tiny ",
+            "ar": "impossibly tiny "
+          }
         },
         {
           "value": "adorably small",
-          "label": "Adorably Small"
+          "label": {
+            "en": "Adorably Small",
+            "zh": "adorably small ",
+            "ja": "adorably small ",
+            "ko": "adorably small ",
+            "es": "adorably small ",
+            "de": "adorably small ",
+            "fr": "adorably small ",
+            "ar": "adorably small "
+          }
         },
         {
           "value": "pocket-sized",
-          "label": "Pocket-sized"
+          "label": {
+            "en": "Pocket-sized",
+            "zh": "pocket-sized ",
+            "ja": "pocket-sized ",
+            "ko": "pocket-sized ",
+            "es": "pocket-sized ",
+            "de": "pocket-sized ",
+            "fr": "pocket-sized ",
+            "ar": "pocket-sized "
+          }
         },
         {
           "value": "miniature",
-          "label": "Miniature"
+          "label": {
+            "en": "Miniature",
+            "zh": "miniature ",
+            "ja": "miniature ",
+            "ko": "miniature ",
+            "es": "miniature ",
+            "de": "miniature ",
+            "fr": "miniature ",
+            "ar": "miniature "
+          }
         }
       ]
     },
@@ -197,23 +539,68 @@
       "options": [
         {
           "value": "bright round eyes",
-          "label": "Bright Round Eyes"
+          "label": {
+            "en": "Bright Round Eyes",
+            "zh": "bright round eyes ",
+            "ja": "bright round eyes ",
+            "ko": "bright round eyes ",
+            "es": "bright round eyes ",
+            "de": "bright round eyes ",
+            "fr": "bright round eyes ",
+            "ar": "bright round eyes "
+          }
         },
         {
           "value": "fluffy soft fur",
-          "label": "Fluffy Soft Fur"
+          "label": {
+            "en": "Fluffy Soft Fur",
+            "zh": "fluffy soft fur ",
+            "ja": "fluffy soft fur ",
+            "ko": "fluffy soft fur ",
+            "es": "fluffy soft fur ",
+            "de": "fluffy soft fur ",
+            "fr": "fluffy soft fur ",
+            "ar": "fluffy soft fur "
+          }
         },
         {
           "value": "tiny delicate paws",
-          "label": "Tiny Delicate Paws"
+          "label": {
+            "en": "Tiny Delicate Paws",
+            "zh": "tiny delicate paws ",
+            "ja": "tiny delicate paws ",
+            "ko": "tiny delicate paws ",
+            "es": "tiny delicate paws ",
+            "de": "tiny delicate paws ",
+            "fr": "tiny delicate paws ",
+            "ar": "tiny delicate paws "
+          }
         },
         {
           "value": "cute button nose",
-          "label": "Cute Button Nose"
+          "label": {
+            "en": "Cute Button Nose",
+            "zh": "cute button nose ",
+            "ja": "cute button nose ",
+            "ko": "cute button nose ",
+            "es": "cute button nose ",
+            "de": "cute button nose ",
+            "fr": "cute button nose ",
+            "ar": "cute button nose "
+          }
         },
         {
           "value": "round chubby body",
-          "label": "Round Chubby Body"
+          "label": {
+            "en": "Round Chubby Body",
+            "zh": "round chubby body ",
+            "ja": "round chubby body ",
+            "ko": "round chubby body ",
+            "es": "round chubby body ",
+            "de": "round chubby body ",
+            "fr": "round chubby body ",
+            "ar": "round chubby body "
+          }
         }
       ]
     },
@@ -225,23 +612,68 @@
       "options": [
         {
           "value": "looks curiously at the camera",
-          "label": "Looks Curiously at Camera"
+          "label": {
+            "en": "Looks Curiously at Camera",
+            "zh": "looks curiously at the camera ",
+            "ja": "looks curiously at the camera ",
+            "ko": "looks curiously at the camera ",
+            "es": "looks curiously at the camera ",
+            "de": "looks curiously at the camera ",
+            "fr": "looks curiously at the camera ",
+            "ar": "looks curiously at the camera "
+          }
         },
         {
           "value": "yawns adorably",
-          "label": "Yawns Adorably"
+          "label": {
+            "en": "Yawns Adorably",
+            "zh": "yawns adorably ",
+            "ja": "yawns adorably ",
+            "ko": "yawns adorably ",
+            "es": "yawns adorably ",
+            "de": "yawns adorably ",
+            "fr": "yawns adorably ",
+            "ar": "yawns adorably "
+          }
         },
         {
           "value": "tilts its tiny head playfully",
-          "label": "Tilts Head Playfully"
+          "label": {
+            "en": "Tilts Head Playfully",
+            "zh": "tilts its tiny head playfully ",
+            "ja": "tilts its tiny head playfully ",
+            "ko": "tilts its tiny head playfully ",
+            "es": "tilts its tiny head playfully ",
+            "de": "tilts its tiny head playfully ",
+            "fr": "tilts its tiny head playfully ",
+            "ar": "tilts its tiny head playfully "
+          }
         },
         {
           "value": "blinks sleepily",
-          "label": "Blinks Sleepily"
+          "label": {
+            "en": "Blinks Sleepily",
+            "zh": "blinks sleepily ",
+            "ja": "blinks sleepily ",
+            "ko": "blinks sleepily ",
+            "es": "blinks sleepily ",
+            "de": "blinks sleepily ",
+            "fr": "blinks sleepily ",
+            "ar": "blinks sleepily "
+          }
         },
         {
           "value": "wiggles happily",
-          "label": "Wiggles Happily"
+          "label": {
+            "en": "Wiggles Happily",
+            "zh": "wiggles happily ",
+            "ja": "wiggles happily ",
+            "ko": "wiggles happily ",
+            "es": "wiggles happily ",
+            "de": "wiggles happily ",
+            "fr": "wiggles happily ",
+            "ar": "wiggles happily "
+          }
         }
       ]
     },
@@ -253,19 +685,55 @@
       "options": [
         {
           "value": "cozy indoor setting by a sunlit window",
-          "label": "Cozy Indoor by Window"
+          "label": {
+            "en": "Cozy Indoor by Window",
+            "zh": "cozy indoor setting by a sunlit window ",
+            "ja": "cozy indoor setting by a sunlit window ",
+            "ko": "cozy indoor setting by a sunlit window ",
+            "es": "cozy indoor setting by a sunlit window ",
+            "de": "cozy indoor setting by a sunlit window ",
+            "fr": "cozy indoor setting by a sunlit window ",
+            "ar": "cozy indoor setting by a sunlit window "
+          }
         },
         {
           "value": "sunny garden with soft flowers",
-          "label": "Sunny Garden"
+          "label": {
+            "en": "Sunny Garden",
+            "zh": "sunny garden with soft flowers ",
+            "ja": "sunny garden with soft flowers ",
+            "ko": "sunny garden with soft flowers ",
+            "es": "sunny garden with soft flowers ",
+            "de": "sunny garden with soft flowers ",
+            "fr": "sunny garden with soft flowers ",
+            "ar": "sunny garden with soft flowers "
+          }
         },
         {
           "value": "soft bedroom with warm blankets",
-          "label": "Soft Bedroom"
+          "label": {
+            "en": "Soft Bedroom",
+            "zh": "soft bedroom with warm blankets ",
+            "ja": "soft bedroom with warm blankets ",
+            "ko": "soft bedroom with warm blankets ",
+            "es": "soft bedroom with warm blankets ",
+            "de": "soft bedroom with warm blankets ",
+            "fr": "soft bedroom with warm blankets ",
+            "ar": "soft bedroom with warm blankets "
+          }
         },
         {
           "value": "natural outdoor setting",
-          "label": "Natural Outdoor"
+          "label": {
+            "en": "Natural Outdoor",
+            "zh": "natural outdoor setting ",
+            "ja": "natural outdoor setting ",
+            "ko": "natural outdoor setting ",
+            "es": "natural outdoor setting ",
+            "de": "natural outdoor setting ",
+            "fr": "natural outdoor setting ",
+            "ar": "natural outdoor setting "
+          }
         }
       ]
     }

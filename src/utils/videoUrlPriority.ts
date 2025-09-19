@@ -147,11 +147,9 @@ function isValidUrl(url: string | null | undefined): url is string {
  * 检查URL是否需要代理
  */
 function shouldUseProxy(url: string): boolean {
-  // 开发环境下，非R2的第三方URL需要代理
+  // 开发环境下，R2 URL需要代理
   if (import.meta.env.DEV) {
-    return !url.includes('cdn.veo3video.me') && 
-           (url.includes('filesystem.site') || 
-            url.includes('heyoo.oss-ap-southeast-1.aliyuncs.com'))
+    return url.includes('cdn.veo3video.me') || url.includes('.r2.dev')
   }
   
   // 生产环境通常不需要代理（通过Cloudflare处理CORS）

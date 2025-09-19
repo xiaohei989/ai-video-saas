@@ -1,10 +1,11 @@
 import { useState, useRef } from 'react'
 import { ChevronDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import PortalDropdown from './portal-dropdown'
 
 interface Option {
   value: string
-  label: string
+  label: string | Record<string, string>
   icon?: string
 }
 
@@ -27,6 +28,16 @@ export function CustomSelect({
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const { i18n } = useTranslation()
+
+  // Helper function to get localized label
+  const getLocalizedLabel = (label: string | Record<string, string>): string => {
+    if (typeof label === 'string') {
+      return label
+    }
+    // 获取当前语言的标签，如果没有则回退到英文，再回退到第一个可用的
+    return label[i18n.language] || label['en'] || Object.values(label)[0] || ''
+  }
 
   // Find the selected option
   const selectedOption = options.find(opt => opt.value === value)
@@ -44,7 +55,7 @@ export function CustomSelect({
             <span>{selectedOption.icon}</span>
           )}
           <span className="truncate">
-            {selectedOption ? selectedOption.label : placeholder}
+            {selectedOption ? getLocalizedLabel(selectedOption.label) : placeholder}
           </span>
         </div>
         <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -70,7 +81,7 @@ export function CustomSelect({
             {showIcon && option.icon && (
               <span>{option.icon}</span>
             )}
-            <span>{option.label}</span>
+            <span>{getLocalizedLabel(option.label)}</span>
           </button>
         ))}
       </PortalDropdown>

@@ -1,9 +1,27 @@
 {
   "id": "f9e8d7c6-b5a4-3928-1e0f-6c5b4a392817",
   "slug": "living-book-storms",
-  "name": "Living Book of Storms",
+  "name": {
+    "en": "Living Book Storms",
+    "zh": "活书风暴",
+    "ja": "生きている本の嵐",
+    "ko": "살아있는 책 폭풍",
+    "es": "Tormentas de Libros Vivientes",
+    "de": "Lebende Bücher-Stürme",
+    "fr": "Tempêtes de Livres Vivants",
+    "ar": "عواصف الكتب الحية"
+  },
   "icon": "📖",
-  "description": "An ancient book transforms into a living diorama with ships battling through storms",
+  "description": {
+    "en": "Magical books that come alive and create weather phenomena when opened, with pages turning into storms",
+    "zh": "神奇的书籍在打开时变得栩栩如生并创造天气现象，书页变成风暴",
+    "ja": "開かれると生き生きとし、天候現象を作り出す魔法の本で、ページが嵐に変わる",
+    "ko": "열리면 살아나며 날씨 현상을 만들어내는 마법의 책들, 페이지가 폭풍으로 변함",
+    "es": "Libros mágicos que cobran vida y crean fenómenos meteorológicos cuando se abren, con páginas que se convierten en tormentas",
+    "de": "Magische Bücher, die zum Leben erwachen und Wetterphänomene erzeugen, wenn sie geöffnet werden, mit Seiten, die zu Stürmen werden",
+    "fr": "Livres magiques qui prennent vie et créent des phénomènes météorologiques lorsqu'ils sont ouverts, avec des pages qui se transforment en tempêtes",
+    "ar": "كتب سحرية تنبض بالحياة وتخلق ظواهر جوية عند فتحها، مع صفحات تتحول إلى عواصف"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/living-book-storms.mp4?v=1758008502567",
   "credits": 15,
   "tags": [
@@ -17,7 +35,7 @@
   ],
   "createdAt": "2025-01-30T10:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.576Z",
+  "lastModified": "2025-09-18T04:11:01.426Z",
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
@@ -94,13 +112,31 @@
   "params": {
     "ship_type": {
       "type": "select",
-      "label": "Ship Type",
+      "label": {
+        "en": "Ship Type",
+        "zh": "船舶类型",
+        "ja": "船の種類",
+        "ko": "선박 유형",
+        "es": "Tipo de Barco",
+        "de": "Schiffstyp",
+        "fr": "Type de Navire",
+        "ar": "نوع السفينة"
+      },
       "required": true,
       "default": "viking_longship",
       "options": [
         {
           "value": "viking_longship",
-          "label": "⚔️ Viking Longship",
+          "label": {
+            "en": "⚔️ Viking Longship",
+            "zh": "⚔️ 维京长船",
+            "ja": "⚔️ バイキング船",
+            "ko": "⚔️ 바이킹 롱쉽",
+            "es": "⚔️ Drakkar Vikingo",
+            "de": "⚔️ Wikinger Langschiff",
+            "fr": "⚔️ Drakkar Viking",
+            "ar": "⚔️ سفينة الفايكنغ الطويلة"
+          },
           "metadata": {
             "ship_description": "Viking longship with fierce dragon head prow",
             "ship_material": "dark oak wooden",
@@ -110,7 +146,16 @@
         },
         {
           "value": "pirate_frigate",
-          "label": "🏴‍☠️ Pirate Frigate",
+          "label": {
+            "en": "🏴‍☠️ Pirate Frigate",
+            "zh": "🏴‍☠️ 海盗护卫舰",
+            "ja": "🏴‍☠️ 海賊フリゲート艦",
+            "ko": "🏴‍☠️ 해적 프리깃",
+            "es": "🏴‍☠️ Fragata Pirata",
+            "de": "🏴‍☠️ Piraten-Fregatte",
+            "fr": "🏴‍☠️ Frégate Pirate",
+            "ar": "🏴‍☠️ فرقاطة القراصنة"
+          },
           "metadata": {
             "ship_description": "three-masted pirate frigate with skull flag",
             "ship_material": "weathered wooden",
@@ -120,7 +165,16 @@
         },
         {
           "value": "spanish_galleon",
-          "label": "🇪🇸 Spanish Galleon",
+          "label": {
+            "en": "🇪🇸 Spanish Galleon",
+            "zh": "🇪🇸 西班牙大帆船",
+            "ja": "🇪🇸 スペインのガレオン船",
+            "ko": "🇪🇸 스페인 갤리온",
+            "es": "🇪🇸 Galeón Español",
+            "de": "🇪🇸 Spanische Galeone",
+            "fr": "🇪🇸 Galion Espagnol",
+            "ar": "🇪🇸 جاليون إسباني"
+          },
           "metadata": {
             "ship_description": "Spanish galleon with golden ornaments",
             "ship_material": "ornate wooden",
@@ -130,7 +184,16 @@
         },
         {
           "value": "chinese_treasure_ship",
-          "label": "🏮 Chinese Treasure Ship",
+          "label": {
+            "en": "🏮 Chinese Treasure Ship",
+            "zh": "🏮 中国宝船",
+            "ja": "🏮 中国の宝船",
+            "ko": "🏮 중국 보물선",
+            "es": "🏮 Barco del Tesoro Chino",
+            "de": "🏮 Chinesisches Schatzschiff",
+            "fr": "🏮 Bateau-Trésor Chinois",
+            "ar": "🏮 سفينة الكنز الصينية"
+          },
           "metadata": {
             "ship_description": "Chinese treasure ship with red sails",
             "ship_material": "lacquered wooden",
@@ -140,7 +203,16 @@
         },
         {
           "value": "british_man_of_war",
-          "label": "🇬🇧 British Man-of-War",
+          "label": {
+            "en": "🇬🇧 British Man-of-War",
+            "zh": "🇬🇧 英国战舰",
+            "ja": "🇬🇧 イギリス戦艦",
+            "ko": "🇬🇧 영국 전함",
+            "es": "🇬🇧 Navío de Guerra Británico",
+            "de": "🇬🇧 Britisches Kriegsschiff",
+            "fr": "🇬🇧 Vaisseau de Guerre Britannique",
+            "ar": "🇬🇧 سفينة حربية بريطانية"
+          },
           "metadata": {
             "ship_description": "HMS Victory-style ship of the line",
             "ship_material": "mighty oak wooden",
@@ -150,7 +222,16 @@
         },
         {
           "value": "missile_destroyer",
-          "label": "🚀 Modern Destroyer",
+          "label": {
+            "en": "🚀 Modern Destroyer",
+            "zh": "🚀 现代驱逐舰",
+            "ja": "🚀 現代駆逐艦",
+            "ko": "🚀 현대 구축함",
+            "es": "🚀 Destructor Moderno",
+            "de": "🚀 Moderner Zerstörer",
+            "fr": "🚀 Destroyer Moderne",
+            "ar": "🚀 مدمرة حديثة"
+          },
           "metadata": {
             "ship_description": "modern destroyer with radar arrays",
             "ship_material": "grey steel",
@@ -160,7 +241,16 @@
         },
         {
           "value": "aircraft_carrier",
-          "label": "✈️ Aircraft Carrier",
+          "label": {
+            "en": "✈️ Aircraft Carrier",
+            "zh": "✈️ 航空母舰",
+            "ja": "✈️ 航空母艦",
+            "ko": "✈️ 항공모함",
+            "es": "✈️ Portaaviones",
+            "de": "✈️ Flugzeugträger",
+            "fr": "✈️ Porte-Avions",
+            "ar": "✈️ حاملة طائرات"
+          },
           "metadata": {
             "ship_description": "nuclear aircraft carrier with jets",
             "ship_material": "massive steel",
@@ -170,7 +260,16 @@
         },
         {
           "value": "attack_submarine",
-          "label": "🔱 Submarine",
+          "label": {
+            "en": "🔱 Submarine",
+            "zh": "🔱 潜水艇",
+            "ja": "🔱 潜水艦",
+            "ko": "🔱 잠수함",
+            "es": "🔱 Submarino",
+            "de": "🔱 U-Boot",
+            "fr": "🔱 Sous-Marin",
+            "ar": "🔱 غواصة"
+          },
           "metadata": {
             "ship_description": "submarine breaking through waves",
             "ship_material": "black steel",
@@ -180,7 +279,16 @@
         },
         {
           "value": "guided_missile_cruiser",
-          "label": "⚡ Missile Cruiser",
+          "label": {
+            "en": "⚡ Missile Cruiser",
+            "zh": "⚡ 导弹巡洋舰",
+            "ja": "⚡ ミサイル巡洋艦",
+            "ko": "⚡ 미사일 순양함",
+            "es": "⚡ Crucero de Misiles",
+            "de": "⚡ Raketenkreuzer",
+            "fr": "⚡ Croiseur à Missiles",
+            "ar": "⚡ طراد صاروخي"
+          },
           "metadata": {
             "ship_description": "guided missile cruiser",
             "ship_material": "composite steel",
@@ -190,7 +298,16 @@
         },
         {
           "value": "stealth_frigate",
-          "label": "🌊 Stealth Frigate",
+          "label": {
+            "en": "🌊 Stealth Frigate",
+            "zh": "🌊 隐身护卫舰",
+            "ja": "🌊 ステルスフリゲート",
+            "ko": "🌊 스텔스 프리깃",
+            "es": "🌊 Fragata Furtiva",
+            "de": "🌊 Tarnkappen-Fregatte",
+            "fr": "🌊 Frégate Furtive",
+            "ar": "🌊 فرقاطة شبح"
+          },
           "metadata": {
             "ship_description": "angular stealth frigate",
             "ship_material": "radar-absorbing composite",
@@ -202,7 +319,16 @@
     },
     "cta_text": {
       "type": "text",
-      "label": "Ending Text",
+      "label": {
+        "en": "Ending Text",
+        "zh": "结尾文字",
+        "ja": "エンディングテキスト",
+        "ko": "엔딩 텍스트",
+        "es": "Texto Final",
+        "de": "Abschlusstext",
+        "fr": "Texte de Fin",
+        "ar": "النص النهائي"
+      },
       "placeholder": "Enter your custom text",
       "required": true,
       "default": "veo3video.me"
@@ -229,7 +355,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

@@ -1,9 +1,27 @@
 {
   "id": "a8c5f2d9-4e7b-3a6c-8f1d-2b9e5a8c4f7e",
   "slug": "crystal-fruit-biting-asmr",
-  "name": "Crystal Fruit Biting ASMR",
+  "name": {
+    "en": "Crystal Fruit Biting ASMR",
+    "zh": "水晶水果咬食ASMR",
+    "ja": "クリスタルフルーツ噛みASMR",
+    "ko": "크리스탈 과일 씹기 ASMR",
+    "es": "ASMR de Morder Frutas de Cristal",
+    "de": "Kristall-Frucht Beißen ASMR",
+    "fr": "ASMR de Croquer des Fruits de Cristal",
+    "ar": "ASMR عض الفواكه الكريستالية"
+  },
   "icon": "💎",
-  "description": "Surrealistic ASMR close-up of biting into crystal-like fruits with customizable colors and materials",
+  "description": {
+    "en": "Satisfying ASMR experience of biting into crystal-like transparent fruits with crispy textures",
+    "zh": "令人满足的ASMR体验，咬食具有酥脆质地的水晶般透明水果",
+    "ja": "サクサクした食感の水晶のような透明フルーツを噛む満足感のあるASMR体験",
+    "ko": "바삭한 질감의 크리스탈처럼 투명한 과일을 씹는 만족스러운 ASMR 경험",
+    "es": "Experiencia ASMR satisfactoria de morder frutas transparentes como cristal con texturas crujientes",
+    "de": "Befriedigende ASMR-Erfahrung beim Beißen in kristallähnliche transparente Früchte mit knusprigen Texturen",
+    "fr": "Expérience ASMR satisfaisante de croquer des fruits transparents comme du cristal avec des textures croquantes",
+    "ar": "تجربة ASMR مرضية لعض الفواكه الشفافة الشبيهة بالكريستال ذات القوام المقرمش"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/crystal-fruit-biting-asmr.mp4?v=1758008502567",
   "tags": [
     "asmr",
@@ -17,124 +35,358 @@
   ],
   "createdAt": "2025-01-29T20:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.574Z",
+  "lastModified": "2025-09-18T03:33:06.779Z",
   "promptTemplate": "Surrealistic ASMR close-up, a woman gently bites into a smooth, {color} {material}-like {fruit_type}. The surface exudes a soft sheen, rich in texture, with a delicate stem remaining on top, reminiscent of {material} art. Her lips part gently as a fair-skinned hand with neatly trimmed nails cradles the {fruit_type}. Captured in slow motion, she bites into the {fruit_type} flesh, and at the instant of biting, small, {color} {material} fragments burst from between her teeth and lips. These fragments refract soft light, naturally falling down in a slow and rhythmic chewing pace. The moist sound of chewing intertwines with the crisp, subtle cracks characteristic of {material}. Each bite is an ASMR feast—layered, quiet, and delicate, transporting viewers into a sensory haze. Emphasizing touch, sound, and vivid visual details to satisfy ASMR cravings.",
   "params": {
     "fruit_type": {
       "type": "select",
-      "label": "Fruit Type",
+      "label": {
+        "en": "Crystal Fruit Type",
+        "zh": "水晶水果类型",
+        "ja": "クリスタルフルーツの種類",
+        "ko": "크리스탈 과일 종류",
+        "es": "Tipo de Fruta de Cristal",
+        "de": "Kristall-Frucht Art",
+        "fr": "Type de Fruit de Cristal",
+        "ar": "نوع الفاكهة الكريستالية"
+      },
       "required": true,
       "default": "apple",
       "options": [
         {
           "value": "apple",
-          "label": "Apple 🍎"
+          "label": {
+            "en": "Apple 🍎",
+            "zh": "苹果 🍎",
+            "ja": "リンゴ 🍎",
+            "ko": "사과 🍎",
+            "es": "Manzana 🍎",
+            "de": "Apfel 🍎",
+            "fr": "Pomme 🍎",
+            "ar": "تفاحة 🍎"
+          }
         },
         {
           "value": "strawberry",
-          "label": "Strawberry 🍓"
+          "label": {
+            "en": "Strawberry 🍓",
+            "zh": "草莓 🍓",
+            "ja": "イチゴ 🍓",
+            "ko": "딸기 🍓",
+            "es": "Fresa 🍓",
+            "de": "Erdbeere 🍓",
+            "fr": "Fraise 🍓",
+            "ar": "فراولة 🍓"
+          }
         },
         {
           "value": "cherry",
-          "label": "Cherry 🍑"
+          "label": {
+            "en": "Cherry 🍑",
+            "zh": "樱桃 🍑",
+            "ja": "チェリー 🍑",
+            "ko": "체리 🍑",
+            "es": "Cereza 🍑",
+            "de": "Kirsche 🍑",
+            "fr": "Cerise 🍑",
+            "ar": "كرز 🍑"
+          }
         },
         {
           "value": "grape",
-          "label": "Grape 🍇"
+          "label": {
+            "en": "Grape 🍇",
+            "zh": "葡萄 🍇",
+            "ja": "ぶどう 🍇",
+            "ko": "포도 🍇",
+            "es": "Uva 🍇",
+            "de": "Traube 🍇",
+            "fr": "Raisin 🍇",
+            "ar": "عنب 🍇"
+          }
         },
         {
           "value": "kiwi",
-          "label": "Kiwi 🥝"
+          "label": {
+            "en": "Kiwi 🥝",
+            "zh": "猕猴桃 🥝",
+            "ja": "キウイ 🥝",
+            "ko": "키위 🥝",
+            "es": "Kiwi 🥝",
+            "de": "Kiwi 🥝",
+            "fr": "Kiwi 🥝",
+            "ar": "كيوي 🥝"
+          }
         },
         {
           "value": "orange",
-          "label": "Orange 🍊"
+          "label": {
+            "en": "Orange 🍊",
+            "zh": "橙子 🍊",
+            "ja": "オレンジ 🍊",
+            "ko": "오렌지 🍊",
+            "es": "Naranja 🍊",
+            "de": "Orange 🍊",
+            "fr": "Orange 🍊",
+            "ar": "برتقالة 🍊"
+          }
         },
         {
           "value": "lemon",
-          "label": "Lemon 🍋"
+          "label": {
+            "en": "Lemon 🍋",
+            "zh": "柠檬 🍋",
+            "ja": "レモン 🍋",
+            "ko": "레몬 🍋",
+            "es": "Limón 🍋",
+            "de": "Zitrone 🍋",
+            "fr": "Citron 🍋",
+            "ar": "ليمونة 🍋"
+          }
         },
         {
           "value": "mango",
-          "label": "Mango 🥭"
+          "label": {
+            "en": "Mango 🥭",
+            "zh": "芒果 🥭",
+            "ja": "マンゴー 🥭",
+            "ko": "망고 🥭",
+            "es": "Mango 🥭",
+            "de": "Mango 🥭",
+            "fr": "Mangue 🥭",
+            "ar": "مانجو 🥭"
+          }
         }
       ]
     },
     "color": {
       "type": "select",
-      "label": "Color",
+      "label": {
+        "en": "Color",
+        "zh": "颜色",
+        "ja": "色",
+        "ko": "색상",
+        "es": "Color",
+        "de": "Farbe",
+        "fr": "Couleur",
+        "ar": "اللون"
+      },
       "required": true,
       "default": "translucent pink",
       "options": [
         {
           "value": "translucent pink",
-          "label": "Translucent Pink 💗"
+          "label": {
+            "en": "Translucent Pink 💗",
+            "zh": "半透明粉色 💗",
+            "ja": "半透明ピンク 💗",
+            "ko": "반투명 분홍 💗",
+            "es": "Rosa Translúcido 💗",
+            "de": "Transluzentes Rosa 💗",
+            "fr": "Rose Translucide 💗",
+            "ar": "وردي شفاف 💗"
+          }
         },
         {
           "value": "translucent blue",
-          "label": "Translucent Blue 💙"
+          "label": {
+            "en": "Translucent Blue 💙",
+            "zh": "半透明蓝色 💙",
+            "ja": "半透明ブルー 💙",
+            "ko": "반투명 파랑 💙",
+            "es": "Azul Translúcido 💙",
+            "de": "Transluzentes Blau 💙",
+            "fr": "Bleu Translucide 💙",
+            "ar": "أزرق شفاف 💙"
+          }
         },
         {
           "value": "translucent green",
-          "label": "Translucent Green 💚"
+          "label": {
+            "en": "Translucent Green 💚",
+            "zh": "半透明绿色 💚",
+            "ja": "半透明グリーン 💚",
+            "ko": "반투명 초록 💚",
+            "es": "Verde Translúcido 💚",
+            "de": "Transluzentes Grün 💚",
+            "fr": "Vert Translucide 💚",
+            "ar": "أخضر شفاف 💚"
+          }
         },
         {
           "value": "translucent yellow",
-          "label": "Translucent Yellow 💛"
+          "label": {
+            "en": "Translucent Yellow 💛",
+            "zh": "半透明黄色 💛",
+            "ja": "半透明イエロー 💛",
+            "ko": "반투명 노랑 💛",
+            "es": "Amarillo Translúcido 💛",
+            "de": "Transluzentes Gelb 💛",
+            "fr": "Jaune Translucide 💛",
+            "ar": "أصفر شفاف 💛"
+          }
         },
         {
           "value": "translucent purple",
-          "label": "Translucent Purple 💜"
+          "label": {
+            "en": "Translucent Purple 💜",
+            "zh": "半透明紫色 💜",
+            "ja": "半透明パープル 💜",
+            "ko": "반투명 보라 💜",
+            "es": "Púrpura Translúcido 💜",
+            "de": "Transluzentes Lila 💜",
+            "fr": "Violet Translucide 💜",
+            "ar": "بنفسجي شفاف 💜"
+          }
         },
         {
           "value": "translucent white",
-          "label": "Translucent White 🤍"
+          "label": {
+            "en": "Translucent White 🤍",
+            "zh": "半透明白色 🤍",
+            "ja": "半透明ホワイト 🤍",
+            "ko": "반투명 흰색 🤍",
+            "es": "Blanco Translúcido 🤍",
+            "de": "Transluzentes Weiß 🤍",
+            "fr": "Blanc Translucide 🤍",
+            "ar": "أبيض شفاف 🤍"
+          }
         },
         {
           "value": "translucent orange",
-          "label": "Translucent Orange 🧡"
+          "label": {
+            "en": "Translucent Orange 🧡",
+            "zh": "半透明橙色 🧡",
+            "ja": "半透明オレンジ 🧡",
+            "ko": "반투명 주황 🧡",
+            "es": "Naranja Translúcido 🧡",
+            "de": "Transluzentes Orange 🧡",
+            "fr": "Orange Translucide 🧡",
+            "ar": "برتقالي شفاف 🧡"
+          }
         },
         {
           "value": "translucent red",
-          "label": "Translucent Red ❤️"
+          "label": {
+            "en": "Translucent Red ❤️",
+            "zh": "半透明红色 ❤️",
+            "ja": "半透明レッド ❤️",
+            "ko": "반투명 빨강 ❤️",
+            "es": "Rojo Translúcido ❤️",
+            "de": "Transluzentes Rot ❤️",
+            "fr": "Rouge Translucide ❤️",
+            "ar": "أحمر شفاف ❤️"
+          }
         }
       ]
     },
     "material": {
       "type": "select",
-      "label": "Material",
+      "label": {
+        "en": "Material",
+        "zh": "材质",
+        "ja": "材質",
+        "ko": "재질",
+        "es": "Material",
+        "de": "Material",
+        "fr": "Matériau",
+        "ar": "المادة"
+      },
       "required": true,
       "default": "crystal",
       "options": [
         {
           "value": "crystal",
-          "label": "Crystal 💎"
+          "label": {
+            "en": "Crystal 💎",
+            "zh": "水晶 💎",
+            "ja": "クリスタル 💎",
+            "ko": "크리스탈 💎",
+            "es": "Cristal 💎",
+            "de": "Kristall 💎",
+            "fr": "Cristal 💎",
+            "ar": "كريستال 💎"
+          }
         },
         {
           "value": "ice",
-          "label": "Ice 🧊"
+          "label": {
+            "en": "Ice 🧊",
+            "zh": "冰块 🧊",
+            "ja": "氷 🧊",
+            "ko": "얼음 🧊",
+            "es": "Hielo 🧊",
+            "de": "Eis 🧊",
+            "fr": "Glace 🧊",
+            "ar": "ثلج 🧊"
+          }
         },
         {
           "value": "glass",
-          "label": "Glass 🪟"
+          "label": {
+            "en": "Glass 🪟",
+            "zh": "玻璃 🪟",
+            "ja": "ガラス 🪟",
+            "ko": "유리 🪟",
+            "es": "Vidrio 🪟",
+            "de": "Glas 🪟",
+            "fr": "Verre 🪟",
+            "ar": "زجاج 🪟"
+          }
         },
         {
           "value": "amber",
-          "label": "Amber 🍯"
+          "label": {
+            "en": "Amber 🍯",
+            "zh": "琥珀 🍯",
+            "ja": "アンバー 🍯",
+            "ko": "호박 🍯",
+            "es": "Ámbar 🍯",
+            "de": "Bernstein 🍯",
+            "fr": "Ambre 🍯",
+            "ar": "عنبر 🍯"
+          }
         },
         {
           "value": "hydrogel",
-          "label": "Hydrogel 💧"
+          "label": {
+            "en": "Hydrogel 💧",
+            "zh": "水凝胶 💧",
+            "ja": "ハイドロゲル 💧",
+            "ko": "하이드로겔 💧",
+            "es": "Hidrogel 💧",
+            "de": "Hydrogel 💧",
+            "fr": "Hydrogel 💧",
+            "ar": "هيدروجيل 💧"
+          }
         },
         {
           "value": "soap",
-          "label": "Soap 🧼"
+          "label": {
+            "en": "Soap 🧼",
+            "zh": "肥皂 🧼",
+            "ja": "石鹸 🧼",
+            "ko": "비누 🧼",
+            "es": "Jabón 🧼",
+            "de": "Seife 🧼",
+            "fr": "Savon 🧼",
+            "ar": "صابون 🧼"
+          }
         }
       ]
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

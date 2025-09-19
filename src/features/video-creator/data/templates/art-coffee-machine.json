@@ -1,9 +1,27 @@
 {
   "id": "f01f880a-b9b3-4dc3-9b5f-34f2fc9fb736",
   "slug": "art-coffee-machine",
-  "name": "Art Coffee Machine Magic Creation",
+  "name": {
+    "en": "Art Coffee Machine Magic Creation",
+    "zh": "艺术咖啡机魔法创作",
+    "ja": "アートコーヒーマシン魔法創作",
+    "ko": "아트 커피 머신 마법 창작",
+    "es": "Creación Mágica de Máquina de Café Arte",
+    "de": "Kunst-Kaffeemaschine Magische Kreation",
+    "fr": "Création Magique de Machine à Café d'Art",
+    "ar": "إبداع سحر آلة القهوة الفنية"
+  },
   "icon": "☕",
-  "description": "Transform classic artworks into fluid art in a cup through a magical coffee machine",
+  "description": {
+    "en": "Transform classic artworks into fluid art in a cup through a magical coffee machine",
+    "zh": "通过神奇的咖啡机将经典艺术品转化为杯中流动艺术",
+    "ja": "魔法のコーヒーマシンで古典的な芸術作品をカップの中の流体アートに変換する",
+    "ko": "마법의 커피 머신을 통해 고전 예술 작품을 컵 속의 유동적인 예술로 변환",
+    "es": "Transforma obras de arte clásicas en arte fluido en una taza a través de una máquina de café mágica",
+    "de": "Verwandle klassische Kunstwerke durch eine magische Kaffeemaschine in fließende Kunst in einer Tasse",
+    "fr": "Transformez les œuvres d'art classiques en art fluide dans une tasse grâce à une machine à café magique",
+    "ar": "حوّل الأعمال الفنية الكلاسيكية إلى فن سائل في كوب من خلال آلة قهوة سحرية"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/art-coffee-machine.mp4?v=1758008502567",
   "category": "Art/Creative",
   "tags": [
@@ -22,108 +40,333 @@
   "params": {
     "artwork": {
       "type": "select",
-      "label": "Artwork",
+      "label": {
+        "en": "Artwork",
+        "zh": "艺术作品",
+        "ja": "アートワーク",
+        "ko": "작품",
+        "es": "Obra de Arte",
+        "de": "Kunstwerk",
+        "fr": "Œuvre d'Art",
+        "ar": "العمل الفني"
+      },
       "required": true,
       "default": "Van Gogh's famous painting The Starry Night",
       "options": [
         {
           "value": "Van Gogh's famous painting The Starry Night",
-          "label": "Van Gogh's Starry Night"
+          "label": {
+            "en": "Van Gogh's Starry Night",
+            "zh": "梵高星夜",
+            "ja": "ゴッホの星月夜",
+            "ko": "반 고흐의 별이 빛나는 밤",
+            "es": "La Noche Estrellada de Van Gogh",
+            "de": "Van Goghs Sternennacht",
+            "fr": "La Nuit Étoilée de Van Gogh",
+            "ar": "ليلة النجوم لفان جوخ"
+          }
         },
         {
           "value": "Monet's Water Lilies",
-          "label": "Monet's Water Lilies"
+          "label": {
+            "en": "Monet's Water Lilies",
+            "zh": "莫奈睡莲",
+            "ja": "モネの睡蓮",
+            "ko": "모네의 수련",
+            "es": "Los Nenúfares de Monet",
+            "de": "Monets Seerosen",
+            "fr": "Les Nymphéas de Monet",
+            "ar": "زنابق الماء لموني"
+          }
         },
         {
           "value": "Leonardo da Vinci's Mona Lisa",
-          "label": "Da Vinci's Mona Lisa"
+          "label": {
+            "en": "Da Vinci's Mona Lisa",
+            "zh": "达芬奇蒙娜丽莎",
+            "ja": "ダ・ヴィンチのモナリザ",
+            "ko": "다빈치의 모나리자",
+            "es": "La Mona Lisa de Da Vinci",
+            "de": "Da Vincis Mona Lisa",
+            "fr": "La Joconde de Da Vinci",
+            "ar": "الموناليزا لدافنشي"
+          }
         },
         {
           "value": "Hokusai's The Great Wave",
-          "label": "Hokusai's Great Wave"
+          "label": {
+            "en": "Hokusai's Great Wave",
+            "zh": "北斋巨浪",
+            "ja": "北斎の神奈川沖浪裏",
+            "ko": "호쿠사이의 거대한 파도",
+            "es": "La Gran Ola de Hokusai",
+            "de": "Hokusais Große Welle",
+            "fr": "La Grande Vague de Hokusai",
+            "ar": "الموجة العظيمة لهوكوساي"
+          }
         },
         {
           "value": "Mondrian's Composition",
-          "label": "Mondrian's Composition"
+          "label": {
+            "en": "Mondrian's Composition",
+            "zh": "蒙德里安构图",
+            "ja": "モンドリアンのコンポジション",
+            "ko": "몬드리안의 구성",
+            "es": "Composición de Mondrian",
+            "de": "Mondrians Komposition",
+            "fr": "Composition de Mondrian",
+            "ar": "تكوين موندريان"
+          }
         },
         {
           "value": "Picasso's Guernica",
-          "label": "Picasso's Guernica"
+          "label": {
+            "en": "Picasso's Guernica",
+            "zh": "毕加索格尔尼卡",
+            "ja": "ピカソのゲルニカ",
+            "ko": "피카소의 게르니카",
+            "es": "Guernica de Picasso",
+            "de": "Picassos Guernica",
+            "fr": "Guernica de Picasso",
+            "ar": "غيرنيكا لبيكاسو"
+          }
         },
         {
           "value": "Klimt's The Kiss",
-          "label": "Klimt's The Kiss"
+          "label": {
+            "en": "Klimt's The Kiss",
+            "zh": "克里姆特吻",
+            "ja": "クリムトの接吻",
+            "ko": "클림트의 키스",
+            "es": "El Beso de Klimt",
+            "de": "Klimts Der Kuss",
+            "fr": "Le Baiser de Klimt",
+            "ar": "القبلة لكليمت"
+          }
         },
         {
           "value": "Munch's The Scream",
-          "label": "Munch's The Scream"
+          "label": {
+            "en": "Munch's The Scream",
+            "zh": "蒙克呐喊",
+            "ja": "ムンクの叫び",
+            "ko": "뭉크의 절규",
+            "es": "El Grito de Munch",
+            "de": "Munchs Der Schrei",
+            "fr": "Le Cri de Munch",
+            "ar": "الصرخة لمونك"
+          }
         },
         {
           "value": "Vermeer's Girl with a Pearl Earring",
-          "label": "Vermeer's Girl with Pearl Earring"
+          "label": {
+            "en": "Vermeer's Girl with Pearl Earring",
+            "zh": "维米尔戴珍珠耳环的女孩",
+            "ja": "フェルメールの真珠の耳飾りの少女",
+            "ko": "베르메르의 진주 귀걱이를 한 소녀",
+            "es": "La Joven de la Perla de Vermeer",
+            "de": "Vermeers Mädchen mit dem Perlenohrring",
+            "fr": "La Jeune Fille à la Perle de Vermeer",
+            "ar": "فتاة بقرط اللؤلؤ لفيرمير"
+          }
         },
         {
           "value": "Botticelli's The Birth of Venus",
-          "label": "Botticelli's Birth of Venus"
+          "label": {
+            "en": "Botticelli's Birth of Venus",
+            "zh": "波提切利维纳斯诞生",
+            "ja": "ボッティチェッリのヴィーナスの誕生",
+            "ko": "보티첼리의 비너스의 탄생",
+            "es": "El Nacimiento de Venus de Botticelli",
+            "de": "Botticellis Geburt der Venus",
+            "fr": "La Naissance de Vénus de Botticelli",
+            "ar": "ولادة فينوس لبوتيتشيللي"
+          }
         },
         {
           "value": "Dali's The Persistence of Memory",
-          "label": "Dali's Persistence of Memory"
+          "label": {
+            "en": "Dali's Persistence of Memory",
+            "zh": "达利记忆的永恒",
+            "ja": "ダリの記憶の固執",
+            "ko": "달리의 기억의 지속",
+            "es": "La Persistencia de la Memoria de Dalí",
+            "de": "Dalís Beharrlichkeit der Erinnerung",
+            "fr": "La Persistance de la Mémoire de Dalí",
+            "ar": "إصرار الذاكرة لدالي"
+          }
         },
         {
           "value": "Kandinsky's Composition VII",
-          "label": "Kandinsky's Composition VII"
+          "label": {
+            "en": "Kandinsky's Composition VII",
+            "zh": "康定斯基第七号构图",
+            "ja": "カンディンスキーのコンポジション7番",
+            "ko": "칸디스키의 구성 7번",
+            "es": "Composición VII de Kandinsky",
+            "de": "Kandinskys Komposition VII",
+            "fr": "Composition VII de Kandinsky",
+            "ar": "تكوين 7 لكاندينسكي"
+          }
         },
         {
           "value": "Rembrandt's The Night Watch",
-          "label": "Rembrandt's Night Watch"
+          "label": {
+            "en": "Rembrandt's Night Watch",
+            "zh": "伦勃朗夜巴",
+            "ja": "レンブラントの夜警",
+            "ko": "렘브란트의 야경대",
+            "es": "La Ronda de Noche de Rembrandt",
+            "de": "Rembrandts Nachtwache",
+            "fr": "La Ronde de Nuit de Rembrandt",
+            "ar": "حراس الليل لريمبراندت"
+          }
         },
         {
           "value": "Michelangelo's The Creation of Adam",
-          "label": "Michelangelo's Creation of Adam"
+          "label": {
+            "en": "Michelangelo's Creation of Adam",
+            "zh": "米开朗基罗亚当的创造",
+            "ja": "ミケランジェロのアダムの創造",
+            "ko": "미켈란젬로의 아담의 창조",
+            "es": "La Creación de Adán de Miguel Ángel",
+            "de": "Michelangelos Erschaffung Adams",
+            "fr": "La Création d'Adam de Michel-Ange",
+            "ar": "خلق آدم لميكيل أنجلو"
+          }
         },
         {
           "value": "Banksy's Girl With Balloon",
-          "label": "Banksy's Girl With Balloon"
+          "label": {
+            "en": "Banksy's Girl With Balloon",
+            "zh": "班克斯持气球的女孩",
+            "ja": "バンクシーの風船を持つ少女",
+            "ko": "뱅시의 풍선을 든 소녀",
+            "es": "Niña con Globo de Banksy",
+            "de": "Banksys Mädchen mit Ballon",
+            "fr": "Fille au Ballon de Banksy",
+            "ar": "الفتاة مع البالون لبانكسي"
+          }
         }
       ]
     },
     "cup_style": {
       "type": "select",
-      "label": "Cup Style",
+      "label": {
+        "en": "Cup Style",
+        "zh": "杯子风格",
+        "ja": "カップスタイル",
+        "ko": "컵 스타일",
+        "es": "Estilo de Taza",
+        "de": "Tassenstil",
+        "fr": "Style de Tasse",
+        "ar": "نمط الكوب"
+      },
       "default": "European-style retro white",
       "options": [
         {
           "value": "European-style retro white",
-          "label": "European Retro White Porcelain"
+          "label": {
+            "en": "European Retro White Porcelain",
+            "zh": "欧式复古白瓷杯",
+            "ja": "ヨーロピアン レトロ 白磁",
+            "ko": "유럽식 복고 화이트 포슬린",
+            "es": "Porcelana Blanca Retro Europea",
+            "de": "Europäisches Retro-Weißes Porzellan",
+            "fr": "Porcelaine Blanche Rétro Européenne",
+            "ar": "خزف أبيض أوروبي كلاسيكي"
+          }
         },
         {
           "value": "modern minimalist glass",
-          "label": "Modern Minimalist Glass"
+          "label": {
+            "en": "Modern Minimalist Glass",
+            "zh": "现代简约玻璃杯",
+            "ja": "モダン ミニマリスト グラス",
+            "ko": "모던 미니멀 글라스",
+            "es": "Vidrio Minimalista Moderno",
+            "de": "Modernes Minimalistisches Glas",
+            "fr": "Verre Minimaliste Moderne",
+            "ar": "كوب زجاجي حديث بسيط"
+          }
         },
         {
           "value": "Japanese ceramic",
-          "label": "Japanese Ceramic"
+          "label": {
+            "en": "Japanese Ceramic",
+            "zh": "日式陶瓷杯",
+            "ja": "日本の陶器",
+            "ko": "일본 세라믹",
+            "es": "Cerámica Japonesa",
+            "de": "Japanische Keramik",
+            "fr": "Céramique Japonaise",
+            "ar": "سيراميك ياباني"
+          }
         },
         {
           "value": "Nordic wood-textured",
-          "label": "Nordic Wood Texture"
+          "label": {
+            "en": "Nordic Wood Texture",
+            "zh": "北欧木纹理",
+            "ja": "ノルディック木目調",
+            "ko": "노르딕 우드 텍스처",
+            "es": "Textura de Madera Nórdica",
+            "de": "Nordische Holzstruktur",
+            "fr": "Texture de Bois Nordique",
+            "ar": "نقشة خشب نوردية"
+          }
         },
         {
           "value": "industrial metal",
-          "label": "Industrial Metal"
+          "label": {
+            "en": "Industrial Metal",
+            "zh": "工业金属",
+            "ja": "インダストリアルメタル",
+            "ko": "인더스트리얼 메탈",
+            "es": "Metal Industrial",
+            "de": "Industriemetall",
+            "fr": "Métal Industriel",
+            "ar": "معدن صناعي"
+          }
         },
         {
           "value": "crystal clear glass",
-          "label": "Crystal Glass"
+          "label": {
+            "en": "Crystal Glass",
+            "zh": "水晶玻璃",
+            "ja": "クリスタルグラス",
+            "ko": "크리스탈 글래스",
+            "es": "Cristal Transparente",
+            "de": "Kristallglas",
+            "fr": "Verre Cristal",
+            "ar": "زجاج بلوري"
+          }
         },
         {
           "value": "vintage porcelain with gold rim",
-          "label": "Gold-rimmed Vintage Porcelain"
+          "label": {
+            "en": "Gold-rimmed Vintage Porcelain",
+            "zh": "金边复古瓷器",
+            "ja": "金縁ヴィンテージ磁器",
+            "ko": "금테 빈티지 도자기",
+            "es": "Porcelana Vintage con Borde Dorado",
+            "de": "Goldgerander Vintage Porzellan",
+            "fr": "Porcelaine Vintage à Bordure Dorée",
+            "ar": "خزف عتيق بحافة ذهبية"
+          }
         },
         {
           "value": "handmade pottery",
-          "label": "Handmade Pottery"
+          "label": {
+            "en": "Handmade Pottery",
+            "zh": "手工陶器",
+            "ja": "手作り陶器",
+            "ko": "수제 도자기",
+            "es": "Cerámica Artesanal",
+            "de": "Handgefertigte Keramik",
+            "fr": "Poterie Artisanale",
+            "ar": "فخار يدوي"
+          }
         }
       ]
     }

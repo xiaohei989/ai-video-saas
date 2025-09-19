@@ -1,9 +1,27 @@
 {
   "id": "401bf980-9845-4ae9-bf01-d1731e3d9e04",
   "slug": "asmr-surreal-toast-spread",
-  "name": "ASMR Surreal Toast Spread",
+  "name": {
+    "en": "ASMR Surreal Toast Spread",
+    "zh": "ASMR超现实吐司涂抹",
+    "ja": "ASMRシュルレアリスムトースト塗り",
+    "ko": "ASMR 초현실적 토스트 발라기",
+    "es": "ASMR Untado Surrealista de Tostada",
+    "de": "ASMR Surrealer Toast-Aufstrich",
+    "fr": "ASMR Tartinage de Toast Surréaliste",
+    "ar": "ASMR دهن الخبز المحمص السريالي"
+  },
   "icon": "🎭",
-  "description": "Use various unexpected miniature objects as butter to spread on toast, creating a visually shocking ASMR experience",
+  "description": {
+    "en": "Mesmerizing ASMR experience of spreading unusual and colorful substances on toast with satisfying textures",
+    "zh": "令人着迷的ASMR体验，在吐司上涂抹不寻常和色彩丰富的物质，具有令人满足的质感",
+    "ja": "満足感のある質感で、トーストに珍しくカラフルな物質を塗る魅惑的なASMR体験",
+    "ko": "만족스러운 질감으로 토스트에 특이하고 화려한 물질을 바르는 매혹적인 ASMR 경험",
+    "es": "Experiencia ASMR fascinante de untar sustancias inusuales y coloridas en tostadas con texturas satisfactorias",
+    "de": "Faszinierende ASMR-Erfahrung beim Auftragen ungewöhnlicher und farbenfroher Substanzen auf Toast mit befriedigenden Texturen",
+    "fr": "Expérience ASMR fascinante de tartinage de substances inhabituelles et colorées sur du pain grillé avec des textures satisfaisantes",
+    "ar": "تجربة ASMR ساحرة لدهن مواد غير عادية وملونة على الخبز المحمص بقوام مرضي"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/asmr-surreal-toast-spread.mp4?v=1758008502567",
   "tags": [
     "asmr",
@@ -17,7 +35,7 @@
   ],
   "createdAt": "2024-08-24T12:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.570Z",
+  "lastModified": "2025-09-18T03:33:06.774Z",
   "promptTemplate": "A super-realistic HD close-up: showing a hand tilting and shaking a {container_type} to dump out {item_quantity} {miniature_items} onto a thick golden slice of freshly baked toast with a crispy surface. The miniature objects tumble out chaotically with satisfying metallic clanks, plastic clicks, and crystalline chimes - some landing upside down, others sideways, many bouncing and rolling with realistic physics as they hit the toast surface. Each object reflects the warm studio lights differently: metal surfaces gleaming with mirror-like reflections, gems refracting rainbow colors, electronic devices flickering with LED lights, and smooth plastic creating subtle highlights. The objects create distinctive impact sounds - heavy metallic thuds from gold bars, sharp crystalline pings from gems, hollow plastic taps from LEGO bricks, and electronic beeps from devices. Then using a knife to attempt to spread these miniature objects on the toast, creating an extraordinary tactile contrast between the cold, hard surfaces of the items and the warm, soft bread. The knife blade scrapes against metal objects with sharp metallic sounds, pushes smooth gems across the bread creating grinding textures, and nudges electronic components that continue blinking and beeping. Some round objects roll away from the knife's pressure, while angular ones create interesting patterns and indentations in the bread surface. The whole scene emphasizes the surreal contrast between inedible objects and food preparation, with each material creating unique sounds - metallic scraping, plastic clicking, electronic humming, and glass tinkling - all softly illuminated by warm studio lights. The shallow depth of field blurs the background, focusing on the texture contrast between the soft toast and hard miniature objects. Shot from top to bottom, ASMR cooking video perspective - creating maximum visual shock through the bizarre juxtaposition of using non-food objects as spreadable ingredients.",
   "params": {
     "miniature_items": {
@@ -28,75 +46,237 @@
       "options": [
         {
           "value": "Coca-Cola, Pepsi, and Sprite cans",
-          "label": "🥤 Classic Soda Cans"
+          "label": {
+            "en": "🥤 Classic Soda Cans",
+            "zh": "Coca-Cola, Pepsi, and Sprite cans ",
+            "ja": "Coca-Cola, Pepsi, and Sprite cans ",
+            "ko": "Coca-Cola, Pepsi, and Sprite cans ",
+            "es": "Coca-Cola, Pepsi, and Sprite cans ",
+            "de": "Coca-Cola, Pepsi, and Sprite cans ",
+            "fr": "Coca-Cola, Pepsi, and Sprite cans ",
+            "ar": "Coca-Cola, Pepsi, and Sprite cans "
+          }
         },
         {
           "value": "tiny Ferrari, Lamborghini, and Porsche cars",
-          "label": "🏎️ Miniature Sports Cars"
+          "label": {
+            "en": "🏎️ Miniature Sports Cars",
+            "zh": "tiny Ferrari, Lamborghini, and Porsche cars ",
+            "ja": "tiny Ferrari, Lamborghini, and Porsche cars ",
+            "ko": "tiny Ferrari, Lamborghini, and Porsche cars ",
+            "es": "tiny Ferrari, Lamborghini, and Porsche cars ",
+            "de": "tiny Ferrari, Lamborghini, and Porsche cars ",
+            "fr": "tiny Ferrari, Lamborghini, and Porsche cars ",
+            "ar": "tiny Ferrari, Lamborghini, and Porsche cars "
+          }
         },
         {
           "value": "miniature Earth, Mars, and Saturn planets",
-          "label": "🪐 Miniature Planets"
+          "label": {
+            "en": "🪐 Miniature Planets",
+            "zh": "miniature Earth, Mars, and Saturn planets ",
+            "ja": "miniature Earth, Mars, and Saturn planets ",
+            "ko": "miniature Earth, Mars, and Saturn planets ",
+            "es": "miniature Earth, Mars, and Saturn planets ",
+            "de": "miniature Earth, Mars, and Saturn planets ",
+            "fr": "miniature Earth, Mars, and Saturn planets ",
+            "ar": "miniature Earth, Mars, and Saturn planets "
+          }
         },
         {
           "value": "tiny robots with glowing LED eyes",
-          "label": "🤖 Tiny Robots"
+          "label": {
+            "en": "🤖 Tiny Robots",
+            "zh": "tiny robots with glowing LED eyes ",
+            "ja": "tiny robots with glowing LED eyes ",
+            "ko": "tiny robots with glowing LED eyes ",
+            "es": "tiny robots with glowing LED eyes ",
+            "de": "tiny robots with glowing LED eyes ",
+            "fr": "tiny robots with glowing LED eyes ",
+            "ar": "tiny robots with glowing LED eyes "
+          }
         },
         {
           "value": "miniature Eiffel Tower, Big Ben, and Statue of Liberty",
-          "label": "🗼 Miniature Landmarks"
+          "label": {
+            "en": "🗼 Miniature Landmarks",
+            "zh": "miniature Eiffel Tower, Big Ben, and Statue of Liberty ",
+            "ja": "miniature Eiffel Tower, Big Ben, and Statue of Liberty ",
+            "ko": "miniature Eiffel Tower, Big Ben, and Statue of Liberty ",
+            "es": "miniature Eiffel Tower, Big Ben, and Statue of Liberty ",
+            "de": "miniature Eiffel Tower, Big Ben, and Statue of Liberty ",
+            "fr": "miniature Eiffel Tower, Big Ben, and Statue of Liberty ",
+            "ar": "miniature Eiffel Tower, Big Ben, and Statue of Liberty "
+          }
         },
         {
           "value": "tiny diamonds, rubies, and emeralds",
-          "label": "💎 Miniature Gems"
+          "label": {
+            "en": "💎 Miniature Gems",
+            "zh": "tiny diamonds, rubies, and emeralds ",
+            "ja": "tiny diamonds, rubies, and emeralds ",
+            "ko": "tiny diamonds, rubies, and emeralds ",
+            "es": "tiny diamonds, rubies, and emeralds ",
+            "de": "tiny diamonds, rubies, and emeralds ",
+            "fr": "tiny diamonds, rubies, and emeralds ",
+            "ar": "tiny diamonds, rubies, and emeralds "
+          }
         },
         {
           "value": "colorful miniature LEGO bricks",
-          "label": "🧱 Miniature LEGO Bricks"
+          "label": {
+            "en": "🧱 Miniature LEGO Bricks",
+            "zh": "colorful miniature LEGO bricks ",
+            "ja": "colorful miniature LEGO bricks ",
+            "ko": "colorful miniature LEGO bricks ",
+            "es": "colorful miniature LEGO bricks ",
+            "de": "colorful miniature LEGO bricks ",
+            "fr": "colorful miniature LEGO bricks ",
+            "ar": "colorful miniature LEGO bricks "
+          }
         },
         {
           "value": "miniature gummy bears, lollipops, and chocolates",
-          "label": "🍬 Miniature Candies"
+          "label": {
+            "en": "🍬 Miniature Candies",
+            "zh": "miniature gummy bears, lollipops, and chocolates ",
+            "ja": "miniature gummy bears, lollipops, and chocolates ",
+            "ko": "miniature gummy bears, lollipops, and chocolates ",
+            "es": "miniature gummy bears, lollipops, and chocolates ",
+            "de": "miniature gummy bears, lollipops, and chocolates ",
+            "fr": "miniature gummy bears, lollipops, and chocolates ",
+            "ar": "miniature gummy bears, lollipops, and chocolates "
+          }
         },
         {
           "value": "tiny realistic eyeballs with different iris colors",
-          "label": "👁️ Miniature Eyeballs"
+          "label": {
+            "en": "👁️ Miniature Eyeballs",
+            "zh": "tiny realistic eyeballs with different iris colors ",
+            "ja": "tiny realistic eyeballs with different iris colors ",
+            "ko": "tiny realistic eyeballs with different iris colors ",
+            "es": "tiny realistic eyeballs with different iris colors ",
+            "de": "tiny realistic eyeballs with different iris colors ",
+            "fr": "tiny realistic eyeballs with different iris colors ",
+            "ar": "tiny realistic eyeballs with different iris colors "
+          }
         },
         {
           "value": "miniature anime figurines and action figures",
-          "label": "🎌 Tiny Figurines"
+          "label": {
+            "en": "🎌 Tiny Figurines",
+            "zh": "miniature anime figurines and action figures ",
+            "ja": "miniature anime figurines and action figures ",
+            "ko": "miniature anime figurines and action figures ",
+            "es": "miniature anime figurines and action figures ",
+            "de": "miniature anime figurines and action figures ",
+            "fr": "miniature anime figurines and action figures ",
+            "ar": "miniature anime figurines and action figures "
+          }
         },
         {
           "value": "tiny grenades, dynamite sticks, and fireworks with detailed fuses",
-          "label": "💣 Miniature Explosives"
+          "label": {
+            "en": "💣 Miniature Explosives",
+            "zh": "tiny grenades, dynamite sticks, and fireworks with detailed fuses ",
+            "ja": "tiny grenades, dynamite sticks, and fireworks with detailed fuses ",
+            "ko": "tiny grenades, dynamite sticks, and fireworks with detailed fuses ",
+            "es": "tiny grenades, dynamite sticks, and fireworks with detailed fuses ",
+            "de": "tiny grenades, dynamite sticks, and fireworks with detailed fuses ",
+            "fr": "tiny grenades, dynamite sticks, and fireworks with detailed fuses ",
+            "ar": "tiny grenades, dynamite sticks, and fireworks with detailed fuses "
+          }
         },
         {
           "value": "miniature gold bars, silver ingots, and platinum coins with reflective surfaces",
-          "label": "💰 Precious Metals"
+          "label": {
+            "en": "💰 Precious Metals",
+            "zh": "miniature gold bars, silver ingots, and platinum coins with reflective surfaces ",
+            "ja": "miniature gold bars, silver ingots, and platinum coins with reflective surfaces ",
+            "ko": "miniature gold bars, silver ingots, and platinum coins with reflective surfaces ",
+            "es": "miniature gold bars, silver ingots, and platinum coins with reflective surfaces ",
+            "de": "miniature gold bars, silver ingots, and platinum coins with reflective surfaces ",
+            "fr": "miniature gold bars, silver ingots, and platinum coins with reflective surfaces ",
+            "ar": "miniature gold bars, silver ingots, and platinum coins with reflective surfaces "
+          }
         },
         {
           "value": "tiny gears, screws, bolts, and mechanical components with intricate details",
-          "label": "⚙️ Mechanical Parts"
+          "label": {
+            "en": "⚙️ Mechanical Parts",
+            "zh": "tiny gears, screws, bolts, and mechanical components with intricate details ",
+            "ja": "tiny gears, screws, bolts, and mechanical components with intricate details ",
+            "ko": "tiny gears, screws, bolts, and mechanical components with intricate details ",
+            "es": "tiny gears, screws, bolts, and mechanical components with intricate details ",
+            "de": "tiny gears, screws, bolts, and mechanical components with intricate details ",
+            "fr": "tiny gears, screws, bolts, and mechanical components with intricate details ",
+            "ar": "tiny gears, screws, bolts, and mechanical components with intricate details "
+          }
         },
         {
           "value": "miniature crystal balls, ancient coins, and mysterious artifacts with glowing effects",
-          "label": "🔮 Mystical Objects"
+          "label": {
+            "en": "🔮 Mystical Objects",
+            "zh": "miniature crystal balls, ancient coins, and mysterious artifacts with glowing effects ",
+            "ja": "miniature crystal balls, ancient coins, and mysterious artifacts with glowing effects ",
+            "ko": "miniature crystal balls, ancient coins, and mysterious artifacts with glowing effects ",
+            "es": "miniature crystal balls, ancient coins, and mysterious artifacts with glowing effects ",
+            "de": "miniature crystal balls, ancient coins, and mysterious artifacts with glowing effects ",
+            "fr": "miniature crystal balls, ancient coins, and mysterious artifacts with glowing effects ",
+            "ar": "miniature crystal balls, ancient coins, and mysterious artifacts with glowing effects "
+          }
         },
         {
           "value": "tiny test tubes, beakers, syringes, and laboratory equipment with colorful liquids",
-          "label": "🔬 Lab Equipment"
+          "label": {
+            "en": "🔬 Lab Equipment",
+            "zh": "tiny test tubes, beakers, syringes, and laboratory equipment with colorful liquids ",
+            "ja": "tiny test tubes, beakers, syringes, and laboratory equipment with colorful liquids ",
+            "ko": "tiny test tubes, beakers, syringes, and laboratory equipment with colorful liquids ",
+            "es": "tiny test tubes, beakers, syringes, and laboratory equipment with colorful liquids ",
+            "de": "tiny test tubes, beakers, syringes, and laboratory equipment with colorful liquids ",
+            "fr": "tiny test tubes, beakers, syringes, and laboratory equipment with colorful liquids ",
+            "ar": "tiny test tubes, beakers, syringes, and laboratory equipment with colorful liquids "
+          }
         },
         {
           "value": "colorful miniature pills, capsules, and tablets in various shapes and sizes",
-          "label": "💊 Medical Capsules"
+          "label": {
+            "en": "💊 Medical Capsules",
+            "zh": "colorful miniature pills, capsules, and tablets in various shapes and sizes ",
+            "ja": "colorful miniature pills, capsules, and tablets in various shapes and sizes ",
+            "ko": "colorful miniature pills, capsules, and tablets in various shapes and sizes ",
+            "es": "colorful miniature pills, capsules, and tablets in various shapes and sizes ",
+            "de": "colorful miniature pills, capsules, and tablets in various shapes and sizes ",
+            "fr": "colorful miniature pills, capsules, and tablets in various shapes and sizes ",
+            "ar": "colorful miniature pills, capsules, and tablets in various shapes and sizes "
+          }
         },
         {
           "value": "miniature bullets, shells, and cartridges with metallic shine",
-          "label": "🎯 Ammunition"
+          "label": {
+            "en": "🎯 Ammunition",
+            "zh": "miniature bullets, shells, and cartridges with metallic shine ",
+            "ja": "miniature bullets, shells, and cartridges with metallic shine ",
+            "ko": "miniature bullets, shells, and cartridges with metallic shine ",
+            "es": "miniature bullets, shells, and cartridges with metallic shine ",
+            "de": "miniature bullets, shells, and cartridges with metallic shine ",
+            "fr": "miniature bullets, shells, and cartridges with metallic shine ",
+            "ar": "miniature bullets, shells, and cartridges with metallic shine "
+          }
         },
         {
           "value": "tiny smartphones, computer chips, and electronic components with LED lights",
-          "label": "📱 Electronic Devices"
+          "label": {
+            "en": "📱 Electronic Devices",
+            "zh": "tiny smartphones, computer chips, and electronic components with LED lights ",
+            "ja": "tiny smartphones, computer chips, and electronic components with LED lights ",
+            "ko": "tiny smartphones, computer chips, and electronic components with LED lights ",
+            "es": "tiny smartphones, computer chips, and electronic components with LED lights ",
+            "de": "tiny smartphones, computer chips, and electronic components with LED lights ",
+            "fr": "tiny smartphones, computer chips, and electronic components with LED lights ",
+            "ar": "tiny smartphones, computer chips, and electronic components with LED lights "
+          }
         }
       ]
     },
@@ -108,15 +288,42 @@
       "options": [
         {
           "value": "transparent glass jar",
-          "label": "Transparent Glass Jar"
+          "label": {
+            "en": "Transparent Glass Jar",
+            "zh": "transparent glass jar ",
+            "ja": "transparent glass jar ",
+            "ko": "transparent glass jar ",
+            "es": "transparent glass jar ",
+            "de": "transparent glass jar ",
+            "fr": "transparent glass jar ",
+            "ar": "transparent glass jar "
+          }
         },
         {
           "value": "crystal container",
-          "label": "Crystal Container"
+          "label": {
+            "en": "Crystal Container",
+            "zh": "crystal container ",
+            "ja": "crystal container ",
+            "ko": "crystal container ",
+            "es": "crystal container ",
+            "de": "crystal container ",
+            "fr": "crystal container ",
+            "ar": "crystal container "
+          }
         },
         {
           "value": "vintage mason jar",
-          "label": "Vintage Mason Jar"
+          "label": {
+            "en": "Vintage Mason Jar",
+            "zh": "vintage mason jar ",
+            "ja": "vintage mason jar ",
+            "ko": "vintage mason jar ",
+            "es": "vintage mason jar ",
+            "de": "vintage mason jar ",
+            "fr": "vintage mason jar ",
+            "ar": "vintage mason jar "
+          }
         }
       ]
     },
@@ -130,7 +337,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

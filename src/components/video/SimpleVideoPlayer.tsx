@@ -8,12 +8,13 @@
  * - 对标 YouTube、Twitter 等主流网站的播放体验
  */
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { Play, Pause, Volume2, VolumeX, Maximize, Minimize } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 import { getOptimalThumbnailSource, supportsMediaFragments } from '@/utils/thumbnailFallback'
 import VideoSkeleton from './VideoSkeleton'
+import { cacheHitTracker } from '@/utils/cacheHitTracker'
 import { 
   toggleFullscreen as toggleFullscreenHelper,
   getFullscreenState,
@@ -21,6 +22,7 @@ import {
   bindVideoFullscreenEventsiOS,
   getFullscreenTooltip
 } from '@/utils/fullscreenHelper'
+import { useVideoPlayback, VideoPlayerInstance } from '@/contexts/VideoPlaybackContext'
 
 export interface SimpleVideoPlayerProps {
   // 基本属性
@@ -75,6 +77,7 @@ export default function SimpleVideoPlayer({
   const [showControls, setShowControls] = useState(false)
   const [isMuted, setIsMuted] = useState(muted)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isHoverLoading, setIsHoverLoading] = useState(false) // 悬浮加载状态
   
   // 视频加载状态
   const [isLoading, setIsLoading] = useState(true)
@@ -83,21 +86,85 @@ export default function SimpleVideoPlayer({
   const [currentVideoSrc, setCurrentVideoSrc] = useState(src)
   const [hasTriedFallback, setHasTriedFallback] = useState(false)
   
+  // 悬停播放控制 - 简化版本
+  
   // 设备能力检测
   const [deviceCapabilities] = useState(detectDeviceCapabilities())
 
-  // 智能视频源优化 - 根据浏览器支持情况添加 Media Fragments
+  // 简化的全局播放管理 - 仅用于点击播放控制
+  const { registerPlayer, unregisterPlayer, requestPlay, notifyPause, isCurrentlyPlaying, isPendingPlay } = useVideoPlayback()
+  
+  // 生成唯一的播放器ID
+  const playerId = useMemo(() => {
+    if (videoId) return videoId
+    // 如果没有提供videoId，基于src生成唯一ID
+    return `video-${src.split('/').pop()?.split('?')[0] || Math.random().toString(36).substr(2, 9)}`
+  }, [videoId, src])
+
+  // 简化的视频源优化 - 不再区分悬停模式
   const getOptimizedVideoUrl = (videoSrc: string): string => {
     const proxyUrl = getProxyVideoUrl(videoSrc)
+    const isUsingProxy = proxyUrl !== videoSrc
+    
+    // 记录缓存命中情况
+    if (isUsingProxy) {
+      cacheHitTracker.recordVideoHit(videoSrc, 'proxy')
+    } else {
+      cacheHitTracker.recordVideoMiss(videoSrc)
+    }
+    
     // 只在支持 Media Fragments 的浏览器中添加参数
     if (supportsMediaFragments() && !proxyUrl.includes('#t=')) {
-      return `${proxyUrl}#t=0.001`
+      const optimizedUrl = `${proxyUrl}#t=0.1`
+      if (isUsingProxy) {
+        cacheHitTracker.recordVideoHit(videoSrc, 'media_fragments')
+      }
+      return optimizedUrl
     }
     return proxyUrl
   }
 
   // 智能缩略图源选择
   const optimalPoster = getOptimalThumbnailSource(src, poster)
+
+  // 创建播放器实例接口
+  const playerInstance = useMemo<VideoPlayerInstance>(() => ({
+    id: playerId,
+    pause: () => {
+      const video = videoRef.current
+      if (video && !video.paused) {
+        video.pause()
+      }
+    },
+    play: async () => {
+      const video = videoRef.current
+      if (video && video.paused) {
+        await video.play()
+      }
+    },
+    getCurrentTime: () => videoRef.current?.currentTime || 0,
+    getDuration: () => videoRef.current?.duration || 0,
+    isPlaying: () => !!(videoRef.current && !videoRef.current.paused),
+    // 立即停止方法：暂停并重置到开始位置
+    stopImmediate: () => {
+      const video = videoRef.current
+      if (video) {
+        if (!video.paused) {
+          video.pause()
+        }
+        video.currentTime = 0
+      }
+    }
+  }), [playerId])
+
+  // 注册和注销播放器
+  useEffect(() => {
+    registerPlayer(playerId, playerInstance)
+    
+    return () => {
+      unregisterPlayer(playerId)
+    }
+  }, [playerId, registerPlayer, unregisterPlayer])
 
   // 处理src变化，重置回退状态
   useEffect(() => {
@@ -116,11 +183,14 @@ export default function SimpleVideoPlayer({
 
     const handlePlay = () => {
       setIsPlaying(true)
+      setIsHoverLoading(false) // 播放开始时取消悬浮加载状态
       onPlay?.()
     }
 
     const handlePause = () => {
       setIsPlaying(false)
+      // 通知全局管理器
+      notifyPause(playerId)
       onPause?.()
     }
 
@@ -156,9 +226,32 @@ export default function SimpleVideoPlayer({
     const handleError = () => {
       console.warn('[SimpleVideoPlayer] 视频加载失败:', currentVideoSrc)
       
+      // 检查是否是R2代理失败，尝试直接访问R2 URL
+      if (currentVideoSrc.includes('/api/r2/') && !hasTriedFallback) {
+        const directR2Url = `https://cdn.veo3video.me${currentVideoSrc.replace('/api/r2', '')}`
+        
+        // 记录代理缓存失败，但R2直接访问成功
+        cacheHitTracker.recordVideoHit(src, 'r2_direct')
+        
+        setHasTriedFallback(true)
+        setCurrentVideoSrc(directR2Url)
+        setIsLoading(true)
+        setHasError(false)
+        
+        // 更新video元素的src
+        if (video) {
+          video.src = directR2Url
+          video.load()
+        }
+        return
+      }
+      
       // 如果有回退URL且还未尝试过，则尝试回退
       if (fallbackSrc && !hasTriedFallback && currentVideoSrc !== fallbackSrc) {
-        console.log('[SimpleVideoPlayer] 尝试回退URL:', fallbackSrc)
+        
+        // 记录回退缓存命中
+        cacheHitTracker.recordVideoHit(src, 'fallback')
+        
         setHasTriedFallback(true)
         setCurrentVideoSrc(fallbackSrc)
         setIsLoading(true)
@@ -173,12 +266,14 @@ export default function SimpleVideoPlayer({
       }
       
       // 没有回退URL或已经尝试过回退，显示错误
+      cacheHitTracker.recordVideoMiss(src)
       setIsLoading(false)
       setHasError(true)
     }
 
     const handleCanPlay = () => {
       setIsLoading(false)
+      setIsHoverLoading(false) // 视频可以播放时取消悬浮加载状态
     }
 
     video.addEventListener('play', handlePlay)
@@ -202,49 +297,67 @@ export default function SimpleVideoPlayer({
       video.removeEventListener('error', handleError)
       video.removeEventListener('canplay', handleCanPlay)
     }
-  }, [onPlay, onPause, onTimeUpdate, src])
+  }, [onPlay, onPause, onTimeUpdate, src, playerId, notifyPause])
 
-  // 悬停自动播放逻辑
-  useEffect(() => {
-    if (!autoPlayOnHover || !videoRef.current) return
-
-    const video = videoRef.current
-
-    if (isHovered && !isPlaying) {
-      // 尝试自动播放
-      video.play().catch(() => {
-        // 如果有声播放失败，尝试静音播放
-        console.debug('Auto-play blocked, trying muted playback')
-        video.muted = true
-        setIsMuted(true)
-        video.play().catch(e => {
-          console.debug('Muted auto-play also failed:', e)
-        })
+  // 🎯 极简鼠标悬停播放控制 - 直接操作video元素，无延迟无异步
+  const handleMouseEnter = useCallback(() => {
+    setIsHovered(true)
+    setShowControls(true)
+    
+    // 🎬 极简悬浮播放：直接播放，无需任何管理器
+    if (autoPlayOnHover && videoRef.current && videoRef.current.paused) {
+      // 开始加载状态
+      setIsHoverLoading(true)
+      
+      videoRef.current.muted = true  // 必须静音才能自动播放
+      videoRef.current.play().then(() => {
+        // 播放成功后取消加载状态
+        setIsHoverLoading(false)
+        setIsPlaying(true)
+      }).catch(() => {
+        // 播放失败也取消加载状态
+        setIsHoverLoading(false)
       })
-    } else if (!isHovered && isPlaying && autoPlayOnHover) {
-      // 鼠标离开时暂停并重置
-      video.pause()
-      video.currentTime = 0
+      setIsMuted(true)
     }
-  }, [isHovered, autoPlayOnHover, isPlaying])
+  }, [autoPlayOnHover])
 
-  // 点击播放/暂停
-  const handlePlayPause = async (e?: React.MouseEvent) => {
+  const handleMouseLeave = useCallback(() => {
+    setIsHovered(false)
+    setShowControls(false)
+    setIsHoverLoading(false) // 重置悬浮加载状态
+    
+    // 🛑 极简悬浮暂停：直接暂停并重置，无需状态管理
+    if (autoPlayOnHover && videoRef.current && !videoRef.current.paused) {
+      videoRef.current.pause()
+      videoRef.current.currentTime = 0  // 重置到开始位置
+      setIsPlaying(false)
+    }
+  }, [autoPlayOnHover])
+
+  // 🎯 简化点击播放/暂停 - 保留全局管理但简化逻辑
+  const handlePlayPause = useCallback((e?: React.MouseEvent) => {
     e?.stopPropagation()
     
     const video = videoRef.current
     if (!video) return
 
-    try {
-      if (isPlaying) {
-        video.pause()
-      } else {
-        await video.play()
+    const isCurrentlyPlayingNow = isCurrentlyPlaying(playerId)
+
+    if (isCurrentlyPlayingNow) {
+      // 当前播放中，直接暂停
+      video.pause()
+      video.currentTime = 0  // 重置到开始位置
+      notifyPause(playerId)
+    } else {
+      // 请求播放（这里保留全局管理，防止多个视频同时有声播放）
+      const success = requestPlay(playerId)
+      
+      if (!success) {
+        console.warn(`[SimpleVideoPlayer] 点击播放请求被拒绝: ${playerId}`)
       }
-    } catch (error) {
-      console.warn('播放操作失败:', error)
     }
-  }
+  }, [playerId, isCurrentlyPlaying, notifyPause, requestPlay])
 
   // 点击视频区域播放/暂停
   const handleVideoClick = (e: React.MouseEvent) => {
@@ -297,10 +410,8 @@ export default function SimpleVideoPlayer({
         
         // iOS设备的回退方案
         if (deviceCapabilities.isiOS) {
-          console.log('[SimpleVideoPlayer] iOS用户可以使用原生视频控制条进入全屏')
+          // iOS用户可以使用原生视频控制条进入全屏
         }
-      } else {
-        console.log('[SimpleVideoPlayer] 全屏切换成功')
       }
     } catch (error) {
       console.error('[SimpleVideoPlayer] 全屏切换出错:', error)
@@ -315,11 +426,9 @@ export default function SimpleVideoPlayer({
     const cleanup = bindVideoFullscreenEventsiOS(
       video,
       () => {
-        console.log('[SimpleVideoPlayer] iOS进入全屏')
         setIsFullscreen(true)
       },
       () => {
-        console.log('[SimpleVideoPlayer] iOS退出全屏')
         setIsFullscreen(false)
       }
     )
@@ -350,18 +459,13 @@ export default function SimpleVideoPlayer({
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
+
   return (
     <div 
       ref={containerRef}
       className={cn("relative group bg-muted overflow-hidden", className)}
-      onMouseEnter={() => {
-        setIsHovered(true)
-        setShowControls(true)
-      }}
-      onMouseLeave={() => {
-        setIsHovered(false)
-        setShowControls(false)
-      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* 骨骼屏覆盖层 - 在视频加载时显示 */}
       {(isLoading || hasError) && (
@@ -397,8 +501,9 @@ export default function SimpleVideoPlayer({
         }}
       />
 
-      {/* 播放按钮覆盖层 - 只在未播放时显示，播放时完全隐藏 */}
-      {showPlayButton && !isPlaying && (
+      {/* 播放按钮覆盖层 - 悬停自动播放时不显示中间播放按钮 */}
+      {showPlayButton && !isCurrentlyPlaying(playerId) && !isPendingPlay(playerId) && 
+       !(autoPlayOnHover && isHovered) && (
         <div 
           className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer
                      opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200"
@@ -410,9 +515,18 @@ export default function SimpleVideoPlayer({
           </div>
         </div>
       )}
+
+      {/* 悬浮加载动画 - 悬停自动播放时视频加载中显示 */}
+      {autoPlayOnHover && isHovered && isHoverLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+          <div className="bg-black/50 rounded-full p-3 md:p-4 backdrop-blur-sm">
+            <div className="h-6 w-6 md:h-8 md:w-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        </div>
+      )}
       
       {/* iOS全屏提示 */}
-      {deviceCapabilities.isiOS && showControls && !isPlaying && (
+      {deviceCapabilities.isiOS && showControls && !isCurrentlyPlaying(playerId) && !isPendingPlay(playerId) && (
         <div className="absolute top-4 right-4 bg-black/70 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
           iOS: 点击全屏按钮进入全屏
         </div>
@@ -420,7 +534,7 @@ export default function SimpleVideoPlayer({
 
 
       {/* 播放控制栏 - 悬停时显示 */}
-      {showControls && isPlaying && duration > 0 && (
+      {showControls && duration > 0 && (
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent">
           {/* 进度条区域 */}
           <div className="px-4 pt-4 pb-2">
@@ -451,9 +565,9 @@ export default function SimpleVideoPlayer({
                 onClick={handlePlayPause}
                 className="flex items-center justify-center w-8 h-8 text-white hover:bg-white/20 
                          rounded-full transition-colors duration-200"
-                aria-label={isPlaying ? '暂停' : '播放'}
+                aria-label={isCurrentlyPlaying(playerId) ? '暂停' : '播放'}
               >
-                {isPlaying ? (
+                {isCurrentlyPlaying(playerId) ? (
                   <Pause className="h-4 w-4" />
                 ) : (
                   <Play className="h-4 w-4 ml-0.5" />
@@ -476,13 +590,13 @@ export default function SimpleVideoPlayer({
             </div>
             
             {/* 右侧控制组 */}
-            <div className="flex items-center gap-2">
-              {/* 时间显示 */}
-              <div className="text-white text-xs font-mono">
+            <div className="flex items-center gap-0.5">
+              {/* 时间显示 - 细字体，位于全屏按钮左侧 */}
+              <div className="text-white text-xs font-light font-sans">
                 {formatTime(currentTime)} / {formatTime(duration)}
               </div>
               
-              {/* 全屏按钮 */}
+              {/* 全屏按钮 - 位于最右侧 */}
               <button
                 onClick={toggleFullscreen}
                 className="flex items-center justify-center w-8 h-8 text-white hover:bg-white/20 
@@ -500,6 +614,7 @@ export default function SimpleVideoPlayer({
           </div>
         </div>
       )}
+
     </div>
   )
 }
@@ -523,8 +638,21 @@ export function LightVideoPlayer({
   // 智能优化的视频 URL
   const optimizedSrc = (() => {
     const proxyUrl = getProxyVideoUrl(src)
+    const isUsingProxy = proxyUrl !== src
+    
+    // 记录轻量级播放器的缓存使用情况
+    if (isUsingProxy) {
+      cacheHitTracker.recordVideoHit(src, 'light_player_proxy')
+    } else {
+      cacheHitTracker.recordVideoMiss(src)
+    }
+    
     if (supportsMediaFragments() && !proxyUrl.includes('#t=')) {
-      return `${proxyUrl}#t=0.001`
+      // 🚀 优化：使用时间范围片段，减少数据传输
+      if (isUsingProxy) {
+        cacheHitTracker.recordVideoHit(src, 'light_player_fragments')
+      }
+      return `${proxyUrl}#t=0.1,0.3`
     }
     return proxyUrl
   })()

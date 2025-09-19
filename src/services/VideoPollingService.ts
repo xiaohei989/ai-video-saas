@@ -107,14 +107,17 @@ class VideoPollingService {
   }
 
   /**
-   * 统一的任务完成处理方法（防重复）
+   * 🚀 统一的任务完成处理方法（防重复+原子操作）
    */
   private async handleTaskCompletion(taskId: string, videoUrl: string, task: VideoTask, source: string): Promise<boolean> {
-    // 检查是否已经处理过这个任务的完成
+    // 🚀 原子性检查和标记，防止竞态条件
     if (this.completedTasks.has(taskId)) {
       console.log(`[POLLING] 任务 ${taskId} 已经处理过完成，跳过重复处理 (来源: ${source})`)
       return false
     }
+    
+    // 🚀 立即标记以防止竞态条件
+    this.completedTasks.add(taskId)
 
     console.log(`[POLLING] ✅ 处理任务完成: ${taskId} (来源: ${source})`)
     
@@ -133,14 +136,11 @@ class VideoPollingService {
       // 通知完成
       this.config?.onTaskComplete(completedTask)
       
-      // 成功后才标记为已处理
-      this.completedTasks.add(taskId)
-      
       console.log(`[POLLING] 任务完成处理完毕: ${taskId}`)
       return true
     } catch (error) {
       console.error(`[POLLING] 处理任务完成时出错 ${taskId}:`, error)
-      // 确保不阻塞后续重试
+      // 🚀 出错时移除标记，允许后续重试
       this.completedTasks.delete(taskId)
       return false
     }
@@ -280,7 +280,7 @@ class VideoPollingService {
   }
 
   /**
-   * 调度下次轮询
+   * 🚀 调度下次轮询（简化复杂判断逻辑）
    */
   private scheduleNextPoll(customDelay?: number): void {
     if (!this.isPolling) return
@@ -289,33 +289,35 @@ class VideoPollingService {
     let delay = customDelay
 
     if (!delay) {
-      // 根据任务数量和运行时间智能调整轮询间隔
-      if (activeTasks.length === 0) {
-        delay = 30000 // 无任务时30秒
-      } else if (activeTasks.length <= 2) {
-        delay = 3000  // 少量任务3秒
-      } else if (activeTasks.length <= 5) {
-        delay = 5000  // 中等任务5秒
-      } else {
-        delay = 8000  // 大量任务8秒
-      }
-
-      // 根据任务运行时间调整（仅当有活跃任务时）
-      if (activeTasks.length > 0) {
-        const oldestTask = activeTasks.reduce((oldest, task) => 
-          task.startedAt < oldest.startedAt ? task : oldest
-        )
-        
-        const taskAge = Date.now() - oldestTask.startedAt.getTime()
-        if (taskAge > 2 * 60 * 1000) { // 超过2分钟的任务
-          delay = Math.min(delay * 1.5, 15000) // 延长间隔，最多15秒
-        }
-      }
+      // 🚀 简化的轮询间隔策略
+      delay = this.getOptimalPollingDelay(activeTasks)
     }
 
     this.pollingInterval = setTimeout(() => {
       this.poll()
     }, delay)
+  }
+
+  /**
+   * 🚀 获取最优轮询间隔（基于任务状态的固定策略）
+   */
+  private getOptimalPollingDelay(activeTasks: VideoTask[]): number {
+    // 无任务时延长间隔
+    if (activeTasks.length === 0) {
+      return 30000 // 30秒
+    }
+
+    // 基于任务数量的基础间隔
+    const baseDelay = activeTasks.length <= 3 ? 3000 : 5000
+
+    // 检查是否有长时间运行的任务
+    const hasLongRunningTask = activeTasks.some(task => {
+      const taskAge = Date.now() - task.startedAt.getTime()
+      return taskAge > 5 * 60 * 1000 // 5分钟以上
+    })
+
+    // 长时间任务适当延长间隔，避免过度轮询
+    return hasLongRunningTask ? Math.min(baseDelay * 1.5, 8000) : baseDelay
   }
 
   /**

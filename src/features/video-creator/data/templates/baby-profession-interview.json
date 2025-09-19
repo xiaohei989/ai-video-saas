@@ -1,9 +1,27 @@
 {
   "id": "4f8d6e2a-9b3c-4e7a-8f2d-1a5b6c7d8e9f",
   "slug": "baby-profession-interview",
-  "name": "Baby Professional Interview",
+  "name": {
+    "en": "Baby Professional Interview",
+    "zh": "婴儿职业访谈",
+    "ja": "赤ちゃん職業インタビュー",
+    "ko": "아기 직업 인터뷰",
+    "es": "Entrevista Profesional de Bebé",
+    "de": "Baby Berufs-Interview",
+    "fr": "Interview Professionnel de Bébé",
+    "ar": "مقابلة مهنية للطفل"
+  },
   "icon": "👶",
-  "description": "Cynical reporter interviews an optimistic baby about their tough late-night job",
+  "description": {
+    "en": "Cynical reporter interviews an optimistic baby about their tough late-night job",
+    "zh": "愤世嫉俗的记者采访乐观的婴儿关于他们艰难的深夜工作",
+    "ja": "皮肉な記者が楽観的な赤ちゃんの厳しい深夜の仕事について取材する",
+    "ko": "냉소적인 기자가 낙관적인 아기의 힘든 야간 근무에 대해 인터뷰한다",
+    "es": "Reportero cínico entrevista a un bebé optimista sobre su duro trabajo nocturno",
+    "de": "Zynischer Reporter interviewt ein optimistisches Baby über seinen harten Nachtjob",
+    "fr": "Journaliste cynique interviewe un bébé optimiste sur son dur travail de nuit",
+    "ar": "مراسل متشائم يقابل طفل متفائل حول عمله الليلي الشاق"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/baby-profession-interview.mp4?v=1758008502567",
   "credits": 10,
   "tags": [
@@ -17,7 +35,7 @@
   ],
   "createdAt": "2025-02-01T10:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.571Z",
+  "lastModified": "2025-09-18T03:33:06.775Z",
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
@@ -72,7 +90,16 @@
       "options": [
         {
           "value": "food_delivery",
-          "label": "🛵 Food Delivery",
+          "label": {
+            "en": "🛵 Food Delivery",
+            "zh": "🛵 外卖配送",
+            "ja": "🛵 フードデリバリー",
+            "ko": "🛵 음식 배달",
+            "es": "🛵 Entrega de Comida",
+            "de": "🛵 Essenslieferung",
+            "fr": "🛵 Livraison de Nourriture",
+            "ar": "🛵 توصيل الطعام"
+          },
           "metadata": {
             "uniform": "tiny food delivery uniform",
             "scene_detail": "sitting on a tricycle",
@@ -85,7 +112,16 @@
         },
         {
           "value": "uber_driver",
-          "label": "🚗 Uber Driver",
+          "label": {
+            "en": "🚗 Uber Driver",
+            "zh": "🚗 网约车司机",
+            "ja": "🚗 配車ドライバー",
+            "ko": "🚗 우버 드라이버",
+            "es": "🚗 Conductor de Uber",
+            "de": "🚗 Uber-Fahrer",
+            "fr": "🚗 Chauffeur Uber",
+            "ar": "🚗 سائق أوبر"
+          },
           "metadata": {
             "uniform": "tiny taxi driver uniform with cap",
             "scene_detail": "sitting in a toy car",
@@ -98,7 +134,16 @@
         },
         {
           "value": "programmer",
-          "label": "💻 Programmer",
+          "label": {
+            "en": "💻 Programmer",
+            "zh": "💻 程序员",
+            "ja": "💻 プログラマー",
+            "ko": "💻 프로그래머",
+            "es": "💻 Programador",
+            "de": "💻 Programmierer",
+            "fr": "💻 Programmeur",
+            "ar": "💻 مبرمج"
+          },
           "metadata": {
             "uniform": "tiny hoodie with tech company logo",
             "scene_detail": "sitting on a wheeled office chair with a tiny laptop",
@@ -111,7 +156,16 @@
         },
         {
           "value": "stock_trader",
-          "label": "📈 Stock Trader",
+          "label": {
+            "en": "📈 Stock Trader",
+            "zh": "📈 股票交易员",
+            "ja": "📈 株式トレーダー",
+            "ko": "📈 주식 트레이더",
+            "es": "📈 Operador de Bolsa",
+            "de": "📈 Aktienhändler",
+            "fr": "📈 Trader en Bourse",
+            "ar": "📈 متداول أسهم"
+          },
           "metadata": {
             "uniform": "tiny business suit with loose tie",
             "scene_detail": "standing on a skateboard holding a toy phone",
@@ -124,7 +178,16 @@
         },
         {
           "value": "influencer",
-          "label": "📱 Social Media Influencer",
+          "label": {
+            "en": "📱 Social Media Influencer",
+            "zh": "📱 社交媒体网红",
+            "ja": "📱 ソーシャルメディアインフルエンサー",
+            "ko": "📱 소셜미디어 인플루언서",
+            "es": "📱 Influencer de Redes Sociales",
+            "de": "📱 Social Media Influencer",
+            "fr": "📱 Influenceur de Médias Sociaux",
+            "ar": "📱 مؤثر وسائل التواصل الاجتماعي"
+          },
           "metadata": {
             "uniform": "trendy outfit with tiny sunglasses",
             "scene_detail": "posing on a scooter with a ring light",
@@ -137,7 +200,16 @@
         },
         {
           "value": "doctor",
-          "label": "👨‍⚕️ Night Shift Doctor",
+          "label": {
+            "en": "Doctor 👨‍⚕️",
+            "zh": "医生 👨‍⚕️",
+            "ja": "医者 👨‍⚕️",
+            "ko": "의사 👨‍⚕️",
+            "es": "Doctor 👨‍⚕️",
+            "de": "Arzt 👨‍⚕️",
+            "fr": "Docteur 👨‍⚕️",
+            "ar": "طبيب 👨‍⚕️"
+          },
           "metadata": {
             "uniform": "tiny white coat with stethoscope",
             "scene_detail": "pulling a toy medical wagon",
@@ -195,7 +267,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

@@ -1,0 +1,104 @@
+{
+  "terminology": {
+    "asmr": {
+      "en": "ASMR",
+      "zh": "ASMR",
+      "ja": "ASMR",
+      "ko": "ASMR", 
+      "es": "ASMR",
+      "de": "ASMR",
+      "fr": "ASMR",
+      "ar": "ASMR"
+    },
+    "cutting": {
+      "en": "cutting",
+      "zh": "切割",
+      "ja": "カット",
+      "ko": "자르기",
+      "es": "cortar",
+      "de": "schneiden",
+      "fr": "découper",
+      "ar": "قطع"
+    },
+    "energy": {
+      "en": "energy",
+      "zh": "能量",
+      "ja": "エネルギー",
+      "ko": "에너지",
+      "es": "energía", 
+      "de": "Energie",
+      "fr": "énergie",
+      "ar": "طاقة"
+    },
+    "magic": {
+      "en": "magic",
+      "zh": "魔法",
+      "ja": "魔法",
+      "ko": "마법",
+      "es": "magia",
+      "de": "Magie", 
+      "fr": "magie",
+      "ar": "سحر"
+    },
+    "miniature": {
+      "en": "miniature",
+      "zh": "微型",
+      "ja": "ミニチュア",
+      "ko": "미니어처",
+      "es": "miniatura",
+      "de": "Miniatur",
+      "fr": "miniature", 
+      "ar": "مصغر"
+    },
+    "realistic": {
+      "en": "realistic",
+      "zh": "逼真",
+      "ja": "リアル",
+      "ko": "현실적인",
+      "es": "realista",
+      "de": "realistisch",
+      "fr": "réaliste",
+      "ar": "واقعي"
+    },
+    "surveillance": {
+      "en": "surveillance",
+      "zh": "监控",
+      "ja": "監視",
+      "ko": "감시",
+      "es": "vigilancia",
+      "de": "Überwachung",
+      "fr": "surveillance",
+      "ar": "مراقبة"
+    },
+    "animation": {
+      "en": "animation",
+      "zh": "动画",
+      "ja": "アニメーション", 
+      "ko": "애니메이션",
+      "es": "animación",
+      "de": "Animation",
+      "fr": "animation",
+      "ar": "رسوم متحركة"
+    },
+    "3d": {
+      "en": "3D",
+      "zh": "3D",
+      "ja": "3D",
+      "ko": "3D",
+      "es": "3D",
+      "de": "3D",
+      "fr": "3D", 
+      "ar": "ثلاثي الأبعاد"
+    },
+    "make_video_public": {
+      "en": "Make video public",
+      "zh": "将视频设为公开",
+      "ja": "動画を公開する",
+      "ko": "비디오를 공개로 설정",
+      "es": "Hacer video público",
+      "de": "Video öffentlich machen",
+      "fr": "Rendre la vidéo publique",
+      "ar": "جعل الفيديو عامًا"
+    }
+  }
+}

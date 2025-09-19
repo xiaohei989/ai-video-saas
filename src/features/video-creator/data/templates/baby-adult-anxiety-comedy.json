@@ -1,9 +1,27 @@
 {
   "id": "f3e6b9c2-5d8a-7f4e-0c9b-8a2f5e3d6c1b",
   "slug": "baby-adult-anxiety-comedy",
-  "name": "Baby Adult Anxiety Comedy",
+  "name": {
+    "en": "Baby Adult Anxiety Comedy",
+    "zh": "婴儿成人焦虑喜剧",
+    "ja": "赤ちゃん大人不安コメディ",
+    "ko": "아기 어른 불안 코미디",
+    "es": "Comedia de Ansiedad Adulta de Bebé",
+    "de": "Baby-Erwachsene Angst-Komödie",
+    "fr": "Comédie d'Anxiété Adulte de Bébé",
+    "ar": "كوميديا قلق الطفل البالغ"
+  },
   "icon": "😰",
-  "description": "Cinematic close-up of a worried baby expressing various adult anxieties with custom response options",
+  "description": {
+    "en": "Hilarious comedy about a baby with adult-level worries and anxieties in everyday situations",
+    "zh": "关于婴儿在日常情况下拥有成人水平担忧和焦虑的搞笑喜剧",
+    "ja": "日常の状況で大人レベルの心配や不安を持つ赤ちゃんについての陽気なコメディ",
+    "ko": "일상 상황에서 성인 수준의 걱정과 불안을 가진 아기에 대한 유쾌한 코미디",
+    "es": "Comedia divertida sobre un bebé con preocupaciones y ansiedades de nivel adulto en situaciones cotidianas",
+    "de": "Urkomische Komödie über ein Baby mit Sorgen und Ängsten auf Erwachsenenniveau in alltäglichen Situationen",
+    "fr": "Comédie hilarante sur un bébé avec des inquiétudes et anxiétés de niveau adulte dans des situations quotidiennes",
+    "ar": "كوميديا مرحة عن طفل لديه مخاوف وقلق بمستوى البالغين في المواقف اليومية"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/baby-adult-anxiety-comedy.mp4?v=1758008502567",
   "tags": [
     "comedy",
@@ -17,7 +35,7 @@
   ],
   "createdAt": "2025-01-29T21:30:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.571Z",
+  "lastModified": "2025-09-18T03:33:06.774Z",
   "promptTemplate": "A cinematic long take, an extreme close-up shot. The focus is on a sunlit nursery where a baby, around one year old, looks deeply sad and worried. The background features a cream-colored carpet and a baby crib, beautifully blurred to create a stunning depth of field with excellent bokeh. The camera captures a continuous action: First, the baby lifts his head, his eyes welling with tears, his expression filled with profound sorrow. He lets out a heavy, world-weary sigh, facing the camera directly. (The frame is a tight single shot on the baby; no one else appears). At this moment, a gentle, adult female voice asks from off-screen in {response_language}: '{interview_question}' Then, a black microphone enters the frame, moving into position right in front of the baby. The baby replies in a desperate, childish voice in {response_language}: '{baby_answer}' Both the interviewer and baby speak clearly in {response_language} language with appropriate accents and pronunciation.",
   "params": {
     "complaint_type": {
@@ -28,51 +46,159 @@
       "options": [
         {
           "value": "My formula money... it all got wiped out in the market!",
-          "label": "Stock Market Loss 📉"
+          "label": {
+            "en": "Stock Market Loss 📉",
+            "zh": "My formula money... it all got wiped out in the market! 📉",
+            "ja": "My formula money... it all got wiped out in the market! 📉",
+            "ko": "My formula money... it all got wiped out in the market! 📉",
+            "es": "My formula money... it all got wiped out in the market! 📉",
+            "de": "My formula money... it all got wiped out in the market! 📉",
+            "fr": "My formula money... it all got wiped out in the market! 📉",
+            "ar": "My formula money... it all got wiped out in the market! 📉"
+          }
         },
         {
           "value": "I need to update my LinkedIn... crawling skills aren't enough anymore!",
-          "label": "Career Anxiety 💼"
+          "label": {
+            "en": "Career Anxiety 💼",
+            "zh": "I need to update my LinkedIn... crawling skills aren't enough anymore! 💼",
+            "ja": "I need to update my LinkedIn... crawling skills aren't enough anymore! 💼",
+            "ko": "I need to update my LinkedIn... crawling skills aren't enough anymore! 💼",
+            "es": "I need to update my LinkedIn... crawling skills aren't enough anymore! 💼",
+            "de": "I need to update my LinkedIn... crawling skills aren't enough anymore! 💼",
+            "fr": "I need to update my LinkedIn... crawling skills aren't enough anymore! 💼",
+            "ar": "I need to update my LinkedIn... crawling skills aren't enough anymore! 💼"
+          }
         },
         {
           "value": "She left me for someone who can walk... I understand though.",
-          "label": "Relationship Drama 💕"
+          "label": {
+            "en": "Relationship Drama 💕",
+            "zh": "She left me for someone who can walk... I understand though. 💕",
+            "ja": "She left me for someone who can walk... I understand though. 💕",
+            "ko": "She left me for someone who can walk... I understand though. 💕",
+            "es": "She left me for someone who can walk... I understand though. 💕",
+            "de": "She left me for someone who can walk... I understand though. 💕",
+            "fr": "She left me for someone who can walk... I understand though. 💕",
+            "ar": "She left me for someone who can walk... I understand though. 💕"
+          }
         },
         {
           "value": "The nursery mortgage rates are killing us!",
-          "label": "Housing Crisis 🏠"
+          "label": {
+            "en": "Housing Crisis 🏠",
+            "zh": "The nursery mortgage rates are killing us! 🏠",
+            "ja": "The nursery mortgage rates are killing us! 🏠",
+            "ko": "The nursery mortgage rates are killing us! 🏠",
+            "es": "The nursery mortgage rates are killing us! 🏠",
+            "de": "The nursery mortgage rates are killing us! 🏠",
+            "fr": "The nursery mortgage rates are killing us! 🏠",
+            "ar": "The nursery mortgage rates are killing us! 🏠"
+          }
         },
         {
           "value": "Formula prices doubled! This is worse than 2008!",
-          "label": "Inflation Stress 🍼"
+          "label": {
+            "en": "Inflation Stress 🍼",
+            "zh": "Formula prices doubled! This is worse than 2008! 🍼",
+            "ja": "Formula prices doubled! This is worse than 2008! 🍼",
+            "ko": "Formula prices doubled! This is worse than 2008! 🍼",
+            "es": "Formula prices doubled! This is worse than 2008! 🍼",
+            "de": "Formula prices doubled! This is worse than 2008! 🍼",
+            "fr": "Formula prices doubled! This is worse than 2008! 🍼",
+            "ar": "Formula prices doubled! This is worse than 2008! 🍼"
+          }
         },
         {
           "value": "My social media engagement is terrible... only family likes my posts.",
-          "label": "Social Media Anxiety 📱"
+          "label": {
+            "en": "Social Media Anxiety 📱",
+            "zh": "My social media engagement is terrible... only family likes my posts. 📱",
+            "ja": "My social media engagement is terrible... only family likes my posts. 📱",
+            "ko": "My social media engagement is terrible... only family likes my posts. 📱",
+            "es": "My social media engagement is terrible... only family likes my posts. 📱",
+            "de": "My social media engagement is terrible... only family likes my posts. 📱",
+            "fr": "My social media engagement is terrible... only family likes my posts. 📱",
+            "ar": "My social media engagement is terrible... only family likes my posts. 📱"
+          }
         },
         {
           "value": "College applications start at 6 months now, I'm already behind!",
-          "label": "Education Pressure 🎓"
+          "label": {
+            "en": "Education Pressure 🎓",
+            "zh": "College applications start at 6 months now, I'm already behind! 🎓",
+            "ja": "College applications start at 6 months now, I'm already behind! 🎓",
+            "ko": "College applications start at 6 months now, I'm already behind! 🎓",
+            "es": "College applications start at 6 months now, I'm already behind! 🎓",
+            "de": "College applications start at 6 months now, I'm already behind! 🎓",
+            "fr": "College applications start at 6 months now, I'm already behind! 🎓",
+            "ar": "College applications start at 6 months now, I'm already behind! 🎓"
+          }
         },
         {
           "value": "My sleep schedule is ruined and it's affecting my work-life balance!",
-          "label": "Health Anxiety 🏥"
+          "label": {
+            "en": "Health Anxiety 🏥",
+            "zh": "My sleep schedule is ruined and it's affecting my work-life balance! 🏥",
+            "ja": "My sleep schedule is ruined and it's affecting my work-life balance! 🏥",
+            "ko": "My sleep schedule is ruined and it's affecting my work-life balance! 🏥",
+            "es": "My sleep schedule is ruined and it's affecting my work-life balance! 🏥",
+            "de": "My sleep schedule is ruined and it's affecting my work-life balance! 🏥",
+            "fr": "My sleep schedule is ruined and it's affecting my work-life balance! 🏥",
+            "ar": "My sleep schedule is ruined and it's affecting my work-life balance! 🏥"
+          }
         },
         {
           "value": "They're outsourcing all the baby jobs to AI now!",
-          "label": "AI Job Replacement 🤖"
+          "label": {
+            "en": "AI Job Replacement 🤖",
+            "zh": "They're outsourcing all the baby jobs to AI now! 🤖",
+            "ja": "They're outsourcing all the baby jobs to AI now! 🤖",
+            "ko": "They're outsourcing all the baby jobs to AI now! 🤖",
+            "es": "They're outsourcing all the baby jobs to AI now! 🤖",
+            "de": "They're outsourcing all the baby jobs to AI now! 🤖",
+            "fr": "They're outsourcing all the baby jobs to AI now! 🤖",
+            "ar": "They're outsourcing all the baby jobs to AI now! 🤖"
+          }
         },
         {
           "value": "Dating apps are brutal when you're pre-verbal.",
-          "label": "Dating Struggles 💔"
+          "label": {
+            "en": "Dating Struggles 💔",
+            "zh": "Dating apps are brutal when you're pre-verbal. 💔",
+            "ja": "Dating apps are brutal when you're pre-verbal. 💔",
+            "ko": "Dating apps are brutal when you're pre-verbal. 💔",
+            "es": "Dating apps are brutal when you're pre-verbal. 💔",
+            "de": "Dating apps are brutal when you're pre-verbal. 💔",
+            "fr": "Dating apps are brutal when you're pre-verbal. 💔",
+            "ar": "Dating apps are brutal when you're pre-verbal. 💔"
+          }
         },
         {
           "value": "My performance review is tomorrow and I can't even sit up!",
-          "label": "Work Performance 📊"
+          "label": {
+            "en": "Work Performance 📊",
+            "zh": "My performance review is tomorrow and I can't even sit up! 📊",
+            "ja": "My performance review is tomorrow and I can't even sit up! 📊",
+            "ko": "My performance review is tomorrow and I can't even sit up! 📊",
+            "es": "My performance review is tomorrow and I can't even sit up! 📊",
+            "de": "My performance review is tomorrow and I can't even sit up! 📊",
+            "fr": "My performance review is tomorrow and I can't even sit up! 📊",
+            "ar": "My performance review is tomorrow and I can't even sit up! 📊"
+          }
         },
         {
           "value": "custom",
-          "label": "Custom Q&A ✏️"
+          "label": {
+            "en": "Custom Q&A ✏️",
+            "zh": "custom ✏️",
+            "ja": "custom ✏️",
+            "ko": "custom ✏️",
+            "es": "custom ✏️",
+            "de": "custom ✏️",
+            "fr": "custom ✏️",
+            "ar": "custom ✏️"
+          }
         }
       ]
     },
@@ -109,35 +235,107 @@
       "options": [
         {
           "value": "English",
-          "label": "English 🇺🇸"
+          "label": {
+            "en": "English 🇺🇸",
+            "zh": "English 🇺🇸",
+            "ja": "English 🇺🇸",
+            "ko": "English 🇺🇸",
+            "es": "English 🇺🇸",
+            "de": "English 🇺🇸",
+            "fr": "English 🇺🇸",
+            "ar": "English 🇺🇸"
+          }
         },
         {
           "value": "Chinese",
-          "label": "Chinese 🇨🇳"
+          "label": {
+            "en": "Chinese 🇨🇳",
+            "zh": "Chinese 🇨🇳",
+            "ja": "Chinese 🇨🇳",
+            "ko": "Chinese 🇨🇳",
+            "es": "Chinese 🇨🇳",
+            "de": "Chinese 🇨🇳",
+            "fr": "Chinese 🇨🇳",
+            "ar": "Chinese 🇨🇳"
+          }
         },
         {
           "value": "Japanese",
-          "label": "Japanese 🇯🇵"
+          "label": {
+            "en": "Japanese 🇯🇵",
+            "zh": "Japanese 🇯🇵",
+            "ja": "Japanese 🇯🇵",
+            "ko": "Japanese 🇯🇵",
+            "es": "Japanese 🇯🇵",
+            "de": "Japanese 🇯🇵",
+            "fr": "Japanese 🇯🇵",
+            "ar": "Japanese 🇯🇵"
+          }
         },
         {
           "value": "Korean",
-          "label": "Korean 🇰🇷"
+          "label": {
+            "en": "Korean 🇰🇷",
+            "zh": "Korean 🇰🇷",
+            "ja": "Korean 🇰🇷",
+            "ko": "Korean 🇰🇷",
+            "es": "Korean 🇰🇷",
+            "de": "Korean 🇰🇷",
+            "fr": "Korean 🇰🇷",
+            "ar": "Korean 🇰🇷"
+          }
         },
         {
           "value": "Spanish",
-          "label": "Spanish 🇪🇸"
+          "label": {
+            "en": "Spanish 🇪🇸",
+            "zh": "Spanish 🇪🇸",
+            "ja": "Spanish 🇪🇸",
+            "ko": "Spanish 🇪🇸",
+            "es": "Spanish 🇪🇸",
+            "de": "Spanish 🇪🇸",
+            "fr": "Spanish 🇪🇸",
+            "ar": "Spanish 🇪🇸"
+          }
         },
         {
           "value": "French",
-          "label": "French 🇫🇷"
+          "label": {
+            "en": "French 🇫🇷",
+            "zh": "French 🇫🇷",
+            "ja": "French 🇫🇷",
+            "ko": "French 🇫🇷",
+            "es": "French 🇫🇷",
+            "de": "French 🇫🇷",
+            "fr": "French 🇫🇷",
+            "ar": "French 🇫🇷"
+          }
         },
         {
           "value": "German",
-          "label": "German 🇩🇪"
+          "label": {
+            "en": "German 🇩🇪",
+            "zh": "German 🇩🇪",
+            "ja": "German 🇩🇪",
+            "ko": "German 🇩🇪",
+            "es": "German 🇩🇪",
+            "de": "German 🇩🇪",
+            "fr": "German 🇩🇪",
+            "ar": "German 🇩🇪"
+          }
         },
         {
           "value": "Italian",
-          "label": "Italian 🇮🇹"
+          "label": {
+            "en": "Italian 🇮🇹",
+            "zh": "Italian 🇮🇹",
+            "ja": "Italian 🇮🇹",
+            "ko": "Italian 🇮🇹",
+            "es": "Italian 🇮🇹",
+            "de": "Italian 🇮🇹",
+            "fr": "Italian 🇮🇹",
+            "ar": "Italian 🇮🇹"
+          }
         }
       ],
       "showWhen": {
@@ -147,7 +345,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

@@ -1,9 +1,27 @@
 {
   "id": "f2d3e5a7-0c8f-4b1e-9a6d-3e7c2b8a5f4d",
   "slug": "cctv-animal-rider-surveillance",
-  "name": "CCTV Animal Rider Surveillance",
+  "name": {
+    "en": "CCTV Animal Rider Surveillance",
+    "zh": "监控摄像头动物骑手监视",
+    "ja": "CCTV動物ライダー監視",
+    "ko": "CCTV 동물 라이더 감시",
+    "es": "Vigilancia CCTV de Jinete Animal",
+    "de": "CCTV Tier-Reiter Überwachung",
+    "fr": "Surveillance CCTV de Cavalier Animal",
+    "ar": "مراقبة CCTV لراكب الحيوان"
+  },
   "icon": "📹",
-  "description": "Night-vision CCTV footage of various animal riders approaching camera with customizable provocative gestures",
+  "description": {
+    "en": "Security camera footage of unexpected animals riding various vehicles in urban environments",
+    "zh": "安全摄像头拍摄到意想不到的动物在城市环境中骑乘各种交通工具",
+    "ja": "都市環境で様々な乗り物に乗る予期しない動物のセキュリティカメラ映像",
+    "ko": "도시 환경에서 다양한 탈것을 타는 예상치 못한 동물들의 보안 카메라 영상",
+    "es": "Metraje de cámara de seguridad de animales inesperados montando varios vehículos en entornos urbanos",
+    "de": "Sicherheitskamera-Aufnahmen von unerwarteten Tieren, die verschiedene Fahrzeuge in städtischen Umgebungen fahren",
+    "fr": "Images de caméra de sécurité d'animaux inattendus montant divers véhicules dans des environnements urbains",
+    "ar": "لقطات كاميرا أمنية لحيوانات غير متوقعة تركب مركبات مختلفة في البيئات الحضرية"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/cctv-animal-rider-surveillance.mp4?v=1758008502567",
   "tags": [
     "cctv",
@@ -16,7 +34,7 @@
   ],
   "createdAt": "2025-01-29T19:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.573Z",
+  "lastModified": "2025-09-18T03:33:06.777Z",
   "promptTemplate": "Night-vision CCTV realism, monochrome low-lux grain, fixed security cam perspective. Static shot from high-mounted CCTV cam showing a {mount_animal} with a {rider_animal} rider starting in the distance at {location} and walking directly toward the camera, coming to a stop at medium close-up distance. The {rider_animal} MUST remain firmly seated on the {mount_animal}'s back for the entire 8-second duration without dismounting, teleporting, or changing position. Timeline: 0-4s: steady approach with realistic walking gait; 4-5s: complete stop 3 meters from camera, rider braces against momentum change while staying mounted; 5-8s: both animals snap heads to look directly at camera lens, the {mount_animal} displays a wide, unnatural smile by pulling its lips back to expose teeth, while the {rider_animal} - STILL FIRMLY SEATED AND MAINTAINING RIDING POSITION - performs {provocative_gesture} toward the camera using only its upper body and arms, keeping its lower body stable in the riding position on the {mount_animal}'s back. Timestamp 2025-07-27 02:30:15 displayed top-left in white monospace digits. 960×540 resolution, 24fps, desaturated greyscale with slight green tint, coarse digital noise typical of low-lux CCD surveillance systems.",
   "params": {
     "mount_animal": {
@@ -27,35 +45,107 @@
       "options": [
         {
           "value": "grey donkey",
-          "label": "Grey Donkey 🐴"
+          "label": {
+            "en": "Grey Donkey 🐴",
+            "zh": "grey donkey 🐴",
+            "ja": "grey donkey 🐴",
+            "ko": "grey donkey 🐴",
+            "es": "grey donkey 🐴",
+            "de": "grey donkey 🐴",
+            "fr": "grey donkey 🐴",
+            "ar": "grey donkey 🐴"
+          }
         },
         {
           "value": "brown horse",
-          "label": "Brown Horse 🐎"
+          "label": {
+            "en": "Brown Horse 🐎",
+            "zh": "brown horse 🐎",
+            "ja": "brown horse 🐎",
+            "ko": "brown horse 🐎",
+            "es": "brown horse 🐎",
+            "de": "brown horse 🐎",
+            "fr": "brown horse 🐎",
+            "ar": "brown horse 🐎"
+          }
         },
         {
           "value": "spotted cow",
-          "label": "Spotted Cow 🐄"
+          "label": {
+            "en": "Spotted Cow 🐄",
+            "zh": "spotted cow 🐄",
+            "ja": "spotted cow 🐄",
+            "ko": "spotted cow 🐄",
+            "es": "spotted cow 🐄",
+            "de": "spotted cow 🐄",
+            "fr": "spotted cow 🐄",
+            "ar": "spotted cow 🐄"
+          }
         },
         {
           "value": "large elephant",
-          "label": "Large Elephant 🐘"
+          "label": {
+            "en": "Large Elephant 🐘",
+            "zh": "large elephant 🐘",
+            "ja": "large elephant 🐘",
+            "ko": "large elephant 🐘",
+            "es": "large elephant 🐘",
+            "de": "large elephant 🐘",
+            "fr": "large elephant 🐘",
+            "ar": "large elephant 🐘"
+          }
         },
         {
           "value": "desert camel",
-          "label": "Desert Camel 🐪"
+          "label": {
+            "en": "Desert Camel 🐪",
+            "zh": "desert camel 🐪",
+            "ja": "desert camel 🐪",
+            "ko": "desert camel 🐪",
+            "es": "desert camel 🐪",
+            "de": "desert camel 🐪",
+            "fr": "desert camel 🐪",
+            "ar": "desert camel 🐪"
+          }
         },
         {
           "value": "powerful rhino",
-          "label": "Powerful Rhino 🦏"
+          "label": {
+            "en": "Powerful Rhino 🦏",
+            "zh": "powerful rhino 🦏",
+            "ja": "powerful rhino 🦏",
+            "ko": "powerful rhino 🦏",
+            "es": "powerful rhino 🦏",
+            "de": "powerful rhino 🦏",
+            "fr": "powerful rhino 🦏",
+            "ar": "powerful rhino 🦏"
+          }
         },
         {
           "value": "graceful deer",
-          "label": "Graceful Deer 🦌"
+          "label": {
+            "en": "Graceful Deer 🦌",
+            "zh": "graceful deer 🦌",
+            "ja": "graceful deer 🦌",
+            "ko": "graceful deer 🦌",
+            "es": "graceful deer 🦌",
+            "de": "graceful deer 🦌",
+            "fr": "graceful deer 🦌",
+            "ar": "graceful deer 🦌"
+          }
         },
         {
           "value": "fluffy bear",
-          "label": "Fluffy Bear 🐻"
+          "label": {
+            "en": "Fluffy Bear 🐻",
+            "zh": "fluffy bear 🐻",
+            "ja": "fluffy bear 🐻",
+            "ko": "fluffy bear 🐻",
+            "es": "fluffy bear 🐻",
+            "de": "fluffy bear 🐻",
+            "fr": "fluffy bear 🐻",
+            "ar": "fluffy bear 🐻"
+          }
         }
       ]
     },
@@ -67,67 +157,202 @@
       "options": [
         {
           "value": "olive baboon",
-          "label": "Olive Baboon 🐒"
+          "label": {
+            "en": "Olive Baboon 🐒",
+            "zh": "olive baboon 🐒",
+            "ja": "olive baboon 🐒",
+            "ko": "olive baboon 🐒",
+            "es": "olive baboon 🐒",
+            "de": "olive baboon 🐒",
+            "fr": "olive baboon 🐒",
+            "ar": "olive baboon 🐒"
+          }
         },
         {
           "value": "clever monkey",
-          "label": "Clever Monkey 🐵"
+          "label": {
+            "en": "Clever Monkey 🐵",
+            "zh": "clever monkey 🐵",
+            "ja": "clever monkey 🐵",
+            "ko": "clever monkey 🐵",
+            "es": "clever monkey 🐵",
+            "de": "clever monkey 🐵",
+            "fr": "clever monkey 🐵",
+            "ar": "clever monkey 🐵"
+          }
         },
         {
           "value": "masked raccoon",
-          "label": "Masked Raccoon 🦝"
+          "label": {
+            "en": "Masked Raccoon 🦝",
+            "zh": "masked raccoon 🦝",
+            "ja": "masked raccoon 🦝",
+            "ko": "masked raccoon 🦝",
+            "es": "masked raccoon 🦝",
+            "de": "masked raccoon 🦝",
+            "fr": "masked raccoon 🦝",
+            "ar": "masked raccoon 🦝"
+          }
         },
         {
           "value": "adorable panda",
-          "label": "Adorable Panda 🐼"
+          "label": {
+            "en": "Adorable Panda 🐼",
+            "zh": "adorable panda 🐼",
+            "ja": "adorable panda 🐼",
+            "ko": "adorable panda 🐼",
+            "es": "adorable panda 🐼",
+            "de": "adorable panda 🐼",
+            "fr": "adorable panda 🐼",
+            "ar": "adorable panda 🐼"
+          }
         },
         {
           "value": "strong orangutan",
-          "label": "Strong Orangutan 🦧"
+          "label": {
+            "en": "Strong Orangutan 🦧",
+            "zh": "strong orangutan 🦧",
+            "ja": "strong orangutan 🦧",
+            "ko": "strong orangutan 🦧",
+            "es": "strong orangutan 🦧",
+            "de": "strong orangutan 🦧",
+            "fr": "strong orangutan 🦧",
+            "ar": "strong orangutan 🦧"
+          }
         },
         {
           "value": "agile squirrel",
-          "label": "Agile Squirrel 🐿️"
+          "label": {
+            "en": "Agile Squirrel 🐿️",
+            "zh": "agile squirrel 🐿️",
+            "ja": "agile squirrel 🐿️",
+            "ko": "agile squirrel 🐿️",
+            "es": "agile squirrel 🐿️",
+            "de": "agile squirrel 🐿️",
+            "fr": "agile squirrel 🐿️",
+            "ar": "agile squirrel 🐿️"
+          }
         },
         {
           "value": "fluffy rabbit",
-          "label": "Fluffy Rabbit 🐰"
+          "label": {
+            "en": "Fluffy Rabbit 🐰",
+            "zh": "fluffy rabbit 🐰",
+            "ja": "fluffy rabbit 🐰",
+            "ko": "fluffy rabbit 🐰",
+            "es": "fluffy rabbit 🐰",
+            "de": "fluffy rabbit 🐰",
+            "fr": "fluffy rabbit 🐰",
+            "ar": "fluffy rabbit 🐰"
+          }
         },
         {
           "value": "spiky hedgehog",
-          "label": "Spiky Hedgehog 🦔"
+          "label": {
+            "en": "Spiky Hedgehog 🦔",
+            "zh": "spiky hedgehog 🦔",
+            "ja": "spiky hedgehog 🦔",
+            "ko": "spiky hedgehog 🦔",
+            "es": "spiky hedgehog 🦔",
+            "de": "spiky hedgehog 🦔",
+            "fr": "spiky hedgehog 🦔",
+            "ar": "spiky hedgehog 🦔"
+          }
         }
       ]
     },
     "location": {
       "type": "select",
-      "label": "Surveillance Location",
+      "label": {
+        "en": "Surveillance Location",
+        "zh": "监控地点",
+        "ja": "監視場所",
+        "ko": "감시 장소",
+        "es": "Ubicación de Vigilancia",
+        "de": "Überwachungsort",
+        "fr": "Lieu de Surveillance",
+        "ar": "موقع المراقبة"
+      },
       "required": true,
       "default": "deserted petrol-station forecourt",
       "options": [
         {
           "value": "deserted petrol-station forecourt",
-          "label": "Gas Station Forecourt"
+          "label": {
+            "en": "Gas Station Forecourt",
+            "zh": "deserted petrol-station forecourt ",
+            "ja": "deserted petrol-station forecourt ",
+            "ko": "deserted petrol-station forecourt ",
+            "es": "deserted petrol-station forecourt ",
+            "de": "deserted petrol-station forecourt ",
+            "fr": "deserted petrol-station forecourt ",
+            "ar": "deserted petrol-station forecourt "
+          }
         },
         {
           "value": "empty parking lot entrance",
-          "label": "Parking Lot Entrance"
+          "label": {
+            "en": "Parking Lot Entrance",
+            "zh": "empty parking lot entrance ",
+            "ja": "empty parking lot entrance ",
+            "ko": "empty parking lot entrance ",
+            "es": "empty parking lot entrance ",
+            "de": "empty parking lot entrance ",
+            "fr": "empty parking lot entrance ",
+            "ar": "empty parking lot entrance "
+          }
         },
         {
           "value": "convenience store front area",
-          "label": "Store Front Area"
+          "label": {
+            "en": "Store Front Area",
+            "zh": "convenience store front area ",
+            "ja": "convenience store front area ",
+            "ko": "convenience store front area ",
+            "es": "convenience store front area ",
+            "de": "convenience store front area ",
+            "fr": "convenience store front area ",
+            "ar": "convenience store front area "
+          }
         },
         {
           "value": "warehouse loading dock",
-          "label": "Warehouse Loading Dock"
+          "label": {
+            "en": "Warehouse Loading Dock",
+            "zh": "warehouse loading dock ",
+            "ja": "warehouse loading dock ",
+            "ko": "warehouse loading dock ",
+            "es": "warehouse loading dock ",
+            "de": "warehouse loading dock ",
+            "fr": "warehouse loading dock ",
+            "ar": "warehouse loading dock "
+          }
         },
         {
           "value": "park pathway junction",
-          "label": "Park Pathway"
+          "label": {
+            "en": "Park Pathway",
+            "zh": "park pathway junction ",
+            "ja": "park pathway junction ",
+            "ko": "park pathway junction ",
+            "es": "park pathway junction ",
+            "de": "park pathway junction ",
+            "fr": "park pathway junction ",
+            "ar": "park pathway junction "
+          }
         },
         {
           "value": "residential street intersection",
-          "label": "Street Intersection"
+          "label": {
+            "en": "Street Intersection",
+            "zh": "residential street intersection ",
+            "ja": "residential street intersection ",
+            "ko": "residential street intersection ",
+            "es": "residential street intersection ",
+            "de": "residential street intersection ",
+            "fr": "residential street intersection ",
+            "ar": "residential street intersection "
+          }
         }
       ]
     },
@@ -139,41 +364,122 @@
       "options": [
         {
           "value": "middle finger gesture",
-          "label": "Middle Finger 🖕"
+          "label": {
+            "en": "Middle Finger 🖕",
+            "zh": "middle finger gesture 🖕",
+            "ja": "middle finger gesture 🖕",
+            "ko": "middle finger gesture 🖕",
+            "es": "middle finger gesture 🖕",
+            "de": "middle finger gesture 🖕",
+            "fr": "middle finger gesture 🖕",
+            "ar": "middle finger gesture 🖕"
+          }
         },
         {
           "value": "thumbs down gesture",
-          "label": "Thumbs Down 👎"
+          "label": {
+            "en": "Thumbs Down 👎",
+            "zh": "thumbs down gesture 👎",
+            "ja": "thumbs down gesture 👎",
+            "ko": "thumbs down gesture 👎",
+            "es": "thumbs down gesture 👎",
+            "de": "thumbs down gesture 👎",
+            "fr": "thumbs down gesture 👎",
+            "ar": "thumbs down gesture 👎"
+          }
         },
         {
           "value": "tongue out mockery",
-          "label": "Tongue Out 😝"
+          "label": {
+            "en": "Tongue Out 😝",
+            "zh": "tongue out mockery 😝",
+            "ja": "tongue out mockery 😝",
+            "ko": "tongue out mockery 😝",
+            "es": "tongue out mockery 😝",
+            "de": "tongue out mockery 😝",
+            "fr": "tongue out mockery 😝",
+            "ar": "tongue out mockery 😝"
+          }
         },
         {
           "value": "rock horns gesture",
-          "label": "Rock Horns 🤘"
+          "label": {
+            "en": "Rock Horns 🤘",
+            "zh": "rock horns gesture 🤘",
+            "ja": "rock horns gesture 🤘",
+            "ko": "rock horns gesture 🤘",
+            "es": "rock horns gesture 🤘",
+            "de": "rock horns gesture 🤘",
+            "fr": "rock horns gesture 🤘",
+            "ar": "rock horns gesture 🤘"
+          }
         },
         {
           "value": "mocking wave",
-          "label": "Mocking Wave 👋"
+          "label": {
+            "en": "Mocking Wave 👋",
+            "zh": "mocking wave 👋",
+            "ja": "mocking wave 👋",
+            "ko": "mocking wave 👋",
+            "es": "mocking wave 👋",
+            "de": "mocking wave 👋",
+            "fr": "mocking wave 👋",
+            "ar": "mocking wave 👋"
+          }
         },
         {
           "value": "inverted peace sign",
-          "label": "Inverted Peace ✌️"
+          "label": {
+            "en": "Inverted Peace ✌️",
+            "zh": "inverted peace sign ✌️",
+            "ja": "inverted peace sign ✌️",
+            "ko": "inverted peace sign ✌️",
+            "es": "inverted peace sign ✌️",
+            "de": "inverted peace sign ✌️",
+            "fr": "inverted peace sign ✌️",
+            "ar": "inverted peace sign ✌️"
+          }
         },
         {
           "value": "call me gesture",
-          "label": "Call Me Gesture 🤙"
+          "label": {
+            "en": "Call Me Gesture 🤙",
+            "zh": "call me gesture 🤙",
+            "ja": "call me gesture 🤙",
+            "ko": "call me gesture 🤙",
+            "es": "call me gesture 🤙",
+            "de": "call me gesture 🤙",
+            "fr": "call me gesture 🤙",
+            "ar": "call me gesture 🤙"
+          }
         },
         {
           "value": "flex muscles pose",
-          "label": "Flex Muscles 💪"
+          "label": {
+            "en": "Flex Muscles 💪",
+            "zh": "flex muscles pose 💪",
+            "ja": "flex muscles pose 💪",
+            "ko": "flex muscles pose 💪",
+            "es": "flex muscles pose 💪",
+            "de": "flex muscles pose 💪",
+            "fr": "flex muscles pose 💪",
+            "ar": "flex muscles pose 💪"
+          }
         }
       ]
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

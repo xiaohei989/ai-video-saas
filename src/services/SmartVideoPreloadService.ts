@@ -111,9 +111,9 @@ class SmartVideoPreloadService {
       backgroundUpgrade: true
     },
     limits: {
-      maxConcurrent: 3,
-      maxPreload: 10,
-      maxCacheSize: 500
+      maxConcurrent: 5,        // 🚀 并发加载从3增加到5
+      maxPreload: 30,          // 🚀 预加载从10增加到30
+      maxCacheSize: 1000       // 🚀 缓存大小从500MB增加到1GB
     }
   }
 

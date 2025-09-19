@@ -109,14 +109,49 @@ export async function syncTemplatesToDatabase(): Promise<SyncResult> {
             })
 
           if (insertError) {
-            console.error(`插入模板 ${template.id} 失败:`, insertError)
-            result.errors.push(`${template.id}: ${insertError.message}`)
-            continue
+            // 检查是否是重复slug错误（code: 23505 是唯一约束违反）
+            if (insertError.code === '23505' && insertError.message?.includes('templates_slug_key')) {
+              console.log(`🔄 检测到slug重复，尝试更新数据库ID: ${template.id}`)
+              
+              // 尝试通过slug找到现有记录并更新其ID
+              const { error: updateIdError } = await supabase
+                .from('templates')
+                .update({
+                  id: template.id, // 使用JSON文件中的ID
+                  name: template.name,
+                  description: template.description,
+                  prompt_template: template.promptTemplate || (template as any).prompt_template || '',
+                  parameters: template.parameters || (template as any).params || {},
+                  category: (template as any).category,
+                  credit_cost: (template as any).credits || 1,
+                  tags: (template as any).tags || [],
+                  version: currentVersion,
+                  thumbnail_url: template.thumbnailUrl,
+                  preview_url: template.previewUrl,
+                  updated_at: new Date().toISOString()
+                  // 注意：不更新 like_count, comment_count 等用户数据
+                })
+                .eq('slug', (template as any).slug)
+              
+              if (updateIdError) {
+                console.error(`更新模板ID ${template.id} 失败:`, updateIdError)
+                result.errors.push(`${template.id}: 更新ID失败 - ${updateIdError.message}`)
+                continue
+              }
+              
+              console.log(`✅ 已更新模板ID: ${template.id}`)
+              result.updated++
+              result.details!.updatedTemplates.push(template.id)
+            } else {
+              console.error(`插入模板 ${template.id} 失败:`, insertError)
+              result.errors.push(`${template.id}: ${insertError.message}`)
+              continue
+            }
+          } else {
+            console.log(`✅ 新增模板: ${template.id} (UUID: ${newUuid})`)
+            result.synced++
+            result.details!.newTemplates.push(template.id)
           }
-
-          console.log(`✅ 新增模板: ${template.id} (UUID: ${newUuid})`)
-          result.synced++
-          result.details!.newTemplates.push(template.id)
 
         } else {
           // 现有模板：检查是否需要更新

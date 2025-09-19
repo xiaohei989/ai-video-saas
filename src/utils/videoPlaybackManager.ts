@@ -90,11 +90,6 @@ class VideoPlaybackManager {
       startTime: Date.now()
     }
 
-    // 检查是否需要暂停其他视频
-    if (this.activeVideos.size >= this.maxConcurrentVideos) {
-      this.pauseLowerPriorityVideos(priority)
-    }
-
     this.activeVideos.set(videoId, instance)
     
     // 监听视频事件

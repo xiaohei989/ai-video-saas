@@ -20,9 +20,15 @@ export interface BatchLikeData {
 class LikesCacheService {
   private cache: Map<string, CachedLikeStatus> = new Map()
   private batchCache: Map<string, BatchLikeData> = new Map()
-  private readonly DEFAULT_TTL = 5 * 60 * 1000 // 5分钟缓存
-  private readonly BATCH_TTL = 3 * 60 * 1000 // 批量数据3分钟缓存
+  // 🚀 优化：延长缓存TTL，提高缓存命中率
+  private readonly DEFAULT_TTL = 30 * 60 * 1000 // 30分钟缓存（从5分钟延长）
+  private readonly BATCH_TTL = 60 * 60 * 1000 // 批量数据1小时缓存（从3分钟延长）
+  private readonly HIGH_PRIORITY_TTL = 2 * 60 * 60 * 1000 // 高优先级2小时缓存
+  private readonly LOW_PRIORITY_TTL = 15 * 60 * 1000 // 低优先级15分钟缓存
   private cleanupInterval: NodeJS.Timeout | null = null
+  // 🚀 新增：预加载缓存管理
+  private preloadQueue: Set<string> = new Set()
+  private preloadInProgress: Set<string> = new Set()
 
   constructor() {
     // 启动定期清理过期缓存
@@ -275,6 +281,110 @@ class LikesCacheService {
     this.cleanupInterval = setInterval(() => {
       this.cleanup()
     }, 60000) // 每分钟清理一次
+  }
+
+  /**
+   * 🚀 智能预加载：根据优先级预加载模板点赞数据
+   */
+  schedulePreload(templateIds: string[], priority: 'high' | 'normal' | 'low' = 'normal'): void {
+    templateIds.forEach(id => {
+      if (!this.has(id) && !this.preloadInProgress.has(id)) {
+        this.preloadQueue.add(id)
+      }
+    })
+    
+    // 高优先级立即处理，其他延迟处理
+    if (priority === 'high') {
+      this.processPreloadQueue()
+    } else {
+      setTimeout(() => this.processPreloadQueue(), priority === 'normal' ? 1000 : 3000)
+    }
+  }
+
+  /**
+   * 🚀 处理预加载队列（背景预加载，不阻塞主流程）
+   */
+  private processPreloadQueue(): void {
+    if (this.preloadQueue.size === 0) return
+    
+    // 分批处理预加载队列，避免过多并发请求
+    const batchSize = 5
+    const currentBatch = Array.from(this.preloadQueue).slice(0, batchSize)
+    
+    currentBatch.forEach(templateId => {
+      this.preloadQueue.delete(templateId)
+      this.preloadInProgress.add(templateId)
+    })
+    
+    // 使用requestIdleCallback进行后台预加载
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      window.requestIdleCallback(() => {
+        this.executePreload(currentBatch)
+      })
+    } else {
+      // 回退：使用setTimeout
+      setTimeout(() => {
+        this.executePreload(currentBatch)
+      }, 100)
+    }
+  }
+
+  /**
+   * 🚀 执行实际的预加载操作
+   */
+  private async executePreload(templateIds: string[]): Promise<void> {
+    try {
+      // 这里需要调用templateLikeService来获取数据
+      // 为了避免循环引用，我们通过事件或回调的方式通知外部服务
+      const event = new CustomEvent('cache-preload-request', {
+        detail: { templateIds }
+      })
+      window.dispatchEvent(event)
+      
+      console.log(`[LikesCacheService] 🔄 后台预加载: ${templateIds.length}个模板`)
+    } catch (error) {
+      console.warn('[LikesCacheService] 预加载失败:', error)
+    } finally {
+      // 清理预加载状态
+      templateIds.forEach(id => {
+        this.preloadInProgress.delete(id)
+      })
+      
+      // 继续处理剩余队列
+      if (this.preloadQueue.size > 0) {
+        setTimeout(() => this.processPreloadQueue(), 500)
+      }
+    }
+  }
+
+  /**
+   * 🚀 根据优先级获取TTL
+   */
+  getTTLByPriority(priority: 'high' | 'normal' | 'low'): number {
+    switch (priority) {
+      case 'high': return this.HIGH_PRIORITY_TTL
+      case 'low': return this.LOW_PRIORITY_TTL
+      default: return this.DEFAULT_TTL
+    }
+  }
+
+  /**
+   * 🚀 智能缓存策略：根据访问模式调整缓存
+   */
+  markAsAccessed(templateId: string): void {
+    const cached = this.cache.get(templateId)
+    if (cached) {
+      // 频繁访问的数据延长缓存时间
+      const now = Date.now()
+      const timeSinceCache = now - cached.cached_at
+      const remainingTime = cached.ttl - timeSinceCache
+      
+      if (remainingTime < cached.ttl * 0.5) {
+        // 如果缓存时间已过半，延长TTL
+        cached.ttl = Math.min(cached.ttl * 1.5, this.HIGH_PRIORITY_TTL)
+        console.log(`[LikesCacheService] 📈 延长热门模板缓存: ${templateId}`)
+      }
+    }
   }
 
   /**

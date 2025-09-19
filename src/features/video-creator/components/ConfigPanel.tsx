@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChevronRight, ChevronDown, Gem, AlertCircle, Sparkles, Shuffle } from 'lucide-react'
 import { Template } from '../data/templates'
+import { localizeTemplate } from '../data/templates/index'
 import { CustomSelect } from '@/components/ui/custom-select'
 import PortalDropdown from '@/components/ui/portal-dropdown'
 import ImageUploader from './ImageUploader'
@@ -37,8 +38,12 @@ export default function ConfigPanel({
   onGenerate,
   isGenerating
 }: ConfigPanelProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { user } = useAuth()
+  
+  // 本地化模板
+  const localizedSelectedTemplate = localizeTemplate(selectedTemplate, i18n.language)
+  const localizedTemplates = templates.map(template => localizeTemplate(template, i18n.language))
   const [showTemplateList, setShowTemplateList] = useState(false)
   const [showValidationError, setShowValidationError] = useState(false)
   const templateTriggerRef = useRef<HTMLButtonElement>(null)
@@ -338,7 +343,7 @@ export default function ConfigPanel({
     // 验证所有必需参数是否已填写
     const missingParams: string[] = []
     
-    Object.entries(selectedTemplate.params).forEach(([key, param]) => {
+    Object.entries(localizedSelectedTemplate.params).forEach(([key, param]) => {
       if (param.required) {
         const value = params[key]
         if (value === undefined || value === null || value === '') {
@@ -366,7 +371,7 @@ export default function ConfigPanel({
   
   const getMissingParams = () => {
     const missing: string[] = []
-    Object.entries(selectedTemplate.params).forEach(([key, param]) => {
+    Object.entries(localizedSelectedTemplate.params).forEach(([key, param]) => {
       if (param.required) {
         const value = params[key]
         if (value === undefined || value === null || value === '') {
@@ -500,7 +505,7 @@ export default function ConfigPanel({
               >
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm">{selectedTemplate.icon}</span>
-                  <span className="truncate">{selectedTemplate.name}</span>
+                  <span className="truncate">{localizedSelectedTemplate.name}</span>
                 </div>
                 {showTemplateList ? (
                   <ChevronDown className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
@@ -514,12 +519,12 @@ export default function ConfigPanel({
                 onClose={() => setShowTemplateList(false)}
                 triggerRef={templateTriggerRef}
               >
-                {templates.map(template => (
+                {localizedTemplates.map((template, index) => (
                   <button
                     key={template.id}
                     className="w-full px-2.5 py-1.5 text-xs text-left hover:bg-accent flex items-center gap-1.5"
                     onClick={() => {
-                      onTemplateChange(template.id)
+                      onTemplateChange(templates[index].id)
                       setShowTemplateList(false)
                     }}
                   >
@@ -539,7 +544,7 @@ export default function ConfigPanel({
                   onParamChange(key, value)
                 })
                 console.log('=== Random Parameters Generated ===')
-                console.log('Template:', selectedTemplate.name)
+                console.log('Template:', localizedSelectedTemplate.name)
                 console.log('Random Params:', randomParams)
               }}
               title="Randomize all parameters"
@@ -551,7 +556,7 @@ export default function ConfigPanel({
           {/* Parameters Container with Rounded Rectangle */}
           <div className="bg-muted/30 border border-border rounded-lg p-1.5 lg:p-2">
             <div className="space-y-1 lg:space-y-1.5">
-              {Object.entries(selectedTemplate.params)
+              {Object.entries(localizedSelectedTemplate.params)
                 .filter(([key]) => key !== 'makePublic') // Exclude makePublic if it exists
                 .map(([key, param]) => 
                   renderParam(key, param)

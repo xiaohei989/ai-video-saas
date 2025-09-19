@@ -31,6 +31,55 @@ export interface PaginationOptions {
 }
 
 class SupabaseVideoService {
+  // 🚀 移动端优化：请求缓存和超时处理
+  private requestCache = new Map<string, { data: any, timestamp: number }>()
+  private readonly CACHE_DURATION = 30000 // 30秒缓存
+  private readonly DEFAULT_TIMEOUT = 8000 // 8秒超时（移动端友好）
+  
+  // 🚀 网络请求优化：防抖动和去重
+  private pendingRequests = new Map<string, Promise<any>>()
+  private interactionDebounce = new Map<string, NodeJS.Timeout>()
+  
+  /**
+   * 🚀 带超时的请求包装器
+   */
+  private withTimeout<T>(promise: Promise<T>, timeout: number = this.DEFAULT_TIMEOUT): Promise<T> {
+    return Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error(`请求超时 (${timeout}ms)`))
+        }, timeout)
+      })
+    ])
+  }
+  
+  /**
+   * 🚀 请求缓存机制
+   */
+  private getCacheKey(method: string, ...args: any[]): string {
+    return `${method}_${JSON.stringify(args)}`
+  }
+  
+  private getCachedResult<T>(cacheKey: string): T | null {
+    const cached = this.requestCache.get(cacheKey)
+    if (cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
+      console.log(`[VideoService] 📦 使用缓存: ${cacheKey}`)
+      return cached.data as T
+    }
+    return null
+  }
+  
+  private setCachedResult<T>(cacheKey: string, data: T): void {
+    this.requestCache.set(cacheKey, { data, timestamp: Date.now() })
+    
+    // 限制缓存大小
+    if (this.requestCache.size > 50) {
+      const oldestKey = this.requestCache.keys().next().value
+      this.requestCache.delete(oldestKey)
+    }
+  }
+
   /**
    * 创建新的视频记录
    */
@@ -268,7 +317,7 @@ class SupabaseVideoService {
   }
 
   /**
-   * 获取用户的视频列表
+   * 🚀 获取用户的视频列表 - 移动端优化版
    */
   async getUserVideos(
     userId: string,
@@ -280,74 +329,103 @@ class SupabaseVideoService {
     page: number
     pageSize: number
   }> {
+    const cacheKey = this.getCacheKey('getUserVideos', userId, filter, pagination)
+    
+    // 🚀 尝试从缓存获取
+    const cached = this.getCachedResult<{
+      videos: Video[], total: number, page: number, pageSize: number
+    }>(cacheKey)
+    if (cached) {
+      return cached
+    }
+
     try {
-      let query = supabase
-        .from('videos')
-        .select('*', { count: 'exact' })
-        .eq('user_id', userId)
-        .eq('is_deleted', false)
-
-      // 应用过滤器
-      if (filter) {
-        if (filter.status) {
-          query = query.eq('status', filter.status)
-        }
-        if (filter.templateId) {
-          // Template ID is stored in metadata
-          query = query.contains('metadata', { templateId: filter.templateId })
-        }
-        if (filter.isPublic !== undefined) {
-          query = query.eq('is_public', filter.isPublic)
-        }
-        if (filter.searchTerm) {
-          query = query.or(`title.ilike.%${filter.searchTerm}%,prompt.ilike.%${filter.searchTerm}%`)
-        }
-        if (filter.startDate) {
-          query = query.gte('created_at', filter.startDate.toISOString())
-        }
-        if (filter.endDate) {
-          query = query.lte('created_at', filter.endDate.toISOString())
-        }
-      }
-
-      // 排序
-      const sortBy = pagination?.sortBy || 'created_at'
-      const sortOrder = pagination?.sortOrder || 'desc'
-      query = query.order(sortBy, { ascending: sortOrder === 'asc' })
-
-      // 分页
-      const page = pagination?.page || 1
-      const pageSize = pagination?.pageSize || 10
-      const from = (page - 1) * pageSize
-      const to = from + pageSize - 1
-      query = query.range(from, to)
-
-      const { data: videos, error, count } = await query
-
-      if (error) {
-        console.error('Error fetching user videos:', error)
-        return {
-          videos: [],
-          total: 0,
-          page,
-          pageSize
-        }
-      }
-
-      return {
-        videos: videos || [],
-        total: count || 0,
-        page,
-        pageSize
-      }
+      // 🚀 使用超时包装
+      const result = await this.withTimeout(
+        this.fetchUserVideosInternal(userId, filter, pagination),
+        // 移动端网络环境不稳定，适当加长超时
+        pagination?.pageSize && pagination.pageSize <= 10 ? 6000 : this.DEFAULT_TIMEOUT
+      )
+      
+      // 🚀 缓存结果
+      this.setCachedResult(cacheKey, result)
+      
+      console.log(`[VideoService] ✅ 获取${result.videos.length}个视频 (${result.total}总数)`)
+      
+      return result
     } catch (error) {
-      console.error('Failed to fetch user videos:', error)
+      console.error('[VideoService] 获取用户视频失败:', error)
+      
+      // 返回空结果但不缓存错误
       return {
         videos: [],
         total: 0,
         page: pagination?.page || 1,
         pageSize: pagination?.pageSize || 10
       }
+    }
+  }
+  
+  /**
+   * 内部获取方法 - 封装实际的数据库查询逻辑
+   */
+  private async fetchUserVideosInternal(
+    userId: string,
+    filter?: VideoFilter,
+    pagination?: PaginationOptions
+  ) {
+    let query = supabase
+      .from('videos')
+      .select('*', { count: 'exact' })
+      .eq('user_id', userId)
+      .eq('is_deleted', false)
+
+    // 应用过滤器
+    if (filter) {
+      if (filter.status) {
+        query = query.eq('status', filter.status)
+      }
+      if (filter.templateId) {
+        query = query.contains('metadata', { templateId: filter.templateId })
+      }
+      if (filter.isPublic !== undefined) {
+        query = query.eq('is_public', filter.isPublic)
+      }
+      if (filter.searchTerm) {
+        query = query.or(`title.ilike.%${filter.searchTerm}%,prompt.ilike.%${filter.searchTerm}%`)
+      }
+      if (filter.startDate) {
+        query = query.gte('created_at', filter.startDate.toISOString())
+      }
+      if (filter.endDate) {
+        query = query.lte('created_at', filter.endDate.toISOString())
+      }
+    }
+
+    // 排序
+    const sortBy = pagination?.sortBy || 'created_at'
+    const sortOrder = pagination?.sortOrder || 'desc'
+    query = query.order(sortBy, { ascending: sortOrder === 'asc' })
+
+    // 分页
+    const page = pagination?.page || 1
+    const pageSize = pagination?.pageSize || 10
+    const from = (page - 1) * pageSize
+    const to = from + pageSize - 1
+    query = query.range(from, to)
+
+    const { data: videos, error, count } = await query
+
+    if (error) {
+      console.error('Error fetching user videos:', error)
+      throw new Error(`数据库查询失败: ${error.message}`)
+    }
+
+    return {
+      videos: videos || [],
+      total: count || 0,
+      page,
+      pageSize
     }
   }
 
@@ -691,48 +769,115 @@ class SupabaseVideoService {
   }
 
   /**
-   * 增加视频交互计数
+   * 增加视频交互计数 - 优化版本，防抖动和去重
    */
   async incrementInteraction(
     id: string,
     type: 'view_count' | 'download_count' | 'share_count'
   ): Promise<boolean> {
+    const requestKey = `increment_${id}_${type}`
+    
+    // 防抖动：view_count 2秒内只处理一次，其他类型1秒内只处理一次
+    const debounceTime = type === 'view_count' ? 2000 : 1000
+    
+    // 清除之前的防抖定时器
+    if (this.interactionDebounce.has(requestKey)) {
+      clearTimeout(this.interactionDebounce.get(requestKey)!)
+    }
+    
+    return new Promise((resolve) => {
+      this.interactionDebounce.set(requestKey, setTimeout(async () => {
+        try {
+          // 清理防抖记录
+          this.interactionDebounce.delete(requestKey)
+          
+          // 检查是否有相同的请求正在进行
+          if (this.pendingRequests.has(requestKey)) {
+            console.log(`[VideoService] 📞 等待进行中的${type}请求: ${id}`)
+            const result = await this.pendingRequests.get(requestKey)
+            resolve(result)
+            return
+          }
+          
+          // 创建新的请求并记录
+          const requestPromise = this.performIncrementInteraction(id, type)
+          this.pendingRequests.set(requestKey, requestPromise)
+          
+          try {
+            const result = await requestPromise
+            resolve(result)
+          } finally {
+            // 清理请求记录
+            this.pendingRequests.delete(requestKey)
+          }
+        } catch (error) {
+          console.error(`[VideoService] ${type}计数更新失败:`, error)
+          resolve(false)
+        }
+      }, debounceTime))
+    })
+  }
+  
+  /**
+   * 执行实际的交互计数更新
+   */
+  private async performIncrementInteraction(
+    id: string,
+    type: 'view_count' | 'download_count' | 'share_count'
+  ): Promise<boolean> {
     try {
-      // 先获取当前值
-      const { data: video, error: fetchError } = await supabase
-        .from('videos')
-        .select(type)
-        .eq('id', id)
-        .single()
-
-      if (fetchError || !video) {
-        console.error('Error fetching video for increment:', fetchError)
-        return false
-      }
-
-      // 更新计数
-      const currentCount = video[type] || 0
-      const { error: updateError } = await supabase
-        .from('videos')
-        .update({ [type]: currentCount + 1 })
-        .eq('id', id)
-
-      if (updateError) {
-        console.error(`Error incrementing ${type}:`, updateError)
-        return false
-      }
-
-      // 如果是观看，更新最后观看时间
-      if (type === 'view_count') {
-        await supabase
+      console.log(`[VideoService] 📊 更新${type}: ${id}`)
+      
+      // 使用带超时的请求
+      const fetchResult = await this.withTimeout(
+        supabase
           .from('videos')
-          .update({ last_viewed_at: new Date().toISOString() })
+          .select(type)
           .eq('id', id)
+          .single(),
+        5000 // 5秒超时
+      )
+
+      if (fetchResult.error || !fetchResult.data) {
+        console.error(`[VideoService] 获取视频失败 ${id}:`, fetchResult.error)
+        return false
       }
 
+      // 更新计数 - 使用原子操作
+      const currentCount = fetchResult.data[type] || 0
+      const updateData: any = { [type]: currentCount + 1 }
+      
+      // 如果是观看，同时更新最后观看时间
+      if (type === 'view_count') {
+        updateData.last_viewed_at = new Date().toISOString()
+      }
+      
+      const updateResult = await this.withTimeout(
+        supabase
+          .from('videos')
+          .update(updateData)
+          .eq('id', id),
+        5000 // 5秒超时
+      )
+
+      if (updateResult.error) {
+        console.error(`[VideoService] 更新${type}失败:`, updateResult.error)
+        return false
+      }
+
+      console.log(`[VideoService] ✅ ${type}更新成功: ${id} (${currentCount} -> ${currentCount + 1})`)
       return true
     } catch (error) {
-      console.error(`Failed to increment ${type}:`, error)
+      // 检查是否是网络错误，可以重试
+      if (error instanceof Error && (
+        error.message.includes('网络') || 
+        error.message.includes('超时') ||
+        error.message.includes('fetch')
+      )) {
+        console.warn(`[VideoService] 网络错误，${type}更新失败: ${id}`, error.message)
+      } else {
+        console.error(`[VideoService] ${type}更新异常: ${id}`, error)
+      }
       return false
     }
   }

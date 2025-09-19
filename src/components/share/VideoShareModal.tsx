@@ -118,7 +118,7 @@ export default function VideoShareModal({ open, onOpenChange, video }: VideoShar
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <AlertDialogContent className="max-w-2xl w-[95vw] sm:w-full max-h-fit">
         <AlertDialogHeader>
           <div className="flex items-center justify-between">
             <AlertDialogTitle className="flex items-center gap-2">
@@ -139,19 +139,19 @@ export default function VideoShareModal({ open, onOpenChange, video }: VideoShar
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* 分享内容复制 */}
           <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-3">
-                <div className="p-3 bg-gray-50 rounded-md text-xs max-h-32 overflow-y-auto whitespace-pre-line border">
+            <CardContent className="pt-4">
+              <div className="space-y-2">
+                <div className="p-2 bg-muted rounded-md text-xs sm:text-sm max-h-24 overflow-y-auto whitespace-pre-line border text-foreground leading-snug">
                   {fusionContent}
                 </div>
                 <Button
                   onClick={() => copyToClipboard(fusionContent, 'complete')}
                   variant="outline"
                   size="sm"
-                  className="w-full"
+                  className="w-full h-9"
                 >
                   {copiedStates.complete ? (
                     <>
@@ -171,12 +171,12 @@ export default function VideoShareModal({ open, onOpenChange, video }: VideoShar
 
           {/* 社交媒体分享按钮 */}
           <Card>
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-2 gap-3">
+            <CardContent className="pt-4">
+              <div className="grid grid-cols-2 gap-2">
                 <Button
                   onClick={() => shareToPlatform('twitter')}
                   variant="outline"
-                  className="flex items-center gap-2 hover:bg-blue-50"
+                  className="flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-950 h-9"
                 >
                   <span className="text-blue-500">𝕏</span>
                   X (Twitter)
@@ -184,25 +184,25 @@ export default function VideoShareModal({ open, onOpenChange, video }: VideoShar
                 <Button
                   onClick={() => shareToPlatform('facebook')}
                   variant="outline"
-                  className="flex items-center gap-2 hover:bg-blue-50"
+                  className="flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-950 h-9"
                 >
-                  <span className="text-blue-700">👥</span>
+                  <span className="text-blue-700 dark:text-blue-400">👥</span>
                   Facebook
                 </Button>
                 <Button
                   onClick={() => shareToPlatform('whatsapp')}
                   variant="outline"
-                  className="flex items-center gap-2 hover:bg-green-50"
+                  className="flex items-center gap-2 hover:bg-green-50 dark:hover:bg-green-950 h-9"
                 >
-                  <span className="text-green-600">📱</span>
+                  <span className="text-green-600 dark:text-green-400">📱</span>
                   WhatsApp
                 </Button>
                 <Button
                   onClick={() => shareToPlatform('instagram')}
                   variant="outline"
-                  className="flex items-center gap-2 hover:bg-purple-50"
+                  className="flex items-center gap-2 hover:bg-purple-50 dark:hover:bg-purple-950 h-9"
                 >
-                  <span className="text-purple-600">📸</span>
+                  <span className="text-purple-600 dark:text-purple-400">📸</span>
                   Instagram
                 </Button>
               </div>
@@ -211,14 +211,14 @@ export default function VideoShareModal({ open, onOpenChange, video }: VideoShar
 
           {/* 积分奖励说明 */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2">
-                <Gift className="h-5 w-5" />
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Gift className="h-4 w-4" />
                 {t('shareModal.shareRewards')}
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4 text-sm">
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4" />
                   <span>{t('shareModal.showCreation')}</span>
@@ -228,7 +228,7 @@ export default function VideoShareModal({ open, onOpenChange, video }: VideoShar
                   <span>{t('shareModal.inviteFriends')}</span>
                 </div>
               </div>
-              <div className="mt-3 p-2 bg-muted rounded text-xs">
+              <div className="mt-2 p-2 bg-muted rounded text-xs">
                 {t('shareModal.rewardNote')}
               </div>
             </CardContent>

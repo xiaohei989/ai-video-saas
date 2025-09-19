@@ -1,9 +1,27 @@
 {
   "id": "a7c8e4f1-5b2d-4e8a-9c7f-2d6b3a8e5c9d",
   "slug": "natural-phenomenon-cutting-asmr",
-  "name": "Natural Phenomenon Cutting ASMR",
+  "name": {
+    "en": "Natural Phenomenon Cutting ASMR",
+    "zh": "自然现象切割ASMR",
+    "ja": "自然現象カットASMR",
+    "ko": "자연 현상 자르기 ASMR",
+    "es": "Corte de Fenómenos Naturales ASMR",
+    "de": "Naturphänomene Schneiden ASMR",
+    "fr": "Découpe de Phénomènes Naturels ASMR",
+    "ar": "قطع الظواهر الطبيعية ASMR"
+  },
   "icon": "🌪️",
-  "description": "Cut miniature natural phenomenon models revealing dynamic interior structures in 4K ASMR videos",
+  "description": {
+    "en": "Satisfying ASMR experience of cutting through natural phenomena like aurora, rainbow, and weather patterns",
+    "zh": "令人满足的ASMR体验，切割极光、彩虹和天气模式等自然现象",
+    "ja": "オーロラ、虹、気象パターンなどの自然現象をカットする満足感のあるASMR体験",
+    "ko": "오로라, 무지개, 날씨 패턴과 같은 자연 현상을 자르는 만족스러운 ASMR 경험",
+    "es": "Experiencia ASMR satisfactoria de cortar fenómenos naturales como aurora, arcoíris y patrones climáticos",
+    "de": "Befriedigende ASMR-Erfahrung beim Schneiden von Naturphänomenen wie Aurora, Regenbogen und Wettermustern",
+    "fr": "Expérience ASMR satisfaisante de découpe de phénomènes naturels comme l'aurore, l'arc-en-ciel et les motifs météorologiques",
+    "ar": "تجربة ASMR مرضية لقطع الظواهر الطبيعية مثل الشفق والقوس قزح وأنماط الطقس"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/natural-phenomenon-cutting-asmr.mp4?v=1758008502567",
   "tags": [
     "asmr",
@@ -16,7 +34,7 @@
   ],
   "createdAt": "2025-01-29T12:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.578Z",
+  "lastModified": "2025-09-18T04:11:01.429Z",
   "promptTemplate": "A realistic 4K close-up shot of a pair of hands with subtle tattoos on fingers and knuckles and a {knife_type} quickly cutting a realistic miniature model of a {natural_phenomenon} on a {cutting_board}. It cuts it into {cutting_style}, revealing its dynamic and unexpected interior. The sound is ASMR style, emphasizing crisp cutting, accompanied by sounds unique to the revealed interior.",
   "params": {
     "natural_phenomenon": {
@@ -27,43 +45,106 @@
       "options": [
         {
           "value": "volcano",
-          "label": "Volcano 🌋",
+          "label": {
+            "en": "Volcano 🌋",
+            "zh": "volcano 🌋",
+            "ja": "volcano 🌋",
+            "ko": "volcano 🌋",
+            "es": "volcano 🌋",
+            "de": "volcano 🌋",
+            "fr": "volcano 🌋",
+            "ar": "volcano 🌋"
+          },
           "interior": "glowing lava with molten fragments",
           "sound": "sizzling lava and bubbling magma"
         },
         {
           "value": "tornado",
-          "label": "Tornado 🌪️",
+          "label": {
+            "en": "Tornado 🌪️",
+            "zh": "tornado 🌪️",
+            "ja": "tornado 🌪️",
+            "ko": "tornado 🌪️",
+            "es": "tornado 🌪️",
+            "de": "tornado 🌪️",
+            "fr": "tornado 🌪️",
+            "ar": "tornado 🌪️"
+          },
           "interior": "swirling vapor with miniature wind currents",
           "sound": "ethereal whooshing and wind howling"
         },
         {
           "value": "thunderstorm cloud",
-          "label": "Thunderstorm Cloud ⛈️",
+          "label": {
+            "en": "Thunderstorm Cloud ⛈️",
+            "zh": "thunderstorm cloud ⛈️",
+            "ja": "thunderstorm cloud ⛈️",
+            "ko": "thunderstorm cloud ⛈️",
+            "es": "thunderstorm cloud ⛈️",
+            "de": "thunderstorm cloud ⛈️",
+            "fr": "thunderstorm cloud ⛈️",
+            "ar": "thunderstorm cloud ⛈️"
+          },
           "interior": "pulsating lightning with electric cores",
           "sound": "electric crackles and thunder rumbles"
         },
         {
           "value": "meteorite",
-          "label": "Meteorite ☄️",
+          "label": {
+            "en": "Meteorite ☄️",
+            "zh": "meteorite ☄️",
+            "ja": "meteorite ☄️",
+            "ko": "meteorite ☄️",
+            "es": "meteorite ☄️",
+            "de": "meteorite ☄️",
+            "fr": "meteorite ☄️",
+            "ar": "meteorite ☄️"
+          },
           "interior": "molten core with crystalline fragments",
           "sound": "crumbling rock and metallic clinks"
         },
         {
           "value": "lightning ball",
-          "label": "Lightning Ball ⚡",
+          "label": {
+            "en": "Lightning Ball ⚡",
+            "zh": "lightning ball ⚡",
+            "ja": "lightning ball ⚡",
+            "ko": "lightning ball ⚡",
+            "es": "lightning ball ⚡",
+            "de": "lightning ball ⚡",
+            "fr": "lightning ball ⚡",
+            "ar": "lightning ball ⚡"
+          },
           "interior": "electric core with energy waves",
           "sound": "high-frequency electric hum and sparks"
         },
         {
           "value": "glacier",
-          "label": "Glacier 🧊",
+          "label": {
+            "en": "Glacier 🧊",
+            "zh": "glacier 🧊",
+            "ja": "glacier 🧊",
+            "ko": "glacier 🧊",
+            "es": "glacier 🧊",
+            "de": "glacier 🧊",
+            "fr": "glacier 🧊",
+            "ar": "glacier 🧊"
+          },
           "interior": "ice crystals with frozen vapor trails",
           "sound": "crisp ice cracking and gentle crystalline chimes"
         },
         {
           "value": "rainbow crystal",
-          "label": "Rainbow Crystal 🌈",
+          "label": {
+            "en": "Rainbow Crystal 🌈",
+            "zh": "rainbow crystal 🌈",
+            "ja": "rainbow crystal 🌈",
+            "ko": "rainbow crystal 🌈",
+            "es": "rainbow crystal 🌈",
+            "de": "rainbow crystal 🌈",
+            "fr": "rainbow crystal 🌈",
+            "ar": "rainbow crystal 🌈"
+          },
           "interior": "rainbow spectrum with light refraction patterns",
           "sound": "ethereal light wave resonance and crystal singing"
         }
@@ -71,25 +152,70 @@
     },
     "knife_type": {
       "type": "select",
-      "label": "Knife Type",
+      "label": {
+        "en": "Knife Type",
+        "zh": "刀具类型",
+        "ja": "ナイフの種類",
+        "ko": "칼 종류",
+        "es": "Tipo de Cuchillo",
+        "de": "Messer Art",
+        "fr": "Type de Couteau",
+        "ar": "نوع السكين"
+      },
       "required": true,
       "default": "sharp steel knife",
       "options": [
         {
           "value": "sharp steel knife",
-          "label": "Sharp Steel Knife"
+          "label": {
+            "en": "Sharp Steel Knife",
+            "zh": "sharp steel knife ",
+            "ja": "sharp steel knife ",
+            "ko": "sharp steel knife ",
+            "es": "sharp steel knife ",
+            "de": "sharp steel knife ",
+            "fr": "sharp steel knife ",
+            "ar": "sharp steel knife "
+          }
         },
         {
           "value": "white ceramic knife",
-          "label": "White Ceramic Knife"
+          "label": {
+            "en": "White Ceramic Knife",
+            "zh": "white ceramic knife ",
+            "ja": "white ceramic knife ",
+            "ko": "white ceramic knife ",
+            "es": "white ceramic knife ",
+            "de": "white ceramic knife ",
+            "fr": "white ceramic knife ",
+            "ar": "white ceramic knife "
+          }
         },
         {
           "value": "Japanese santoku knife",
-          "label": "Japanese Santoku Knife"
+          "label": {
+            "en": "Japanese Santoku Knife",
+            "zh": "Japanese santoku knife ",
+            "ja": "Japanese santoku knife ",
+            "ko": "Japanese santoku knife ",
+            "es": "Japanese santoku knife ",
+            "de": "Japanese santoku knife ",
+            "fr": "Japanese santoku knife ",
+            "ar": "Japanese santoku knife "
+          }
         },
         {
           "value": "damascus steel knife",
-          "label": "Damascus Steel Knife"
+          "label": {
+            "en": "Damascus Steel Knife",
+            "zh": "damascus steel knife ",
+            "ja": "damascus steel knife ",
+            "ko": "damascus steel knife ",
+            "es": "damascus steel knife ",
+            "de": "damascus steel knife ",
+            "fr": "damascus steel knife ",
+            "ar": "damascus steel knife "
+          }
         }
       ]
     },
@@ -101,49 +227,139 @@
       "options": [
         {
           "value": "wooden cutting board",
-          "label": "Wooden Cutting Board"
+          "label": {
+            "en": "Wooden Cutting Board",
+            "zh": "木制砧板",
+            "ja": "木製まな板",
+            "ko": "나무 도마",
+            "es": "Tabla de Cortar de Madera",
+            "de": "Holzschneidebrett",
+            "fr": "Planche à Découper en Bois",
+            "ar": "لوح تقطيع خشبي"
+          }
         },
         {
           "value": "marble countertop",
-          "label": "Marble Countertop"
+          "label": {
+            "en": "Marble Countertop",
+            "zh": "大理石台面",
+            "ja": "大理石カウンタートップ",
+            "ko": "대리석 조리대",
+            "es": "Encimera de Mármol",
+            "de": "Marmor-Arbeitsplatte",
+            "fr": "Plan de Travail en Marbre",
+            "ar": "سطح رخامي"
+          }
         },
         {
           "value": "black slate surface",
-          "label": "Black Slate Surface"
+          "label": {
+            "en": "Black Slate Surface",
+            "zh": "黑色石板表面",
+            "ja": "黒いスレート表面",
+            "ko": "검은 슬레이트 표면",
+            "es": "Superficie de Pizarra Negra",
+            "de": "Schwarze Schieferoberfläche",
+            "fr": "Surface en Ardoise Noire",
+            "ar": "سطح حجر أردوازي أسود"
+          }
         },
         {
           "value": "bamboo cutting board",
-          "label": "Bamboo Cutting Board"
+          "label": {
+            "en": "Bamboo Cutting Board",
+            "zh": "bamboo cutting board ",
+            "ja": "bamboo cutting board ",
+            "ko": "bamboo cutting board ",
+            "es": "bamboo cutting board ",
+            "de": "bamboo cutting board ",
+            "fr": "bamboo cutting board ",
+            "ar": "bamboo cutting board "
+          }
         }
       ]
     },
     "cutting_style": {
       "type": "select",
-      "label": "Cutting Style",
+      "label": {
+        "en": "Cutting Style",
+        "zh": "切割风格",
+        "ja": "切り方",
+        "ko": "자르기 스타일",
+        "es": "Estilo de Corte",
+        "de": "Schnitt Stil",
+        "fr": "Style de Coupe",
+        "ar": "نمط القطع"
+      },
       "required": true,
       "default": "two halves",
       "options": [
         {
           "value": "two halves",
-          "label": "Cut in Half"
+          "label": {
+            "en": "Cut in Half",
+            "zh": "two halves ",
+            "ja": "two halves ",
+            "ko": "two halves ",
+            "es": "two halves ",
+            "de": "two halves ",
+            "fr": "two halves ",
+            "ar": "two halves "
+          }
         },
         {
           "value": "multiple thin slices",
-          "label": "Multiple Thin Slices"
+          "label": {
+            "en": "Multiple Thin Slices",
+            "zh": "多片薄切",
+            "ja": "複数の薄いスライス",
+            "ko": "여러 개의 얇은 조각",
+            "es": "Múltiples Rebanadas Finas",
+            "de": "Mehrere Dünne Scheiben",
+            "fr": "Multiples Tranches Fines",
+            "ar": "شرائح رفيعة متعددة"
+          }
         },
         {
           "value": "cross-sectional cuts",
-          "label": "Cross-sectional Cuts"
+          "label": {
+            "en": "Cross-sectional Cuts",
+            "zh": "cross-sectional cuts ",
+            "ja": "cross-sectional cuts ",
+            "ko": "cross-sectional cuts ",
+            "es": "cross-sectional cuts ",
+            "de": "cross-sectional cuts ",
+            "fr": "cross-sectional cuts ",
+            "ar": "cross-sectional cuts "
+          }
         },
         {
           "value": "spiral cuts",
-          "label": "Spiral Cuts"
+          "label": {
+            "en": "Spiral Cuts",
+            "zh": "spiral cuts ",
+            "ja": "spiral cuts ",
+            "ko": "spiral cuts ",
+            "es": "spiral cuts ",
+            "de": "spiral cuts ",
+            "fr": "spiral cuts ",
+            "ar": "spiral cuts "
+          }
         }
       ]
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

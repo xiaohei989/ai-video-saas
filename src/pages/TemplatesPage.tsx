@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Play, Hash, TrendingUp, Sparkles, ArrowUp, Video } from 'lucide-react'
-import { templateList as initialTemplates, getPopularTags, getTemplatesByTags } from '@/features/video-creator/data/templates/index'
+import { templateList as initialTemplates, getPopularTags, getTemplatesByTags, localizeTemplate } from '@/features/video-creator/data/templates/index'
 import SimpleVideoPlayer from '@/components/video/SimpleVideoPlayer'
 import LikeCounterButton from '@/components/templates/LikeCounterButton'
 import TemplatesSkeleton from '@/components/templates/TemplatesSkeleton'
@@ -15,6 +15,11 @@ import CachedImage from '@/components/ui/CachedImage'
 import { useTemplateLikes } from '@/hooks/useTemplateLikes'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useSEO } from '@/hooks/useSEO'
+import TemplatePerformanceStats, { 
+  type TemplatePerformanceMetrics, 
+  type TemplateLoadingState 
+} from '@/components/debug/TemplatePerformanceStats'
+import { cacheHitTracker } from '@/utils/cacheHitTracker'
 
 type SortOption = 'popular' | 'latest'
 
@@ -143,7 +148,7 @@ function templatesReducer(state: TemplatesState, action: TemplatesAction): Templ
         ...state,
         currentPage: 1,
         pageSize: state.isMobileDetected ? 6 : 12,
-        sortBy: 'popular',
+        sortBy: 'latest',
         selectedTags: [],
         hasInitializationError: false,
         updateCount: 0,
@@ -156,7 +161,7 @@ function templatesReducer(state: TemplatesState, action: TemplatesAction): Templ
 }
 
 export default function TemplatesPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const { trackTemplateView, trackEvent, trackFilter } = useAnalytics()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -172,7 +177,7 @@ export default function TemplatesPage() {
       // 核心分页和筛选状态
       currentPage: page ? Math.max(1, parseInt(page, 10)) : 1,
       pageSize: size ? Math.max(3, parseInt(size, 10)) : 12,
-      sortBy: sort && ['popular', 'latest'].includes(sort) ? sort : 'popular',
+      sortBy: sort && ['popular', 'latest'].includes(sort) ? sort : 'latest',
       selectedTags: tags ? tags.split(',').filter(Boolean) : [],
       
       // 控制状态
@@ -219,6 +224,47 @@ export default function TemplatesPage() {
   // SEO优化
   useSEO('templates')
   
+  // 📊 性能监控状态
+  const [performanceMetrics, setPerformanceMetrics] = useState<TemplatePerformanceMetrics>({
+    // 页面加载性能
+    pageLoadStart: 0,
+    firstContentfulPaint: 0,
+    timeToInteractive: 0,
+    templateRenderTime: 0,
+    
+    // 数据加载性能
+    templateLoadTime: 0,
+    likeDataLoadTime: 0,
+    cacheHitCount: 0,
+    networkRequestCount: 0,
+    
+    // 用户交互性能
+    filterResponseTime: 0,
+    paginationResponseTime: 0,
+    sortResponseTime: 0,
+    tagClickResponseTime: 0,
+    
+    // 资源使用统计
+    templateCount: 0,
+    loadedImageCount: 0,
+    loadedVideoCount: 0,
+    cacheSize: 0,
+    
+    // 分类缓存统计
+    imageCacheSize: 0,
+    videoCacheSize: 0,
+    imageCacheItems: 0,
+    videoCacheItems: 0
+  })
+  
+  const [templateLoadingState, setTemplateLoadingState] = useState<TemplateLoadingState>({
+    initial: true,
+    templatesLoaded: false,
+    likesLoaded: false,
+    assetsLoaded: false,
+    fullReady: false
+  })
+  
   // 移动端设备检测（纯宽度检测）
   const isMobile = useMemo(() => {
     if (typeof window === 'undefined') return false
@@ -232,6 +278,188 @@ export default function TemplatesPage() {
       dispatch({ type: 'SET_MOBILE_DETECTED', payload: true })
     }
   }, [isMobile]) // 移除isMobileDetected依赖，避免循环
+
+  // 📊 性能监控初始化
+  useEffect(() => {
+    const pageLoadStart = performance.now()
+    setPerformanceMetrics(prev => ({ ...prev, pageLoadStart }))
+    
+    // 监控首次内容绘制时间 (FCP)
+    const measureFCP = () => {
+      if ('getEntriesByType' in performance) {
+        const paintEntries = performance.getEntriesByType('paint')
+        const fcpEntry = paintEntries.find(entry => entry.name === 'first-contentful-paint')
+        
+        if (fcpEntry) {
+          setPerformanceMetrics(prev => ({
+            ...prev,
+            firstContentfulPaint: fcpEntry.startTime
+          }))
+          
+          console.log(`[TemplatePerformance] 🎨 FCP: ${fcpEntry.startTime.toFixed(1)}ms`)
+        }
+      }
+    }
+    
+    // 延迟测量FCP，确保渲染完成
+    setTimeout(measureFCP, 100)
+    
+    return () => {
+      // 组件卸载时记录最终性能数据
+      const totalTime = performance.now() - pageLoadStart
+      console.log(`[TemplatePerformance] 📊 总页面时间: ${totalTime.toFixed(1)}ms`)
+    }
+  }, [])
+
+
+
+  // 📊 监控资源加载状态
+  useEffect(() => {
+    if (templateLoadingState.templatesLoaded && templateLoadingState.likesLoaded && !templateLoadingState.assetsLoaded) {
+      // 监控图片和视频资源加载
+      const images = document.querySelectorAll('img[src*="template"], img[src*="thumbnail"]')
+      const videos = document.querySelectorAll('video[src], video source[src]')
+      
+      setPerformanceMetrics(prev => ({
+        ...prev,
+        loadedImageCount: images.length,
+        loadedVideoCount: videos.length
+      }))
+      
+      setTemplateLoadingState(prev => ({ ...prev, assetsLoaded: true }))
+      
+      // 计算可交互时间 (TTI)
+      const tti = performance.now() - performanceMetrics.pageLoadStart
+      setPerformanceMetrics(prev => ({
+        ...prev,
+        timeToInteractive: tti
+      }))
+      
+      console.log(`[TemplatePerformance] 🖼️ 资源加载完成: ${images.length}图片, ${videos.length}视频`)
+      console.log(`[TemplatePerformance] ⚡ TTI: ${tti.toFixed(1)}ms`)
+    }
+  }, [templateLoadingState.templatesLoaded, templateLoadingState.likesLoaded, templateLoadingState.assetsLoaded, performanceMetrics.pageLoadStart])
+
+  // 📊 监控模板渲染性能
+  useEffect(() => {
+    if (templateLoadingState.assetsLoaded && !templateLoadingState.fullReady) {
+      const renderStartTime = performance.now()
+      
+      // 使用 requestAnimationFrame 确保渲染完成后测量
+      requestAnimationFrame(() => {
+        const templateRenderTime = performance.now() - renderStartTime
+        
+        setPerformanceMetrics(prev => ({
+          ...prev,
+          templateRenderTime
+        }))
+        
+        setTemplateLoadingState(prev => ({ ...prev, fullReady: true }))
+        
+        console.log(`[TemplatePerformance] 🎨 模板渲染时间: ${templateRenderTime.toFixed(1)}ms`)
+      })
+    }
+  }, [templateLoadingState.assetsLoaded, templateLoadingState.fullReady])
+
+  // 📊 监控缓存使用情况 - 使用新的多层缓存统计服务
+  useEffect(() => {
+    if (!templateLoadingState.fullReady) return
+    
+    const updateCacheStats = async () => {
+      try {
+        // 导入缓存统计服务
+        const { cacheStatsService } = await import('@/utils/cacheStatsService')
+        
+        // 记录模板数据缓存使用情况
+        if (filteredAndSortedTemplates.length > 0) {
+          cacheHitTracker.recordTemplateHit('template_data', 'memory')
+          console.log(`[TemplatesPage] 📋 模板数据缓存命中: ${filteredAndSortedTemplates.length}个模板`)
+        } else {
+          cacheHitTracker.recordTemplateMiss('template_data')
+          console.log(`[TemplatesPage] 📋 模板数据缓存未命中: 无数据`)
+        }
+        
+        // 获取资源缓存统计（使用cacheHitTracker而不是multiLevelCache）
+        const hitTrackerStats = cacheHitTracker.getStats()
+        const cacheStats = await cacheStatsService.getMultiLayerCacheStats()
+        
+        setPerformanceMetrics(prev => {
+          const updatedMetrics = {
+            ...prev,
+            cacheSize: cacheStats.totalSize,
+            // 使用资源缓存的命中数据
+            cacheHitCount: hitTrackerStats.overall.hits,
+            networkRequestCount: hitTrackerStats.overall.misses,
+            // 添加分类缓存数据
+            imageCacheSize: cacheStats.imageCacheStats.size,
+            videoCacheSize: cacheStats.videoCacheStats.size,
+            imageCacheItems: cacheStats.imageCacheStats.items,
+            videoCacheItems: cacheStats.videoCacheStats.items,
+            // 添加分类资源缓存命中统计
+            imageCacheHits: hitTrackerStats.image.hits,
+            imageCacheMisses: hitTrackerStats.image.misses,
+            videoCacheHits: hitTrackerStats.video.hits,
+            videoCacheMisses: hitTrackerStats.video.misses,
+            templateCacheHits: hitTrackerStats.template.hits,
+            templateCacheMisses: hitTrackerStats.template.misses,
+            apiCacheHits: hitTrackerStats.api.hits,
+            apiCacheMisses: hitTrackerStats.api.misses,
+          }
+          
+          // 分类显示资源缓存统计
+          console.log(`[TemplatePerformance] 📊 资源缓存统计:`)
+          console.log(`  🖼️ 图片: 命中${hitTrackerStats.image.hits}次, 未命中${hitTrackerStats.image.misses}次, 命中率${hitTrackerStats.image.hitRate.toFixed(1)}%`)
+          console.log(`  🎬 视频: 命中${hitTrackerStats.video.hits}次, 未命中${hitTrackerStats.video.misses}次, 命中率${hitTrackerStats.video.hitRate.toFixed(1)}%`)
+          console.log(`  📋 模板: 命中${hitTrackerStats.template.hits}次, 未命中${hitTrackerStats.template.misses}次, 命中率${hitTrackerStats.template.hitRate.toFixed(1)}%`)
+          console.log(`  🔗 API: 命中${hitTrackerStats.api.hits}次, 未命中${hitTrackerStats.api.misses}次, 命中率${hitTrackerStats.api.hitRate.toFixed(1)}%`)
+          console.log(`  📊 总体: 命中${hitTrackerStats.overall.hits}次, 未命中${hitTrackerStats.overall.misses}次, 命中率${hitTrackerStats.overall.hitRate.toFixed(1)}%`)
+          console.log(`  💾 缓存大小: ${(cacheStats.totalSize / 1024).toFixed(1)}KB`)
+          console.log(`  🏪 localStorage: ${cacheStats.localStorageCache.prefixes.join(', ')}`)
+          console.log(`  📱 IndexedDB: ${cacheStats.indexedDBCache.isAvailable ? '可用' : '不可用'}`)
+          console.log(`  🔧 环境: ${cacheStats.environment}`)
+          
+          // 资源缓存效率诊断
+          const totalResourceRequests = hitTrackerStats.overall.hits + hitTrackerStats.overall.misses
+          const resourceEfficiency = totalResourceRequests > 0 ? (hitTrackerStats.overall.hits / totalResourceRequests * 100).toFixed(1) : '0'
+          console.log(`[TemplatePerformance] 🔍 资源缓存效率诊断:`)
+          console.log(`  - 资源缓存命中: ${hitTrackerStats.overall.hits}`)
+          console.log(`  - 资源缓存未命中: ${hitTrackerStats.overall.misses}`) 
+          console.log(`  - 总资源请求: ${totalResourceRequests}`)
+          console.log(`  - 资源缓存效率: ${resourceEfficiency}%`)
+          
+          return updatedMetrics
+        })
+      } catch (error) {
+        console.warn('[TemplatePerformance] 多层缓存统计失败:', error)
+        
+        // 降级到快速概览模式
+        try {
+          const { cacheStatsService } = await import('@/utils/cacheStatsService')
+          const quickStats = cacheStatsService.getQuickCacheOverview()
+          
+          setPerformanceMetrics(prev => ({
+            ...prev,
+            cacheSize: quickStats.estimatedSize,
+            cacheHitCount: quickStats.estimatedItems
+          }))
+          
+          console.log(`[TemplatePerformance] 💾 快速缓存统计: ${(quickStats.estimatedSize / 1024).toFixed(1)}KB, ${quickStats.cacheTypes.join(', ')}`)
+        } catch (fallbackError) {
+          console.error('[TemplatePerformance] 缓存统计完全失败:', fallbackError)
+        }
+      }
+    }
+    
+    // 立即执行一次
+    updateCacheStats()
+    
+    // 每10秒更新一次缓存统计
+    const cacheStatsInterval = setInterval(updateCacheStats, 10000)
+    
+    return () => {
+      clearInterval(cacheStatsInterval)
+    }
+  }, [templateLoadingState.fullReady])
 
   // 重构的URL同步机制 - 使用ref缓存避免循环依赖
   const urlSyncState = useRef({
@@ -338,39 +566,33 @@ export default function TemplatesPage() {
     [selectedTags]
   )
   
-  // 获取所有模板的点赞状态
-  const {
-    likeStatuses: allLikeStatuses,
-    loading: likesLoading
-  } = useTemplateLikes({
-    templateIds: allTemplateIds,
-    enableAutoRefresh: false
-  })
-
-  // 判断点赞数据是否已完全加载
-  const isLikeDataLoaded = useMemo(() => {
-    // 如果没有模版，认为已加载
-    if (allTemplateIds.length === 0) return true
-    
-    // 如果正在加载，认为未完全加载
-    if (likesLoading) return false
-    
-    // 检查是否所有模版都有点赞状态数据（包括默认的0点赞）
-    return allTemplateIds.every(templateId => 
-      allLikeStatuses.has(templateId)
-    )
-  }, [allTemplateIds, likesLoading, allLikeStatuses])
+  // 🚀 渐进式加载：先获取可见模板的点赞数据 - 稍后基于排序后的结果计算
+  // 先初始化一个空的点赞状态Map，避免循环依赖
+  const [allLikeStatuses, setAllLikeStatuses] = useState<Map<string, any>>(new Map())
 
   // 根据标签筛选和排序的模板列表
   const filteredAndSortedTemplates = useMemo(() => {
     // 首先根据选中的标签筛选模板
     const filteredTemplates = getTemplatesByTags(selectedTags)
     
+    // 记录模板筛选缓存使用情况
+    if (selectedTags.length > 0) {
+      cacheHitTracker.recordTemplateHit(`filter_${selectedTags.join('_')}`, 'filter_cache')
+    } else {
+      cacheHitTracker.recordTemplateHit('all_templates', 'memory')
+    }
+    
+    // 本地化模板内容
+    const localizedTemplates = filteredTemplates.map(template => localizeTemplate(template, i18n.language))
+    
     // 然后排序
     switch (sortBy) {
       case 'latest':
+        // 记录最新排序缓存使用
+        cacheHitTracker.recordTemplateHit('sort_latest', 'sort_cache')
+        
         // 按创建时间降序排序（最新的在前）
-        return filteredTemplates.sort((a, b) => {
+        return localizedTemplates.sort((a, b) => {
           const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
           const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
           return dateB - dateA
@@ -378,17 +600,25 @@ export default function TemplatesPage() {
       
       case 'popular':
       default:
-        // 如果点赞数据未完全加载，先按创建时间排序避免闪烁
-        if (!isLikeDataLoaded) {
-          return filteredTemplates.sort((a, b) => {
+        // 🚀 渐进式排序：使用已有的点赞数据，缺失的使用默认值
+        const hasAnyLikeData = allLikeStatuses.size > 0
+        
+        if (!hasAnyLikeData) {
+          // 完全没有点赞数据时，按创建时间排序
+          cacheHitTracker.recordTemplateMiss('sort_popular_loading')
+          
+          return localizedTemplates.sort((a, b) => {
             const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
             const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
             return dateB - dateA
           })
         }
         
-        // 按点赞数降序排序（最受欢迎的在前）
-        return filteredTemplates.sort((a, b) => {
+        // 有部分点赞数据时，混合排序
+        cacheHitTracker.recordTemplateHit('sort_popular_progressive', 'sort_cache')
+        
+        // 按点赞数降序排序，缺失数据使用默认值0
+        return localizedTemplates.sort((a, b) => {
           const likeCountA = allLikeStatuses.get(a.id)?.like_count || 0
           const likeCountB = allLikeStatuses.get(b.id)?.like_count || 0
           
@@ -402,7 +632,7 @@ export default function TemplatesPage() {
           return likeCountB - likeCountA
         })
     }
-  }, [selectedTags, sortBy, allLikeStatuses, isLikeDataLoaded])
+  }, [selectedTags, sortBy, allLikeStatuses, i18n.language]) // 移除 isLikeDataLoaded 依赖，允许渐进式更新
 
   // 分页计算
   const totalItems = filteredAndSortedTemplates.length
@@ -410,6 +640,90 @@ export default function TemplatesPage() {
   const startIndex = (currentPage - 1) * pageSize
   const endIndex = startIndex + pageSize
   const paginatedTemplates = filteredAndSortedTemplates.slice(startIndex, endIndex)
+
+  // 🚀 修复：基于排序后的分页模板计算visibleTemplateIds，确保点赞数据与显示模板匹配
+  const visibleTemplateIds = useMemo(() => 
+    paginatedTemplates.map(t => t.id),
+    [paginatedTemplates]
+  )
+
+  // 优先加载可见模板的点赞状态（渐进式加载策略）
+  const {
+    likeStatuses: visibleLikeStatuses,
+    loading: likesLoading
+  } = useTemplateLikes({
+    templateIds: visibleTemplateIds, // 基于排序后的分页模板
+    enableAutoRefresh: false,
+    priority: 'high' // 添加优先级
+  })
+
+  // 🚀 将可见模板的点赞状态合并到全局状态中
+  useEffect(() => {
+    if (visibleLikeStatuses.size > 0) {
+      setAllLikeStatuses(prev => {
+        const newMap = new Map(prev)
+        visibleLikeStatuses.forEach((status, templateId) => {
+          newMap.set(templateId, status)
+        })
+        return newMap
+      })
+    }
+  }, [visibleLikeStatuses])
+
+  // 🚀 优化：判断可见区域的点赞数据是否已加载（不再等待所有数据）
+  const isVisibleLikeDataLoaded = useMemo(() => {
+    // 如果没有可见模版，认为已加载
+    if (visibleTemplateIds.length === 0) return true
+    
+    // 如果正在加载，但没有任何缓存数据，认为未加载
+    if (likesLoading && visibleLikeStatuses.size === 0) return false
+    
+    // 检查是否所有可见模版都有点赞状态数据（包括默认的0点赞）
+    return visibleTemplateIds.every(templateId => 
+      visibleLikeStatuses.has(templateId)
+    )
+  }, [visibleTemplateIds, likesLoading, visibleLikeStatuses])
+
+  // 保留原有的全部数据加载状态（用于性能监控）
+  const isLikeDataLoaded = useMemo(() => {
+    return allTemplateIds.every(templateId => 
+      allLikeStatuses.has(templateId)
+    )
+  }, [allTemplateIds, allLikeStatuses])
+
+  // 📊 监控点赞数据加载性能 - 基于可见数据加载状态
+  useEffect(() => {
+    if (isVisibleLikeDataLoaded && !templateLoadingState.likesLoaded) {
+      const likeDataLoadTime = performance.now() - performanceMetrics.pageLoadStart
+      
+      setPerformanceMetrics(prev => ({
+        ...prev,
+        likeDataLoadTime,
+        networkRequestCount: prev.networkRequestCount + visibleTemplateIds.length
+      }))
+      
+      setTemplateLoadingState(prev => ({ ...prev, likesLoaded: true }))
+      
+      console.log(`[TemplatePerformance] 👍 点赞数据加载: ${likeDataLoadTime.toFixed(1)}ms`)
+    }
+  }, [isVisibleLikeDataLoaded, templateLoadingState.likesLoaded, visibleTemplateIds.length, performanceMetrics.pageLoadStart])
+
+  // 📊 监控模板数据加载性能 - 必须在 filteredAndSortedTemplates 定义之后
+  useEffect(() => {
+    if (filteredAndSortedTemplates.length > 0 && !templateLoadingState.templatesLoaded) {
+      const templateLoadTime = performance.now() - performanceMetrics.pageLoadStart
+      
+      setPerformanceMetrics(prev => ({
+        ...prev,
+        templateLoadTime,
+        templateCount: filteredAndSortedTemplates.length
+      }))
+      
+      setTemplateLoadingState(prev => ({ ...prev, templatesLoaded: true }))
+      
+      console.log(`[TemplatePerformance] 📋 模板数据加载: ${templateLoadTime.toFixed(1)}ms (${filteredAndSortedTemplates.length}个模板)`)
+    }
+  }, [filteredAndSortedTemplates.length, templateLoadingState.templatesLoaded, performanceMetrics.pageLoadStart])
   
   // 使用之前获取的所有点赞状态数据
   const getLikeStatus = useCallback((templateId: string) => {
@@ -519,9 +833,20 @@ export default function TemplatesPage() {
       return
     }
     
+    // 📊 性能监控：分页响应时间
+    const startTime = performance.now()
+    
     dispatch({ type: 'SET_PAGE', payload: page })
     // 滚动到页面顶部
     window.scrollTo({ top: 0, behavior: 'smooth' })
+    
+    // 记录分页性能
+    const endTime = performance.now()
+    const responseTime = endTime - startTime
+    setPerformanceMetrics(prev => ({
+      ...prev,
+      paginationResponseTime: responseTime
+    }))
     
     // 跟踪分页使用
     trackEvent({
@@ -531,7 +856,8 @@ export default function TemplatesPage() {
       custom_parameters: {
         total_pages: totalPages,
         page_size: pageSize,
-        sort_by: sortBy
+        sort_by: sortBy,
+        response_time: responseTime
       }
     })
   }, [isInitialized, hasInitializationError, totalPages, pageSize, sortBy, trackEvent, dispatch])
@@ -571,13 +897,27 @@ export default function TemplatesPage() {
       return
     }
     
+    // 📊 性能监控：排序响应时间
+    const startTime = performance.now()
+    
     // 使用批量更新
     dispatch({ type: 'BATCH_UPDATE', payload: {
       sortBy: newSort,
       currentPage: 1 // 切换排序时回到第一页
     }})
     
+    // 记录排序性能和筛选性能
+    const endTime = performance.now()
+    const responseTime = endTime - startTime
+    setPerformanceMetrics(prev => ({
+      ...prev,
+      sortResponseTime: responseTime,
+      filterResponseTime: Math.max(prev.filterResponseTime, responseTime) // 更新筛选性能
+    }))
+    
     trackFilter('sort', newSort)
+    
+    console.log(`[TemplatePerformance] 🔄 排序切换响应时间: ${responseTime.toFixed(1)}ms`)
   }, [isInitialized, hasInitializationError, trackFilter, dispatch])
 
   const handleTagClick = useCallback((tag: string) => {
@@ -585,6 +925,9 @@ export default function TemplatesPage() {
       console.warn('[TemplatesPage] 组件未完全初始化，跳过标签切换')
       return
     }
+    
+    // 📊 性能监控：标签点击响应时间
+    const startTime = performance.now()
     
     const newSelectedTags = selectedTags.includes(tag)
       ? selectedTags.filter(t => t !== tag) // 取消选中
@@ -596,6 +939,15 @@ export default function TemplatesPage() {
       currentPage: 1 // 切换标签时回到第一页
     }})
     
+    // 记录标签点击性能和筛选性能
+    const endTime = performance.now()
+    const responseTime = endTime - startTime
+    setPerformanceMetrics(prev => ({
+      ...prev,
+      tagClickResponseTime: responseTime,
+      filterResponseTime: Math.max(prev.filterResponseTime, responseTime) // 更新筛选性能
+    }))
+    
     // 跟踪标签筛选事件
     trackEvent({
       action: 'tag_filter',
@@ -603,9 +955,12 @@ export default function TemplatesPage() {
       label: tag,
       custom_parameters: {
         selected_tags: newSelectedTags,
-        filter_action: selectedTags.includes(tag) ? 'remove' : 'add'
+        filter_action: selectedTags.includes(tag) ? 'remove' : 'add',
+        response_time: responseTime
       }
     })
+    
+    console.log(`[TemplatePerformance] 🏷️ 标签点击响应时间: ${responseTime.toFixed(1)}ms`)
   }, [isInitialized, hasInitializationError, selectedTags, trackEvent, dispatch])
 
   // 使用useCallback优化回调函数，避免TemplateCard不必要的重渲染
@@ -755,7 +1110,7 @@ export default function TemplatesPage() {
       </div>
 
       {/* 模版网格或骨架屏 */}
-      {sortBy === 'popular' && !isLikeDataLoaded ? (
+      {sortBy === 'popular' && !isVisibleLikeDataLoaded ? (
         <TemplatesSkeleton 
           count={pageSize} 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6" 
@@ -778,7 +1133,7 @@ export default function TemplatesPage() {
       )}
 
       {/* 分页组件 - 只在数据加载完成且有多页时显示 */}
-      {totalPages > 1 && !(sortBy === 'popular' && !isLikeDataLoaded) && (
+      {totalPages > 1 && !(sortBy === 'popular' && !isVisibleLikeDataLoaded) && (
         <div className="flex justify-center mt-8">
           <Pagination
             currentPage={currentPage}
@@ -804,6 +1159,23 @@ export default function TemplatesPage() {
         >
           <ArrowUp className="h-5 w-5" />
         </Button>
+      )}
+
+      {/* 📊 性能监控面板 - 开发环境显示 */}
+      {import.meta.env.DEV && (
+        <>
+          <TemplatePerformanceStats
+            metrics={performanceMetrics}
+            isMobile={isMobile}
+            loadingState={templateLoadingState}
+            filterStats={{
+              selectedTags,
+              sortBy,
+              currentPage,
+              totalPages
+            }}
+          />
+        </>
       )}
     </div>
   )
@@ -938,6 +1310,8 @@ const TemplateCard = memo(({
             variant="default"
             showIcon={true}
             animated={true}
+            dataLoading={!likeStatus} // 🚀 点赞数据加载中状态
+            skeleton={false} // 不使用完整骨架屏，使用dataLoading状态
             onLikeChange={(liked, count) => {
               onLikeChange(template.id, { is_liked: liked, like_count: count })
             }}

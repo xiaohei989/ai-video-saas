@@ -1,9 +1,27 @@
 {
   "id": "c1d2e3f4-a5b6-7890-1234-567890abcdef",
   "slug": "city-landmarks-book",
-  "name": "City Landmarks from Book",
+  "name": {
+    "en": "City Landmarks Book",
+    "zh": "城市地标书籍",
+    "ja": "都市ランドマーク本",
+    "ko": "도시 랜드마크 책",
+    "es": "Libro de Monumentos de la Ciudad",
+    "de": "Stadtsehenswürdigkeiten Buch",
+    "fr": "Livre des Monuments de la Ville",
+    "ar": "كتاب معالم المدينة"
+  },
   "icon": "🏙️",
-  "description": "A book page transforms into famous city landmarks rising in miniature",
+  "description": {
+    "en": "Interactive book that brings famous city landmarks to life with 3D projections and animations",
+    "zh": "互动书籍，通过3D投影和动画将著名城市地标栩栩如生地呈现",
+    "ja": "3Dプロジェクションとアニメーションで有名な都市のランドマークを生き生きと表現するインタラクティブな本",
+    "ko": "3D 프로젝션과 애니메이션으로 유명한 도시 랜드마크를 생생하게 구현하는 인터랙티브 책",
+    "es": "Libro interactivo que da vida a monumentos famosos de la ciudad con proyecciones 3D y animaciones",
+    "de": "Interaktives Buch, das berühmte Stadtsehenswürdigkeiten mit 3D-Projektionen und Animationen zum Leben erweckt",
+    "fr": "Livre interactif qui donne vie aux monuments célèbres de la ville avec des projections 3D et des animations",
+    "ar": "كتاب تفاعلي يحيي معالم المدينة الشهيرة بالإسقاطات ثلاثية الأبعاد والرسوم المتحركة"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/city-landmarks-book.mp4?v=1758008502567",
   "credits": 10,
   "tags": [
@@ -17,7 +35,7 @@
   ],
   "createdAt": "2025-01-30T16:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.573Z",
+  "lastModified": "2025-09-18T04:10:19.642Z",
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
@@ -89,13 +107,31 @@
   "params": {
     "city": {
       "type": "select",
-      "label": "City",
+      "label": {
+        "en": "City",
+        "zh": "城市",
+        "ja": "都市",
+        "ko": "도시",
+        "es": "Ciudad",
+        "de": "Stadt",
+        "fr": "Ville",
+        "ar": "المدينة"
+      },
       "required": true,
       "default": "paris",
       "options": [
         {
           "value": "paris",
-          "label": "🗼 Paris",
+          "label": {
+            "en": "🗼 Paris",
+            "zh": "paris ",
+            "ja": "paris ",
+            "ko": "paris ",
+            "es": "paris ",
+            "de": "paris ",
+            "fr": "paris ",
+            "ar": "paris "
+          },
           "metadata": {
             "opening_sketch": "a simple Parisian skyline sketch in elegant ink lines",
             "landmarks_description": "the iconic Eiffel Tower rising majestically, Arc de Triomphe forming at the book's edge",
@@ -120,7 +156,16 @@
         },
         {
           "value": "newyork",
-          "label": "🗽 New York",
+          "label": {
+            "en": "🗽 New York",
+            "zh": "newyork ",
+            "ja": "newyork ",
+            "ko": "newyork ",
+            "es": "newyork ",
+            "de": "newyork ",
+            "fr": "newyork ",
+            "ar": "newyork "
+          },
           "metadata": {
             "opening_sketch": "a bold Manhattan skyline sketch with strong ink strokes",
             "landmarks_description": "the Statue of Liberty emerging proudly, Empire State Building towering above",
@@ -145,7 +190,16 @@
         },
         {
           "value": "tokyo",
-          "label": "🗾 Tokyo",
+          "label": {
+            "en": "🗾 Tokyo",
+            "zh": "tokyo ",
+            "ja": "tokyo ",
+            "ko": "tokyo ",
+            "es": "tokyo ",
+            "de": "tokyo ",
+            "fr": "tokyo ",
+            "ar": "tokyo "
+          },
           "metadata": {
             "opening_sketch": "a delicate Tokyo skyline sketch with cherry blossom motifs",
             "landmarks_description": "Tokyo Tower rising in red and white, Shibuya crossing forming with tiny pedestrians",
@@ -170,7 +224,16 @@
         },
         {
           "value": "london",
-          "label": "🏛️ London",
+          "label": {
+            "en": "🏛️ London",
+            "zh": "london ",
+            "ja": "london ",
+            "ko": "london ",
+            "es": "london ",
+            "de": "london ",
+            "fr": "london ",
+            "ar": "london "
+          },
           "metadata": {
             "opening_sketch": "a classic London skyline sketch with Victorian details",
             "landmarks_description": "Big Ben tower rising with its iconic clock, Tower Bridge spanning across the pages",
@@ -195,7 +258,16 @@
         },
         {
           "value": "sanfrancisco",
-          "label": "🌉 San Francisco",
+          "label": {
+            "en": "🌉 San Francisco",
+            "zh": "sanfrancisco ",
+            "ja": "sanfrancisco ",
+            "ko": "sanfrancisco ",
+            "es": "sanfrancisco ",
+            "de": "sanfrancisco ",
+            "fr": "sanfrancisco ",
+            "ar": "sanfrancisco "
+          },
           "metadata": {
             "opening_sketch": "a scenic San Francisco bay sketch with rolling hills",
             "landmarks_description": "the Golden Gate Bridge arcing majestically across the bay area",
@@ -220,7 +292,16 @@
         },
         {
           "value": "dubai",
-          "label": "🕌 Dubai",
+          "label": {
+            "en": "🕌 Dubai",
+            "zh": "dubai ",
+            "ja": "dubai ",
+            "ko": "dubai ",
+            "es": "dubai ",
+            "de": "dubai ",
+            "fr": "dubai ",
+            "ar": "dubai "
+          },
           "metadata": {
             "opening_sketch": "a futuristic Dubai skyline sketch with geometric patterns",
             "landmarks_description": "Burj Khalifa piercing upward majestically, Palm Jumeirah spreading like a palm tree",
@@ -245,7 +326,16 @@
         },
         {
           "value": "shanghai",
-          "label": "🐉 Shanghai",
+          "label": {
+            "en": "🐉 Shanghai",
+            "zh": "shanghai ",
+            "ja": "shanghai ",
+            "ko": "shanghai ",
+            "es": "shanghai ",
+            "de": "shanghai ",
+            "fr": "shanghai ",
+            "ar": "shanghai "
+          },
           "metadata": {
             "opening_sketch": "a dynamic Shanghai Bund skyline sketch with traditional and modern elements",
             "landmarks_description": "Oriental Pearl Tower rising with its distinctive spheres, the Bund's historic buildings lining the waterfront",
@@ -270,7 +360,16 @@
         },
         {
           "value": "cyberpunk",
-          "label": "🌃 Cyberpunk City",
+          "label": {
+            "en": "🌃 Cyberpunk City",
+            "zh": "cyberpunk ",
+            "ja": "cyberpunk ",
+            "ko": "cyberpunk ",
+            "es": "cyberpunk ",
+            "de": "cyberpunk ",
+            "fr": "cyberpunk ",
+            "ar": "cyberpunk "
+          },
           "metadata": {
             "opening_sketch": "a futuristic cyberpunk skyline sketch with neon circuit patterns",
             "landmarks_description": "towering neon-lit skyscrapers with holographic advertisements floating above",
@@ -295,7 +394,16 @@
         },
         {
           "value": "beijing",
-          "label": "🏯 Beijing",
+          "label": {
+            "en": "🏯 Beijing",
+            "zh": "beijing ",
+            "ja": "beijing ",
+            "ko": "beijing ",
+            "es": "beijing ",
+            "de": "beijing ",
+            "fr": "beijing ",
+            "ar": "beijing "
+          },
           "metadata": {
             "opening_sketch": "a traditional Chinese ink painting style Beijing skyline sketch with dragon motifs",
             "landmarks_description": "the majestic Forbidden City with golden rooftops, Tiananmen Gate rising ceremonially, Bird's Nest stadium gleaming in the distance",
@@ -320,7 +428,16 @@
         },
         {
           "value": "rome",
-          "label": "🏛️ Rome",
+          "label": {
+            "en": "🏛️ Rome",
+            "zh": "rome ",
+            "ja": "rome ",
+            "ko": "rome ",
+            "es": "rome ",
+            "de": "rome ",
+            "fr": "rome ",
+            "ar": "rome "
+          },
           "metadata": {
             "opening_sketch": "a classical Roman architectural sketch with marble columns and arches",
             "landmarks_description": "the mighty Colosseum rising from ancient stones, St. Peter's Basilica dome gleaming, Trevi Fountain sparkling",
@@ -345,7 +462,16 @@
         },
         {
           "value": "sydney",
-          "label": "🌴 Sydney",
+          "label": {
+            "en": "🌴 Sydney",
+            "zh": "sydney ",
+            "ja": "sydney ",
+            "ko": "sydney ",
+            "es": "sydney ",
+            "de": "sydney ",
+            "fr": "sydney ",
+            "ar": "sydney "
+          },
           "metadata": {
             "opening_sketch": "a harbor city sketch with distinctive sail-like shapes and bridge arcs",
             "landmarks_description": "the iconic Sydney Opera House with its sail shells rising, Harbour Bridge spanning majestically across the water",
@@ -370,7 +496,16 @@
         },
         {
           "value": "rio",
-          "label": "🏖️ Rio de Janeiro",
+          "label": {
+            "en": "🏖️ Rio de Janeiro",
+            "zh": "rio ",
+            "ja": "rio ",
+            "ko": "rio ",
+            "es": "rio ",
+            "de": "rio ",
+            "fr": "rio ",
+            "ar": "rio "
+          },
           "metadata": {
             "opening_sketch": "a tropical coastal sketch with mountain silhouettes and beach curves",
             "landmarks_description": "Christ the Redeemer statue arms spread wide atop Corcovado, Sugarloaf Mountain rising from Guanabara Bay, Copacabana beach curving",
@@ -395,7 +530,16 @@
         },
         {
           "value": "istanbul",
-          "label": "🕌 Istanbul",
+          "label": {
+            "en": "🕌 Istanbul",
+            "zh": "istanbul ",
+            "ja": "istanbul ",
+            "ko": "istanbul ",
+            "es": "istanbul ",
+            "de": "istanbul ",
+            "fr": "istanbul ",
+            "ar": "istanbul "
+          },
           "metadata": {
             "opening_sketch": "a Byzantine sketch showing domes and minarets across two continents",
             "landmarks_description": "the Blue Mosque with six minarets rising, Hagia Sophia's massive dome gleaming, Bosphorus Bridge connecting continents",
@@ -420,7 +564,16 @@
         },
         {
           "value": "moscow",
-          "label": "🏰 Moscow",
+          "label": {
+            "en": "🏰 Moscow",
+            "zh": "moscow ",
+            "ja": "moscow ",
+            "ko": "moscow ",
+            "es": "moscow ",
+            "de": "moscow ",
+            "fr": "moscow ",
+            "ar": "moscow "
+          },
           "metadata": {
             "opening_sketch": "a Russian winter sketch with onion domes and fortress walls",
             "landmarks_description": "the colorful St. Basil's Cathedral with its distinctive onion domes, Red Square's fortress walls, Kremlin towers rising majestically",
@@ -445,7 +598,16 @@
         },
         {
           "value": "cairo",
-          "label": "🗿 Cairo",
+          "label": {
+            "en": "🗿 Cairo",
+            "zh": "cairo ",
+            "ja": "cairo ",
+            "ko": "cairo ",
+            "es": "cairo ",
+            "de": "cairo ",
+            "fr": "cairo ",
+            "ar": "cairo "
+          },
           "metadata": {
             "opening_sketch": "an ancient Egyptian sketch with pyramid silhouettes and hieroglyphic borders",
             "landmarks_description": "the Great Pyramids of Giza rising from desert sands, the Sphinx gazing eternally, ancient temples gleaming",
@@ -470,7 +632,16 @@
         },
         {
           "value": "kyoto",
-          "label": "⛩️ Kyoto",
+          "label": {
+            "en": "⛩️ Kyoto",
+            "zh": "kyoto ",
+            "ja": "kyoto ",
+            "ko": "kyoto ",
+            "es": "kyoto ",
+            "de": "kyoto ",
+            "fr": "kyoto ",
+            "ar": "kyoto "
+          },
           "metadata": {
             "opening_sketch": "a traditional Japanese ink painting with temple silhouettes and cherry blossom petals",
             "landmarks_description": "the golden Kinkaku-ji Temple reflecting in pond waters, thousands of vermillion torii gates climbing the mountain, bamboo groves swaying",
@@ -495,7 +666,16 @@
         },
         {
           "value": "barcelona",
-          "label": "🏔️ Barcelona",
+          "label": {
+            "en": "🏔️ Barcelona",
+            "zh": "barcelona ",
+            "ja": "barcelona ",
+            "ko": "barcelona ",
+            "es": "barcelona ",
+            "de": "barcelona ",
+            "fr": "barcelona ",
+            "ar": "barcelona "
+          },
           "metadata": {
             "opening_sketch": "a Gaudí-inspired architectural sketch with organic curves and mosaic patterns",
             "landmarks_description": "the towering Sagrada Familia with its intricate spires, colorful Park Güell with mosaic dragons, Gothic Quarter arcades",
@@ -522,7 +702,16 @@
     },
     "cta_text": {
       "type": "text",
-      "label": "Ending Text",
+      "label": {
+        "en": "Ending Text",
+        "zh": "结尾文字",
+        "ja": "エンディングテキスト",
+        "ko": "엔딩 텍스트",
+        "es": "Texto Final",
+        "de": "Abschlusstext",
+        "fr": "Texte de Fin",
+        "ar": "النص النهائي"
+      },
       "placeholder": "Enter your custom text",
       "required": true,
       "default": "Explore the World"
@@ -624,7 +813,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

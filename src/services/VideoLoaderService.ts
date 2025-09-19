@@ -300,9 +300,7 @@ class VideoLoaderService {
         applyVideoCorsFix(video, videoUrl)
       }).catch(() => {
         // 如果导入失败，手动设置CORS属性
-        if (videoUrl.includes('cdn.veo3video.me') || 
-            videoUrl.includes('filesystem.site') ||
-            videoUrl.includes('heyoo.oss-ap-southeast-1.aliyuncs.com')) {
+        if (videoUrl.includes('cdn.veo3video.me')) {
           video.crossOrigin = 'anonymous'
           video.setAttribute('crossorigin', 'anonymous')
         }

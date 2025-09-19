@@ -1,9 +1,27 @@
 {
   "id": "8151cddb-757c-45ec-a490-463d6dbe7e88",
   "slug": "surveillance-animal-encounter",
-  "name": "Surveillance Animal Encounter",
+  "name": {
+    "en": "Surveillance Animal Encounter",
+    "zh": "监控动物偶遇",
+    "ja": "監視カメラ動物遭遇",
+    "ko": "감시 카메라 동물 조우",
+    "es": "Encuentro Animal de Vigilancia",
+    "de": "Überwachungs-Tier-Begegnung",
+    "fr": "Rencontre Animale de Surveillance",
+    "ar": "لقاء حيوان المراقبة"
+  },
   "icon": "📹",
-  "description": "Create unique surveillance camera perspective animal interaction videos with night vision effects and fisheye lens distortion",
+  "description": {
+    "en": "Security camera footage of unexpected animal encounters in urban environments",
+    "zh": "城市环境中意外动物遭遇的安防摄像头画面",
+    "ja": "都市環境での予期しない動物との遭遇を撮影した防犯カメラ映像",
+    "ko": "도시 환경에서 예상치 못한 동물 조우의 보안 카메라 영상",
+    "es": "Grabaciones de cámaras de seguridad de encuentros inesperados con animales en entornos urbanos",
+    "de": "Überwachungskamera-Aufnahmen von unerwarteten Tierbegegnungen in städtischen Umgebungen",
+    "fr": "Images de caméras de sécurité de rencontres inattendues avec des animaux dans des environnements urbains",
+    "ar": "لقطات كاميرا أمنية للقاءات حيوانية غير متوقعة في البيئات الحضرية"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/surveillance-animal-encounter.mp4?v=1758008502567",
   "category": "Animals/Fantasy",
   "tags": [
@@ -16,7 +34,7 @@
   ],
   "createdAt": "2025-01-22T10:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.580Z",
+  "lastModified": "2025-09-18T03:33:06.813Z",
   "promptTemplate": "Low-quality surveillance video style, black and white, {night_vision} in night vision mode, high contrast, rough film texture. Fixed perspective: {lens_type} lens (simulating real cat's eye perspective), peeking from behind the interior door. The light is dim, and the {scene_location} is shrouded in darkness. A huge {main_animal} walks slowly and majestically towards the door with heavy steps. Walking with the {main_animal} is a {companion_animal}. They walk to the door in unison. When they stop in front of the door, the {companion_animal}'s eyes turn to the cat's eye lens (lens position). {action_type}. The {main_animal} is expressionless and indifferent to the {companion_animal}'s behavior. Due to the cat's eye perspective, the edges of the picture are slightly dark. It is quiet all around, with only the faint chirping of insects in the distance.",
   "params": {
     "night_vision": {
@@ -26,19 +44,55 @@
       "options": [
         {
           "value": "strong green fluorescence",
-          "label": "Strong Green Fluorescence"
+          "label": {
+            "en": "Strong Green Fluorescence",
+            "zh": "strong green fluorescence ",
+            "ja": "strong green fluorescence ",
+            "ko": "strong green fluorescence ",
+            "es": "strong green fluorescence ",
+            "de": "strong green fluorescence ",
+            "fr": "strong green fluorescence ",
+            "ar": "strong green fluorescence "
+          }
         },
         {
           "value": "white phosphor",
-          "label": "White Phosphor"
+          "label": {
+            "en": "White Phosphor",
+            "zh": "white phosphor ",
+            "ja": "white phosphor ",
+            "ko": "white phosphor ",
+            "es": "white phosphor ",
+            "de": "white phosphor ",
+            "fr": "white phosphor ",
+            "ar": "white phosphor "
+          }
         },
         {
           "value": "thermal imaging",
-          "label": "Thermal Imaging"
+          "label": {
+            "en": "Thermal Imaging",
+            "zh": "thermal imaging ",
+            "ja": "thermal imaging ",
+            "ko": "thermal imaging ",
+            "es": "thermal imaging ",
+            "de": "thermal imaging ",
+            "fr": "thermal imaging ",
+            "ar": "thermal imaging "
+          }
         },
         {
           "value": "subtle green tint",
-          "label": "Subtle Green Tint"
+          "label": {
+            "en": "Subtle Green Tint",
+            "zh": "subtle green tint ",
+            "ja": "subtle green tint ",
+            "ko": "subtle green tint ",
+            "es": "subtle green tint ",
+            "de": "subtle green tint ",
+            "fr": "subtle green tint ",
+            "ar": "subtle green tint "
+          }
         }
       ]
     },
@@ -49,19 +103,55 @@
       "options": [
         {
           "value": "ultra-wide-angle fisheye",
-          "label": "Ultra-wide-angle Fisheye"
+          "label": {
+            "en": "Ultra-wide-angle Fisheye",
+            "zh": "ultra-wide-angle fisheye ",
+            "ja": "ultra-wide-angle fisheye ",
+            "ko": "ultra-wide-angle fisheye ",
+            "es": "ultra-wide-angle fisheye ",
+            "de": "ultra-wide-angle fisheye ",
+            "fr": "ultra-wide-angle fisheye ",
+            "ar": "ultra-wide-angle fisheye "
+          }
         },
         {
           "value": "standard wide-angle",
-          "label": "Standard Wide-angle"
+          "label": {
+            "en": "Standard Wide-angle",
+            "zh": "standard wide-angle ",
+            "ja": "standard wide-angle ",
+            "ko": "standard wide-angle ",
+            "es": "standard wide-angle ",
+            "de": "standard wide-angle ",
+            "fr": "standard wide-angle ",
+            "ar": "standard wide-angle "
+          }
         },
         {
           "value": "normal lens",
-          "label": "Normal Lens"
+          "label": {
+            "en": "Normal Lens",
+            "zh": "normal lens ",
+            "ja": "normal lens ",
+            "ko": "normal lens ",
+            "es": "normal lens ",
+            "de": "normal lens ",
+            "fr": "normal lens ",
+            "ar": "normal lens "
+          }
         },
         {
           "value": "telephoto lens",
-          "label": "Telephoto Lens"
+          "label": {
+            "en": "Telephoto Lens",
+            "zh": "telephoto lens ",
+            "ja": "telephoto lens ",
+            "ko": "telephoto lens ",
+            "es": "telephoto lens ",
+            "de": "telephoto lens ",
+            "fr": "telephoto lens ",
+            "ar": "telephoto lens "
+          }
         }
       ]
     },
@@ -73,59 +163,185 @@
       "options": [
         {
           "value": "Siberian tiger",
-          "label": "Siberian Tiger 🐅"
+          "label": {
+            "en": "Siberian Tiger 🐅",
+            "zh": "Siberian tiger 🐅",
+            "ja": "Siberian tiger 🐅",
+            "ko": "Siberian tiger 🐅",
+            "es": "Siberian tiger 🐅",
+            "de": "Siberian tiger 🐅",
+            "fr": "Siberian tiger 🐅",
+            "ar": "Siberian tiger 🐅"
+          }
         },
         {
           "value": "African lion",
-          "label": "African Lion 🦁"
+          "label": {
+            "en": "African Lion 🦁",
+            "zh": "African lion 🦁",
+            "ja": "African lion 🦁",
+            "ko": "African lion 🦁",
+            "es": "African lion 🦁",
+            "de": "African lion 🦁",
+            "fr": "African lion 🦁",
+            "ar": "African lion 🦁"
+          }
         },
         {
           "value": "Leopard",
-          "label": "Leopard 🐆"
+          "label": {
+            "en": "Leopard 🐆",
+            "zh": "Leopard 🐆",
+            "ja": "Leopard 🐆",
+            "ko": "Leopard 🐆",
+            "es": "Leopard 🐆",
+            "de": "Leopard 🐆",
+            "fr": "Leopard 🐆",
+            "ar": "Leopard 🐆"
+          }
         },
         {
           "value": "Giant panda",
-          "label": "Giant Panda 🐼"
+          "label": {
+            "en": "Giant Panda 🐼",
+            "zh": "Giant panda 🐼",
+            "ja": "Giant panda 🐼",
+            "ko": "Giant panda 🐼",
+            "es": "Giant panda 🐼",
+            "de": "Giant panda 🐼",
+            "fr": "Giant panda 🐼",
+            "ar": "Giant panda 🐼"
+          }
         },
         {
           "value": "Grizzly bear",
-          "label": "Grizzly Bear 🐻"
+          "label": {
+            "en": "Grizzly Bear 🐻",
+            "zh": "Grizzly bear 🐻",
+            "ja": "Grizzly bear 🐻",
+            "ko": "Grizzly bear 🐻",
+            "es": "Grizzly bear 🐻",
+            "de": "Grizzly bear 🐻",
+            "fr": "Grizzly bear 🐻",
+            "ar": "Grizzly bear 🐻"
+          }
         },
         {
           "value": "Polar bear",
-          "label": "Polar Bear 🐻‍❄️"
+          "label": {
+            "en": "Polar Bear 🐻‍❄️",
+            "zh": "Polar bear 🐻‍❄️",
+            "ja": "Polar bear 🐻‍❄️",
+            "ko": "Polar bear 🐻‍❄️",
+            "es": "Polar bear 🐻‍❄️",
+            "de": "Polar bear 🐻‍❄️",
+            "fr": "Polar bear 🐻‍❄️",
+            "ar": "Polar bear 🐻‍❄️"
+          }
         },
         {
           "value": "Gray wolf",
-          "label": "Gray Wolf 🐺"
+          "label": {
+            "en": "Gray Wolf 🐺",
+            "zh": "Gray wolf 🐺",
+            "ja": "Gray wolf 🐺",
+            "ko": "Gray wolf 🐺",
+            "es": "Gray wolf 🐺",
+            "de": "Gray wolf 🐺",
+            "fr": "Gray wolf 🐺",
+            "ar": "Gray wolf 🐺"
+          }
         },
         {
           "value": "Arctic wolf",
-          "label": "Arctic Wolf 🐺"
+          "label": {
+            "en": "Arctic Wolf 🐺",
+            "zh": "Arctic wolf 🐺",
+            "ja": "Arctic wolf 🐺",
+            "ko": "Arctic wolf 🐺",
+            "es": "Arctic wolf 🐺",
+            "de": "Arctic wolf 🐺",
+            "fr": "Arctic wolf 🐺",
+            "ar": "Arctic wolf 🐺"
+          }
         },
         {
           "value": "Gorilla",
-          "label": "Gorilla 🦍"
+          "label": {
+            "en": "Gorilla 🦍",
+            "zh": "Gorilla 🦍",
+            "ja": "Gorilla 🦍",
+            "ko": "Gorilla 🦍",
+            "es": "Gorilla 🦍",
+            "de": "Gorilla 🦍",
+            "fr": "Gorilla 🦍",
+            "ar": "Gorilla 🦍"
+          }
         },
         {
           "value": "Elephant",
-          "label": "Elephant 🐘"
+          "label": {
+            "en": "Elephant 🐘",
+            "zh": "Elephant 🐘",
+            "ja": "Elephant 🐘",
+            "ko": "Elephant 🐘",
+            "es": "Elephant 🐘",
+            "de": "Elephant 🐘",
+            "fr": "Elephant 🐘",
+            "ar": "Elephant 🐘"
+          }
         },
         {
           "value": "Rhinoceros",
-          "label": "Rhinoceros 🦏"
+          "label": {
+            "en": "Rhinoceros 🦏",
+            "zh": "Rhinoceros 🦏",
+            "ja": "Rhinoceros 🦏",
+            "ko": "Rhinoceros 🦏",
+            "es": "Rhinoceros 🦏",
+            "de": "Rhinoceros 🦏",
+            "fr": "Rhinoceros 🦏",
+            "ar": "Rhinoceros 🦏"
+          }
         },
         {
           "value": "Hippopotamus",
-          "label": "Hippopotamus 🦛"
+          "label": {
+            "en": "Hippopotamus 🦛",
+            "zh": "Hippopotamus 🦛",
+            "ja": "Hippopotamus 🦛",
+            "ko": "Hippopotamus 🦛",
+            "es": "Hippopotamus 🦛",
+            "de": "Hippopotamus 🦛",
+            "fr": "Hippopotamus 🦛",
+            "ar": "Hippopotamus 🦛"
+          }
         },
         {
           "value": "Moose",
-          "label": "Moose 🦌"
+          "label": {
+            "en": "Moose 🦌",
+            "zh": "Moose 🦌",
+            "ja": "Moose 🦌",
+            "ko": "Moose 🦌",
+            "es": "Moose 🦌",
+            "de": "Moose 🦌",
+            "fr": "Moose 🦌",
+            "ar": "Moose 🦌"
+          }
         },
         {
           "value": "Kangaroo",
-          "label": "Kangaroo 🦘"
+          "label": {
+            "en": "Kangaroo 🦘",
+            "zh": "Kangaroo 🦘",
+            "ja": "Kangaroo 🦘",
+            "ko": "Kangaroo 🦘",
+            "es": "Kangaroo 🦘",
+            "de": "Kangaroo 🦘",
+            "fr": "Kangaroo 🦘",
+            "ar": "Kangaroo 🦘"
+          }
         }
       ]
     },
@@ -137,79 +353,250 @@
       "options": [
         {
           "value": "tabby cat",
-          "label": "Tabby Cat 🐈"
+          "label": {
+            "en": "Tabby Cat 🐈",
+            "zh": "tabby cat 🐈",
+            "ja": "tabby cat 🐈",
+            "ko": "tabby cat 🐈",
+            "es": "tabby cat 🐈",
+            "de": "tabby cat 🐈",
+            "fr": "tabby cat 🐈",
+            "ar": "tabby cat 🐈"
+          }
         },
         {
           "value": "orange cat",
-          "label": "Orange Cat 🐈"
+          "label": {
+            "en": "Orange Cat 🐈",
+            "zh": "orange cat 🐈",
+            "ja": "orange cat 🐈",
+            "ko": "orange cat 🐈",
+            "es": "orange cat 🐈",
+            "de": "orange cat 🐈",
+            "fr": "orange cat 🐈",
+            "ar": "orange cat 🐈"
+          }
         },
         {
           "value": "siamese cat",
-          "label": "Siamese Cat 🐈"
+          "label": {
+            "en": "Siamese Cat 🐈",
+            "zh": "siamese cat 🐈",
+            "ja": "siamese cat 🐈",
+            "ko": "siamese cat 🐈",
+            "es": "siamese cat 🐈",
+            "de": "siamese cat 🐈",
+            "fr": "siamese cat 🐈",
+            "ar": "siamese cat 🐈"
+          }
         },
         {
           "value": "persian cat",
-          "label": "Persian Cat 🐈"
+          "label": {
+            "en": "Persian Cat 🐈",
+            "zh": "persian cat 🐈",
+            "ja": "persian cat 🐈",
+            "ko": "persian cat 🐈",
+            "es": "persian cat 🐈",
+            "de": "persian cat 🐈",
+            "fr": "persian cat 🐈",
+            "ar": "persian cat 🐈"
+          }
         },
         {
           "value": "chihuahua",
-          "label": "Chihuahua 🐕"
+          "label": {
+            "en": "Chihuahua 🐕",
+            "zh": "chihuahua 🐕",
+            "ja": "chihuahua 🐕",
+            "ko": "chihuahua 🐕",
+            "es": "chihuahua 🐕",
+            "de": "chihuahua 🐕",
+            "fr": "chihuahua 🐕",
+            "ar": "chihuahua 🐕"
+          }
         },
         {
           "value": "corgi",
-          "label": "Corgi 🐕"
+          "label": {
+            "en": "Corgi 🐕",
+            "zh": "corgi 🐕",
+            "ja": "corgi 🐕",
+            "ko": "corgi 🐕",
+            "es": "corgi 🐕",
+            "de": "corgi 🐕",
+            "fr": "corgi 🐕",
+            "ar": "corgi 🐕"
+          }
         },
         {
           "value": "french bulldog",
-          "label": "French Bulldog 🐕"
+          "label": {
+            "en": "French Bulldog 🐕",
+            "zh": "french bulldog 🐕",
+            "ja": "french bulldog 🐕",
+            "ko": "french bulldog 🐕",
+            "es": "french bulldog 🐕",
+            "de": "french bulldog 🐕",
+            "fr": "french bulldog 🐕",
+            "ar": "french bulldog 🐕"
+          }
         },
         {
           "value": "rabbit",
-          "label": "Rabbit 🐰"
+          "label": {
+            "en": "Rabbit 🐰",
+            "zh": "兔子 🐰",
+            "ja": "ウサギ 🐰",
+            "ko": "토끼 🐰",
+            "es": "Conejo 🐰",
+            "de": "Kaninchen 🐰",
+            "fr": "Lapin 🐰",
+            "ar": "أرنب 🐰"
+          }
         },
         {
           "value": "ferret",
-          "label": "Ferret 🦦"
+          "label": {
+            "en": "Ferret 🦦",
+            "zh": "ferret 🦦",
+            "ja": "ferret 🦦",
+            "ko": "ferret 🦦",
+            "es": "ferret 🦦",
+            "de": "ferret 🦦",
+            "fr": "ferret 🦦",
+            "ar": "ferret 🦦"
+          }
         },
         {
           "value": "raccoon",
-          "label": "Raccoon 🦝"
+          "label": {
+            "en": "Raccoon 🦝",
+            "zh": "raccoon 🦝",
+            "ja": "raccoon 🦝",
+            "ko": "raccoon 🦝",
+            "es": "raccoon 🦝",
+            "de": "raccoon 🦝",
+            "fr": "raccoon 🦝",
+            "ar": "raccoon 🦝"
+          }
         },
         {
           "value": "red panda",
-          "label": "Red Panda 🐾"
+          "label": {
+            "en": "Red Panda 🐾",
+            "zh": "red panda 🐾",
+            "ja": "red panda 🐾",
+            "ko": "red panda 🐾",
+            "es": "red panda 🐾",
+            "de": "red panda 🐾",
+            "fr": "red panda 🐾",
+            "ar": "red panda 🐾"
+          }
         },
         {
           "value": "squirrel",
-          "label": "Squirrel 🐿️"
+          "label": {
+            "en": "Squirrel 🐿️",
+            "zh": "squirrel 🐿️",
+            "ja": "squirrel 🐿️",
+            "ko": "squirrel 🐿️",
+            "es": "squirrel 🐿️",
+            "de": "squirrel 🐿️",
+            "fr": "squirrel 🐿️",
+            "ar": "squirrel 🐿️"
+          }
         },
         {
           "value": "hedgehog",
-          "label": "Hedgehog 🦔"
+          "label": {
+            "en": "Hedgehog 🦔",
+            "zh": "hedgehog 🦔",
+            "ja": "hedgehog 🦔",
+            "ko": "hedgehog 🦔",
+            "es": "hedgehog 🦔",
+            "de": "hedgehog 🦔",
+            "fr": "hedgehog 🦔",
+            "ar": "hedgehog 🦔"
+          }
         },
         {
           "value": "red fox",
-          "label": "Red Fox 🦊"
+          "label": {
+            "en": "Red Fox 🦊",
+            "zh": "red fox 🦊",
+            "ja": "red fox 🦊",
+            "ko": "red fox 🦊",
+            "es": "red fox 🦊",
+            "de": "red fox 🦊",
+            "fr": "red fox 🦊",
+            "ar": "red fox 🦊"
+          }
         },
         {
           "value": "wolf cub",
-          "label": "Wolf Cub 🐺"
+          "label": {
+            "en": "Wolf Cub 🐺",
+            "zh": "wolf cub 🐺",
+            "ja": "wolf cub 🐺",
+            "ko": "wolf cub 🐺",
+            "es": "wolf cub 🐺",
+            "de": "wolf cub 🐺",
+            "fr": "wolf cub 🐺",
+            "ar": "wolf cub 🐺"
+          }
         },
         {
           "value": "meerkat",
-          "label": "Meerkat 🐾"
+          "label": {
+            "en": "Meerkat 🐾",
+            "zh": "meerkat 🐾",
+            "ja": "meerkat 🐾",
+            "ko": "meerkat 🐾",
+            "es": "meerkat 🐾",
+            "de": "meerkat 🐾",
+            "fr": "meerkat 🐾",
+            "ar": "meerkat 🐾"
+          }
         },
         {
           "value": "capuchin monkey",
-          "label": "Capuchin Monkey 🐒"
+          "label": {
+            "en": "Capuchin Monkey 🐒",
+            "zh": "capuchin monkey 🐒",
+            "ja": "capuchin monkey 🐒",
+            "ko": "capuchin monkey 🐒",
+            "es": "capuchin monkey 🐒",
+            "de": "capuchin monkey 🐒",
+            "fr": "capuchin monkey 🐒",
+            "ar": "capuchin monkey 🐒"
+          }
         },
         {
           "value": "lemur",
-          "label": "Lemur 🐵"
+          "label": {
+            "en": "Lemur 🐵",
+            "zh": "lemur 🐵",
+            "ja": "lemur 🐵",
+            "ko": "lemur 🐵",
+            "es": "lemur 🐵",
+            "de": "lemur 🐵",
+            "fr": "lemur 🐵",
+            "ar": "lemur 🐵"
+          }
         },
         {
           "value": "hamster",
-          "label": "Hamster 🐹"
+          "label": {
+            "en": "Hamster 🐹",
+            "zh": "仓鼠 🐹",
+            "ja": "ハムスター 🐹",
+            "ko": "햄스터 🐹",
+            "es": "Hámster 🐹",
+            "de": "Hamster 🐹",
+            "fr": "Hamster 🐹",
+            "ar": "هامستر 🐹"
+          }
         }
       ]
     },
@@ -220,27 +607,81 @@
       "options": [
         {
           "value": "Like a human, the small animal raises one front paw provocatively, deliberately straightening only the longest middle finger, while all other fingers are tightly bent and retracted, forming a clear and precise movement, imitating the insulting 'middle finger' gesture of humans. The shape of the paw imitates the human hand. The movement is slow and full of irony, and it remains in this position after completion, with eyes penetrating the lens and looking directly at the viewer",
-          "label": "Provocative Middle Finger Gesture"
+          "label": {
+            "en": "Provocative Middle Finger Gesture",
+            "zh": "Like a human, the small animal raises one front paw provocatively, deliberately straightening only the longest middle finger, while all other fingers are tightly bent and retracted, forming a clear and precise movement, imitating the insulting 'middle finger' gesture of humans. The shape of the paw imitates the human hand. The movement is slow and full of irony, and it remains in this position after completion, with eyes penetrating the lens and looking directly at the viewer ",
+            "ja": "Like a human, the small animal raises one front paw provocatively, deliberately straightening only the longest middle finger, while all other fingers are tightly bent and retracted, forming a clear and precise movement, imitating the insulting 'middle finger' gesture of humans. The shape of the paw imitates the human hand. The movement is slow and full of irony, and it remains in this position after completion, with eyes penetrating the lens and looking directly at the viewer ",
+            "ko": "Like a human, the small animal raises one front paw provocatively, deliberately straightening only the longest middle finger, while all other fingers are tightly bent and retracted, forming a clear and precise movement, imitating the insulting 'middle finger' gesture of humans. The shape of the paw imitates the human hand. The movement is slow and full of irony, and it remains in this position after completion, with eyes penetrating the lens and looking directly at the viewer ",
+            "es": "Like a human, the small animal raises one front paw provocatively, deliberately straightening only the longest middle finger, while all other fingers are tightly bent and retracted, forming a clear and precise movement, imitating the insulting 'middle finger' gesture of humans. The shape of the paw imitates the human hand. The movement is slow and full of irony, and it remains in this position after completion, with eyes penetrating the lens and looking directly at the viewer ",
+            "de": "Like a human, the small animal raises one front paw provocatively, deliberately straightening only the longest middle finger, while all other fingers are tightly bent and retracted, forming a clear and precise movement, imitating the insulting 'middle finger' gesture of humans. The shape of the paw imitates the human hand. The movement is slow and full of irony, and it remains in this position after completion, with eyes penetrating the lens and looking directly at the viewer ",
+            "fr": "Like a human, the small animal raises one front paw provocatively, deliberately straightening only the longest middle finger, while all other fingers are tightly bent and retracted, forming a clear and precise movement, imitating the insulting 'middle finger' gesture of humans. The shape of the paw imitates the human hand. The movement is slow and full of irony, and it remains in this position after completion, with eyes penetrating the lens and looking directly at the viewer ",
+            "ar": "Like a human, the small animal raises one front paw provocatively, deliberately straightening only the longest middle finger, while all other fingers are tightly bent and retracted, forming a clear and precise movement, imitating the insulting 'middle finger' gesture of humans. The shape of the paw imitates the human hand. The movement is slow and full of irony, and it remains in this position after completion, with eyes penetrating the lens and looking directly at the viewer "
+          }
         },
         {
           "value": "The small animal raises its paw in a friendly wave, moving it side to side in a human-like greeting gesture, maintaining eye contact with the camera",
-          "label": "Friendly Wave"
+          "label": {
+            "en": "Friendly Wave",
+            "zh": "The small animal raises its paw in a friendly wave, moving it side to side in a human-like greeting gesture, maintaining eye contact with the camera ",
+            "ja": "The small animal raises its paw in a friendly wave, moving it side to side in a human-like greeting gesture, maintaining eye contact with the camera ",
+            "ko": "The small animal raises its paw in a friendly wave, moving it side to side in a human-like greeting gesture, maintaining eye contact with the camera ",
+            "es": "The small animal raises its paw in a friendly wave, moving it side to side in a human-like greeting gesture, maintaining eye contact with the camera ",
+            "de": "The small animal raises its paw in a friendly wave, moving it side to side in a human-like greeting gesture, maintaining eye contact with the camera ",
+            "fr": "The small animal raises its paw in a friendly wave, moving it side to side in a human-like greeting gesture, maintaining eye contact with the camera ",
+            "ar": "The small animal raises its paw in a friendly wave, moving it side to side in a human-like greeting gesture, maintaining eye contact with the camera "
+          }
         },
         {
           "value": "The small animal points directly at the camera with one extended claw, as if recognizing the viewer, holding the pose for several seconds",
-          "label": "Point at Camera"
+          "label": {
+            "en": "Point at Camera",
+            "zh": "The small animal points directly at the camera with one extended claw, as if recognizing the viewer, holding the pose for several seconds ",
+            "ja": "The small animal points directly at the camera with one extended claw, as if recognizing the viewer, holding the pose for several seconds ",
+            "ko": "The small animal points directly at the camera with one extended claw, as if recognizing the viewer, holding the pose for several seconds ",
+            "es": "The small animal points directly at the camera with one extended claw, as if recognizing the viewer, holding the pose for several seconds ",
+            "de": "The small animal points directly at the camera with one extended claw, as if recognizing the viewer, holding the pose for several seconds ",
+            "fr": "The small animal points directly at the camera with one extended claw, as if recognizing the viewer, holding the pose for several seconds ",
+            "ar": "The small animal points directly at the camera with one extended claw, as if recognizing the viewer, holding the pose for several seconds "
+          }
         },
         {
           "value": "The small animal makes a scratching gesture in the air, as if trying to reach through the lens, with claws fully extended",
-          "label": "Air Scratching"
+          "label": {
+            "en": "Air Scratching",
+            "zh": "The small animal makes a scratching gesture in the air, as if trying to reach through the lens, with claws fully extended ",
+            "ja": "The small animal makes a scratching gesture in the air, as if trying to reach through the lens, with claws fully extended ",
+            "ko": "The small animal makes a scratching gesture in the air, as if trying to reach through the lens, with claws fully extended ",
+            "es": "The small animal makes a scratching gesture in the air, as if trying to reach through the lens, with claws fully extended ",
+            "de": "The small animal makes a scratching gesture in the air, as if trying to reach through the lens, with claws fully extended ",
+            "fr": "The small animal makes a scratching gesture in the air, as if trying to reach through the lens, with claws fully extended ",
+            "ar": "The small animal makes a scratching gesture in the air, as if trying to reach through the lens, with claws fully extended "
+          }
         },
         {
           "value": "The small animal playfully raises both front paws in a 'hands up' gesture, as if surrendering",
-          "label": "Raise Both Paws"
+          "label": {
+            "en": "Raise Both Paws",
+            "zh": "The small animal playfully raises both front paws in a 'hands up' gesture, as if surrendering ",
+            "ja": "The small animal playfully raises both front paws in a 'hands up' gesture, as if surrendering ",
+            "ko": "The small animal playfully raises both front paws in a 'hands up' gesture, as if surrendering ",
+            "es": "The small animal playfully raises both front paws in a 'hands up' gesture, as if surrendering ",
+            "de": "The small animal playfully raises both front paws in a 'hands up' gesture, as if surrendering ",
+            "fr": "The small animal playfully raises both front paws in a 'hands up' gesture, as if surrendering ",
+            "ar": "The small animal playfully raises both front paws in a 'hands up' gesture, as if surrendering "
+          }
         },
         {
           "value": "The small animal slowly blinks at the camera, then turns its head away dismissively",
-          "label": "Dismissive Head Turn"
+          "label": {
+            "en": "Dismissive Head Turn",
+            "zh": "The small animal slowly blinks at the camera, then turns its head away dismissively ",
+            "ja": "The small animal slowly blinks at the camera, then turns its head away dismissively ",
+            "ko": "The small animal slowly blinks at the camera, then turns its head away dismissively ",
+            "es": "The small animal slowly blinks at the camera, then turns its head away dismissively ",
+            "de": "The small animal slowly blinks at the camera, then turns its head away dismissively ",
+            "fr": "The small animal slowly blinks at the camera, then turns its head away dismissively ",
+            "ar": "The small animal slowly blinks at the camera, then turns its head away dismissively "
+          }
         }
       ]
     },
@@ -251,31 +692,94 @@
       "options": [
         {
           "value": "dilapidated porch",
-          "label": "Dilapidated Porch"
+          "label": {
+            "en": "Dilapidated Porch",
+            "zh": "dilapidated porch ",
+            "ja": "dilapidated porch ",
+            "ko": "dilapidated porch ",
+            "es": "dilapidated porch ",
+            "de": "dilapidated porch ",
+            "fr": "dilapidated porch ",
+            "ar": "dilapidated porch "
+          }
         },
         {
           "value": "modern doorway",
-          "label": "Modern Doorway"
+          "label": {
+            "en": "Modern Doorway",
+            "zh": "modern doorway ",
+            "ja": "modern doorway ",
+            "ko": "modern doorway ",
+            "es": "modern doorway ",
+            "de": "modern doorway ",
+            "fr": "modern doorway ",
+            "ar": "modern doorway "
+          }
         },
         {
           "value": "apartment hallway",
-          "label": "Apartment Hallway"
+          "label": {
+            "en": "Apartment Hallway",
+            "zh": "apartment hallway ",
+            "ja": "apartment hallway ",
+            "ko": "apartment hallway ",
+            "es": "apartment hallway ",
+            "de": "apartment hallway ",
+            "fr": "apartment hallway ",
+            "ar": "apartment hallway "
+          }
         },
         {
           "value": "garden entrance",
-          "label": "Garden Entrance"
+          "label": {
+            "en": "Garden Entrance",
+            "zh": "garden entrance ",
+            "ja": "garden entrance ",
+            "ko": "garden entrance ",
+            "es": "garden entrance ",
+            "de": "garden entrance ",
+            "fr": "garden entrance ",
+            "ar": "garden entrance "
+          }
         },
         {
           "value": "abandoned building entrance",
-          "label": "Abandoned Building Entrance"
+          "label": {
+            "en": "Abandoned Building Entrance",
+            "zh": "abandoned building entrance ",
+            "ja": "abandoned building entrance ",
+            "ko": "abandoned building entrance ",
+            "es": "abandoned building entrance ",
+            "de": "abandoned building entrance ",
+            "fr": "abandoned building entrance ",
+            "ar": "abandoned building entrance "
+          }
         },
         {
           "value": "underground parking entrance",
-          "label": "Underground Parking Entrance"
+          "label": {
+            "en": "Underground Parking Entrance",
+            "zh": "underground parking entrance ",
+            "ja": "underground parking entrance ",
+            "ko": "underground parking entrance ",
+            "es": "underground parking entrance ",
+            "de": "underground parking entrance ",
+            "fr": "underground parking entrance ",
+            "ar": "underground parking entrance "
+          }
         },
         {
           "value": "old warehouse door",
-          "label": "Old Warehouse Door"
+          "label": {
+            "en": "Old Warehouse Door",
+            "zh": "old warehouse door ",
+            "ja": "old warehouse door ",
+            "ko": "old warehouse door ",
+            "es": "old warehouse door ",
+            "de": "old warehouse door ",
+            "fr": "old warehouse door ",
+            "ar": "old warehouse door "
+          }
         }
       ]
     }

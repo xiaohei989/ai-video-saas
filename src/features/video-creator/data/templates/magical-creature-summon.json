@@ -1,9 +1,27 @@
 {
   "id": "a7b8c9d0-e1f2-3456-7890-abcdef123456",
   "slug": "magical-creature-summon",
-  "name": "Magical Creature Summoning",
+  "name": {
+    "en": "Magical Creature Summoning",
+    "zh": "魔法生物召唤",
+    "ja": "魔法クリーチャー召喚",
+    "ko": "마법 생물 소환",
+    "es": "Invocación de Criaturas Mágicas",
+    "de": "Magische Kreatur Beschwörung",
+    "fr": "Invocation de Créatures Magiques",
+    "ar": "استدعاء المخلوقات السحرية"
+  },
   "icon": "🐉",
-  "description": "An ancient spellbook summons legendary creatures through elemental magic",
+  "description": {
+    "en": "Epic magical summoning ritual that brings mythical creatures to life with spectacular effects",
+    "zh": "史诗般的魔法召唤仪式，通过壮观的效果让神话生物栩栩如生",
+    "ja": "壮大な効果で神話の生き物を蘇らせる叙事詩的な魔法の召喚儀式",
+    "ko": "장대한 효과로 신화 생물을 생생하게 소환하는 서사적 마법 의식",
+    "es": "Ritual de invocación mágica épica que da vida a criaturas míticas con efectos espectaculares",
+    "de": "Episches magisches Beschwörungsritual, das mythische Kreaturen mit spektakulären Effekten zum Leben erweckt",
+    "fr": "Rituel d'invocation magique épique qui donne vie à des créatures mythiques avec des effets spectaculaires",
+    "ar": "طقوس استدعاء سحرية ملحمية تحيي المخلوقات الأسطورية بتأثيرات مذهلة"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/magical-creature-summon.mp4?v=1758008502567",
   "credits": 12,
   "tags": [
@@ -17,7 +35,7 @@
   ],
   "createdAt": "2025-01-30T14:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.577Z",
+  "lastModified": "2025-09-18T04:10:19.646Z",
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
@@ -84,7 +102,16 @@
       "options": [
         {
           "value": "phoenix",
-          "label": "🔥 Phoenix",
+          "label": {
+            "en": "🔥 Phoenix",
+            "zh": "phoenix ",
+            "ja": "phoenix ",
+            "ko": "phoenix ",
+            "es": "phoenix ",
+            "de": "phoenix ",
+            "fr": "phoenix ",
+            "ar": "phoenix "
+          },
           "metadata": {
             "creature_adjective": "fiery",
             "element": "flames",
@@ -116,7 +143,16 @@
         },
         {
           "value": "dragon",
-          "label": "🐉 Dragon",
+          "label": {
+            "en": "🐉 Dragon",
+            "zh": "dragon ",
+            "ja": "dragon ",
+            "ko": "dragon ",
+            "es": "dragon ",
+            "de": "dragon ",
+            "fr": "dragon ",
+            "ar": "dragon "
+          },
           "metadata": {
             "creature_adjective": "massive",
             "element": "sand",
@@ -148,7 +184,16 @@
         },
         {
           "value": "werewolf",
-          "label": "🐺 Werewolf",
+          "label": {
+            "en": "🐺 Werewolf",
+            "zh": "werewolf ",
+            "ja": "werewolf ",
+            "ko": "werewolf ",
+            "es": "werewolf ",
+            "de": "werewolf ",
+            "fr": "werewolf ",
+            "ar": "werewolf "
+          },
           "metadata": {
             "creature_adjective": "savage",
             "element": "moonlight transformation",
@@ -180,7 +225,16 @@
         },
         {
           "value": "vampire",
-          "label": "🦇 Vampire",
+          "label": {
+            "en": "🦇 Vampire",
+            "zh": "vampire ",
+            "ja": "vampire ",
+            "ko": "vampire ",
+            "es": "vampire ",
+            "de": "vampire ",
+            "fr": "vampire ",
+            "ar": "vampire "
+          },
           "metadata": {
             "creature_adjective": "aristocratic",
             "element": "blood and shadows",
@@ -212,7 +266,16 @@
         },
         {
           "value": "unicorn",
-          "label": "🦄 Unicorn",
+          "label": {
+            "en": "🦄 Unicorn",
+            "zh": "unicorn ",
+            "ja": "unicorn ",
+            "ko": "unicorn ",
+            "es": "unicorn ",
+            "de": "unicorn ",
+            "fr": "unicorn ",
+            "ar": "unicorn "
+          },
           "metadata": {
             "creature_adjective": "majestic",
             "element": "rainbow light",
@@ -244,7 +307,16 @@
         },
         {
           "value": "hellhound",
-          "label": "🔥 Hellhound",
+          "label": {
+            "en": "🔥 Hellhound",
+            "zh": "hellhound ",
+            "ja": "hellhound ",
+            "ko": "hellhound ",
+            "es": "hellhound ",
+            "de": "hellhound ",
+            "fr": "hellhound ",
+            "ar": "hellhound "
+          },
           "metadata": {
             "creature_adjective": "infernal three-headed",
             "element": "hellfire",
@@ -276,7 +348,16 @@
         },
         {
           "value": "medusa",
-          "label": "🐍 Medusa",
+          "label": {
+            "en": "🐍 Medusa",
+            "zh": "medusa ",
+            "ja": "medusa ",
+            "ko": "medusa ",
+            "es": "medusa ",
+            "de": "medusa ",
+            "fr": "medusa ",
+            "ar": "medusa "
+          },
           "metadata": {
             "creature_adjective": "serpentine",
             "element": "petrification",
@@ -308,7 +389,16 @@
         },
         {
           "value": "chinese_dragon",
-          "label": "🐲 Chinese Dragon",
+          "label": {
+            "en": "🐲 Chinese Dragon",
+            "zh": "chinese_dragon ",
+            "ja": "chinese_dragon ",
+            "ko": "chinese_dragon ",
+            "es": "chinese_dragon ",
+            "de": "chinese_dragon ",
+            "fr": "chinese_dragon ",
+            "ar": "chinese_dragon "
+          },
           "metadata": {
             "creature_adjective": "majestic celestial",
             "element": "clouds and mist",
@@ -340,7 +430,16 @@
         },
         {
           "value": "fairy",
-          "label": "🧚 Fairy",
+          "label": {
+            "en": "🧚 Fairy",
+            "zh": "fairy ",
+            "ja": "fairy ",
+            "ko": "fairy ",
+            "es": "fairy ",
+            "de": "fairy ",
+            "fr": "fairy ",
+            "ar": "fairy "
+          },
           "metadata": {
             "creature_adjective": "ethereal luminous",
             "element": "stardust and moonbeams",
@@ -372,7 +471,16 @@
         },
         {
           "value": "griffin",
-          "label": "🦅 Griffin",
+          "label": {
+            "en": "🦅 Griffin",
+            "zh": "griffin ",
+            "ja": "griffin ",
+            "ko": "griffin ",
+            "es": "griffin ",
+            "de": "griffin ",
+            "fr": "griffin ",
+            "ar": "griffin "
+          },
           "metadata": {
             "creature_adjective": "noble heraldic",
             "element": "storm winds and lightning",
@@ -404,7 +512,16 @@
         },
         {
           "value": "kraken",
-          "label": "🌊 Kraken",
+          "label": {
+            "en": "🌊 Kraken",
+            "zh": "kraken ",
+            "ja": "kraken ",
+            "ko": "kraken ",
+            "es": "kraken ",
+            "de": "kraken ",
+            "fr": "kraken ",
+            "ar": "kraken "
+          },
           "metadata": {
             "creature_adjective": "colossal tentacled",
             "element": "deep sea whirlpool",
@@ -436,7 +553,16 @@
         },
         {
           "value": "thunderbird",
-          "label": "⚡ Thunderbird",
+          "label": {
+            "en": "⚡ Thunderbird",
+            "zh": "thunderbird ",
+            "ja": "thunderbird ",
+            "ko": "thunderbird ",
+            "es": "thunderbird ",
+            "de": "thunderbird ",
+            "fr": "thunderbird ",
+            "ar": "thunderbird "
+          },
           "metadata": {
             "creature_adjective": "mighty storm-bringing",
             "element": "thunder and lightning",
@@ -468,7 +594,16 @@
         },
         {
           "value": "lich",
-          "label": "💀 Lich",
+          "label": {
+            "en": "💀 Lich",
+            "zh": "lich ",
+            "ja": "lich ",
+            "ko": "lich ",
+            "es": "lich ",
+            "de": "lich ",
+            "fr": "lich ",
+            "ar": "lich "
+          },
           "metadata": {
             "creature_adjective": "undead sorcerous",
             "element": "death magic and decay",
@@ -500,7 +635,16 @@
         },
         {
           "value": "kitsune",
-          "label": "🦊 Kitsune",
+          "label": {
+            "en": "🦊 Kitsune",
+            "zh": "kitsune ",
+            "ja": "kitsune ",
+            "ko": "kitsune ",
+            "es": "kitsune ",
+            "de": "kitsune ",
+            "fr": "kitsune ",
+            "ar": "kitsune "
+          },
           "metadata": {
             "creature_adjective": "mystical nine-tailed",
             "element": "fox fire and cherry blossoms",
@@ -534,7 +678,16 @@
     },
     "cta_text": {
       "type": "text",
-      "label": "Ending Text",
+      "label": {
+        "en": "Ending Text",
+        "zh": "结尾文字",
+        "ja": "エンディングテキスト",
+        "ko": "엔딩 텍스트",
+        "es": "Texto Final",
+        "de": "Abschlusstext",
+        "fr": "Texte de Fin",
+        "ar": "النص النهائي"
+      },
       "placeholder": "Enter your custom text",
       "required": true,
       "default": "veo3video.me"
@@ -671,7 +824,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

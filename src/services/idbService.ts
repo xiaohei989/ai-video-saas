@@ -387,6 +387,26 @@ class IDBCacheService {
   }
 
   /**
+   * 获取所有缓存键
+   */
+  async getAllCacheKeys(): Promise<string[]> {
+    if (!this.isInitialized) await this.initialize()
+    if (!this.db) return []
+
+    try {
+      const tx = this.db.transaction('cache', 'readonly')
+      const store = tx.objectStore('cache')
+      const keys = await store.getAllKeys()
+      await tx.done
+      
+      return keys.filter(key => typeof key === 'string') as string[]
+    } catch (error) {
+      console.error('[IDBCache] 获取所有键失败:', error)
+      return []
+    }
+  }
+
+  /**
    * 获取缓存统计
    */
   getStats() {

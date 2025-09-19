@@ -9,7 +9,8 @@ export function Footer() {
   return (
     <footer className="border-t bg-background">
       <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* 移动端：2列布局 (Quick Links + Legal)，桌面端：3列布局 */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
           {/* Quick Links with underline animation */}
           <div>
             <h3 className="font-semibold mb-3">{t('footer.quickLinks')}</h3>
@@ -32,7 +33,7 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Legal with slide-in effect */}
+          {/* Legal with slide-in effect - 在移动端排在右侧 */}
           <div>
             <h3 className="font-semibold mb-3">{t('footer.legal')}</h3>
             <ul className="space-y-2 text-sm">
@@ -54,10 +55,10 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Social with enhanced animations */}
-          <div>
+          {/* Social with enhanced animations - 在移动端占据两列 */}
+          <div className="col-span-2 md:col-span-1">
             <h3 className="font-semibold mb-3">{t('footer.connect')}</h3>
-            <div className="flex gap-4">
+            <div className="flex gap-4 justify-start md:justify-start">
               <a
                 href="https://x.com/veo3video_me"
                 target="_blank"

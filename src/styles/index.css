@@ -709,14 +709,14 @@ html.dark {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 6px 8px;
+  padding: 8px 12px;
   border-radius: 8px;
   transition: all 0.2s ease-in-out;
   text-decoration: none;
   color: var(--muted-foreground);
-  min-width: 48px;
-  min-height: 44px;
-  gap: 2px;
+  min-width: 64px;
+  min-height: 48px;
+  gap: 3px;
   /* 移动端触摸优化 */
   touch-action: manipulation;
   -webkit-touch-callout: none;
@@ -767,9 +767,10 @@ html.dark {
     -webkit-tap-highlight-color: transparent !important;
     /* 触摸延迟移除 */
     touch-action: manipulation !important;
-    /* 强制高度 */
-    min-height: 50px !important;
-    min-width: 52px !important;
+    /* 强制高度和宽度 */
+    min-height: 54px !important;
+    min-width: 68px !important;
+    padding: 8px 14px !important;
   }
   
   .mobile-nav-item:active {
@@ -842,10 +843,10 @@ html.dark {
 /* 移动端按钮元素样式 */
 @media (max-width: 768px) {
   .mobile-nav-item span {
-    font-size: 10px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 600;
     white-space: nowrap;
-    line-height: 1;
+    line-height: 1.2;
     /* 防止文字被选中 */
     pointer-events: none;
     color: inherit;

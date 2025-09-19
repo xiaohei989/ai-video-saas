@@ -1,9 +1,27 @@
 {
   "id": "d9a3f6e8-4c7b-5e9d-1a4f-8b2e6d9a3c5f",
   "slug": "newborn-baby-interview-comedy",
-  "name": "Newborn Baby Interview Comedy",
+  "name": {
+    "en": "Newborn Baby Interview Comedy",
+    "zh": "新生儿采访喜剧",
+    "ja": "新生児インタビューコメディ",
+    "ko": "신생아 인터뷰 코미디",
+    "es": "Comedia de Entrevista a Bebé Recién Nacido",
+    "de": "Neugeborenen-Interview-Komödie",
+    "fr": "Comédie d'Interview de Nouveau-né",
+    "ar": "كوميديا مقابلة المولود الجديد"
+  },
   "icon": "👶",
-  "description": "Creative and funny interview simulation with a newborn baby giving unexpected comedic responses",
+  "description": {
+    "en": "Hilarious mock interview with a newborn baby discussing their thoughts on life outside the womb",
+    "zh": "与新生儿进行搞笑模拟采访，讨论他们对子宫外生活的想法",
+    "ja": "胎外の生活についての考えを話し合う新生児との陽気な模擬インタビュー",
+    "ko": "자궁 밖 생활에 대한 생각을 논의하는 신생아와의 유쾌한 모의 인터뷰",
+    "es": "Entrevista simulada divertida con un bebé recién nacido discutiendo sus pensamientos sobre la vida fuera del útero",
+    "de": "Urkomisches Schein-Interview mit einem Neugeborenen über seine Gedanken zum Leben außerhalb der Gebärmutter",
+    "fr": "Interview simulée hilarante avec un nouveau-né discutant de ses pensées sur la vie hors de l'utérus",
+    "ar": "مقابلة وهمية مرحة مع مولود جديد يناقش أفكاره حول الحياة خارج الرحم"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/newborn-baby-interview-comedy.mp4?v=1758008502567",
   "tags": [
     "comedy",
@@ -17,7 +35,7 @@
   ],
   "createdAt": "2025-01-29T21:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.578Z",
+  "lastModified": "2025-09-18T03:33:06.802Z",
   "promptTemplate": "A creative and funny short video, simulating the contrasting comedic scene of a newborn baby being interviewed and 'talking.' Hospital ward setting with white bed and pillows, large windows letting in natural light, creating a bright and warm medical environment. A newborn, wrapped in a white towel, sitting on the bed, looking confused. An adult woman interviewer, wearing a blue suit, holding a microphone with 'BABYME' printed on it, leaning in with a smile and asking: 'Welcome to the new world, you're the new member of our family. What do you want to say?' The baby responds: '{baby_response}' Camera work includes slice switching (close-up of baby and microphone → mid-shot interactive panorama → close-up of baby), with natural camera movement, reminiscent of a news interview. Realistic, textured look with bright colors, natural lighting, natural movement, and a lighthearted comedic atmosphere. No subtitles.",
   "params": {
     "baby_response": {
@@ -28,49 +46,148 @@
       "options": [
         {
           "value": "Put me back in. I heard my parents are poor.",
-          "label": "Poor Parents 💸"
+          "label": {
+            "en": "Poor Parents 💸",
+            "zh": "Put me back in. I heard my parents are poor. 💸",
+            "ja": "Put me back in. I heard my parents are poor. 💸",
+            "ko": "Put me back in. I heard my parents are poor. 💸",
+            "es": "Put me back in. I heard my parents are poor. 💸",
+            "de": "Put me back in. I heard my parents are poor. 💸",
+            "fr": "Put me back in. I heard my parents are poor. 💸",
+            "ar": "Put me back in. I heard my parents are poor. 💸"
+          }
         },
         {
           "value": "Do I get a refund? This place looks expensive.",
-          "label": "Refund Request 💰"
+          "label": {
+            "en": "Refund Request 💰",
+            "zh": "Do I get a refund? This place looks expensive. 💰",
+            "ja": "Do I get a refund? This place looks expensive. 💰",
+            "ko": "Do I get a refund? This place looks expensive. 💰",
+            "es": "Do I get a refund? This place looks expensive. 💰",
+            "de": "Do I get a refund? This place looks expensive. 💰",
+            "fr": "Do I get a refund? This place looks expensive. 💰",
+            "ar": "Do I get a refund? This place looks expensive. 💰"
+          }
         },
         {
           "value": "I want to speak to the manager about my accommodations.",
-          "label": "Manager Complaint 👔"
+          "label": {
+            "en": "Manager Complaint 👔",
+            "zh": "I want to speak to the manager about my accommodations. 👔",
+            "ja": "I want to speak to the manager about my accommodations. 👔",
+            "ko": "I want to speak to the manager about my accommodations. 👔",
+            "es": "I want to speak to the manager about my accommodations. 👔",
+            "de": "I want to speak to the manager about my accommodations. 👔",
+            "fr": "I want to speak to the manager about my accommodations. 👔",
+            "ar": "I want to speak to the manager about my accommodations. 👔"
+          }
         },
         {
           "value": "The Wi-Fi password please. I need to update my resume.",
-          "label": "Wi-Fi Request 📶"
+          "label": {
+            "en": "Wi-Fi Request 📶",
+            "zh": "The Wi-Fi password please. I need to update my resume. 📶",
+            "ja": "The Wi-Fi password please. I need to update my resume. 📶",
+            "ko": "The Wi-Fi password please. I need to update my resume. 📶",
+            "es": "The Wi-Fi password please. I need to update my resume. 📶",
+            "de": "The Wi-Fi password please. I need to update my resume. 📶",
+            "fr": "The Wi-Fi password please. I need to update my resume. 📶",
+            "ar": "The Wi-Fi password please. I need to update my resume. 📶"
+          }
         },
         {
           "value": "Where's the food delivery? I've been waiting 9 months.",
-          "label": "Food Delivery 🍕"
+          "label": {
+            "en": "Food Delivery 🍕",
+            "zh": "Where's the food delivery? I've been waiting 9 months. 🍕",
+            "ja": "Where's the food delivery? I've been waiting 9 months. 🍕",
+            "ko": "Where's the food delivery? I've been waiting 9 months. 🍕",
+            "es": "Where's the food delivery? I've been waiting 9 months. 🍕",
+            "de": "Where's the food delivery? I've been waiting 9 months. 🍕",
+            "fr": "Where's the food delivery? I've been waiting 9 months. 🍕",
+            "ar": "Where's the food delivery? I've been waiting 9 months. 🍕"
+          }
         },
         {
           "value": "This airbnb has terrible reviews. One star.",
-          "label": "Bad Reviews ⭐"
+          "label": {
+            "en": "Bad Reviews ⭐",
+            "zh": "This airbnb has terrible reviews. One star. ⭐",
+            "ja": "This airbnb has terrible reviews. One star. ⭐",
+            "ko": "This airbnb has terrible reviews. One star. ⭐",
+            "es": "This airbnb has terrible reviews. One star. ⭐",
+            "de": "This airbnb has terrible reviews. One star. ⭐",
+            "fr": "This airbnb has terrible reviews. One star. ⭐",
+            "ar": "This airbnb has terrible reviews. One star. ⭐"
+          }
         },
         {
           "value": "I've made a terrible mistake. Can I get a do-over?",
-          "label": "Mistake Regret 😅"
+          "label": {
+            "en": "Mistake Regret 😅",
+            "zh": "I've made a terrible mistake. Can I get a do-over? 😅",
+            "ja": "I've made a terrible mistake. Can I get a do-over? 😅",
+            "ko": "I've made a terrible mistake. Can I get a do-over? 😅",
+            "es": "I've made a terrible mistake. Can I get a do-over? 😅",
+            "de": "I've made a terrible mistake. Can I get a do-over? 😅",
+            "fr": "I've made a terrible mistake. Can I get a do-over? 😅",
+            "ar": "I've made a terrible mistake. Can I get a do-over? 😅"
+          }
         },
         {
           "value": "The previews were misleading. This is nothing like the brochure.",
-          "label": "False Advertising 📋"
+          "label": {
+            "en": "False Advertising 📋",
+            "zh": "The previews were misleading. This is nothing like the brochure. 📋",
+            "ja": "The previews were misleading. This is nothing like the brochure. 📋",
+            "ko": "The previews were misleading. This is nothing like the brochure. 📋",
+            "es": "The previews were misleading. This is nothing like the brochure. 📋",
+            "de": "The previews were misleading. This is nothing like the brochure. 📋",
+            "fr": "The previews were misleading. This is nothing like the brochure. 📋",
+            "ar": "The previews were misleading. This is nothing like the brochure. 📋"
+          }
         },
         {
           "value": "Someone forgot to enable dark mode. It's too bright here.",
-          "label": "Dark Mode 🌙"
+          "label": {
+            "en": "Dark Mode 🌙",
+            "zh": "Someone forgot to enable dark mode. It's too bright here. 🌙",
+            "ja": "Someone forgot to enable dark mode. It's too bright here. 🌙",
+            "ko": "Someone forgot to enable dark mode. It's too bright here. 🌙",
+            "es": "Someone forgot to enable dark mode. It's too bright here. 🌙",
+            "de": "Someone forgot to enable dark mode. It's too bright here. 🌙",
+            "fr": "Someone forgot to enable dark mode. It's too bright here. 🌙",
+            "ar": "Someone forgot to enable dark mode. It's too bright here. 🌙"
+          }
         },
         {
           "value": "Is there a tutorial? I don't know how any of this works.",
-          "label": "Tutorial Request 📖"
+          "label": {
+            "en": "Tutorial Request 📖",
+            "zh": "Is there a tutorial? I don't know how any of this works. 📖",
+            "ja": "Is there a tutorial? I don't know how any of this works. 📖",
+            "ko": "Is there a tutorial? I don't know how any of this works. 📖",
+            "es": "Is there a tutorial? I don't know how any of this works. 📖",
+            "de": "Is there a tutorial? I don't know how any of this works. 📖",
+            "fr": "Is there a tutorial? I don't know how any of this works. 📖",
+            "ar": "Is there a tutorial? I don't know how any of this works. 📖"
+          }
         }
       ]
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

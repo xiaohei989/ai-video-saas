@@ -1,0 +1,1280 @@
+{
+  "batch": 3,
+  "description": "第三批模板翻译 - 剩余15个模板的完整8种语言翻译",
+  "templates": {
+    "fantasy-food-cutting-asmr": {
+      "name": {
+        "en": "Fantasy Food Cutting ASMR",
+        "zh": "幻想食物切割ASMR",
+        "ja": "ファンタジー食材カットASMR",
+        "ko": "판타지 음식 자르기 ASMR",
+        "es": "Corte de Comida Fantástica ASMR",
+        "de": "Fantasy Lebensmittel Schneiden ASMR",
+        "fr": "Découpe d'Aliments Fantastiques ASMR",
+        "ar": "تقطيع الطعام الخيالي ASMR"
+      },
+      "description": {
+        "en": "Magical fantasy foods being sliced with enchanted knives, creating mystical cutting sounds",
+        "zh": "用魔法刀切割神奇幻想食物，产生神秘的切割声音",
+        "ja": "魔法のナイフで幻想的な食材を切り、神秘的な音を奏でる",
+        "ko": "마법의 칼로 환상적인 음식을 자르며 신비로운 소리를 만들어내는",
+        "es": "Alimentos fantásticos mágicos siendo cortados con cuchillos encantados, creando sonidos místicos",
+        "de": "Magische Fantasy-Lebensmittel werden mit verzauberten Messern geschnitten und erzeugen mystische Schneidgeräusche",
+        "fr": "Aliments fantastiques magiques tranchés avec des couteaux enchantés, créant des sons de coupe mystiques",
+        "ar": "أطعمة خيالية سحرية يتم تقطيعها بسكاكين مسحورة، مما يخلق أصوات تقطيع صوفية"
+      },
+      "params": {
+        "food_type": {
+          "label": {
+            "en": "Fantasy Food Type",
+            "zh": "幻想食物类型",
+            "ja": "ファンタジー食材の種類",
+            "ko": "판타지 음식 종류",
+            "es": "Tipo de Comida Fantástica",
+            "de": "Fantasy-Lebensmittel-Typ",
+            "fr": "Type d'Aliment Fantastique",
+            "ar": "نوع الطعام الخيالي"
+          },
+          "options": [
+            {
+              "value": "glowing crystal fruit",
+              "label": {
+                "en": "Glowing Crystal Fruit 💎",
+                "zh": "发光水晶果实 💎",
+                "ja": "光る水晶フルーツ 💎",
+                "ko": "빛나는 수정 과일 💎",
+                "es": "Fruta de Cristal Brillante 💎",
+                "de": "Leuchtende Kristallfrucht 💎",
+                "fr": "Fruit de Cristal Lumineux 💎",
+                "ar": "فاكهة كريستالية مضيئة 💎"
+              }
+            },
+            {
+              "value": "rainbow cheese blocks",
+              "label": {
+                "en": "Rainbow Cheese Blocks 🌈",
+                "zh": "彩虹奶酪块 🌈",
+                "ja": "レインボーチーズブロック 🌈",
+                "ko": "무지개 치즈 블록 🌈",
+                "es": "Bloques de Queso Arcoíris 🌈",
+                "de": "Regenbogen-Käseblöcke 🌈",
+                "fr": "Blocs de Fromage Arc-en-ciel 🌈",
+                "ar": "قوالب جبن قوس قزح 🌈"
+              }
+            },
+            {
+              "value": "magical floating bread",
+              "label": {
+                "en": "Magical Floating Bread 🍞",
+                "zh": "魔法漂浮面包 🍞",
+                "ja": "魔法の浮遊パン 🍞",
+                "ko": "마법의 떠다니는 빵 🍞",
+                "es": "Pan Flotante Mágico 🍞",
+                "de": "Magisches schwebendes Brot 🍞",
+                "fr": "Pain Flottant Magique 🍞",
+                "ar": "خبز سحري طائف 🍞"
+              }
+            },
+            {
+              "value": "enchanted vegetables",
+              "label": {
+                "en": "Enchanted Vegetables 🥕",
+                "zh": "魔法蔬菜 🥕",
+                "ja": "魔法の野菜 🥕",
+                "ko": "마법에 걸린 채소 🥕",
+                "es": "Verduras Encantadas 🥕",
+                "de": "Verzauberte Gemüse 🥕",
+                "fr": "Légumes Enchantés 🥕",
+                "ar": "خضروات مسحورة 🥕"
+              }
+            }
+          ]
+        },
+        "cutting_style": {
+          "label": {
+            "en": "Cutting Style",
+            "zh": "切割方式",
+            "ja": "カットスタイル",
+            "ko": "자르기 스타일",
+            "es": "Estilo de Corte",
+            "de": "Schneidestil",
+            "fr": "Style de Découpe",
+            "ar": "نمط التقطيع"
+          },
+          "options": [
+            {
+              "value": "delicate precise slicing",
+              "label": {
+                "en": "Delicate Precise Slicing",
+                "zh": "精细准确切片",
+                "ja": "繊細で正確なスライス",
+                "ko": "섬세하고 정확한 슬라이싱",
+                "es": "Rebanado Delicado y Preciso",
+                "de": "Zartes präzises Schneiden",
+                "fr": "Tranchage Délicat et Précis",
+                "ar": "تقطيع رقيق ودقيق"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "human-hand-interaction": {
+      "name": {
+        "en": "Human Hand Interaction",
+        "zh": "人手互动",
+        "ja": "人の手との相互作用",
+        "ko": "인간 손의 상호작용",
+        "es": "Interacción de Mano Humana",
+        "de": "Menschliche Hand Interaktion",
+        "fr": "Interaction avec la Main Humaine",
+        "ar": "تفاعل اليد البشرية"
+      },
+      "description": {
+        "en": "Close-up interactions between human hands and various objects, creating satisfying tactile experiences",
+        "zh": "人手与各种物品的近距离互动，创造令人满意的触觉体验",
+        "ja": "人の手と様々な物体との接近した相互作用で、満足感のある触覚体験を作り出す",
+        "ko": "인간의 손과 다양한 물체 간의 근접 상호작용으로 만족스러운 촉각 경험을 만들어내는",
+        "es": "Interacciones de cerca entre manos humanas y varios objetos, creando experiencias táctiles satisfactorias",
+        "de": "Nahaufnahmen von Interaktionen zwischen menschlichen Händen und verschiedenen Objekten, die befriedigende taktile Erfahrungen schaffen",
+        "fr": "Interactions rapprochées entre les mains humaines et divers objets, créant des expériences tactiles satisfaisantes",
+        "ar": "تفاعلات مقربة بين الأيدي البشرية وأشياء مختلفة، مما يخلق تجارب لمسية مرضية"
+      },
+      "params": {
+        "interaction_type": {
+          "label": {
+            "en": "Interaction Type",
+            "zh": "互动类型",
+            "ja": "相互作用の種類",
+            "ko": "상호작용 유형",
+            "es": "Tipo de Interacción",
+            "de": "Interaktionstyp",
+            "fr": "Type d'Interaction",
+            "ar": "نوع التفاعل"
+          },
+          "options": [
+            {
+              "value": "gentle touching",
+              "label": {
+                "en": "Gentle Touching",
+                "zh": "轻柔触摸",
+                "ja": "優しいタッチ",
+                "ko": "부드러운 터치",
+                "es": "Toque Suave",
+                "de": "Sanftes Berühren",
+                "fr": "Toucher Doux",
+                "ar": "لمس لطيف"
+              }
+            },
+            {
+              "value": "careful manipulation",
+              "label": {
+                "en": "Careful Manipulation",
+                "zh": "小心操作",
+                "ja": "注意深い操作",
+                "ko": "신중한 조작",
+                "es": "Manipulación Cuidadosa",
+                "de": "Vorsichtige Manipulation",
+                "fr": "Manipulation Prudente",
+                "ar": "تلاعب حذر"
+              }
+            },
+            {
+              "value": "rhythmic tapping",
+              "label": {
+                "en": "Rhythmic Tapping",
+                "zh": "有节奏的轻拍",
+                "ja": "リズミカルなタップ",
+                "ko": "리듬적인 두드리기",
+                "es": "Golpeteo Rítmico",
+                "de": "Rhythmisches Klopfen",
+                "fr": "Tapotement Rythmé",
+                "ar": "نقر إيقاعي"
+              }
+            }
+          ]
+        },
+        "object_type": {
+          "label": {
+            "en": "Object Type",
+            "zh": "物品类型",
+            "ja": "オブジェクトの種類",
+            "ko": "물체 유형",
+            "es": "Tipo de Objeto",
+            "de": "Objekttyp",
+            "fr": "Type d'Objet",
+            "ar": "نوع الكائن"
+          },
+          "options": [
+            {
+              "value": "textured surfaces",
+              "label": {
+                "en": "Textured Surfaces",
+                "zh": "有纹理的表面",
+                "ja": "テクスチャーのある表面",
+                "ko": "질감이 있는 표면",
+                "es": "Superficies Texturizadas",
+                "de": "Strukturierte Oberflächen",
+                "fr": "Surfaces Texturées",
+                "ar": "أسطح محكمة"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "invisible-objects-reveal": {
+      "name": {
+        "en": "Invisible Objects Reveal",
+        "zh": "隐形物品揭示",
+        "ja": "見えないオブジェクトの露出",
+        "ko": "보이지 않는 물체 공개",
+        "es": "Revelación de Objetos Invisibles",
+        "de": "Unsichtbare Objekte Enthüllung",
+        "fr": "Révélation d'Objets Invisibles",
+        "ar": "كشف الأشياء غير المرئية"
+      },
+      "description": {
+        "en": "Mysterious invisible objects gradually becoming visible through special effects or magical interactions",
+        "zh": "神秘的隐形物品通过特殊效果或魔法互动逐渐变得可见",
+        "ja": "特殊効果や魔法的な相互作用により、神秘的な見えない物体が徐々に見えるようになる",
+        "ko": "특수 효과나 마법적 상호작용을 통해 신비한 보이지 않는 물체가 점차 보이게 되는",
+        "es": "Objetos invisibles misteriosos que gradualmente se vuelven visibles a través de efectos especiales o interacciones mágicas",
+        "de": "Geheimnisvolle unsichtbare Objekte werden durch Spezialeffekte oder magische Interaktionen allmählich sichtbar",
+        "fr": "Objets invisibles mystérieux devenant progressivement visibles grâce à des effets spéciaux ou des interactions magiques",
+        "ar": "أشياء غير مرئية غامضة تصبح مرئية تدريجياً من خلال التأثيرات الخاصة أو التفاعلات السحرية"
+      },
+      "params": {
+        "reveal_method": {
+          "label": {
+            "en": "Reveal Method",
+            "zh": "显示方法",
+            "ja": "露出方法",
+            "ko": "공개 방법",
+            "es": "Método de Revelación",
+            "de": "Enthüllungsmethode",
+            "fr": "Méthode de Révélation",
+            "ar": "طريقة الكشف"
+          },
+          "options": [
+            {
+              "value": "magical dust sprinkle",
+              "label": {
+                "en": "Magical Dust Sprinkle",
+                "zh": "魔法粉末撒洒",
+                "ja": "魔法の粉まき",
+                "ko": "마법 가루 뿌리기",
+                "es": "Rociado de Polvo Mágico",
+                "de": "Magisches Staub Streuen",
+                "fr": "Saupoudrage de Poussière Magique",
+                "ar": "رش الغبار السحري"
+              }
+            },
+            {
+              "value": "thermal vision effect",
+              "label": {
+                "en": "Thermal Vision Effect",
+                "zh": "热成像效果",
+                "ja": "サーマルビジョン効果",
+                "ko": "열화상 효과",
+                "es": "Efecto de Visión Térmica",
+                "de": "Wärmebildeffekt",
+                "fr": "Effet de Vision Thermique",
+                "ar": "تأثير الرؤية الحرارية"
+              }
+            }
+          ]
+        },
+        "object_category": {
+          "label": {
+            "en": "Object Category",
+            "zh": "物品类别",
+            "ja": "オブジェクトカテゴリ",
+            "ko": "물체 카테고리",
+            "es": "Categoría de Objeto",
+            "de": "Objektkategorie",
+            "fr": "Catégorie d'Objet",
+            "ar": "فئة الكائن"
+          },
+          "options": [
+            {
+              "value": "everyday items",
+              "label": {
+                "en": "Everyday Items",
+                "zh": "日常用品",
+                "ja": "日用品",
+                "ko": "일상용품",
+                "es": "Artículos Cotidianos",
+                "de": "Alltagsgegenstände",
+                "fr": "Objets du Quotidien",
+                "ar": "أغراض يومية"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "liquid-pouring-asmr": {
+      "name": {
+        "en": "Liquid Pouring ASMR",
+        "zh": "液体倾倒ASMR",
+        "ja": "液体注ぎASMR",
+        "ko": "액체 붓기 ASMR",
+        "es": "Vertido de Líquidos ASMR",
+        "de": "Flüssigkeiten Gießen ASMR",
+        "fr": "Versement de Liquides ASMR",
+        "ar": "صب السوائل ASMR"
+      },
+      "description": {
+        "en": "Satisfying liquid pouring sounds and visuals with various colored and textured liquids",
+        "zh": "令人满意的液体倾倒声音和视觉效果，包含各种颜色和质地的液体",
+        "ja": "様々な色と質感の液体による満足感のある注ぎ音と映像",
+        "ko": "다양한 색상과 질감의 액체로 만족스러운 붓기 소리와 시각적 효과",
+        "es": "Sonidos y visuales satisfactorios de vertido de líquidos con varios líquidos de colores y texturas",
+        "de": "Befriedigende Flüssigkeits-Gießgeräusche und -bilder mit verschiedenen farbigen und strukturierten Flüssigkeiten",
+        "fr": "Sons et visuels satisfaisants de versement de liquides avec diverses liquides colorés et texturés",
+        "ar": "أصوات ومرئيات مرضية لصب السوائل مع سوائل مختلفة الألوان والقوام"
+      },
+      "params": {
+        "liquid_type": {
+          "label": {
+            "en": "Liquid Type",
+            "zh": "液体类型",
+            "ja": "液体の種類",
+            "ko": "액체 유형",
+            "es": "Tipo de Líquido",
+            "de": "Flüssigkeitstyp",
+            "fr": "Type de Liquide",
+            "ar": "نوع السائل"
+          },
+          "options": [
+            {
+              "value": "golden honey",
+              "label": {
+                "en": "Golden Honey 🍯",
+                "zh": "金色蜂蜜 🍯",
+                "ja": "ゴールデンハニー 🍯",
+                "ko": "황금 꿀 🍯",
+                "es": "Miel Dorada 🍯",
+                "de": "Goldener Honig 🍯",
+                "fr": "Miel Doré 🍯",
+                "ar": "عسل ذهبي 🍯"
+              }
+            },
+            {
+              "value": "colorful paint",
+              "label": {
+                "en": "Colorful Paint 🎨",
+                "zh": "彩色颜料 🎨",
+                "ja": "カラフルペイント 🎨",
+                "ko": "색색의 페인트 🎨",
+                "es": "Pintura Colorida 🎨",
+                "de": "Bunte Farbe 🎨",
+                "fr": "Peinture Colorée 🎨",
+                "ar": "طلاء ملون 🎨"
+              }
+            },
+            {
+              "value": "glowing magical potion",
+              "label": {
+                "en": "Glowing Magical Potion ✨",
+                "zh": "发光魔法药水 ✨",
+                "ja": "光る魔法のポーション ✨",
+                "ko": "빛나는 마법 물약 ✨",
+                "es": "Poción Mágica Brillante ✨",
+                "de": "Leuchtender Zaubertrank ✨",
+                "fr": "Potion Magique Brillante ✨",
+                "ar": "جرعة سحرية متوهجة ✨"
+              }
+            }
+          ]
+        },
+        "container_type": {
+          "label": {
+            "en": "Container Type",
+            "zh": "容器类型",
+            "ja": "容器の種類",
+            "ko": "용기 유형",
+            "es": "Tipo de Contenedor",
+            "de": "Behältertyp",
+            "fr": "Type de Conteneur",
+            "ar": "نوع الحاوية"
+          },
+          "options": [
+            {
+              "value": "crystal glass",
+              "label": {
+                "en": "Crystal Glass",
+                "zh": "水晶玻璃",
+                "ja": "クリスタルガラス",
+                "ko": "크리스털 유리",
+                "es": "Vidrio de Cristal",
+                "de": "Kristallglas",
+                "fr": "Verre Cristal",
+                "ar": "زجاج كريستالي"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "object-transformation": {
+      "name": {
+        "en": "Object Transformation",
+        "zh": "物品变形",
+        "ja": "オブジェクト変身",
+        "ko": "물체 변형",
+        "es": "Transformación de Objetos",
+        "de": "Objekttransformation",
+        "fr": "Transformation d'Objets",
+        "ar": "تحويل الأشياء"
+      },
+      "description": {
+        "en": "Magical transformations of everyday objects into completely different forms through mystical processes",
+        "zh": "日常物品通过神秘过程魔法般地变形为完全不同的形态",
+        "ja": "日常的な物体が神秘的なプロセスを通じて全く異なる形に魔法的に変身する",
+        "ko": "일상적인 물체가 신비로운 과정을 통해 완전히 다른 형태로 마법같이 변형되는",
+        "es": "Transformaciones mágicas de objetos cotidianos en formas completamente diferentes a través de procesos místicos",
+        "de": "Magische Verwandlungen alltäglicher Objekte in völlig andere Formen durch mystische Prozesse",
+        "fr": "Transformations magiques d'objets du quotidien en formes complètement différentes par des processus mystiques",
+        "ar": "تحولات سحرية للأشياء اليومية إلى أشكال مختلفة تماماً من خلال عمليات صوفية"
+      },
+      "params": {
+        "original_object": {
+          "label": {
+            "en": "Original Object",
+            "zh": "原始物品",
+            "ja": "元のオブジェクト",
+            "ko": "원래 물체",
+            "es": "Objeto Original",
+            "de": "Ursprüngliches Objekt",
+            "fr": "Objet Original",
+            "ar": "الكائن الأصلي"
+          },
+          "options": [
+            {
+              "value": "ordinary pencil",
+              "label": {
+                "en": "Ordinary Pencil ✏️",
+                "zh": "普通铅笔 ✏️",
+                "ja": "普通の鉛筆 ✏️",
+                "ko": "일반 연필 ✏️",
+                "es": "Lápiz Ordinario ✏️",
+                "de": "Gewöhnlicher Bleistift ✏️",
+                "fr": "Crayon Ordinaire ✏️",
+                "ar": "قلم رصاص عادي ✏️"
+              }
+            },
+            {
+              "value": "simple stone",
+              "label": {
+                "en": "Simple Stone 🪨",
+                "zh": "简单石头 🪨",
+                "ja": "シンプルな石 🪨",
+                "ko": "단순한 돌 🪨",
+                "es": "Piedra Simple 🪨",
+                "de": "Einfacher Stein 🪨",
+                "fr": "Pierre Simple 🪨",
+                "ar": "حجر بسيط 🪨"
+              }
+            }
+          ]
+        },
+        "transformed_object": {
+          "label": {
+            "en": "Transformed Object",
+            "zh": "变形后物品",
+            "ja": "変身後のオブジェクト",
+            "ko": "변형된 물체",
+            "es": "Objeto Transformado",
+            "de": "Verwandeltes Objekt",
+            "fr": "Objet Transformé",
+            "ar": "الكائن المحول"
+          },
+          "options": [
+            {
+              "value": "magical wand",
+              "label": {
+                "en": "Magical Wand 🪄",
+                "zh": "魔法棒 🪄",
+                "ja": "魔法の杖 🪄",
+                "ko": "마법 지팡이 🪄",
+                "es": "Varita Mágica 🪄",
+                "de": "Magischer Zauberstab 🪄",
+                "fr": "Baguette Magique 🪄",
+                "ar": "عصا سحرية 🪄"
+              }
+            },
+            {
+              "value": "glowing crystal",
+              "label": {
+                "en": "Glowing Crystal 💎",
+                "zh": "发光水晶 💎",
+                "ja": "光るクリスタル 💎",
+                "ko": "빛나는 수정 💎",
+                "es": "Cristal Brillante 💎",
+                "de": "Leuchtender Kristall 💎",
+                "fr": "Cristal Lumineux 💎",
+                "ar": "كريستال مضيء 💎"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "paper-folding-art": {
+      "name": {
+        "en": "Paper Folding Art",
+        "zh": "折纸艺术",
+        "ja": "紙折りアート",
+        "ko": "종이접기 예술",
+        "es": "Arte de Plegado de Papel",
+        "de": "Papierfalten Kunst",
+        "fr": "Art du Pliage de Papier",
+        "ar": "فن طي الورق"
+      },
+      "description": {
+        "en": "Mesmerizing paper folding sequences creating intricate origami designs with precise movements",
+        "zh": "令人着迷的折纸序列，通过精确动作创造复杂的折纸设计",
+        "ja": "正確な動きで複雑な折り紙デザインを作る魅惑的な紙折りシーケンス",
+        "ko": "정확한 움직임으로 복잡한 종이접기 디자인을 만드는 매혹적인 종이 접기 순서",
+        "es": "Secuencias hipnotizantes de plegado de papel creando diseños de origami intrincados con movimientos precisos",
+        "de": "Faszinierende Papierfalten-Sequenzen, die mit präzisen Bewegungen komplizierte Origami-Designs schaffen",
+        "fr": "Séquences hypnotisantes de pliage de papier créant des designs d'origami complexes avec des mouvements précis",
+        "ar": "متسلسلات مذهلة لطي الورق تخلق تصاميم أوريغامي معقدة بحركات دقيقة"
+      },
+      "params": {
+        "paper_type": {
+          "label": {
+            "en": "Paper Type",
+            "zh": "纸张类型",
+            "ja": "紙の種類",
+            "ko": "종이 유형",
+            "es": "Tipo de Papel",
+            "de": "Papiertyp",
+            "fr": "Type de Papier",
+            "ar": "نوع الورق"
+          },
+          "options": [
+            {
+              "value": "colorful origami paper",
+              "label": {
+                "en": "Colorful Origami Paper 🌈",
+                "zh": "彩色折纸 🌈",
+                "ja": "カラフルな折り紙 🌈",
+                "ko": "색색의 종이접기 종이 🌈",
+                "es": "Papel de Origami Colorido 🌈",
+                "de": "Buntes Origami-Papier 🌈",
+                "fr": "Papier Origami Coloré 🌈",
+                "ar": "ورق أوريغامي ملون 🌈"
+              }
+            },
+            {
+              "value": "metallic foil paper",
+              "label": {
+                "en": "Metallic Foil Paper ✨",
+                "zh": "金属箔纸 ✨",
+                "ja": "メタリックホイル紙 ✨",
+                "ko": "금속 포일 종이 ✨",
+                "es": "Papel de Lámina Metálica ✨",
+                "de": "Metallfolie Papier ✨",
+                "fr": "Papier Feuille Métallique ✨",
+                "ar": "ورق رقائق معدنية ✨"
+              }
+            }
+          ]
+        },
+        "creation_type": {
+          "label": {
+            "en": "Creation Type",
+            "zh": "创作类型",
+            "ja": "作品の種類",
+            "ko": "창작 유형",
+            "es": "Tipo de Creación",
+            "de": "Schöpfungstyp",
+            "fr": "Type de Création",
+            "ar": "نوع الإبداع"
+          },
+          "options": [
+            {
+              "value": "elegant crane",
+              "label": {
+                "en": "Elegant Crane 🕊️",
+                "zh": "优雅仙鹤 🕊️",
+                "ja": "エレガントな鶴 🕊️",
+                "ko": "우아한 학 🕊️",
+                "es": "Grulla Elegante 🕊️",
+                "de": "Eleganter Kranich 🕊️",
+                "fr": "Grue Élégante 🕊️",
+                "ar": "رافعة أنيقة 🕊️"
+              }
+            },
+            {
+              "value": "blooming flower",
+              "label": {
+                "en": "Blooming Flower 🌸",
+                "zh": "盛开花朵 🌸",
+                "ja": "咲く花 🌸",
+                "ko": "피어나는 꽃 🌸",
+                "es": "Flor Floreciente 🌸",
+                "de": "Blühende Blume 🌸",
+                "fr": "Fleur Épanouie 🌸",
+                "ar": "زهرة متفتحة 🌸"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "sand-art-creation": {
+      "name": {
+        "en": "Sand Art Creation",
+        "zh": "沙画创作",
+        "ja": "砂絵制作",
+        "ko": "모래 예술 창작",
+        "es": "Creación de Arte en Arena",
+        "de": "Sandkunst Erstellung",
+        "fr": "Création d'Art de Sable",
+        "ar": "إبداع فن الرمال"
+      },
+      "description": {
+        "en": "Therapeutic sand art creation with flowing colored sands forming beautiful patterns and designs",
+        "zh": "治疗性沙画创作，流动的彩色沙子形成美丽的图案和设计",
+        "ja": "流れる色砂が美しいパターンとデザインを形成する癒しの砂絵制作",
+        "ko": "흐르는 색모래가 아름다운 패턴과 디자인을 만드는 치료적 모래 예술 창작",
+        "es": "Creación terapéutica de arte en arena con arenas de colores fluyendo formando hermosos patrones y diseños",
+        "de": "Therapeutische Sandkunst-Erstellung mit fließenden bunten Sanden, die schöne Muster und Designs bilden",
+        "fr": "Création thérapeutique d'art de sable avec des sables colorés fluides formant de beaux motifs et designs",
+        "ar": "إبداع فن الرمال العلاجي مع رمال ملونة متدفقة تشكل أنماط وتصاميم جميلة"
+      },
+      "params": {
+        "sand_colors": {
+          "label": {
+            "en": "Sand Colors",
+            "zh": "沙子颜色",
+            "ja": "砂の色",
+            "ko": "모래 색상",
+            "es": "Colores de Arena",
+            "de": "Sandfarben",
+            "fr": "Couleurs de Sable",
+            "ar": "ألوان الرمل"
+          },
+          "options": [
+            {
+              "value": "sunset gradient",
+              "label": {
+                "en": "Sunset Gradient 🌅",
+                "zh": "日落渐变 🌅",
+                "ja": "夕日のグラデーション 🌅",
+                "ko": "일몰 그라데이션 🌅",
+                "es": "Gradiente de Atardecer 🌅",
+                "de": "Sonnenuntergang Farbverlauf 🌅",
+                "fr": "Dégradé de Coucher de Soleil 🌅",
+                "ar": "تدرج غروب الشمس 🌅"
+              }
+            },
+            {
+              "value": "ocean blues",
+              "label": {
+                "en": "Ocean Blues 🌊",
+                "zh": "海洋蓝色 🌊",
+                "ja": "オーシャンブルー 🌊",
+                "ko": "바다 블루 🌊",
+                "es": "Azules del Océano 🌊",
+                "de": "Ozean-Blautöne 🌊",
+                "fr": "Bleus Océan 🌊",
+                "ar": "زرقة المحيط 🌊"
+              }
+            }
+          ]
+        },
+        "pattern_type": {
+          "label": {
+            "en": "Pattern Type",
+            "zh": "图案类型",
+            "ja": "パターンの種類",
+            "ko": "패턴 유형",
+            "es": "Tipo de Patrón",
+            "de": "Mustertyp",
+            "fr": "Type de Motif",
+            "ar": "نوع النمط"
+          },
+          "options": [
+            {
+              "value": "mandala design",
+              "label": {
+                "en": "Mandala Design 🕉️",
+                "zh": "曼陀罗设计 🕉️",
+                "ja": "マンダラデザイン 🕉️",
+                "ko": "만다라 디자인 🕉️",
+                "es": "Diseño de Mandala 🕉️",
+                "de": "Mandala-Design 🕉️",
+                "fr": "Design Mandala 🕉️",
+                "ar": "تصميم مندالا 🕉️"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "slime-making": {
+      "name": {
+        "en": "Slime Making",
+        "zh": "史莱姆制作",
+        "ja": "スライム作り",
+        "ko": "슬라임 만들기",
+        "es": "Hacer Slime",
+        "de": "Schleim Herstellen",
+        "fr": "Fabrication de Slime",
+        "ar": "صنع السلايم"
+      },
+      "description": {
+        "en": "Satisfying slime creation process with mixing, stretching, and texture exploration",
+        "zh": "令人满意的史莱姆制作过程，包括混合、拉伸和质地探索",
+        "ja": "混合、伸ばし、質感探索を含む満足感のあるスライム作成プロセス",
+        "ko": "믹싱, 늘리기, 질감 탐색을 포함한 만족스러운 슬라임 제작 과정",
+        "es": "Proceso satisfactorio de creación de slime con mezcla, estiramiento y exploración de texturas",
+        "de": "Befriedigender Schleim-Herstellungsprozess mit Mischen, Dehnen und Texturerkundung",
+        "fr": "Processus satisfaisant de création de slime avec mélange, étirement et exploration de texture",
+        "ar": "عملية مرضية لصنع السلايم مع الخلط والتمدد واستكشاف القوام"
+      },
+      "params": {
+        "slime_type": {
+          "label": {
+            "en": "Slime Type",
+            "zh": "史莱姆类型",
+            "ja": "スライムの種類",
+            "ko": "슬라임 유형",
+            "es": "Tipo de Slime",
+            "de": "Schleim-Typ",
+            "fr": "Type de Slime",
+            "ar": "نوع السلايم"
+          },
+          "options": [
+            {
+              "value": "clear glitter slime",
+              "label": {
+                "en": "Clear Glitter Slime ✨",
+                "zh": "透明闪粉史莱姆 ✨",
+                "ja": "透明グリッタースライム ✨",
+                "ko": "투명 글리터 슬라임 ✨",
+                "es": "Slime Transparente con Purpurina ✨",
+                "de": "Klarer Glitzer-Schleim ✨",
+                "fr": "Slime Transparent Pailleté ✨",
+                "ar": "سلايم شفاف بالبريق ✨"
+              }
+            },
+            {
+              "value": "fluffy cloud slime",
+              "label": {
+                "en": "Fluffy Cloud Slime ☁️",
+                "zh": "蓬松云朵史莱姆 ☁️",
+                "ja": "ふわふわクラウドスライム ☁️",
+                "ko": "푹신한 구름 슬라임 ☁️",
+                "es": "Slime Esponjoso de Nube ☁️",
+                "de": "Fluffiger Wolken-Schleim ☁️",
+                "fr": "Slime Nuage Moelleux ☁️",
+                "ar": "سلايم غيمة رقيق ☁️"
+              }
+            }
+          ]
+        },
+        "activity_type": {
+          "label": {
+            "en": "Activity Type",
+            "zh": "活动类型",
+            "ja": "アクティビティの種類",
+            "ko": "활동 유형",
+            "es": "Tipo de Actividad",
+            "de": "Aktivitätstyp",
+            "fr": "Type d'Activité",
+            "ar": "نوع النشاط"
+          },
+          "options": [
+            {
+              "value": "mixing and stretching",
+              "label": {
+                "en": "Mixing and Stretching",
+                "zh": "混合和拉伸",
+                "ja": "混合と伸ばし",
+                "ko": "믹싱과 늘리기",
+                "es": "Mezclar y Estirar",
+                "de": "Mischen und Dehnen",
+                "fr": "Mélanger et Étirer",
+                "ar": "الخلط والتمدد"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "soap-cutting": {
+      "name": {
+        "en": "Soap Cutting",
+        "zh": "肥皂切割",
+        "ja": "石鹸カット",
+        "ko": "비누 자르기",
+        "es": "Corte de Jabón",
+        "de": "Seife Schneiden",
+        "fr": "Découpe de Savon",
+        "ar": "تقطيع الصابون"
+      },
+      "description": {
+        "en": "Satisfying soap cutting with clean, precise slices creating geometric patterns",
+        "zh": "令人满意的肥皂切割，干净精确的切片创造几何图案",
+        "ja": "幾何学的なパターンを作る清潔で正確な切片による満足感のある石鹸カット",
+        "ko": "기하학적 패턴을 만드는 깔끔하고 정확한 절단으로 만족스러운 비누 자르기",
+        "es": "Corte satisfactorio de jabón con rebanadas limpias y precisas creando patrones geométricos",
+        "de": "Befriedigendes Seifenschneiden mit sauberen, präzisen Schnitten, die geometrische Muster schaffen",
+        "fr": "Découpe satisfaisante de savon avec des tranches nettes et précises créant des motifs géométriques",
+        "ar": "تقطيع صابون مرضي بشرائح نظيفة ودقيقة تخلق أنماط هندسية"
+      },
+      "params": {
+        "soap_type": {
+          "label": {
+            "en": "Soap Type",
+            "zh": "肥皂类型",
+            "ja": "石鹸の種類",
+            "ko": "비누 유형",
+            "es": "Tipo de Jabón",
+            "de": "Seifentyp",
+            "fr": "Type de Savon",
+            "ar": "نوع الصابون"
+          },
+          "options": [
+            {
+              "value": "translucent glycerin soap",
+              "label": {
+                "en": "Translucent Glycerin Soap 🧼",
+                "zh": "半透明甘油皂 🧼",
+                "ja": "半透明グリセリン石鹸 🧼",
+                "ko": "반투명 글리세린 비누 🧼",
+                "es": "Jabón de Glicerina Translúcido 🧼",
+                "de": "Durchscheinende Glycerinseife 🧼",
+                "fr": "Savon Glycériné Translucide 🧼",
+                "ar": "صابون جليسرين شفاف 🧼"
+              }
+            },
+            {
+              "value": "colorful layered soap",
+              "label": {
+                "en": "Colorful Layered Soap 🌈",
+                "zh": "彩色分层肥皂 🌈",
+                "ja": "カラフルな層状石鹸 🌈",
+                "ko": "색색의 층층 비누 🌈",
+                "es": "Jabón en Capas Colorido 🌈",
+                "de": "Bunte Schichtseife 🌈",
+                "fr": "Savon en Couches Coloré 🌈",
+                "ar": "صابون ملون متعدد الطبقات 🌈"
+              }
+            }
+          ]
+        },
+        "cutting_pattern": {
+          "label": {
+            "en": "Cutting Pattern",
+            "zh": "切割图案",
+            "ja": "カットパターン",
+            "ko": "자르기 패턴",
+            "es": "Patrón de Corte",
+            "de": "Schnittmuster",
+            "fr": "Motif de Découpe",
+            "ar": "نمط التقطيع"
+          },
+          "options": [
+            {
+              "value": "precise geometric cubes",
+              "label": {
+                "en": "Precise Geometric Cubes",
+                "zh": "精确几何立方体",
+                "ja": "正確な幾何学的立方体",
+                "ko": "정확한 기하학적 정육면체",
+                "es": "Cubos Geométricos Precisos",
+                "de": "Präzise geometrische Würfel",
+                "fr": "Cubes Géométriques Précis",
+                "ar": "مكعبات هندسية دقيقة"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "texture-exploration": {
+      "name": {
+        "en": "Texture Exploration",
+        "zh": "质地探索",
+        "ja": "テクスチャー探索",
+        "ko": "질감 탐구",
+        "es": "Exploración de Texturas",
+        "de": "Textur Erkundung",
+        "fr": "Exploration de Textures",
+        "ar": "استكشاف القوام"
+      },
+      "description": {
+        "en": "Close-up exploration of various textures through touch, revealing intricate surface details",
+        "zh": "通过触摸近距离探索各种质地，揭示复杂的表面细节",
+        "ja": "タッチによる様々なテクスチャーのクローズアップ探索、複雑な表面の詳細を明らかにする",
+        "ko": "터치를 통한 다양한 질감의 근접 탐구로 복잡한 표면 디테일을 드러내는",
+        "es": "Exploración cercana de varias texturas a través del tacto, revelando detalles intrincados de la superficie",
+        "de": "Nahaufnahme-Erkundung verschiedener Texturen durch Berührung, die komplizierte Oberflächendetails enthüllt",
+        "fr": "Exploration rapprochée de diverses textures par le toucher, révélant des détails de surface complexes",
+        "ar": "استكشاف مقرب لقوامات مختلفة من خلال اللمس، يكشف تفاصيل سطحية معقدة"
+      },
+      "params": {
+        "texture_type": {
+          "label": {
+            "en": "Texture Type",
+            "zh": "质地类型",
+            "ja": "テクスチャーの種類",
+            "ko": "질감 유형",
+            "es": "Tipo de Textura",
+            "de": "Texturtyp",
+            "fr": "Type de Texture",
+            "ar": "نوع القوام"
+          },
+          "options": [
+            {
+              "value": "soft fabric",
+              "label": {
+                "en": "Soft Fabric 🧶",
+                "zh": "柔软织物 🧶",
+                "ja": "柔らかい布地 🧶",
+                "ko": "부드러운 직물 🧶",
+                "es": "Tela Suave 🧶",
+                "de": "Weicher Stoff 🧶",
+                "fr": "Tissu Doux 🧶",
+                "ar": "نسيج ناعم 🧶"
+              }
+            },
+            {
+              "value": "rough bark",
+              "label": {
+                "en": "Rough Bark 🌳",
+                "zh": "粗糙树皮 🌳",
+                "ja": "粗い樹皮 🌳",
+                "ko": "거친 나무껍질 🌳",
+                "es": "Corteza Rugosa 🌳",
+                "de": "Raue Rinde 🌳",
+                "fr": "Écorce Rugueuse 🌳",
+                "ar": "لحاء خشن 🌳"
+              }
+            }
+          ]
+        },
+        "exploration_method": {
+          "label": {
+            "en": "Exploration Method",
+            "zh": "探索方法",
+            "ja": "探索方法",
+            "ko": "탐구 방법",
+            "es": "Método de Exploración",
+            "de": "Erkundungsmethode",
+            "fr": "Méthode d'Exploration",
+            "ar": "طريقة الاستكشاف"
+          },
+          "options": [
+            {
+              "value": "gentle finger tracing",
+              "label": {
+                "en": "Gentle Finger Tracing",
+                "zh": "轻柔手指描摹",
+                "ja": "優しい指なぞり",
+                "ko": "부드러운 손가락 추적",
+                "es": "Trazado Suave con Dedos",
+                "de": "Sanftes Fingerverfolgen",
+                "fr": "Traçage Doux du Doigt",
+                "ar": "تتبع لطيف بالإصبع"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "toy-unboxing": {
+      "name": {
+        "en": "Toy Unboxing",
+        "zh": "玩具开箱",
+        "ja": "おもちゃの開封",
+        "ko": "장난감 언박싱",
+        "es": "Desempaque de Juguetes",
+        "de": "Spielzeug Auspacken",
+        "fr": "Déballage de Jouets",
+        "ar": "فتح علب الألعاب"
+      },
+      "description": {
+        "en": "Satisfying toy unboxing with careful unwrapping, revealing surprise elements inside packaging",
+        "zh": "令人满意的玩具开箱，小心拆包装，揭示包装内的惊喜元素",
+        "ja": "慎重な開封により、パッケージ内のサプライズ要素を明らかにする満足感のあるおもちゃの開封",
+        "ko": "조심스럽게 포장을 뜯어 포장 안의 놀라운 요소들을 드러내는 만족스러운 장난감 언박싱",
+        "es": "Desempaque satisfactorio de juguetes con desenvolvimiento cuidadoso, revelando elementos sorpresa dentro del empaque",
+        "de": "Befriedigendes Spielzeug-Auspacken mit vorsichtigem Entpacken, das Überraschungselemente in der Verpackung enthüllt",
+        "fr": "Déballage satisfaisant de jouets avec déballage soigneux, révélant des éléments surprise à l'intérieur de l'emballage",
+        "ar": "فتح مرضي لعلب الألعاب مع إزالة التغليف بعناية، يكشف عناصر مفاجئة داخل التعبئة"
+      },
+      "params": {
+        "toy_category": {
+          "label": {
+            "en": "Toy Category",
+            "zh": "玩具类别",
+            "ja": "おもちゃのカテゴリ",
+            "ko": "장난감 카테고리",
+            "es": "Categoría de Juguete",
+            "de": "Spielzeugkategorie",
+            "fr": "Catégorie de Jouet",
+            "ar": "فئة اللعبة"
+          },
+          "options": [
+            {
+              "value": "collectible figures",
+              "label": {
+                "en": "Collectible Figures 🎎",
+                "zh": "收藏人偶 🎎",
+                "ja": "コレクタブルフィギュア 🎎",
+                "ko": "수집용 피규어 🎎",
+                "es": "Figuras Coleccionables 🎎",
+                "de": "Sammelfiguren 🎎",
+                "fr": "Figurines de Collection 🎎",
+                "ar": "شخصيات قابلة للجمع 🎎"
+              }
+            },
+            {
+              "value": "mystery surprise boxes",
+              "label": {
+                "en": "Mystery Surprise Boxes 📦",
+                "zh": "神秘惊喜盒 📦",
+                "ja": "ミステリーサプライズボックス 📦",
+                "ko": "미스터리 서프라이즈 박스 📦",
+                "es": "Cajas Sorpresa Misteriosas 📦",
+                "de": "Geheimnisvolle Überraschungsboxen 📦",
+                "fr": "Boîtes Surprises Mystérieuses 📦",
+                "ar": "صناديق مفاجآت غامضة 📦"
+              }
+            }
+          ]
+        },
+        "unboxing_style": {
+          "label": {
+            "en": "Unboxing Style",
+            "zh": "开箱风格",
+            "ja": "開封スタイル",
+            "ko": "언박싱 스타일",
+            "es": "Estilo de Desempaque",
+            "de": "Auspack-Stil",
+            "fr": "Style de Déballage",
+            "ar": "نمط فتح العلب"
+          },
+          "options": [
+            {
+              "value": "slow methodical unwrapping",
+              "label": {
+                "en": "Slow Methodical Unwrapping",
+                "zh": "缓慢有条理拆包",
+                "ja": "ゆっくりと体系的な開封",
+                "ko": "천천히 체계적인 포장 뜯기",
+                "es": "Desenvoltura Lenta y Metódica",
+                "de": "Langsames methodisches Auspacken",
+                "fr": "Déballage Lent et Méthodique",
+                "ar": "إزالة تغليف بطيئة ومنهجية"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "wood-carving": {
+      "name": {
+        "en": "Wood Carving",
+        "zh": "木雕",
+        "ja": "木彫り",
+        "ko": "목조각",
+        "es": "Tallado en Madera",
+        "de": "Holzschnitzerei",
+        "fr": "Sculpture sur Bois",
+        "ar": "نحت الخشب"
+      },
+      "description": {
+        "en": "Meditative wood carving process with precise tool movements creating detailed artistic sculptures",
+        "zh": "冥想式木雕过程，精确的工具动作创造出详细的艺术雕塑",
+        "ja": "精密な道具の動きで詳細な芸術彫刻を作る瞑想的な木彫りプロセス",
+        "ko": "정확한 도구 움직임으로 세밀한 예술 조각을 만드는 명상적인 목조각 과정",
+        "es": "Proceso meditativo de tallado en madera con movimientos precisos de herramientas creando esculturas artísticas detalladas",
+        "de": "Meditativer Holzschnitzprozess mit präzisen Werkzeugbewegungen, die detaillierte künstlerische Skulpturen schaffen",
+        "fr": "Processus méditatif de sculpture sur bois avec des mouvements d'outils précis créant des sculptures artistiques détaillées",
+        "ar": "عملية نحت خشب تأملية مع حركات أدوات دقيقة تخلق منحوتات فنية مفصلة"
+      },
+      "params": {
+        "wood_type": {
+          "label": {
+            "en": "Wood Type",
+            "zh": "木材类型",
+            "ja": "木材の種類",
+            "ko": "목재 유형",
+            "es": "Tipo de Madera",
+            "de": "Holzart",
+            "fr": "Type de Bois",
+            "ar": "نوع الخشب"
+          },
+          "options": [
+            {
+              "value": "smooth cedar",
+              "label": {
+                "en": "Smooth Cedar 🌲",
+                "zh": "光滑雪松 🌲",
+                "ja": "滑らかな杉 🌲",
+                "ko": "부드러운 삼나무 🌲",
+                "es": "Cedro Suave 🌲",
+                "de": "Glatte Zeder 🌲",
+                "fr": "Cèdre Lisse 🌲",
+                "ar": "أرز ناعم 🌲"
+              }
+            },
+            {
+              "value": "rich walnut",
+              "label": {
+                "en": "Rich Walnut 🥜",
+                "zh": "丰富胡桃木 🥜",
+                "ja": "豊かなウォルナット 🥜",
+                "ko": "풍부한 호두나무 🥜",
+                "es": "Nogal Rico 🥜",
+                "de": "Reiches Walnuss 🥜",
+                "fr": "Noyer Riche 🥜",
+                "ar": "جوز غني 🥜"
+              }
+            }
+          ]
+        },
+        "carving_subject": {
+          "label": {
+            "en": "Carving Subject",
+            "zh": "雕刻主题",
+            "ja": "彫刻の主題",
+            "ko": "조각 주제",
+            "es": "Tema de Tallado",
+            "de": "Schnitzthema",
+            "fr": "Sujet de Sculpture",
+            "ar": "موضوع النحت"
+          },
+          "options": [
+            {
+              "value": "intricate flower design",
+              "label": {
+                "en": "Intricate Flower Design 🌺",
+                "zh": "复杂花卉设计 🌺",
+                "ja": "複雑な花のデザイン 🌺",
+                "ko": "복잡한 꽃 디자인 🌺",
+                "es": "Diseño Floral Intrincado 🌺",
+                "de": "Kompliziertes Blumendesign 🌺",
+                "fr": "Design Floral Complexe 🌺",
+                "ar": "تصميم زهري معقد 🌺"
+              }
+            },
+            {
+              "value": "detailed animal figure",
+              "label": {
+                "en": "Detailed Animal Figure 🦉",
+                "zh": "详细动物雕像 🦉",
+                "ja": "詳細な動物フィギュア 🦉",
+                "ko": "상세한 동물 조각상 🦉",
+                "es": "Figura Animal Detallada 🦉",
+                "de": "Detaillierte Tierfigur 🦉",
+                "fr": "Figure Animale Détaillée 🦉",
+                "ar": "شكل حيوان مفصل 🦉"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "zen-garden-raking": {
+      "name": {
+        "en": "Zen Garden Raking",
+        "zh": "禅意花园耙沙",
+        "ja": "禅庭園の砂掻き",
+        "ko": "선 정원 모래 긁기",
+        "es": "Rastrillado de Jardín Zen",
+        "de": "Zen-Garten Harken",
+        "fr": "Ratissage de Jardin Zen",
+        "ar": "تمشيط حديقة زين"
+      },
+      "description": {
+        "en": "Peaceful zen garden sand raking creating flowing patterns and meditative rhythmic sounds",
+        "zh": "宁静的禅意花园耙沙，创造流动的图案和冥想节奏声音",
+        "ja": "流れるようなパターンと瞑想的なリズム音を作る平和な禅庭園の砂掻き",
+        "ko": "흐르는 패턴과 명상적인 리듬 소리를 만드는 평화로운 선 정원 모래 긁기",
+        "es": "Rastrillado pacífico de arena de jardín zen creando patrones fluidos y sonidos rítmicos meditativos",
+        "de": "Friedliches Zen-Garten-Sandharken, das fließende Muster und meditative rhythmische Klänge schafft",
+        "fr": "Ratissage paisible de sable de jardin zen créant des motifs fluides et des sons rythmiques méditatifs",
+        "ar": "تمشيط هادئ لرمل حديقة زين يخلق أنماط متدفقة وأصوات إيقاعية تأملية"
+      },
+      "params": {
+        "pattern_style": {
+          "label": {
+            "en": "Pattern Style",
+            "zh": "图案风格",
+            "ja": "パターンスタイル",
+            "ko": "패턴 스타일",
+            "es": "Estilo de Patrón",
+            "de": "Musterstil",
+            "fr": "Style de Motif",
+            "ar": "نمط الطراز"
+          },
+          "options": [
+            {
+              "value": "concentric circles",
+              "label": {
+                "en": "Concentric Circles 🌀",
+                "zh": "同心圆 🌀",
+                "ja": "同心円 🌀",
+                "ko": "동심원 🌀",
+                "es": "Círculos Concéntricos 🌀",
+                "de": "Konzentrische Kreise 🌀",
+                "fr": "Cercles Concentriques 🌀",
+                "ar": "دوائر متحدة المركز 🌀"
+              }
+            },
+            {
+              "value": "flowing waves",
+              "label": {
+                "en": "Flowing Waves 〰️",
+                "zh": "流动波浪 〰️",
+                "ja": "流れる波 〰️",
+                "ko": "흐르는 파도 〰️",
+                "es": "Ondas Fluidas 〰️",
+                "de": "Fließende Wellen 〰️",
+                "fr": "Vagues Fluides 〰️",
+                "ar": "أمواج متدفقة 〰️"
+              }
+            }
+          ]
+        },
+        "garden_setting": {
+          "label": {
+            "en": "Garden Setting",
+            "zh": "花园环境",
+            "ja": "庭園の設定",
+            "ko": "정원 설정",
+            "es": "Configuración del Jardín",
+            "de": "Garten-Einstellung",
+            "fr": "Cadre du Jardin",
+            "ar": "إعداد الحديقة"
+          },
+          "options": [
+            {
+              "value": "traditional japanese garden",
+              "label": {
+                "en": "Traditional Japanese Garden 🏯",
+                "zh": "传统日式花园 🏯",
+                "ja": "伝統的な日本庭園 🏯",
+                "ko": "전통 일본 정원 🏯",
+                "es": "Jardín Japonés Tradicional 🏯",
+                "de": "Traditioneller japanischer Garten 🏯",
+                "fr": "Jardin Japonais Traditionnel 🏯",
+                "ar": "حديقة يابانية تقليدية 🏯"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

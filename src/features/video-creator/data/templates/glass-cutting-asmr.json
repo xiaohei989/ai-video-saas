@@ -1,9 +1,27 @@
 {
   "id": "2dbea2dc-48f3-427e-9db9-694289bde441",
   "slug": "glass-cutting-asmr",
-  "name": "Glass Fruit Cutting ASMR",
+  "name": {
+    "en": "Glass Cutting ASMR",
+    "zh": "玻璃切割ASMR",
+    "ja": "ガラスカットASMR",
+    "ko": "유리 자르기 ASMR",
+    "es": "Corte de Vidrio ASMR",
+    "de": "Glas Schneiden ASMR",
+    "fr": "Découpe de Verre ASMR",
+    "ar": "قطع الزجاج ASMR"
+  },
   "icon": "🔪",
-  "description": "Create mesmerizing ASMR videos of cutting translucent glass fruits",
+  "description": {
+    "en": "Satisfying ASMR experience of cutting through various types of glass with crystal-clear sound effects",
+    "zh": "令人满足的ASMR体验，切割各种类型的玻璃并带有水晶般清澈的音效",
+    "ja": "クリスタルクリアな音響効果で様々なタイプのガラスをカットする満足感のあるASMR体験",
+    "ko": "수정처럼 맑은 음향 효과로 다양한 유형의 유리를 자르는 만족스러운 ASMR 경험",
+    "es": "Experiencia ASMR satisfactoria de cortar varios tipos de vidrio con efectos de sonido cristalinos",
+    "de": "Befriedigende ASMR-Erfahrung beim Schneiden verschiedener Glasarten mit kristallklaren Soundeffekten",
+    "fr": "Expérience ASMR satisfaisante de découpe de différents types de verre avec des effets sonores cristallins",
+    "ar": "تجربة ASMR مرضية لقطع أنواع مختلفة من الزجاج بتأثيرات صوتية صافية كالكريستال"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/glass-cutting-asmr.mp4?v=2025",
   "tags": [
     "asmr",
@@ -18,260 +36,773 @@
   ],
   "createdAt": "2024-01-15T10:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-01-29T04:30:00Z",
+  "lastModified": "2025-09-18T04:11:01.426Z",
   "promptTemplate": "In a surreal close-up, a sharp {knife_type} knife slices through a {color} {fruit} made entirely of translucent {material}, with the blade positioned at the center of the cut. The {fruit} is exquisitely carved, glimmering under {lighting} light, with each detail delicately visible on the surface. As the knife descends to perform {cutting_style}, perfect pieces fall away, each piece dropping as the knife shifts down {slice_thickness} millimeters to the next position, revealing the shiny {material}-like core, its internal texture exquisite, with light cleverly refracted by the transparent material. The scene is set on a {surface}, with soft ambient light reflections and no background distractions. The camera is fixed at the front of the close-up, advancing the cutting action in a slow cinematic style. There is no music, no cinematic black bars, no watermark, and no subtitles.",
   "params": {
     "fruit": {
       "type": "select",
-      "label": "Fruit Type",
+      "label": {
+        "en": "Fruit Type",
+        "zh": "水果类型",
+        "ja": "フルーツの種類",
+        "ko": "과일 종류",
+        "es": "Tipo de Fruta",
+        "de": "Frucht Art",
+        "fr": "Type de Fruit",
+        "ar": "نوع الفاكهة"
+      },
       "required": true,
       "default": "strawberry",
       "options": [
         {
           "value": "strawberry",
-          "label": "Strawberry 🍓"
+          "label": {
+            "en": "Strawberry 🍓",
+            "zh": "草莓 🍓",
+            "ja": "イチゴ 🍓",
+            "ko": "딸기 🍓",
+            "es": "Fresa 🍓",
+            "de": "Erdbeere 🍓",
+            "fr": "Fraise 🍓",
+            "ar": "فراولة 🍓"
+          }
         },
         {
           "value": "apple",
-          "label": "Apple 🍎"
+          "label": {
+            "en": "Apple 🍎",
+            "zh": "苹果 🍎",
+            "ja": "リンゴ 🍎",
+            "ko": "사과 🍎",
+            "es": "Manzana 🍎",
+            "de": "Apfel 🍎",
+            "fr": "Pomme 🍎",
+            "ar": "تفاحة 🍎"
+          }
         },
         {
           "value": "orange",
-          "label": "Orange 🍊"
+          "label": {
+            "en": "Orange 🍊",
+            "zh": "橙子 🍊",
+            "ja": "オレンジ 🍊",
+            "ko": "오렌지 🍊",
+            "es": "Naranja 🍊",
+            "de": "Orange 🍊",
+            "fr": "Orange 🍊",
+            "ar": "برتقالة 🍊"
+          }
         },
         {
           "value": "watermelon",
-          "label": "Watermelon 🍉"
+          "label": {
+            "en": "Watermelon 🍉",
+            "zh": "西瓜 🍉",
+            "ja": "スイカ 🍉",
+            "ko": "수박 🍉",
+            "es": "Sandía 🍉",
+            "de": "Wassermelone 🍉",
+            "fr": "Pastèque 🍉",
+            "ar": "بطيخ 🍉"
+          }
         },
         {
           "value": "lemon",
-          "label": "Lemon 🍋"
+          "label": {
+            "en": "Lemon 🍋",
+            "zh": "柠檬 🍋",
+            "ja": "レモン 🍋",
+            "ko": "레몬 🍋",
+            "es": "Limón 🍋",
+            "de": "Zitrone 🍋",
+            "fr": "Citron 🍋",
+            "ar": "ليمونة 🍋"
+          }
         },
         {
           "value": "grapes",
-          "label": "Grapes 🍇"
+          "label": {
+            "en": "Grapes 🍇",
+            "zh": "葡萄 🍇",
+            "ja": "ぶどう 🍇",
+            "ko": "포도 🍇",
+            "es": "Uvas 🍇",
+            "de": "Trauben 🍇",
+            "fr": "Raisins 🍇",
+            "ar": "عنب 🍇"
+          }
         },
         {
           "value": "kiwi",
-          "label": "Kiwi 🥝"
+          "label": {
+            "en": "Kiwi 🥝",
+            "zh": "猕猴桃 🥝",
+            "ja": "キウイ 🥝",
+            "ko": "키위 🥝",
+            "es": "Kiwi 🥝",
+            "de": "Kiwi 🥝",
+            "fr": "Kiwi 🥝",
+            "ar": "كيوي 🥝"
+          }
         },
         {
           "value": "peach",
-          "label": "Peach 🍑"
+          "label": {
+            "en": "Peach 🍑",
+            "zh": "桃子 🍑",
+            "ja": "桃 🍑",
+            "ko": "복숭아 🍑",
+            "es": "Durazno 🍑",
+            "de": "Pfirsich 🍑",
+            "fr": "Pêche 🍑",
+            "ar": "خوخ 🍑"
+          }
         },
         {
           "value": "pear",
-          "label": "Pear 🍐"
+          "label": {
+            "en": "Pear 🍐",
+            "zh": "梨 🍐",
+            "ja": "梨 🍐",
+            "ko": "배 🍐",
+            "es": "Pera 🍐",
+            "de": "Birne 🍐",
+            "fr": "Poire 🍐",
+            "ar": "كمثرى 🍐"
+          }
         },
         {
           "value": "mango",
-          "label": "Mango 🥭"
+          "label": {
+            "en": "Mango 🥭",
+            "zh": "芒果 🥭",
+            "ja": "マンゴー 🥭",
+            "ko": "망고 🥭",
+            "es": "Mango 🥭",
+            "de": "Mango 🥭",
+            "fr": "Mangue 🥭",
+            "ar": "مانجو 🥭"
+          }
         }
       ]
     },
     "color": {
       "type": "select",
-      "label": "Color",
+      "label": {
+        "en": "Color",
+        "zh": "颜色",
+        "ja": "色",
+        "ko": "색상",
+        "es": "Color",
+        "de": "Farbe",
+        "fr": "Couleur",
+        "ar": "اللون"
+      },
       "required": true,
       "default": "vivid red",
       "options": [
         {
           "value": "vivid red",
-          "label": "Vivid Red"
+          "label": {
+            "en": "Vivid Red",
+            "zh": "鲜艳红色",
+            "ja": "鮮やかな赤",
+            "ko": "선명한 빨강",
+            "es": "Rojo Vívido",
+            "de": "Lebhaftes Rot",
+            "fr": "Rouge Vif",
+            "ar": "أحمر زاهي"
+          }
         },
         {
           "value": "deep ruby",
-          "label": "Deep Ruby"
+          "label": {
+            "en": "Deep Ruby",
+            "zh": "深红宝石色",
+            "ja": "深いルビー色",
+            "ko": "깊은 루비색",
+            "es": "Rubí Profundo",
+            "de": "Tiefes Rubinrot",
+            "fr": "Rubis Profond",
+            "ar": "ياقوت أحمر عميق"
+          }
         },
         {
           "value": "bright orange",
-          "label": "Bright Orange"
+          "label": {
+            "en": "Bright Orange",
+            "zh": "明亮橙色",
+            "ja": "明るいオレンジ",
+            "ko": "밝은 주황색",
+            "es": "Naranja Brillante",
+            "de": "Helles Orange",
+            "fr": "Orange Vif",
+            "ar": "برتقالي مشرق"
+          }
         },
         {
           "value": "golden yellow",
-          "label": "Golden Yellow"
+          "label": {
+            "en": "Golden Yellow",
+            "zh": "金黄色",
+            "ja": "金色の黄色",
+            "ko": "황금색",
+            "es": "Amarillo Dorado",
+            "de": "Goldgelb",
+            "fr": "Jaune Doré",
+            "ar": "أصفر ذهبي"
+          }
         },
         {
           "value": "emerald green",
-          "label": "Emerald Green"
+          "label": {
+            "en": "Emerald Green",
+            "zh": "翡翠绿",
+            "ja": "エメラルドグリーン",
+            "ko": "에메랄드 그린",
+            "es": "Verde Esmeralda",
+            "de": "Smaragdgrün",
+            "fr": "Vert Émeraude",
+            "ar": "أخضر زمردي"
+          }
         },
         {
           "value": "ocean blue",
-          "label": "Ocean Blue"
+          "label": {
+            "en": "Ocean Blue",
+            "zh": "海洋蓝",
+            "ja": "オーシャンブルー",
+            "ko": "바다 블루",
+            "es": "Azul Océano",
+            "de": "Ozeanblau",
+            "fr": "Bleu Océan",
+            "ar": "أزرق المحيط"
+          }
         },
         {
           "value": "royal purple",
-          "label": "Royal Purple"
+          "label": {
+            "en": "Royal Purple",
+            "zh": "皇室紫",
+            "ja": "ロイヤルパープル",
+            "ko": "로열 퍼플",
+            "es": "Púrpura Real",
+            "de": "Königsviolett",
+            "fr": "Violet Royal",
+            "ar": "بنفسجي ملكي"
+          }
         },
         {
           "value": "crystal clear",
-          "label": "Crystal Clear"
+          "label": {
+            "en": "Crystal Clear",
+            "zh": "水晶透明",
+            "ja": "クリスタルクリア",
+            "ko": "수정처럼 맑은",
+            "es": "Cristalino",
+            "de": "Kristallklar",
+            "fr": "Cristallin",
+            "ar": "شفاف كالكريستال"
+          }
         },
         {
           "value": "rose pink",
-          "label": "Rose Pink"
+          "label": {
+            "en": "Rose Pink",
+            "zh": "玫瑰粉",
+            "ja": "ローズピンク",
+            "ko": "로즈 핑크",
+            "es": "Rosa Rosa",
+            "de": "Rosenrosa",
+            "fr": "Rose",
+            "ar": "وردي الورد"
+          }
         },
         {
           "value": "amber",
-          "label": "Amber"
+          "label": {
+            "en": "Amber 🍯",
+            "zh": "琥珀 🍯",
+            "ja": "アンバー 🍯",
+            "ko": "호박 🍯",
+            "es": "Ámbar 🍯",
+            "de": "Bernstein 🍯",
+            "fr": "Ambre 🍯",
+            "ar": "عنبر 🍯"
+          }
         },
         {
           "value": "turquoise",
-          "label": "Turquoise"
+          "label": {
+            "en": "Turquoise",
+            "zh": "绿松石色",
+            "ja": "ターコイズ",
+            "ko": "터키석색",
+            "es": "Turquesa",
+            "de": "Türkis",
+            "fr": "Turquoise",
+            "ar": "فيروزي"
+          }
         },
         {
           "value": "rainbow gradient",
-          "label": "Rainbow Gradient"
+          "label": {
+            "en": "Rainbow Gradient",
+            "zh": "彩虹渐变",
+            "ja": "レインボーグラデーション",
+            "ko": "무지개 그라데이션",
+            "es": "Gradiente Arcoíris",
+            "de": "Regenbogen-Verlauf",
+            "fr": "Dégradé Arc-en-ciel",
+            "ar": "تدرج قوس قزح"
+          }
         }
       ]
     },
     "material": {
       "type": "select",
-      "label": "Material",
+      "label": {
+        "en": "Material",
+        "zh": "材质",
+        "ja": "材質",
+        "ko": "재질",
+        "es": "Material",
+        "de": "Material",
+        "fr": "Matériau",
+        "ar": "المادة"
+      },
       "required": true,
       "default": "glass",
       "options": [
         {
           "value": "glass",
-          "label": "Translucent Glass"
+          "label": {
+            "en": "Glass 🪟",
+            "zh": "玻璃 🪟",
+            "ja": "ガラス 🪟",
+            "ko": "유리 🪟",
+            "es": "Vidrio 🪟",
+            "de": "Glas 🪟",
+            "fr": "Verre 🪟",
+            "ar": "زجاج 🪟"
+          }
         },
         {
           "value": "crystal",
-          "label": "Crystal"
+          "label": {
+            "en": "Crystal 💎",
+            "zh": "水晶 💎",
+            "ja": "クリスタル 💎",
+            "ko": "크리스탈 💎",
+            "es": "Cristal 💎",
+            "de": "Kristall 💎",
+            "fr": "Cristal 💎",
+            "ar": "كريستال 💎"
+          }
         },
         {
           "value": "diamond",
-          "label": "Diamond"
+          "label": {
+            "en": "Diamond",
+            "zh": "钻石",
+            "ja": "ダイヤモンド",
+            "ko": "다이아몬드",
+            "es": "Diamante",
+            "de": "Diamant",
+            "fr": "Diamant",
+            "ar": "ماس"
+          }
         },
         {
           "value": "frosted glass",
-          "label": "Frosted Glass"
+          "label": {
+            "en": "Frosted Glass",
+            "zh": "磨砂玻璃",
+            "ja": "すりガラス",
+            "ko": "서리 유리",
+            "es": "Vidrio Esmerilado",
+            "de": "Milchglas",
+            "fr": "Verre Dépoli",
+            "ar": "زجاج مصنفر"
+          }
         },
         {
           "value": "jade",
-          "label": "Jade"
+          "label": {
+            "en": "Jade",
+            "zh": "翡翠",
+            "ja": "翡翠",
+            "ko": "옥",
+            "es": "Jade",
+            "de": "Jade",
+            "fr": "Jade",
+            "ar": "اليشم"
+          }
         },
         {
           "value": "ice",
-          "label": "Ice"
+          "label": {
+            "en": "Ice 🧊",
+            "zh": "冰块 🧊",
+            "ja": "氷 🧊",
+            "ko": "얼음 🧊",
+            "es": "Hielo 🧊",
+            "de": "Eis 🧊",
+            "fr": "Glace 🧊",
+            "ar": "ثلج 🧊"
+          }
         },
         {
           "value": "soap",
-          "label": "Soap"
+          "label": {
+            "en": "Soap 🧼",
+            "zh": "肥皂 🧼",
+            "ja": "石鹸 🧼",
+            "ko": "비누 🧼",
+            "es": "Jabón 🧼",
+            "de": "Seife 🧼",
+            "fr": "Savon 🧼",
+            "ar": "صابون 🧼"
+          }
         },
         {
           "value": "wax",
-          "label": "Wax"
+          "label": {
+            "en": "Wax",
+            "zh": "蜡",
+            "ja": "ワックス",
+            "ko": "왁스",
+            "es": "Cera",
+            "de": "Wachs",
+            "fr": "Cire",
+            "ar": "شمع"
+          }
         },
         {
           "value": "jelly",
-          "label": "Jelly"
+          "label": {
+            "en": "Jelly",
+            "zh": "果冻",
+            "ja": "ゼリー",
+            "ko": "젤리",
+            "es": "Gelatina",
+            "de": "Gelee",
+            "fr": "Gelée",
+            "ar": "جيلي"
+          }
         },
         {
           "value": "hard candy",
-          "label": "Hard Candy"
+          "label": {
+            "en": "Hard Candy",
+            "zh": "硬糖",
+            "ja": "ハードキャンディ",
+            "ko": "하드캔디",
+            "es": "Caramelo Duro",
+            "de": "Hartbonbon",
+            "fr": "Bonbon Dur",
+            "ar": "حلوى صلبة"
+          }
         }
       ]
     },
     "knife_type": {
       "type": "select",
-      "label": "Knife Type",
+      "label": {
+        "en": "Knife Type",
+        "zh": "刀具类型",
+        "ja": "ナイフの種類",
+        "ko": "칼 종류",
+        "es": "Tipo de Cuchillo",
+        "de": "Messer Art",
+        "fr": "Type de Couteau",
+        "ar": "نوع السكين"
+      },
       "default": "stainless steel kitchen",
       "options": [
         {
           "value": "stainless steel kitchen",
-          "label": "Stainless Steel Kitchen"
+          "label": {
+            "en": "Stainless Steel Kitchen",
+            "zh": "不锈钢厨刀",
+            "ja": "ステンレス包丁",
+            "ko": "스테인리스 주방칼",
+            "es": "Cuchillo de Acero Inoxidable",
+            "de": "Edelstahl-Küchenmesser",
+            "fr": "Couteau de Cuisine Inox",
+            "ar": "سكين مطبخ من الستانلس ستيل"
+          }
         },
         {
           "value": "matte black blade",
-          "label": "Matte Black Blade"
+          "label": {
+            "en": "Matte Black Blade",
+            "zh": "哑光黑刀片",
+            "ja": "マットブラック刃",
+            "ko": "무광 검은 칼날",
+            "es": "Hoja Negra Mate",
+            "de": "Matte Schwarze Klinge",
+            "fr": "Lame Noire Mate",
+            "ar": "نصل أسود غير لامع"
+          }
         },
         {
           "value": "white ceramic",
-          "label": "White Ceramic"
+          "label": {
+            "en": "White Ceramic",
+            "zh": "白色陶瓷刀",
+            "ja": "白いセラミック",
+            "ko": "하얀 세라믹",
+            "es": "Cerámica Blanca",
+            "de": "Weiße Keramik",
+            "fr": "Céramique Blanche",
+            "ar": "سيراميك أبيض"
+          }
         },
         {
           "value": "damascus steel",
-          "label": "Damascus Steel"
+          "label": {
+            "en": "Damascus Steel",
+            "zh": "大马士革钢刀",
+            "ja": "ダマスカス鋼",
+            "ko": "다마스커스 강철",
+            "es": "Acero Damasco",
+            "de": "Damaszenerstahl",
+            "fr": "Acier de Damas",
+            "ar": "فولاذ دمشقي"
+          }
         },
         {
           "value": "Japanese santoku",
-          "label": "Japanese Santoku"
+          "label": {
+            "en": "Japanese Santoku",
+            "zh": "日式三德刀",
+            "ja": "日本の三徳包丁",
+            "ko": "일본식 산토쿠",
+            "es": "Santoku Japonés",
+            "de": "Japanisches Santoku",
+            "fr": "Santoku Japonais",
+            "ar": "سانتوكو ياباني"
+          }
         }
       ]
     },
     "cutting_style": {
       "type": "select",
-      "label": "Cutting Style",
+      "label": {
+        "en": "Cutting Style",
+        "zh": "切割风格",
+        "ja": "切り方",
+        "ko": "자르기 스타일",
+        "es": "Estilo de Corte",
+        "de": "Schnitt Stil",
+        "fr": "Style de Coupe",
+        "ar": "نمط القطع"
+      },
       "default": "multiple thin slices",
       "options": [
         {
           "value": "a single clean slice",
-          "label": "Single Clean Slice"
+          "label": {
+            "en": "Single Clean Slice",
+            "zh": "单次干净切片",
+            "ja": "一回のきれいなスライス",
+            "ko": "한 번의 깔끔한 절단",
+            "es": "Corte Limpio Simple",
+            "de": "Ein Sauberer Schnitt",
+            "fr": "Une Tranche Nette",
+            "ar": "شريحة واحدة نظيفة"
+          }
         },
         {
           "value": "multiple thin slices",
-          "label": "Multiple Thin Slices"
+          "label": {
+            "en": "Multiple Thin Slices",
+            "zh": "多片薄切",
+            "ja": "複数の薄いスライス",
+            "ko": "여러 개의 얇은 조각",
+            "es": "Múltiples Rebanadas Finas",
+            "de": "Mehrere Dünne Scheiben",
+            "fr": "Multiples Tranches Fines",
+            "ar": "شرائح رفيعة متعددة"
+          }
         },
         {
           "value": "a halving cut",
-          "label": "Cut in Half"
+          "label": {
+            "en": "Cut in Half",
+            "zh": "对半切",
+            "ja": "半分に切る",
+            "ko": "반으로 자르기",
+            "es": "Cortar por la Mitad",
+            "de": "Halbierung",
+            "fr": "Couper en Deux",
+            "ar": "قطع إلى نصفين"
+          }
         },
         {
           "value": "quarter cuts",
-          "label": "Cut in Quarters"
+          "label": {
+            "en": "Cut in Quarters",
+            "zh": "四等分切",
+            "ja": "四分割",
+            "ko": "4등분으로 자르기",
+            "es": "Cortar en Cuartos",
+            "de": "Vierteln",
+            "fr": "Couper en Quartiers",
+            "ar": "تقطيع إلى أرباع"
+          }
         }
       ]
     },
     "lighting": {
       "type": "select",
-      "label": "Lighting",
+      "label": {
+        "en": "Lighting",
+        "zh": "照明",
+        "ja": "照明",
+        "ko": "조명",
+        "es": "Iluminación",
+        "de": "Beleuchtung",
+        "fr": "Éclairage",
+        "ar": "الإضاءة"
+      },
       "default": "soft diffuse",
       "options": [
         {
           "value": "soft diffuse",
-          "label": "Soft Diffuse"
+          "label": {
+            "en": "Soft Diffuse",
+            "zh": "柔和漫射",
+            "ja": "ソフト拡散",
+            "ko": "부드러운 확산",
+            "es": "Difuso Suave",
+            "de": "Weiche Streuung",
+            "fr": "Diffusion Douce",
+            "ar": "انتشار ناعم"
+          }
         },
         {
           "value": "dramatic side",
-          "label": "Dramatic Side Light"
+          "label": {
+            "en": "Dramatic Side Light",
+            "zh": "dramatic side ",
+            "ja": "dramatic side ",
+            "ko": "dramatic side ",
+            "es": "dramatic side ",
+            "de": "dramatic side ",
+            "fr": "dramatic side ",
+            "ar": "dramatic side "
+          }
         },
         {
           "value": "backlit",
-          "label": "Backlight"
+          "label": {
+            "en": "Backlight",
+            "zh": "backlit ",
+            "ja": "backlit ",
+            "ko": "backlit ",
+            "es": "backlit ",
+            "de": "backlit ",
+            "fr": "backlit ",
+            "ar": "backlit "
+          }
         },
         {
           "value": "studio",
-          "label": "Studio Lighting"
+          "label": {
+            "en": "Studio",
+            "zh": "工作室照明",
+            "ja": "スタジオ",
+            "ko": "스튜디오",
+            "es": "Estudio",
+            "de": "Studio",
+            "fr": "Studio",
+            "ar": "استوديو"
+          }
         }
       ]
     },
     "surface": {
       "type": "select",
-      "label": "Surface",
+      "label": {
+        "en": "Surface",
+        "zh": "表面",
+        "ja": "表面",
+        "ko": "표면",
+        "es": "Superficie",
+        "de": "Oberfläche",
+        "fr": "Surface",
+        "ar": "السطح"
+      },
       "default": "neutral marble countertop",
       "options": [
         {
           "value": "neutral marble countertop",
-          "label": "Marble Countertop"
+          "label": {
+            "en": "Marble Countertop",
+            "zh": "大理石台面",
+            "ja": "大理石カウンター",
+            "ko": "대리석 조리대",
+            "es": "Encimera de Mármol",
+            "de": "Marmor-Arbeitsplatte",
+            "fr": "Plan de Travail en Marbre",
+            "ar": "سطح رخامي"
+          }
         },
         {
           "value": "wooden cutting board",
-          "label": "Wooden Board"
+          "label": {
+            "en": "Wooden Cutting Board",
+            "zh": "木制砧板",
+            "ja": "木製まな板",
+            "ko": "나무 도마",
+            "es": "Tabla de Cortar de Madera",
+            "de": "Holzschneidebrett",
+            "fr": "Planche à Découper en Bois",
+            "ar": "لوح تقطيع خشبي"
+          }
         },
         {
           "value": "black slate surface",
-          "label": "Black Slate"
+          "label": {
+            "en": "Black Slate Surface",
+            "zh": "黑色石板表面",
+            "ja": "黒いスレート表面",
+            "ko": "검은 슬레이트 표면",
+            "es": "Superficie de Pizarra Negra",
+            "de": "Schwarze Schieferoberfläche",
+            "fr": "Surface en Ardoise Noire",
+            "ar": "سطح حجر أردوازي أسود"
+          }
         },
         {
           "value": "white ceramic plate",
-          "label": "White Ceramic"
+          "label": {
+            "en": "White Ceramic Plate",
+            "zh": "白色陶瓷盘",
+            "ja": "白いセラミックプレート",
+            "ko": "흰색 세라믹 접시",
+            "es": "Plato de Cerámica Blanca",
+            "de": "Weißer Keramikteller",
+            "fr": "Assiette en Céramique Blanche",
+            "ar": "طبق سيراميك أبيض"
+          }
         }
       ]
     },
     "slice_thickness": {
       "type": "slider",
-      "label": "Slice Thickness (mm)",
+      "label": {
+        "en": "Slice Thickness (mm)",
+        "zh": "切片厚度 (毫米)",
+        "ja": "スライスの厚さ (mm)",
+        "ko": "슬라이스 두께 (mm)",
+        "es": "Grosor de Rebanada (mm)",
+        "de": "Scheiben Dicke (mm)",
+        "fr": "Épaisseur de Tranche (mm)",
+        "ar": "سمك الشريحة (مم)"
+      },
       "min": 3,
       "max": 10,
       "step": 1,
@@ -279,7 +810,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

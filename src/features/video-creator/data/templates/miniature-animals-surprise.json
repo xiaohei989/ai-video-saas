@@ -1,9 +1,27 @@
 {
   "id": "5a46006a-7da2-47a1-909a-9d4cda1c096d",
   "slug": "miniature-animals-surprise",
-  "name": "Miniature Animals Surprise Box",
+  "name": {
+    "en": "Miniature Animals Surprise Box",
+    "zh": "微型动物惊喜盒",
+    "ja": "ミニチュア動物サプライズボックス",
+    "ko": "미니어처 동물 서프라이즈 박스",
+    "es": "Caja Sorpresa de Animales en Miniatura",
+    "de": "Miniatur-Tiere Überraschungsbox",
+    "fr": "Boîte Surprise d'Animaux Miniatures",
+    "ar": "صندوق مفاجأة الحيوانات المصغرة"
+  },
   "icon": "🦒",
-  "description": "Hyper-realistic miniature animals hidden in unexpected containers, revealing surprise moments when doors open",
+  "description": {
+    "en": "Hyper-realistic miniature animals hidden in unexpected containers, revealing surprise moments when doors open",
+    "zh": "隐藏在意想不到容器中的超逼真微型动物，开门时展现惊喜时刻",
+    "ja": "予期しないコンテナに隠された超リアルなミニチュア動物が、扉を開けるときにサプライズの瞬間を明かす",
+    "ko": "예상치 못한 용기에 숨겨진 초현실적인 미니어처 동물들이 문을 열 때 놀라운 순간을 드러냄",
+    "es": "Animales en miniatura hiperrealistas escondidos en contenedores inesperados, revelando momentos sorpresa cuando se abren las puertas",
+    "de": "Hyperrealistische Miniatur-Tiere, die in unerwarteten Behältern versteckt sind und überraschende Momente offenbaren, wenn sich die Türen öffnen",
+    "fr": "Animaux miniatures hyperréalistes cachés dans des contenants inattendus, révélant des moments de surprise à l'ouverture des portes",
+    "ar": "حيوانات مصغرة فائقة الواقعية مخفية في حاويات غير متوقعة، تكشف لحظات مفاجئة عند فتح الأبواب"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/miniature-animals-surprise.mp4?v=1758008502567",
   "category": "Animals/Surprise",
   "tags": [
@@ -18,232 +36,700 @@
   ],
   "createdAt": "2025-01-24T10:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.578Z",
+  "lastModified": "2025-09-18T03:33:06.789Z",
   "promptTemplate": "Ultra-realistic documentary shot: The back of a human hand gently opens the rustic wooden {container_type} door toward the camera. Inside, {animal_count} extremely lifelike miniature {animal_type} are nestled in a compact straw nest. The animals {animal_action}. Setting: {environment} with late morning sunlight, casting soft natural shadows. The {container_type} is mounted on a fence pole. Camera: ARRI Alexa Mini LF with 35mm prime macro lens, locked-off frontal shot at door level, f/2.8, perfectly centered composition. Ultra-realistic with hyperrealism, advanced fur/scale simulation, subsurface skin scattering, micro eye reflections. Ambient sounds include soft nature sounds, subtle wood creak, and tiny creature sounds. Mood: surprising, calm, and softly joyful.",
   "params": {
     "animal_type": {
       "type": "select",
-      "label": "Animal Type",
+      "label": {
+        "en": "Animal Type",
+        "zh": "动物类型",
+        "ja": "動物の種類",
+        "ko": "동물 종류",
+        "es": "Tipo de Animal",
+        "de": "Tierart",
+        "fr": "Type d'Animal",
+        "ar": "نوع الحيوان"
+      },
       "required": true,
       "default": "baby giraffes",
       "options": [
         {
           "value": "baby giraffes",
-          "label": "Baby Giraffes 🦒"
+          "label": {
+            "en": "Baby Giraffes 🦒",
+            "zh": "baby giraffes 🦒",
+            "ja": "baby giraffes 🦒",
+            "ko": "baby giraffes 🦒",
+            "es": "baby giraffes 🦒",
+            "de": "baby giraffes 🦒",
+            "fr": "baby giraffes 🦒",
+            "ar": "baby giraffes 🦒"
+          }
         },
         {
           "value": "baby elephants",
-          "label": "Baby Elephants 🐘"
+          "label": {
+            "en": "Baby Elephants 🐘",
+            "zh": "baby elephants 🐘",
+            "ja": "baby elephants 🐘",
+            "ko": "baby elephants 🐘",
+            "es": "baby elephants 🐘",
+            "de": "baby elephants 🐘",
+            "fr": "baby elephants 🐘",
+            "ar": "baby elephants 🐘"
+          }
         },
         {
           "value": "baby pandas",
-          "label": "Baby Pandas 🐼"
+          "label": {
+            "en": "Baby Pandas 🐼",
+            "zh": "baby pandas 🐼",
+            "ja": "baby pandas 🐼",
+            "ko": "baby pandas 🐼",
+            "es": "baby pandas 🐼",
+            "de": "baby pandas 🐼",
+            "fr": "baby pandas 🐼",
+            "ar": "baby pandas 🐼"
+          }
         },
         {
           "value": "baby lions",
-          "label": "Baby Lions 🦁"
+          "label": {
+            "en": "Baby Lions 🦁",
+            "zh": "baby lions 🦁",
+            "ja": "baby lions 🦁",
+            "ko": "baby lions 🦁",
+            "es": "baby lions 🦁",
+            "de": "baby lions 🦁",
+            "fr": "baby lions 🦁",
+            "ar": "baby lions 🦁"
+          }
         },
         {
           "value": "baby dragons",
-          "label": "Baby Dragons 🐉"
+          "label": {
+            "en": "Baby Dragons 🐉",
+            "zh": "baby dragons 🐉",
+            "ja": "baby dragons 🐉",
+            "ko": "baby dragons 🐉",
+            "es": "baby dragons 🐉",
+            "de": "baby dragons 🐉",
+            "fr": "baby dragons 🐉",
+            "ar": "baby dragons 🐉"
+          }
         },
         {
           "value": "baby phoenixes",
-          "label": "Baby Phoenixes 🔥"
+          "label": {
+            "en": "Baby Phoenixes 🔥",
+            "zh": "baby phoenixes 🔥",
+            "ja": "baby phoenixes 🔥",
+            "ko": "baby phoenixes 🔥",
+            "es": "baby phoenixes 🔥",
+            "de": "baby phoenixes 🔥",
+            "fr": "baby phoenixes 🔥",
+            "ar": "baby phoenixes 🔥"
+          }
         },
         {
           "value": "baby unicorns",
-          "label": "Baby Unicorns 🦄"
+          "label": {
+            "en": "Baby Unicorns 🦄",
+            "zh": "baby unicorns 🦄",
+            "ja": "baby unicorns 🦄",
+            "ko": "baby unicorns 🦄",
+            "es": "baby unicorns 🦄",
+            "de": "baby unicorns 🦄",
+            "fr": "baby unicorns 🦄",
+            "ar": "baby unicorns 🦄"
+          }
         },
         {
           "value": "baby griffins",
-          "label": "Baby Griffins 🦅"
+          "label": {
+            "en": "Baby Griffins 🦅",
+            "zh": "baby griffins 🦅",
+            "ja": "baby griffins 🦅",
+            "ko": "baby griffins 🦅",
+            "es": "baby griffins 🦅",
+            "de": "baby griffins 🦅",
+            "fr": "baby griffins 🦅",
+            "ar": "baby griffins 🦅"
+          }
         },
         {
           "value": "baby pegasus",
-          "label": "Baby Pegasus ✨"
+          "label": {
+            "en": "Baby Pegasus ✨",
+            "zh": "baby pegasus ✨",
+            "ja": "baby pegasus ✨",
+            "ko": "baby pegasus ✨",
+            "es": "baby pegasus ✨",
+            "de": "baby pegasus ✨",
+            "fr": "baby pegasus ✨",
+            "ar": "baby pegasus ✨"
+          }
         },
         {
           "value": "baby nine-tailed foxes",
-          "label": "Baby Nine-tailed Foxes 🦊"
+          "label": {
+            "en": "Baby Nine-tailed Foxes 🦊",
+            "zh": "baby nine-tailed foxes 🦊",
+            "ja": "baby nine-tailed foxes 🦊",
+            "ko": "baby nine-tailed foxes 🦊",
+            "es": "baby nine-tailed foxes 🦊",
+            "de": "baby nine-tailed foxes 🦊",
+            "fr": "baby nine-tailed foxes 🦊",
+            "ar": "baby nine-tailed foxes 🦊"
+          }
         },
         {
           "value": "baby zebras",
-          "label": "Baby Zebras 🦓"
+          "label": {
+            "en": "Baby Zebras 🦓",
+            "zh": "baby zebras 🦓",
+            "ja": "baby zebras 🦓",
+            "ko": "baby zebras 🦓",
+            "es": "baby zebras 🦓",
+            "de": "baby zebras 🦓",
+            "fr": "baby zebras 🦓",
+            "ar": "baby zebras 🦓"
+          }
         },
         {
           "value": "baby koalas",
-          "label": "Baby Koalas 🐨"
+          "label": {
+            "en": "Baby Koalas 🐨",
+            "zh": "baby koalas 🐨",
+            "ja": "baby koalas 🐨",
+            "ko": "baby koalas 🐨",
+            "es": "baby koalas 🐨",
+            "de": "baby koalas 🐨",
+            "fr": "baby koalas 🐨",
+            "ar": "baby koalas 🐨"
+          }
         },
         {
           "value": "baby penguins",
-          "label": "Baby Penguins 🐧"
+          "label": {
+            "en": "Baby Penguins 🐧",
+            "zh": "baby penguins 🐧",
+            "ja": "baby penguins 🐧",
+            "ko": "baby penguins 🐧",
+            "es": "baby penguins 🐧",
+            "de": "baby penguins 🐧",
+            "fr": "baby penguins 🐧",
+            "ar": "baby penguins 🐧"
+          }
         },
         {
           "value": "baby owls",
-          "label": "Baby Owls 🦉"
+          "label": {
+            "en": "Baby Owls 🦉",
+            "zh": "baby owls 🦉",
+            "ja": "baby owls 🦉",
+            "ko": "baby owls 🦉",
+            "es": "baby owls 🦉",
+            "de": "baby owls 🦉",
+            "fr": "baby owls 🦉",
+            "ar": "baby owls 🦉"
+          }
         },
         {
           "value": "baby cerberus puppies",
-          "label": "Baby Cerberus Puppies 🐺"
+          "label": {
+            "en": "Baby Cerberus Puppies 🐺",
+            "zh": "baby cerberus puppies 🐺",
+            "ja": "baby cerberus puppies 🐺",
+            "ko": "baby cerberus puppies 🐺",
+            "es": "baby cerberus puppies 🐺",
+            "de": "baby cerberus puppies 🐺",
+            "fr": "baby cerberus puppies 🐺",
+            "ar": "baby cerberus puppies 🐺"
+          }
         },
         {
           "value": "baby hippogriffs",
-          "label": "Baby Hippogriffs 🦋"
+          "label": {
+            "en": "Baby Hippogriffs 🦋",
+            "zh": "baby hippogriffs 🦋",
+            "ja": "baby hippogriffs 🦋",
+            "ko": "baby hippogriffs 🦋",
+            "es": "baby hippogriffs 🦋",
+            "de": "baby hippogriffs 🦋",
+            "fr": "baby hippogriffs 🦋",
+            "ar": "baby hippogriffs 🦋"
+          }
         },
         {
           "value": "baby qilins",
-          "label": "Baby Qilins 🦌"
+          "label": {
+            "en": "Baby Qilins 🦌",
+            "zh": "baby qilins 🦌",
+            "ja": "baby qilins 🦌",
+            "ko": "baby qilins 🦌",
+            "es": "baby qilins 🦌",
+            "de": "baby qilins 🦌",
+            "fr": "baby qilins 🦌",
+            "ar": "baby qilins 🦌"
+          }
         },
         {
           "value": "baby white tigers",
-          "label": "Baby White Tigers 🐅"
+          "label": {
+            "en": "Baby White Tigers 🐅",
+            "zh": "baby white tigers 🐅",
+            "ja": "baby white tigers 🐅",
+            "ko": "baby white tigers 🐅",
+            "es": "baby white tigers 🐅",
+            "de": "baby white tigers 🐅",
+            "fr": "baby white tigers 🐅",
+            "ar": "baby white tigers 🐅"
+          }
         }
       ]
     },
     "animal_count": {
       "type": "select",
-      "label": "Animal Count",
+      "label": {
+        "en": "Animal Count",
+        "zh": "动物数量",
+        "ja": "動物の数",
+        "ko": "동물 수",
+        "es": "Cantidad de Animales",
+        "de": "Anzahl der Tiere",
+        "fr": "Nombre d'Animaux",
+        "ar": "عدد الحيوانات"
+      },
       "default": "two",
       "options": [
         {
           "value": "one",
-          "label": "One"
+          "label": {
+            "en": "One",
+            "zh": "一只",
+            "ja": "一匹",
+            "ko": "한 마리",
+            "es": "Uno",
+            "de": "Eins",
+            "fr": "Un",
+            "ar": "واحد"
+          }
         },
         {
           "value": "two",
-          "label": "Two"
+          "label": {
+            "en": "Two",
+            "zh": "两只",
+            "ja": "二匹",
+            "ko": "두 마리",
+            "es": "Dos",
+            "de": "Zwei",
+            "fr": "Deux",
+            "ar": "اثنان"
+          }
         },
         {
           "value": "three",
-          "label": "Three"
+          "label": {
+            "en": "Three",
+            "zh": "三只",
+            "ja": "三匹",
+            "ko": "세 마리",
+            "es": "Tres",
+            "de": "Drei",
+            "fr": "Trois",
+            "ar": "ثلاثة"
+          }
         },
         {
           "value": "a family of four",
-          "label": "A Family of Four"
+          "label": {
+            "en": "A Family of Four",
+            "zh": "a family of four ",
+            "ja": "a family of four ",
+            "ko": "a family of four ",
+            "es": "a family of four ",
+            "de": "a family of four ",
+            "fr": "a family of four ",
+            "ar": "a family of four "
+          }
         }
       ]
     },
     "container_type": {
       "type": "select",
-      "label": "Container Type",
+      "label": {
+        "en": "Container Type",
+        "zh": "容器类型",
+        "ja": "コンテナの種類",
+        "ko": "용기 종류",
+        "es": "Tipo de Contenedor",
+        "de": "Behältertyp",
+        "fr": "Type de Conteneur",
+        "ar": "نوع الحاوية"
+      },
       "required": true,
       "default": "birdhouse",
       "options": [
         {
           "value": "birdhouse",
-          "label": "Birdhouse 🏠"
+          "label": {
+            "en": "Birdhouse 🏠",
+            "zh": "鸟舍 🏠",
+            "ja": "鳥小屋 🏠",
+            "ko": "새집 🏠",
+            "es": "Casa de Pájaros 🏠",
+            "de": "Vogelhaus 🏠",
+            "fr": "Nichoir 🏠",
+            "ar": "بيت الطيور 🏠"
+          }
         },
         {
           "value": "vintage mailbox",
-          "label": "Vintage Mailbox 📮"
+          "label": {
+            "en": "Vintage Mailbox 📮",
+            "zh": "vintage mailbox 📮",
+            "ja": "vintage mailbox 📮",
+            "ko": "vintage mailbox 📮",
+            "es": "vintage mailbox 📮",
+            "de": "vintage mailbox 📮",
+            "fr": "vintage mailbox 📮",
+            "ar": "vintage mailbox 📮"
+          }
         },
         {
           "value": "large flower pot",
-          "label": "Large Flower Pot 🪴"
+          "label": {
+            "en": "Large Flower Pot 🪴",
+            "zh": "large flower pot 🪴",
+            "ja": "large flower pot 🪴",
+            "ko": "large flower pot 🪴",
+            "es": "large flower pot 🪴",
+            "de": "large flower pot 🪴",
+            "fr": "large flower pot 🪴",
+            "ar": "large flower pot 🪴"
+          }
         },
         {
           "value": "antique teacup",
-          "label": "Antique Teacup ☕"
+          "label": {
+            "en": "Antique Teacup ☕",
+            "zh": "antique teacup ☕",
+            "ja": "antique teacup ☕",
+            "ko": "antique teacup ☕",
+            "es": "antique teacup ☕",
+            "de": "antique teacup ☕",
+            "fr": "antique teacup ☕",
+            "ar": "antique teacup ☕"
+          }
         },
         {
           "value": "old shoebox",
-          "label": "Old Shoebox 📦"
+          "label": {
+            "en": "Old Shoebox 📦",
+            "zh": "old shoebox 📦",
+            "ja": "old shoebox 📦",
+            "ko": "old shoebox 📦",
+            "es": "old shoebox 📦",
+            "de": "old shoebox 📦",
+            "fr": "old shoebox 📦",
+            "ar": "old shoebox 📦"
+          }
         },
         {
           "value": "tree hollow",
-          "label": "Tree Hollow 🌳"
+          "label": {
+            "en": "Tree Hollow 🌳",
+            "zh": "tree hollow 🌳",
+            "ja": "tree hollow 🌳",
+            "ko": "tree hollow 🌳",
+            "es": "tree hollow 🌳",
+            "de": "tree hollow 🌳",
+            "fr": "tree hollow 🌳",
+            "ar": "tree hollow 🌳"
+          }
         },
         {
           "value": "miniature castle",
-          "label": "Miniature Castle 🏰"
+          "label": {
+            "en": "Miniature Castle 🏰",
+            "zh": "miniature castle 🏰",
+            "ja": "miniature castle 🏰",
+            "ko": "miniature castle 🏰",
+            "es": "miniature castle 🏰",
+            "de": "miniature castle 🏰",
+            "fr": "miniature castle 🏰",
+            "ar": "miniature castle 🏰"
+          }
         },
         {
           "value": "glass terrarium",
-          "label": "Glass Terrarium 🔮"
+          "label": {
+            "en": "Glass Terrarium 🔮",
+            "zh": "glass terrarium 🔮",
+            "ja": "glass terrarium 🔮",
+            "ko": "glass terrarium 🔮",
+            "es": "glass terrarium 🔮",
+            "de": "glass terrarium 🔮",
+            "fr": "glass terrarium 🔮",
+            "ar": "glass terrarium 🔮"
+          }
         },
         {
           "value": "ancient treasure chest",
-          "label": "Ancient Treasure Chest 💎"
+          "label": {
+            "en": "Ancient Treasure Chest 💎",
+            "zh": "ancient treasure chest 💎",
+            "ja": "ancient treasure chest 💎",
+            "ko": "ancient treasure chest 💎",
+            "es": "ancient treasure chest 💎",
+            "de": "ancient treasure chest 💎",
+            "fr": "ancient treasure chest 💎",
+            "ar": "ancient treasure chest 💎"
+          }
         },
         {
           "value": "mushroom house",
-          "label": "Mushroom House 🍄"
+          "label": {
+            "en": "Mushroom House 🍄",
+            "zh": "mushroom house 🍄",
+            "ja": "mushroom house 🍄",
+            "ko": "mushroom house 🍄",
+            "es": "mushroom house 🍄",
+            "de": "mushroom house 🍄",
+            "fr": "mushroom house 🍄",
+            "ar": "mushroom house 🍄"
+          }
         }
       ]
     },
     "animal_action": {
       "type": "select",
-      "label": "Animal Action",
+      "label": {
+        "en": "Animal Action",
+        "zh": "动物行为",
+        "ja": "動物の行動",
+        "ko": "동물 행동",
+        "es": "Acción del Animal",
+        "de": "Tierverhalten",
+        "fr": "Action de l'Animal",
+        "ar": "حركة الحيوان"
+      },
       "required": true,
       "default": "are alert and waiting; one gently yawns, both subtly move their ears and blink",
       "options": [
         {
           "value": "are alert and waiting; one gently yawns, both subtly move their ears and blink",
-          "label": "Alert and Waiting, Yawning"
+          "label": {
+            "en": "Alert and Waiting, Yawning",
+            "zh": "are alert and waiting; one gently yawns, both subtly move their ears and blink ",
+            "ja": "are alert and waiting; one gently yawns, both subtly move their ears and blink ",
+            "ko": "are alert and waiting; one gently yawns, both subtly move their ears and blink ",
+            "es": "are alert and waiting; one gently yawns, both subtly move their ears and blink ",
+            "de": "are alert and waiting; one gently yawns, both subtly move their ears and blink ",
+            "fr": "are alert and waiting; one gently yawns, both subtly move their ears and blink ",
+            "ar": "are alert and waiting; one gently yawns, both subtly move their ears and blink "
+          }
         },
         {
           "value": "are sleeping peacefully, then slowly wake up",
-          "label": "Sleeping Peacefully, Waking Up"
+          "label": {
+            "en": "Sleeping Peacefully, Waking Up",
+            "zh": "are sleeping peacefully, then slowly wake up ",
+            "ja": "are sleeping peacefully, then slowly wake up ",
+            "ko": "are sleeping peacefully, then slowly wake up ",
+            "es": "are sleeping peacefully, then slowly wake up ",
+            "de": "are sleeping peacefully, then slowly wake up ",
+            "fr": "are sleeping peacefully, then slowly wake up ",
+            "ar": "are sleeping peacefully, then slowly wake up "
+          }
         },
         {
           "value": "curiously look at the camera with big eyes",
-          "label": "Looking Curiously at Camera"
+          "label": {
+            "en": "Looking Curiously at Camera",
+            "zh": "curiously look at the camera with big eyes ",
+            "ja": "curiously look at the camera with big eyes ",
+            "ko": "curiously look at the camera with big eyes ",
+            "es": "curiously look at the camera with big eyes ",
+            "de": "curiously look at the camera with big eyes ",
+            "fr": "curiously look at the camera with big eyes ",
+            "ar": "curiously look at the camera with big eyes "
+          }
         },
         {
           "value": "playfully interact with each other",
-          "label": "Playing with Each Other"
+          "label": {
+            "en": "Playing with Each Other",
+            "zh": "playfully interact with each other ",
+            "ja": "playfully interact with each other ",
+            "ko": "playfully interact with each other ",
+            "es": "playfully interact with each other ",
+            "de": "playfully interact with each other ",
+            "fr": "playfully interact with each other ",
+            "ar": "playfully interact with each other "
+          }
         },
         {
           "value": "are eating from tiny bowls",
-          "label": "Eating from Tiny Bowls"
+          "label": {
+            "en": "Eating from Tiny Bowls",
+            "zh": "are eating from tiny bowls ",
+            "ja": "are eating from tiny bowls ",
+            "ko": "are eating from tiny bowls ",
+            "es": "are eating from tiny bowls ",
+            "de": "are eating from tiny bowls ",
+            "fr": "are eating from tiny bowls ",
+            "ar": "are eating from tiny bowls "
+          }
         },
         {
           "value": "stand up excitedly when door opens",
-          "label": "Standing Up Excitedly When Door Opens"
+          "label": {
+            "en": "Standing Up Excitedly When Door Opens",
+            "zh": "stand up excitedly when door opens ",
+            "ja": "stand up excitedly when door opens ",
+            "ko": "stand up excitedly when door opens ",
+            "es": "stand up excitedly when door opens ",
+            "de": "stand up excitedly when door opens ",
+            "fr": "stand up excitedly when door opens ",
+            "ar": "stand up excitedly when door opens "
+          }
         },
         {
           "value": "are practicing their tiny roars or chirps",
-          "label": "Practicing Tiny Roars or Chirps"
+          "label": {
+            "en": "Practicing Tiny Roars or Chirps",
+            "zh": "are practicing their tiny roars or chirps ",
+            "ja": "are practicing their tiny roars or chirps ",
+            "ko": "are practicing their tiny roars or chirps ",
+            "es": "are practicing their tiny roars or chirps ",
+            "de": "are practicing their tiny roars or chirps ",
+            "fr": "are practicing their tiny roars or chirps ",
+            "ar": "are practicing their tiny roars or chirps "
+          }
         },
         {
           "value": "are reading tiny magical books",
-          "label": "Reading Tiny Magical Books"
+          "label": {
+            "en": "Reading Tiny Magical Books",
+            "zh": "are reading tiny magical books ",
+            "ja": "are reading tiny magical books ",
+            "ko": "are reading tiny magical books ",
+            "es": "are reading tiny magical books ",
+            "de": "are reading tiny magical books ",
+            "fr": "are reading tiny magical books ",
+            "ar": "are reading tiny magical books "
+          }
         }
       ]
     },
     "environment": {
       "type": "select",
-      "label": "Environment Scene",
+      "label": {
+        "en": "Environment Scene",
+        "zh": "环境场景",
+        "ja": "環境シーン",
+        "ko": "환경 장면",
+        "es": "Escena del Entorno",
+        "de": "Umgebungsszene",
+        "fr": "Scène d'Environnement",
+        "ar": "مشهد البيئة"
+      },
       "default": "Open field with lush green grass and blue sky",
       "options": [
         {
           "value": "Open field with lush green grass and blue sky",
-          "label": "Open Field with Green Grass and Blue Sky"
+          "label": {
+            "en": "Open Field with Green Grass and Blue Sky",
+            "zh": "Open field with lush green grass and blue sky ",
+            "ja": "Open field with lush green grass and blue sky ",
+            "ko": "Open field with lush green grass and blue sky ",
+            "es": "Open field with lush green grass and blue sky ",
+            "de": "Open field with lush green grass and blue sky ",
+            "fr": "Open field with lush green grass and blue sky ",
+            "ar": "Open field with lush green grass and blue sky "
+          }
         },
         {
           "value": "Blooming garden with colorful flowers",
-          "label": "Blooming Garden with Colorful Flowers"
+          "label": {
+            "en": "Blooming Garden with Colorful Flowers",
+            "zh": "Blooming garden with colorful flowers ",
+            "ja": "Blooming garden with colorful flowers ",
+            "ko": "Blooming garden with colorful flowers ",
+            "es": "Blooming garden with colorful flowers ",
+            "de": "Blooming garden with colorful flowers ",
+            "fr": "Blooming garden with colorful flowers ",
+            "ar": "Blooming garden with colorful flowers "
+          }
         },
         {
           "value": "Peaceful forest clearing with dappled sunlight",
-          "label": "Peaceful Forest Clearing with Dappled Sunlight"
+          "label": {
+            "en": "Peaceful Forest Clearing with Dappled Sunlight",
+            "zh": "Peaceful forest clearing with dappled sunlight ",
+            "ja": "Peaceful forest clearing with dappled sunlight ",
+            "ko": "Peaceful forest clearing with dappled sunlight ",
+            "es": "Peaceful forest clearing with dappled sunlight ",
+            "de": "Peaceful forest clearing with dappled sunlight ",
+            "fr": "Peaceful forest clearing with dappled sunlight ",
+            "ar": "Peaceful forest clearing with dappled sunlight "
+          }
         },
         {
           "value": "Cozy backyard with wooden fence",
-          "label": "Cozy Backyard with Wooden Fence"
+          "label": {
+            "en": "Cozy Backyard with Wooden Fence",
+            "zh": "Cozy backyard with wooden fence ",
+            "ja": "Cozy backyard with wooden fence ",
+            "ko": "Cozy backyard with wooden fence ",
+            "es": "Cozy backyard with wooden fence ",
+            "de": "Cozy backyard with wooden fence ",
+            "fr": "Cozy backyard with wooden fence ",
+            "ar": "Cozy backyard with wooden fence "
+          }
         },
         {
           "value": "Magical garden with floating lights and mystical fog",
-          "label": "Magical Garden with Floating Lights and Mystical Fog"
+          "label": {
+            "en": "Magical Garden with Floating Lights and Mystical Fog",
+            "zh": "Magical garden with floating lights and mystical fog ",
+            "ja": "Magical garden with floating lights and mystical fog ",
+            "ko": "Magical garden with floating lights and mystical fog ",
+            "es": "Magical garden with floating lights and mystical fog ",
+            "de": "Magical garden with floating lights and mystical fog ",
+            "fr": "Magical garden with floating lights and mystical fog ",
+            "ar": "Magical garden with floating lights and mystical fog "
+          }
         },
         {
           "value": "Enchanted forest with glowing mushrooms",
-          "label": "Enchanted Forest with Glowing Mushrooms"
+          "label": {
+            "en": "Enchanted Forest with Glowing Mushrooms",
+            "zh": "Enchanted forest with glowing mushrooms ",
+            "ja": "Enchanted forest with glowing mushrooms ",
+            "ko": "Enchanted forest with glowing mushrooms ",
+            "es": "Enchanted forest with glowing mushrooms ",
+            "de": "Enchanted forest with glowing mushrooms ",
+            "fr": "Enchanted forest with glowing mushrooms ",
+            "ar": "Enchanted forest with glowing mushrooms "
+          }
         },
         {
           "value": "Cloud kingdom floating in the sky",
-          "label": "Cloud Kingdom Floating in the Sky"
+          "label": {
+            "en": "Cloud Kingdom Floating in the Sky",
+            "zh": "Cloud kingdom floating in the sky ",
+            "ja": "Cloud kingdom floating in the sky ",
+            "ko": "Cloud kingdom floating in the sky ",
+            "es": "Cloud kingdom floating in the sky ",
+            "de": "Cloud kingdom floating in the sky ",
+            "fr": "Cloud kingdom floating in the sky ",
+            "ar": "Cloud kingdom floating in the sky "
+          }
         }
       ]
     }

@@ -1,9 +1,27 @@
 {
   "id": "c8f2d5a9-3e7b-4c6d-9a8f-1b5e8c2a4d7c",
   "slug": "windowsill-animal-interview",
-  "name": "Windowsill Animal Interview",
+  "name": {
+    "en": "Windowsill Animal Interview",
+    "zh": "窗台动物采访",
+    "ja": "窓際動物インタビュー",
+    "ko": "창틀 동물 인터뷰",
+    "es": "Entrevista a Animales del Alféizar",
+    "de": "Fensterbrett-Tier-Interview",
+    "fr": "Interview d'Animaux sur le Rebord de Fenêtre",
+    "ar": "مقابلة حيوانات عتبة النافذة"
+  },
   "icon": "🎤",
-  "description": "Photorealistic animal interview on windowsill with human-like gestures and voice responses",
+  "description": {
+    "en": "Whimsical mock interviews with small animals perched on windowsills sharing their daily observations",
+    "zh": "与栖息在窗台上的小动物进行奇幻模拟采访，分享它们的日常观察",
+    "ja": "窓際に止まった小動物たちとの風変わりな模擬インタビューで、彼らの日常観察を共有",
+    "ko": "창틀에 앉은 작은 동물들과의 기발한 모의 인터뷰로 그들의 일상 관찰을 공유",
+    "es": "Entrevistas simuladas caprichosas con pequeños animales posados en alféizares compartiendo sus observaciones diarias",
+    "de": "Skurrile Schein-Interviews mit kleinen Tieren auf Fensterbänken, die ihre täglichen Beobachtungen teilen",
+    "fr": "Interviews simulées fantaisistes avec de petits animaux perchés sur les rebords de fenêtre partageant leurs observations quotidiennes",
+    "ar": "مقابلات وهمية غريبة مع حيوانات صغيرة على عتبات النوافذ تشارك ملاحظاتها اليومية"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/windowsill-animal-interview.mp4?v=1758008502567",
   "tags": [
     "interview",
@@ -17,46 +35,127 @@
   ],
   "createdAt": "2025-01-29T20:30:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.581Z",
+  "lastModified": "2025-09-18T03:33:06.825Z",
   "promptTemplate": "A realistic {animal} sitting on a windowsill, calmly gazing outside. Quiet home interior with natural daylight pouring through a window, sheer curtains gently swaying. A reporter appears next to the window with a microphone and asks, 'What should people do after watching this video?' The {animal} turns to the camera, raises one paw — now anatomically adjusted to form a perfect human-like {gesture} — and confidently says in English, 'Like it.' Photorealistic with light surreal enhancement — real fur, lighting, and movement, but the paw forms a clearly defined gesture like a human hand. Camera starts with a mid-shot over the reporter's shoulder, cuts to a tight front-facing close-up of the {animal}'s gesture and face, ends with a slow zoom-out for comedic timing. Peaceful and homey atmosphere with whimsical twist, using soft color tones and warm light.",
   "params": {
     "animal": {
       "type": "select",
-      "label": "Animal",
+      "label": {
+        "en": "Interviewed Animal",
+        "zh": "被采访动物",
+        "ja": "インタビューする動物",
+        "ko": "인터뷰 동물",
+        "es": "Animal Entrevistado",
+        "de": "Interviewtes Tier",
+        "fr": "Animal Interviewé",
+        "ar": "الحيوان المُقابَل"
+      },
       "required": true,
       "default": "cat",
       "options": [
         {
           "value": "cat",
-          "label": "Cat 🐱"
+          "label": {
+            "en": "Cat 🐱",
+            "zh": "猫 🐱",
+            "ja": "猫 🐱",
+            "ko": "고양이 🐱",
+            "es": "Gato 🐱",
+            "de": "Katze 🐱",
+            "fr": "Chat 🐱",
+            "ar": "قطة 🐱"
+          }
         },
         {
           "value": "dog",
-          "label": "Dog 🐶"
+          "label": {
+            "en": "Dog 🐶",
+            "zh": "狗 🐶",
+            "ja": "犬 🐶",
+            "ko": "개 🐶",
+            "es": "Perro 🐶",
+            "de": "Hund 🐶",
+            "fr": "Chien 🐶",
+            "ar": "كلب 🐶"
+          }
         },
         {
           "value": "rabbit",
-          "label": "Rabbit 🐰"
+          "label": {
+            "en": "Rabbit 🐰",
+            "zh": "兔子 🐰",
+            "ja": "ウサギ 🐰",
+            "ko": "토끼 🐰",
+            "es": "Conejo 🐰",
+            "de": "Kaninchen 🐰",
+            "fr": "Lapin 🐰",
+            "ar": "أرنب 🐰"
+          }
         },
         {
           "value": "hedgehog",
-          "label": "Hedgehog 🦔"
+          "label": {
+            "en": "Hedgehog 🦔",
+            "zh": "hedgehog 🦔",
+            "ja": "hedgehog 🦔",
+            "ko": "hedgehog 🦔",
+            "es": "hedgehog 🦔",
+            "de": "hedgehog 🦔",
+            "fr": "hedgehog 🦔",
+            "ar": "hedgehog 🦔"
+          }
         },
         {
           "value": "squirrel",
-          "label": "Squirrel 🐿️"
+          "label": {
+            "en": "Squirrel 🐿️",
+            "zh": "squirrel 🐿️",
+            "ja": "squirrel 🐿️",
+            "ko": "squirrel 🐿️",
+            "es": "squirrel 🐿️",
+            "de": "squirrel 🐿️",
+            "fr": "squirrel 🐿️",
+            "ar": "squirrel 🐿️"
+          }
         },
         {
           "value": "small bird",
-          "label": "Small Bird 🐦"
+          "label": {
+            "en": "Small Bird 🐦",
+            "zh": "小鸟 🐦",
+            "ja": "小鳥 🐦",
+            "ko": "작은 새 🐦",
+            "es": "Pájaro Pequeño 🐦",
+            "de": "Kleiner Vogel 🐦",
+            "fr": "Petit Oiseau 🐦",
+            "ar": "طائر صغير 🐦"
+          }
         },
         {
           "value": "ferret",
-          "label": "Ferret 🐾"
+          "label": {
+            "en": "Ferret 🐾",
+            "zh": "ferret 🐾",
+            "ja": "ferret 🐾",
+            "ko": "ferret 🐾",
+            "es": "ferret 🐾",
+            "de": "ferret 🐾",
+            "fr": "ferret 🐾",
+            "ar": "ferret 🐾"
+          }
         },
         {
           "value": "hamster",
-          "label": "Hamster 🐹"
+          "label": {
+            "en": "Hamster 🐹",
+            "zh": "仓鼠 🐹",
+            "ja": "ハムスター 🐹",
+            "ko": "햄스터 🐹",
+            "es": "Hámster 🐹",
+            "de": "Hamster 🐹",
+            "fr": "Hamster 🐹",
+            "ar": "هامستر 🐹"
+          }
         }
       ]
     },
@@ -68,41 +167,122 @@
       "options": [
         {
           "value": "thumbs-up gesture",
-          "label": "Thumbs Up 👍"
+          "label": {
+            "en": "Thumbs Up 👍",
+            "zh": "thumbs-up gesture 👍",
+            "ja": "thumbs-up gesture 👍",
+            "ko": "thumbs-up gesture 👍",
+            "es": "thumbs-up gesture 👍",
+            "de": "thumbs-up gesture 👍",
+            "fr": "thumbs-up gesture 👍",
+            "ar": "thumbs-up gesture 👍"
+          }
         },
         {
           "value": "thumbs-down gesture",
-          "label": "Thumbs Down 👎"
+          "label": {
+            "en": "Thumbs Down 👎",
+            "zh": "thumbs-down gesture 👎",
+            "ja": "thumbs-down gesture 👎",
+            "ko": "thumbs-down gesture 👎",
+            "es": "thumbs-down gesture 👎",
+            "de": "thumbs-down gesture 👎",
+            "fr": "thumbs-down gesture 👎",
+            "ar": "thumbs-down gesture 👎"
+          }
         },
         {
           "value": "peace sign",
-          "label": "Peace Sign ✌️"
+          "label": {
+            "en": "Peace Sign ✌️",
+            "zh": "peace sign ✌️",
+            "ja": "peace sign ✌️",
+            "ko": "peace sign ✌️",
+            "es": "peace sign ✌️",
+            "de": "peace sign ✌️",
+            "fr": "peace sign ✌️",
+            "ar": "peace sign ✌️"
+          }
         },
         {
           "value": "waving gesture",
-          "label": "Waving 👋"
+          "label": {
+            "en": "Waving 👋",
+            "zh": "waving gesture 👋",
+            "ja": "waving gesture 👋",
+            "ko": "waving gesture 👋",
+            "es": "waving gesture 👋",
+            "de": "waving gesture 👋",
+            "fr": "waving gesture 👋",
+            "ar": "waving gesture 👋"
+          }
         },
         {
           "value": "rock horns",
-          "label": "Rock Horns 🤘"
+          "label": {
+            "en": "Rock Horns 🤘",
+            "zh": "rock horns 🤘",
+            "ja": "rock horns 🤘",
+            "ko": "rock horns 🤘",
+            "es": "rock horns 🤘",
+            "de": "rock horns 🤘",
+            "fr": "rock horns 🤘",
+            "ar": "rock horns 🤘"
+          }
         },
         {
           "value": "OK sign",
-          "label": "OK Sign 👌"
+          "label": {
+            "en": "OK Sign 👌",
+            "zh": "OK sign 👌",
+            "ja": "OK sign 👌",
+            "ko": "OK sign 👌",
+            "es": "OK sign 👌",
+            "de": "OK sign 👌",
+            "fr": "OK sign 👌",
+            "ar": "OK sign 👌"
+          }
         },
         {
           "value": "vulcan salute",
-          "label": "Vulcan Salute 🖖"
+          "label": {
+            "en": "Vulcan Salute 🖖",
+            "zh": "vulcan salute 🖖",
+            "ja": "vulcan salute 🖖",
+            "ko": "vulcan salute 🖖",
+            "es": "vulcan salute 🖖",
+            "de": "vulcan salute 🖖",
+            "fr": "vulcan salute 🖖",
+            "ar": "vulcan salute 🖖"
+          }
         },
         {
           "value": "stop gesture",
-          "label": "Stop Gesture 🤚"
+          "label": {
+            "en": "Stop Gesture 🤚",
+            "zh": "stop gesture 🤚",
+            "ja": "stop gesture 🤚",
+            "ko": "stop gesture 🤚",
+            "es": "stop gesture 🤚",
+            "de": "stop gesture 🤚",
+            "fr": "stop gesture 🤚",
+            "ar": "stop gesture 🤚"
+          }
         }
       ]
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

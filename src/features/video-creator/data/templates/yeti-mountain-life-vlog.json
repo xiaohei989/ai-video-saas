@@ -1,9 +1,27 @@
 {
   "id": "e5b8f1c4-9a7d-3f6e-2b8c-7e4a1d5b8f9e",
   "slug": "yeti-mountain-life-vlog",
-  "name": "Yeti Mountain Life Vlog",
+  "name": {
+    "en": "Yeti Mountain Life Vlog",
+    "zh": "雪人山地生活视频博客",
+    "ja": "イエティ山岳生活ブログ",
+    "ko": "예티 산악 생활 브이로그",
+    "es": "Vlog de Vida en la Montaña del Yeti",
+    "de": "Yeti Bergleben Vlog",
+    "fr": "Vlog de Vie en Montagne du Yéti",
+    "ar": "مدونة فيديو حياة الييتي الجبلية"
+  },
   "icon": "🏔️",
-  "description": "POV selfie footage of a Yeti sharing daily life activities in the Himalayan mountains with entertaining commentary",
+  "description": {
+    "en": "Documentary-style vlog following a friendly yeti's daily life in the snowy mountains",
+    "zh": "纪录片风格的视频博客，跟随友善雪人在雪山中的日常生活",
+    "ja": "雪山での友好的なイエティの日常生活を追うドキュメンタリー風のブログ",
+    "ko": "눈 덮인 산에서 친근한 예티의 일상 생활을 따라가는 다큐멘터리 스타일 브이로그",
+    "es": "Vlog estilo documental siguiendo la vida diaria de un yeti amigable en las montañas nevadas",
+    "de": "Dokumentarfilm-artiger Vlog über das tägliche Leben eines freundlichen Yetis in den verschneiten Bergen",
+    "fr": "Vlog de style documentaire suivant la vie quotidienne d'un yéti amical dans les montagnes enneigées",
+    "ar": "مدونة فيديو بأسلوب وثائقي تتبع الحياة اليومية لييتي ودود في الجبال المثلجة"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/yeti-mountain-life-vlog.mp4?v=1758008502567",
   "tags": [
     "yeti",
@@ -17,7 +35,7 @@
   ],
   "createdAt": "2025-01-29T23:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.581Z",
+  "lastModified": "2025-09-18T03:33:06.826Z",
   "promptTemplate": "POV selfie of a realistic white-furred Yeti in {weather_condition} conditions during {time_of_day}, holding a selfie stick with the camera at the end, standing majestically in the Himalayan mountains. {activity_description} The scene unfolds in the breathtaking Himalayan landscape with towering snow-capped peaks reaching into the clouds, pristine glaciers gleaming under natural light, and ancient ice formations creating a dramatic backdrop. Prayer flags flutter in the mountain winds while the thin, crisp air sparkles with ice crystals. Far below, deep valleys disappear into misty clouds, emphasizing the incredible altitude and isolation of this sacred mountain realm. The atmosphere is both serene and powerful, filled with the sounds of mountain winds and distant avalanches echoing through the peaks. National Geographic documentary style, HD quality with cinematic depth of field capturing the majesty of high-altitude wilderness. The Yeti turns to face the camera directly and speaks to the audience in his deep, wise mountain voice: '{voiceover_content}' No background narration or voiceover - only the Yeti's direct speech is heard.",
   "params": {
     "weather_condition": {
@@ -28,15 +46,42 @@
       "options": [
         {
           "value": "clear mountain",
-          "label": "Clear Mountain ☀️🏔️"
+          "label": {
+            "en": "Clear Mountain ☀️🏔️",
+            "zh": "clear mountain ☀️🏔️",
+            "ja": "clear mountain ☀️🏔️",
+            "ko": "clear mountain ☀️🏔️",
+            "es": "clear mountain ☀️🏔️",
+            "de": "clear mountain ☀️🏔️",
+            "fr": "clear mountain ☀️🏔️",
+            "ar": "clear mountain ☀️🏔️"
+          }
         },
         {
           "value": "blizzard",
-          "label": "Blizzard 🌨️💨"
+          "label": {
+            "en": "Blizzard 🌨️💨",
+            "zh": "blizzard 🌨️💨",
+            "ja": "blizzard 🌨️💨",
+            "ko": "blizzard 🌨️💨",
+            "es": "blizzard 🌨️💨",
+            "de": "blizzard 🌨️💨",
+            "fr": "blizzard 🌨️💨",
+            "ar": "blizzard 🌨️💨"
+          }
         },
         {
           "value": "aurora night",
-          "label": "Aurora Night 🌌✨"
+          "label": {
+            "en": "Aurora Night 🌌✨",
+            "zh": "aurora night 🌌✨",
+            "ja": "aurora night 🌌✨",
+            "ko": "aurora night 🌌✨",
+            "es": "aurora night 🌌✨",
+            "de": "aurora night 🌌✨",
+            "fr": "aurora night 🌌✨",
+            "ar": "aurora night 🌌✨"
+          }
         }
       ]
     },
@@ -48,23 +93,68 @@
       "options": [
         {
           "value": "dawn",
-          "label": "Mountain Dawn 🌅"
+          "label": {
+            "en": "Mountain Dawn 🌅",
+            "zh": "dawn 🌅",
+            "ja": "dawn 🌅",
+            "ko": "dawn 🌅",
+            "es": "dawn 🌅",
+            "de": "dawn 🌅",
+            "fr": "dawn 🌅",
+            "ar": "dawn 🌅"
+          }
         },
         {
           "value": "midday",
-          "label": "High Sun ☀️"
+          "label": {
+            "en": "High Sun ☀️",
+            "zh": "midday ☀️",
+            "ja": "midday ☀️",
+            "ko": "midday ☀️",
+            "es": "midday ☀️",
+            "de": "midday ☀️",
+            "fr": "midday ☀️",
+            "ar": "midday ☀️"
+          }
         },
         {
           "value": "dusk",
-          "label": "Mountain Dusk 🌇"
+          "label": {
+            "en": "Mountain Dusk 🌇",
+            "zh": "dusk 🌇",
+            "ja": "dusk 🌇",
+            "ko": "dusk 🌇",
+            "es": "dusk 🌇",
+            "de": "dusk 🌇",
+            "fr": "dusk 🌇",
+            "ar": "dusk 🌇"
+          }
         },
         {
           "value": "night",
-          "label": "Star Night 🌙"
+          "label": {
+            "en": "Star Night 🌙",
+            "zh": "night 🌙",
+            "ja": "night 🌙",
+            "ko": "night 🌙",
+            "es": "night 🌙",
+            "de": "night 🌙",
+            "fr": "night 🌙",
+            "ar": "night 🌙"
+          }
         },
         {
           "value": "late_night",
-          "label": "Deep Night ⭐"
+          "label": {
+            "en": "Deep Night ⭐",
+            "zh": "late_night ⭐",
+            "ja": "late_night ⭐",
+            "ko": "late_night ⭐",
+            "es": "late_night ⭐",
+            "de": "late_night ⭐",
+            "fr": "late_night ⭐",
+            "ar": "late_night ⭐"
+          }
         }
       ]
     },
@@ -76,91 +166,226 @@
       "options": [
         {
           "value": "morning_snow_bath",
-          "label": "Morning Snow Bath ❄️",
+          "label": {
+            "en": "Morning Snow Bath ❄️",
+            "zh": "morning_snow_bath ❄️",
+            "ja": "morning_snow_bath ❄️",
+            "ko": "morning_snow_bath ❄️",
+            "es": "morning_snow_bath ❄️",
+            "de": "morning_snow_bath ❄️",
+            "fr": "morning_snow_bath ❄️",
+            "ar": "morning_snow_bath ❄️"
+          },
           "activity_description": "He scoops up fresh, powdery snow and gently scrubs his thick white fur, demonstrating his daily grooming routine with surprising gentleness for such a massive creature.",
           "voiceover_content": "Fresh powder cleans the fur. Mountain hygiene 101."
         },
         {
           "value": "track_investigation",
-          "label": "Track Investigation 🔍",
+          "label": {
+            "en": "Track Investigation 🔍",
+            "zh": "track_investigation 🔍",
+            "ja": "track_investigation 🔍",
+            "ko": "track_investigation 🔍",
+            "es": "track_investigation 🔍",
+            "de": "track_investigation 🔍",
+            "fr": "track_investigation 🔍",
+            "ar": "track_investigation 🔍"
+          },
           "activity_description": "He kneels down and examines animal tracks in the snow with expert precision, his keen eyes reading the story of mountain wildlife movements.",
           "voiceover_content": "Snow leopard tracks... They're getting bolder."
         },
         {
           "value": "mountain_tea_brewing",
-          "label": "Mountain Tea Brewing ☕",
+          "label": {
+            "en": "Mountain Tea Brewing ☕",
+            "zh": "mountain_tea_brewing ☕",
+            "ja": "mountain_tea_brewing ☕",
+            "ko": "mountain_tea_brewing ☕",
+            "es": "mountain_tea_brewing ☕",
+            "de": "mountain_tea_brewing ☕",
+            "fr": "mountain_tea_brewing ☕",
+            "ar": "mountain_tea_brewing ☕"
+          },
           "activity_description": "He carefully gathers rare Himalayan herbs and combines them with pristine glacier water, creating a steaming mountain tea in a natural ice bowl.",
           "voiceover_content": "Glacier water tea. Better than coffee shops below."
         },
         {
           "value": "ice_wall_climbing",
-          "label": "Ice Wall Climbing 🧗",
+          "label": {
+            "en": "Ice Wall Climbing 🧗",
+            "zh": "ice_wall_climbing 🧗",
+            "ja": "ice_wall_climbing 🧗",
+            "ko": "ice_wall_climbing 🧗",
+            "es": "ice_wall_climbing 🧗",
+            "de": "ice_wall_climbing 🧗",
+            "fr": "ice_wall_climbing 🧗",
+            "ar": "ice_wall_climbing 🧗"
+          },
           "activity_description": "He effortlessly scales a nearly vertical ice wall with his massive claws, demonstrating incredible strength and agility that would be impossible for humans.",
           "voiceover_content": "Humans need gear. I just need these."
         },
         {
           "value": "glacier_fishing",
-          "label": "Glacier Fishing 🎣",
+          "label": {
+            "en": "Glacier Fishing 🎣",
+            "zh": "glacier_fishing 🎣",
+            "ja": "glacier_fishing 🎣",
+            "ko": "glacier_fishing 🎣",
+            "es": "glacier_fishing 🎣",
+            "de": "glacier_fishing 🎣",
+            "fr": "glacier_fishing 🎣",
+            "ar": "glacier_fishing 🎣"
+          },
           "activity_description": "He punches through thick glacier ice with his bare fists and reaches into the icy water to catch fish with lightning-fast reflexes.",
           "voiceover_content": "Ice fishing, Yeti style. No equipment needed."
         },
         {
           "value": "avalanche_warning",
-          "label": "Avalanche Warning 🏔️",
+          "label": {
+            "en": "Avalanche Warning 🏔️",
+            "zh": "avalanche_warning 🏔️",
+            "ja": "avalanche_warning 🏔️",
+            "ko": "avalanche_warning 🏔️",
+            "es": "avalanche_warning 🏔️",
+            "de": "avalanche_warning 🏔️",
+            "fr": "avalanche_warning 🏔️",
+            "ar": "avalanche_warning 🏔️"
+          },
           "activity_description": "He suddenly stops and tilts his head, listening intently to subtle mountain sounds. His expression turns serious as he detects dangerous snow conditions.",
           "voiceover_content": "Hear that rumble? Time to move. Been doing this for centuries."
         },
         {
           "value": "aurora_watching",
-          "label": "Aurora Watching ⚡",
+          "label": {
+            "en": "Aurora Watching ⚡",
+            "zh": "aurora_watching ⚡",
+            "ja": "aurora_watching ⚡",
+            "ko": "aurora_watching ⚡",
+            "es": "aurora_watching ⚡",
+            "de": "aurora_watching ⚡",
+            "fr": "aurora_watching ⚡",
+            "ar": "aurora_watching ⚡"
+          },
           "activity_description": "He points excitedly at rare daytime aurora phenomena visible only from extreme altitude, his eyes reflecting the ethereal lights dancing across the sky.",
           "voiceover_content": "Humans only see aurora at night. We know the daytime spots."
         },
         {
           "value": "cave_decorating",
-          "label": "Cave Decorating 🏠",
+          "label": {
+            "en": "Cave Decorating 🏠",
+            "zh": "cave_decorating 🏠",
+            "ja": "cave_decorating 🏠",
+            "ko": "cave_decorating 🏠",
+            "es": "cave_decorating 🏠",
+            "de": "cave_decorating 🏠",
+            "fr": "cave_decorating 🏠",
+            "ar": "cave_decorating 🏠"
+          },
           "activity_description": "He arranges beautiful ice sculptures and crystal formations in his snow cave home, creating surprisingly artistic and comfortable living spaces.",
           "voiceover_content": "Home improvement, Yeti edition. Ice furniture lasts forever."
         },
         {
           "value": "food_preservation",
-          "label": "Food Preservation 🥩",
+          "label": {
+            "en": "Food Preservation 🥩",
+            "zh": "food_preservation 🥩",
+            "ja": "food_preservation 🥩",
+            "ko": "food_preservation 🥩",
+            "es": "food_preservation 🥩",
+            "de": "food_preservation 🥩",
+            "fr": "food_preservation 🥩",
+            "ar": "food_preservation 🥩"
+          },
           "activity_description": "He demonstrates how to use natural glacier caves as refrigeration, organizing and storing mountain game with ancient preservation techniques.",
           "voiceover_content": "Natural freezer everywhere. Food stays fresh for decades."
         },
         {
           "value": "night_hunting",
-          "label": "Night Hunting 🦌",
+          "label": {
+            "en": "Night Hunting 🦌",
+            "zh": "night_hunting 🦌",
+            "ja": "night_hunting 🦌",
+            "ko": "night_hunting 🦌",
+            "es": "night_hunting 🦌",
+            "de": "night_hunting 🦌",
+            "fr": "night_hunting 🦌",
+            "ar": "night_hunting 🦌"
+          },
           "activity_description": "He moves silently through the darkness with supernatural stealth, his glowing eyes scanning for mountain wildlife with perfect night vision.",
           "voiceover_content": "Night vision is standard for Yetis. Humans miss half the fun."
         },
         {
           "value": "storm_shelter",
-          "label": "Storm Shelter 🔥",
+          "label": {
+            "en": "Storm Shelter 🔥",
+            "zh": "storm_shelter 🔥",
+            "ja": "storm_shelter 🔥",
+            "ko": "storm_shelter 🔥",
+            "es": "storm_shelter 🔥",
+            "de": "storm_shelter 🔥",
+            "fr": "storm_shelter 🔥",
+            "ar": "storm_shelter 🔥"
+          },
           "activity_description": "He calmly reinforces his shelter as a massive blizzard rages outside, showing no fear of the extreme weather conditions that would terrify most creatures.",
           "voiceover_content": "Category 5 blizzard? Just Tuesday night up here."
         },
         {
           "value": "cosmic_philosophy",
-          "label": "Cosmic Philosophy 🌌",
+          "label": {
+            "en": "Cosmic Philosophy 🌌",
+            "zh": "cosmic_philosophy 🌌",
+            "ja": "cosmic_philosophy 🌌",
+            "ko": "cosmic_philosophy 🌌",
+            "es": "cosmic_philosophy 🌌",
+            "de": "cosmic_philosophy 🌌",
+            "fr": "cosmic_philosophy 🌌",
+            "ar": "cosmic_philosophy 🌌"
+          },
           "activity_description": "He lies back against an ice formation and gazes up at the infinite starry sky, his ancient wisdom evident in his contemplative expression.",
           "voiceover_content": "At 20,000 feet, everything looks small. Perspective changes."
         },
         {
           "value": "deep_sleep_prep",
-          "label": "Deep Sleep Prep 😴",
+          "label": {
+            "en": "Deep Sleep Prep 😴",
+            "zh": "deep_sleep_prep 😴",
+            "ja": "deep_sleep_prep 😴",
+            "ko": "deep_sleep_prep 😴",
+            "es": "deep_sleep_prep 😴",
+            "de": "deep_sleep_prep 😴",
+            "fr": "deep_sleep_prep 😴",
+            "ar": "deep_sleep_prep 😴"
+          },
           "activity_description": "He arranges thick layers of mountain moss and fur in his ice cave, creating a surprisingly cozy sleeping area despite the extreme cold.",
           "voiceover_content": "Mountain sleep secret? Embrace the cold, don't fight it."
         },
         {
           "value": "mountain_meditation",
-          "label": "Mountain Meditation 🧘",
+          "label": {
+            "en": "Mountain Meditation 🧘",
+            "zh": "mountain_meditation 🧘",
+            "ja": "mountain_meditation 🧘",
+            "ko": "mountain_meditation 🧘",
+            "es": "mountain_meditation 🧘",
+            "de": "mountain_meditation 🧘",
+            "fr": "mountain_meditation 🧘",
+            "ar": "mountain_meditation 🧘"
+          },
           "activity_description": "He sits in perfect stillness on a mountain peak, his breathing synchronized with the mountain winds as he enters deep meditative states.",
           "voiceover_content": "Meditating for millennia. Mountains talk if you listen."
         },
         {
           "value": "custom",
-          "label": "Custom Activity ✏️",
+          "label": {
+            "en": "Custom Activity ✏️",
+            "zh": "custom ✏️",
+            "ja": "custom ✏️",
+            "ko": "custom ✏️",
+            "es": "custom ✏️",
+            "de": "custom ✏️",
+            "fr": "custom ✏️",
+            "ar": "custom ✏️"
+          },
           "activity_description": "He performs a custom mountain activity. [Add your specific Yeti activity details here]",
           "voiceover_content": "[Add your custom Yeti mountain commentary here]"
         }
@@ -186,7 +411,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

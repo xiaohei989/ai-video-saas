@@ -172,8 +172,7 @@ export const SECURITY_CONFIG = {
       'data:',
       'https://*.supabase.co',
       'https://hvkzwrnvxsleeonqqrzq.supabase.co',
-      'https://heyoo.oss-ap-southeast-1.aliyuncs.com',
-      'https://*.aliyuncs.com'
+      'https://cdn.veo3video.me'
     ],
     FRAME_SRC: [
       "'self'",

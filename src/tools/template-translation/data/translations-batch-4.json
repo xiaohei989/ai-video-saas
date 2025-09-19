@@ -1,0 +1,918 @@
+{
+  "batch": 4,
+  "description": "第四批模板翻译 - 剩余16个模板的完整8种语言翻译",
+  "templates": {
+    "baby-profession-interview": {
+      "name": {
+        "en": "Baby Professional Interview",
+        "zh": "婴儿职业访谈",
+        "ja": "赤ちゃん職業インタビュー",
+        "ko": "아기 직업 인터뷰",
+        "es": "Entrevista Profesional de Bebé",
+        "de": "Baby Berufs-Interview",
+        "fr": "Interview Professionnel de Bébé",
+        "ar": "مقابلة مهنية للطفل"
+      },
+      "description": {
+        "en": "Cynical reporter interviews an optimistic baby about their tough late-night job",
+        "zh": "愤世嫉俗的记者采访乐观的婴儿关于他们艰难的深夜工作",
+        "ja": "皮肉な記者が楽観的な赤ちゃんの厳しい深夜の仕事について取材する",
+        "ko": "냉소적인 기자가 낙관적인 아기의 힘든 야간 근무에 대해 인터뷰한다",
+        "es": "Reportero cínico entrevista a un bebé optimista sobre su duro trabajo nocturno",
+        "de": "Zynischer Reporter interviewt ein optimistisches Baby über seinen harten Nachtjob",
+        "fr": "Journaliste cynique interviewe un bébé optimiste sur son dur travail de nuit",
+        "ar": "مراسل متشائم يقابل طفل متفائل حول عمله الليلي الشاق"
+      },
+      "params": {
+        "profession": {
+          "label": {
+            "en": "Baby's Profession",
+            "zh": "婴儿的职业",
+            "ja": "赤ちゃんの職業",
+            "ko": "아기의 직업",
+            "es": "Profesión del Bebé",
+            "de": "Beruf des Babys",
+            "fr": "Profession du Bébé",
+            "ar": "مهنة الطفل"
+          }
+        },
+        "location": {
+          "label": {
+            "en": "Interview Location",
+            "zh": "采访地点",
+            "ja": "インタビュー場所",
+            "ko": "인터뷰 장소",
+            "es": "Ubicación de la Entrevista",
+            "de": "Interview-Ort",
+            "fr": "Lieu de l'Interview",
+            "ar": "موقع المقابلة"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "bigfoot-survival-vlog": {
+      "name": {
+        "en": "Bigfoot Survival Vlog",
+        "zh": "大脚怪生存视频博客",
+        "ja": "ビッグフット生存ブログ",
+        "ko": "빅풋 생존 브이로그",
+        "es": "Vlog de Supervivencia de Pie Grande",
+        "de": "Bigfoot Survival-Vlog",
+        "fr": "Vlog de Survie de Bigfoot",
+        "ar": "مدونة فيديو نجاة البيغ فوت"
+      },
+      "description": {
+        "en": "Bigfoot documents survival techniques and daily life in the wilderness through vlogs",
+        "zh": "大脚怪通过视频博客记录荒野中的生存技巧和日常生活",
+        "ja": "ビッグフットが荒野での生存テクニックと日常生活をブログで記録する",
+        "ko": "빅풋이 브이로그를 통해 야생에서의 생존 기술과 일상생활을 기록한다",
+        "es": "Pie Grande documenta técnicas de supervivencia y vida diaria en la naturaleza a través de vlogs",
+        "de": "Bigfoot dokumentiert Überlebenstechniken und das tägliche Leben in der Wildnis durch Vlogs",
+        "fr": "Bigfoot documente les techniques de survie et la vie quotidienne dans la nature sauvage à travers des vlogs",
+        "ar": "يوثق البيغ فوت تقنيات البقاء والحياة اليومية في البرية من خلال مدونات الفيديو"
+      },
+      "params": {
+        "activity": {
+          "label": {
+            "en": "Survival Activity",
+            "zh": "生存活动",
+            "ja": "生存活動",
+            "ko": "생존 활동",
+            "es": "Actividad de Supervivencia",
+            "de": "Überlebensaktivität",
+            "fr": "Activité de Survie",
+            "ar": "نشاط البقاء"
+          }
+        },
+        "environment": {
+          "label": {
+            "en": "Environment",
+            "zh": "环境",
+            "ja": "環境",
+            "ko": "환경",
+            "es": "Entorno",
+            "de": "Umgebung",
+            "fr": "Environnement",
+            "ar": "البيئة"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "blueprint-to-product": {
+      "name": {
+        "en": "Blueprint to Product",
+        "zh": "蓝图变产品",
+        "ja": "設計図から製品へ",
+        "ko": "청사진에서 제품으로",
+        "es": "De Plano a Producto",
+        "de": "Von der Blaupause zum Produkt",
+        "fr": "Du Plan au Produit",
+        "ar": "من المخطط إلى المنتج"
+      },
+      "description": {
+        "en": "Magical transformation process from engineering blueprints to fully functional products",
+        "zh": "从工程蓝图到功能完整产品的神奇转换过程",
+        "ja": "エンジニアリング設計図から完全に機能する製品への魔法的な変換プロセス",
+        "ko": "엔지니어링 청사진에서 완전히 기능하는 제품으로의 마법적인 변환 과정",
+        "es": "Proceso de transformación mágica de planos de ingeniería a productos completamente funcionales",
+        "de": "Magischer Transformationsprozess von Ingenieursbauplänen zu voll funktionsfähigen Produkten",
+        "fr": "Processus de transformation magique des plans d'ingénierie aux produits entièrement fonctionnels",
+        "ar": "عملية تحويل سحرية من مخططات الهندسة إلى منتجات وظيفية بالكامل"
+      },
+      "params": {
+        "product_type": {
+          "label": {
+            "en": "Product Type",
+            "zh": "产品类型",
+            "ja": "製品タイプ",
+            "ko": "제품 유형",
+            "es": "Tipo de Producto",
+            "de": "Produkttyp",
+            "fr": "Type de Produit",
+            "ar": "نوع المنتج"
+          }
+        },
+        "transformation_style": {
+          "label": {
+            "en": "Transformation Style",
+            "zh": "转换风格",
+            "ja": "変換スタイル",
+            "ko": "변환 스타일",
+            "es": "Estilo de Transformación",
+            "de": "Transformationsstil",
+            "fr": "Style de Transformation",
+            "ar": "نمط التحويل"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "cctv-animal-rider-surveillance": {
+      "name": {
+        "en": "CCTV Animal Rider Surveillance",
+        "zh": "监控摄像头动物骑手监视",
+        "ja": "CCTV動物ライダー監視",
+        "ko": "CCTV 동물 라이더 감시",
+        "es": "Vigilancia CCTV de Jinete Animal",
+        "de": "CCTV Tier-Reiter Überwachung",
+        "fr": "Surveillance CCTV de Cavalier Animal",
+        "ar": "مراقبة CCTV لراكب الحيوان"
+      },
+      "description": {
+        "en": "Security camera footage of unexpected animals riding various vehicles in urban environments",
+        "zh": "安全摄像头拍摄到意想不到的动物在城市环境中骑乘各种交通工具",
+        "ja": "都市環境で様々な乗り物に乗る予期しない動物のセキュリティカメラ映像",
+        "ko": "도시 환경에서 다양한 탈것을 타는 예상치 못한 동물들의 보안 카메라 영상",
+        "es": "Metraje de cámara de seguridad de animales inesperados montando varios vehículos en entornos urbanos",
+        "de": "Sicherheitskamera-Aufnahmen von unerwarteten Tieren, die verschiedene Fahrzeuge in städtischen Umgebungen fahren",
+        "fr": "Images de caméra de sécurité d'animaux inattendus montant divers véhicules dans des environnements urbains",
+        "ar": "لقطات كاميرا أمنية لحيوانات غير متوقعة تركب مركبات مختلفة في البيئات الحضرية"
+      },
+      "params": {
+        "animal": {
+          "label": {
+            "en": "Animal Type",
+            "zh": "动物类型",
+            "ja": "動物の種類",
+            "ko": "동물 종류",
+            "es": "Tipo de Animal",
+            "de": "Tierart",
+            "fr": "Type d'Animal",
+            "ar": "نوع الحيوان"
+          }
+        },
+        "vehicle": {
+          "label": {
+            "en": "Vehicle Type",
+            "zh": "交通工具类型",
+            "ja": "乗り物の種類",
+            "ko": "탈것 종류",
+            "es": "Tipo de Vehículo",
+            "de": "Fahrzeugtyp",
+            "fr": "Type de Véhicule",
+            "ar": "نوع المركبة"
+          }
+        },
+        "location": {
+          "label": {
+            "en": "Surveillance Location",
+            "zh": "监控地点",
+            "ja": "監視場所",
+            "ko": "감시 장소",
+            "es": "Ubicación de Vigilancia",
+            "de": "Überwachungsort",
+            "fr": "Lieu de Surveillance",
+            "ar": "موقع المراقبة"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "city-landmarks-book": {
+      "name": {
+        "en": "City Landmarks Book",
+        "zh": "城市地标书籍",
+        "ja": "都市ランドマーク本",
+        "ko": "도시 랜드마크 책",
+        "es": "Libro de Monumentos de la Ciudad",
+        "de": "Stadtsehenswürdigkeiten Buch",
+        "fr": "Livre des Monuments de la Ville",
+        "ar": "كتاب معالم المدينة"
+      },
+      "description": {
+        "en": "Interactive book that brings famous city landmarks to life with 3D projections and animations",
+        "zh": "互动书籍，通过3D投影和动画将著名城市地标栩栩如生地呈现",
+        "ja": "3Dプロジェクションとアニメーションで有名な都市のランドマークを生き生きと表現するインタラクティブな本",
+        "ko": "3D 프로젝션과 애니메이션으로 유명한 도시 랜드마크를 생생하게 구현하는 인터랙티브 책",
+        "es": "Libro interactivo que da vida a monumentos famosos de la ciudad con proyecciones 3D y animaciones",
+        "de": "Interaktives Buch, das berühmte Stadtsehenswürdigkeiten mit 3D-Projektionen und Animationen zum Leben erweckt",
+        "fr": "Livre interactif qui donne vie aux monuments célèbres de la ville avec des projections 3D et des animations",
+        "ar": "كتاب تفاعلي يحيي معالم المدينة الشهيرة بالإسقاطات ثلاثية الأبعاد والرسوم المتحركة"
+      },
+      "params": {
+        "city": {
+          "label": {
+            "en": "City",
+            "zh": "城市",
+            "ja": "都市",
+            "ko": "도시",
+            "es": "Ciudad",
+            "de": "Stadt",
+            "fr": "Ville",
+            "ar": "المدينة"
+          }
+        },
+        "landmark": {
+          "label": {
+            "en": "Landmark",
+            "zh": "地标",
+            "ja": "ランドマーク",
+            "ko": "랜드마크",
+            "es": "Monumento",
+            "de": "Sehenswürdigkeit",
+            "fr": "Monument",
+            "ar": "المعلم"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "country-historical-evolution": {
+      "name": {
+        "en": "Country Historical Evolution",
+        "zh": "国家历史演变",
+        "ja": "国の歴史的進化",
+        "ko": "국가 역사적 진화",
+        "es": "Evolución Histórica del País",
+        "de": "Historische Entwicklung des Landes",
+        "fr": "Évolution Historique du Pays",
+        "ar": "التطور التاريخي للبلد"
+      },
+      "description": {
+        "en": "Time-lapse visualization of a country's borders, culture, and development through different historical periods",
+        "zh": "通过不同历史时期的时间流逝可视化展示国家边界、文化和发展",
+        "ja": "異なる歴史的時代を通じた国の国境、文化、発展のタイムラプス可視化",
+        "ko": "다양한 역사적 시대를 통한 국가의 국경, 문화, 발전의 타임랩스 시각화",
+        "es": "Visualización en time-lapse de las fronteras, cultura y desarrollo de un país a través de diferentes períodos históricos",
+        "de": "Zeitraffer-Visualisierung der Grenzen, Kultur und Entwicklung eines Landes durch verschiedene historische Perioden",
+        "fr": "Visualisation en accéléré des frontières, de la culture et du développement d'un pays à travers différentes périodes historiques",
+        "ar": "تصور بالفاصل الزمني لحدود البلد وثقافته وتطوره عبر فترات تاريخية مختلفة"
+      },
+      "params": {
+        "country": {
+          "label": {
+            "en": "Country",
+            "zh": "国家",
+            "ja": "国",
+            "ko": "국가",
+            "es": "País",
+            "de": "Land",
+            "fr": "Pays",
+            "ar": "البلد"
+          }
+        },
+        "time_period": {
+          "label": {
+            "en": "Historical Period",
+            "zh": "历史时期",
+            "ja": "歴史的時代",
+            "ko": "역사적 시대",
+            "es": "Período Histórico",
+            "de": "Historische Periode",
+            "fr": "Période Historique",
+            "ar": "الفترة التاريخية"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "fireplace-cozy-selfie": {
+      "name": {
+        "en": "Fireplace Cozy Selfie",
+        "zh": "壁炉温馨自拍",
+        "ja": "暖炉コージー自撮り",
+        "ko": "벽난로 아늑한 셀카",
+        "es": "Selfie Acogedor de Chimenea",
+        "de": "Kamin Gemütliches Selfie",
+        "fr": "Selfie Confortable de Cheminée",
+        "ar": "سيلفي مدفأة مريح"
+      },
+      "description": {
+        "en": "Cozy fireside selfie video with warm atmosphere, crackling fire sounds, and intimate lighting",
+        "zh": "温馨炉边自拍视频，营造温暖氛围，伴有劈啪燃烧声和亲密照明",
+        "ja": "暖かい雰囲気、薪の燃える音、親密な照明での居心地の良い炉端自撮りビデオ",
+        "ko": "따뜻한 분위기, 타닥거리는 불소리, 친밀한 조명이 있는 아늑한 난로 앞 셀카 영상",
+        "es": "Video selfie acogedor junto al fuego con ambiente cálido, sonidos de fuego crepitante e iluminación íntima",
+        "de": "Gemütliches Kamin-Selfie-Video mit warmer Atmosphäre, knisternden Feuergeräuschen und intimer Beleuchtung",
+        "fr": "Vidéo selfie confortable au coin du feu avec une atmosphère chaleureuse, des sons de feu crépitant et un éclairage intime",
+        "ar": "فيديو سيلفي مريح بجانب المدفأة مع أجواء دافئة وأصوات نار متفرقعة وإضاءة حميمة"
+      },
+      "params": {
+        "mood": {
+          "label": {
+            "en": "Mood",
+            "zh": "心情",
+            "ja": "ムード",
+            "ko": "분위기",
+            "es": "Estado de Ánimo",
+            "de": "Stimmung",
+            "fr": "Humeur",
+            "ar": "المزاج"
+          }
+        },
+        "time_of_day": {
+          "label": {
+            "en": "Time of Day",
+            "zh": "一天中的时间",
+            "ja": "時間帯",
+            "ko": "하루 중 시간",
+            "es": "Hora del Día",
+            "de": "Tageszeit",
+            "fr": "Moment de la Journée",
+            "ar": "وقت اليوم"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "living-book-storms": {
+      "name": {
+        "en": "Living Book Storms",
+        "zh": "活书风暴",
+        "ja": "生きている本の嵐",
+        "ko": "살아있는 책 폭풍",
+        "es": "Tormentas de Libros Vivientes",
+        "de": "Lebende Bücher-Stürme",
+        "fr": "Tempêtes de Livres Vivants",
+        "ar": "عواصف الكتب الحية"
+      },
+      "description": {
+        "en": "Magical books that come alive and create weather phenomena when opened, with pages turning into storms",
+        "zh": "神奇的书籍在打开时变得栩栩如生并创造天气现象，书页变成风暴",
+        "ja": "開かれると生き生きとし、天候現象を作り出す魔法の本で、ページが嵐に変わる",
+        "ko": "열리면 살아나며 날씨 현상을 만들어내는 마법의 책들, 페이지가 폭풍으로 변함",
+        "es": "Libros mágicos que cobran vida y crean fenómenos meteorológicos cuando se abren, con páginas que se convierten en tormentas",
+        "de": "Magische Bücher, die zum Leben erwachen und Wetterphänomene erzeugen, wenn sie geöffnet werden, mit Seiten, die zu Stürmen werden",
+        "fr": "Livres magiques qui prennent vie et créent des phénomènes météorologiques lorsqu'ils sont ouverts, avec des pages qui se transforment en tempêtes",
+        "ar": "كتب سحرية تنبض بالحياة وتخلق ظواهر جوية عند فتحها، مع صفحات تتحول إلى عواصف"
+      },
+      "params": {
+        "book_type": {
+          "label": {
+            "en": "Book Type",
+            "zh": "书籍类型",
+            "ja": "本の種類",
+            "ko": "책 종류",
+            "es": "Tipo de Libro",
+            "de": "Buchtyp",
+            "fr": "Type de Livre",
+            "ar": "نوع الكتاب"
+          }
+        },
+        "weather_type": {
+          "label": {
+            "en": "Weather Phenomenon",
+            "zh": "天气现象",
+            "ja": "天候現象",
+            "ko": "날씨 현상",
+            "es": "Fenómeno Meteorológico",
+            "de": "Wetterphänomen",
+            "fr": "Phénomène Météorologique",
+            "ar": "الظاهرة الجوية"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "magic-pen-3d-bloom": {
+      "name": {
+        "en": "Magic Pen 3D Bloom",
+        "zh": "魔法笔3D绽放",
+        "ja": "マジックペン3D開花",
+        "ko": "마법 펜 3D 블룸",
+        "es": "Florecimiento 3D de Pluma Mágica",
+        "de": "Magischer Stift 3D-Blüte",
+        "fr": "Épanouissement 3D de Stylo Magique",
+        "ar": "قلم سحري تفتح ثلاثي الأبعاد"
+      },
+      "description": {
+        "en": "Magical pen that draws objects which then bloom into three-dimensional reality from the paper",
+        "zh": "神奇的笔画出物体，然后从纸上绽放成三维现实",
+        "ja": "物体を描き、それが紙から三次元の現実に開花する魔法のペン",
+        "ko": "물체를 그리면 종이에서 3차원 현실로 피어나는 마법의 펜",
+        "es": "Pluma mágica que dibuja objetos que luego florecen en realidad tridimensional desde el papel",
+        "de": "Magischer Stift, der Objekte zeichnet, die dann aus dem Papier in die dreidimensionale Realität blühen",
+        "fr": "Stylo magique qui dessine des objets qui s'épanouissent ensuite en réalité tridimensionnelle depuis le papier",
+        "ar": "قلم سحري يرسم أشياء تتفتح بعد ذلك إلى واقع ثلاثي الأبعاد من الورق"
+      },
+      "params": {
+        "object_type": {
+          "label": {
+            "en": "Object to Draw",
+            "zh": "要绘制的物体",
+            "ja": "描くオブジェクト",
+            "ko": "그릴 물체",
+            "es": "Objeto a Dibujar",
+            "de": "Zu zeichnendes Objekt",
+            "fr": "Objet à Dessiner",
+            "ar": "الكائن المراد رسمه"
+          }
+        },
+        "bloom_style": {
+          "label": {
+            "en": "Bloom Animation Style",
+            "zh": "绽放动画风格",
+            "ja": "開花アニメーションスタイル",
+            "ko": "블룸 애니메이션 스타일",
+            "es": "Estilo de Animación de Florecimiento",
+            "de": "Blüten-Animationsstil",
+            "fr": "Style d'Animation d'Épanouissement",
+            "ar": "نمط الرسوم المتحركة للتفتح"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "ocean-selfie-surprise": {
+      "name": {
+        "en": "Ocean Selfie Surprise",
+        "zh": "海洋自拍惊喜",
+        "ja": "海洋自撮りサプライズ",
+        "ko": "바다 셀카 서프라이즈",
+        "es": "Selfie Sorpresa del Océano",
+        "de": "Ozean-Selfie Überraschung",
+        "fr": "Selfie Surprise de l'Océan",
+        "ar": "مفاجأة سيلفي المحيط"
+      },
+      "description": {
+        "en": "Ocean selfie video where unexpected sea creatures photobomb the shot with playful interactions",
+        "zh": "海洋自拍视频，意想不到的海洋生物顽皮地入镜互动",
+        "ja": "予期しない海洋生物が遊び心のある相互作用でフォトボムする海洋自撮りビデオ",
+        "ko": "예상치 못한 바다 생물들이 장난스러운 상호작용으로 사진을 폭격하는 바다 셀카 영상",
+        "es": "Video selfie del océano donde criaturas marinas inesperadas aparecen en la toma con interacciones juguetonas",
+        "de": "Ozean-Selfie-Video, bei dem unerwartete Meerestiere mit verspielten Interaktionen ins Bild platzen",
+        "fr": "Vidéo selfie d'océan où des créatures marines inattendues font irruption dans le plan avec des interactions joueuses",
+        "ar": "فيديو سيلفي المحيط حيث تظهر المخلوقات البحرية غير المتوقعة في اللقطة مع تفاعلات مرحة"
+      },
+      "params": {
+        "sea_creature": {
+          "label": {
+            "en": "Sea Creature",
+            "zh": "海洋生物",
+            "ja": "海洋生物",
+            "ko": "바다 생물",
+            "es": "Criatura Marina",
+            "de": "Meereskreatur",
+            "fr": "Créature Marine",
+            "ar": "المخلوق البحري"
+          }
+        },
+        "interaction_type": {
+          "label": {
+            "en": "Interaction Type",
+            "zh": "互动类型",
+            "ja": "相互作用の種類",
+            "ko": "상호작용 유형",
+            "es": "Tipo de Interacción",
+            "de": "Interaktionstyp",
+            "fr": "Type d'Interaction",
+            "ar": "نوع التفاعل"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "olympic-animal-diving-broadcast": {
+      "name": {
+        "en": "Olympic Animal Diving Broadcast",
+        "zh": "奥运动物跳水转播",
+        "ja": "オリンピック動物ダイビング放送",
+        "ko": "올림픽 동물 다이빙 방송",
+        "es": "Transmisión de Clavados de Animales Olímpicos",
+        "de": "Olympische Tier-Tauchen Übertragung",
+        "fr": "Diffusion de Plongeon Animal Olympique",
+        "ar": "بث الغوص الحيواني الأولمبي"
+      },
+      "description": {
+        "en": "Professional sports broadcast of animals competing in Olympic-style diving competitions with commentary",
+        "zh": "动物参加奥运式跳水比赛的专业体育转播，带有解说",
+        "ja": "オリンピック式ダイビング競技で競う動物の解説付きプロスポーツ放送",
+        "ko": "올림픽 스타일 다이빙 경기에서 경쟁하는 동물들의 해설이 있는 전문 스포츠 방송",
+        "es": "Transmisión deportiva profesional de animales compitiendo en competencias de clavados estilo olímpico con comentario",
+        "de": "Professionelle Sportübertragung von Tieren, die in olympischen Taucherwettbewerben mit Kommentar antreten",
+        "fr": "Diffusion sportive professionnelle d'animaux en compétition dans des compétitions de plongeon de style olympique avec commentaire",
+        "ar": "بث رياضي محترف للحيوانات تتنافس في مسابقات الغوص بأسلوب أولمبي مع التعليق"
+      },
+      "params": {
+        "animal": {
+          "label": {
+            "en": "Diving Animal",
+            "zh": "跳水动物",
+            "ja": "ダイビング動物",
+            "ko": "다이빙 동물",
+            "es": "Animal de Clavados",
+            "de": "Tauchtier",
+            "fr": "Animal de Plongeon",
+            "ar": "حيوان الغوص"
+          }
+        },
+        "diving_style": {
+          "label": {
+            "en": "Diving Style",
+            "zh": "跳水风格",
+            "ja": "ダイビングスタイル",
+            "ko": "다이빙 스타일",
+            "es": "Estilo de Clavado",
+            "de": "Tauchstil",
+            "fr": "Style de Plongeon",
+            "ar": "نمط الغوص"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "selfie-vlog-animals": {
+      "name": {
+        "en": "Selfie Vlog Animals",
+        "zh": "自拍视频博客动物",
+        "ja": "自撮りブログ動物",
+        "ko": "셀카 브이로그 동물",
+        "es": "Selfie Vlog de Animales",
+        "de": "Selfie-Vlog Tiere",
+        "fr": "Selfie Vlog Animaux",
+        "ar": "سيلفي مدونة فيديو الحيوانات"
+      },
+      "description": {
+        "en": "Animals creating their own vlog content with selfie cameras, sharing their daily adventures",
+        "zh": "动物用自拍相机制作自己的视频博客内容，分享他们的日常冒险",
+        "ja": "動物が自撮りカメラで独自のブログコンテンツを作成し、日常の冒険を共有する",
+        "ko": "동물들이 셀카 카메라로 자신만의 브이로그 콘텐츠를 만들며 일상 모험을 공유하는",
+        "es": "Animales creando su propio contenido de vlog con cámaras selfie, compartiendo sus aventuras diarias",
+        "de": "Tiere erstellen ihre eigenen Vlog-Inhalte mit Selfie-Kameras und teilen ihre täglichen Abenteuer",
+        "fr": "Animaux créant leur propre contenu de vlog avec des caméras selfie, partageant leurs aventures quotidiennes",
+        "ar": "الحيوانات تنشئ محتوى مدونة الفيديو الخاص بها بكاميرات السيلفي، تشارك مغامراتها اليومية"
+      },
+      "params": {
+        "animal": {
+          "label": {
+            "en": "Vlogging Animal",
+            "zh": "视频博客动物",
+            "ja": "ブログ動物",
+            "ko": "브이로그 동물",
+            "es": "Animal Vlogger",
+            "de": "Vlog-Tier",
+            "fr": "Animal Vlogueur",
+            "ar": "حيوان مدونة الفيديو"
+          }
+        },
+        "activity": {
+          "label": {
+            "en": "Activity",
+            "zh": "活动",
+            "ja": "アクティビティ",
+            "ko": "활동",
+            "es": "Actividad",
+            "de": "Aktivität",
+            "fr": "Activité",
+            "ar": "النشاط"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "skydiving-adventure": {
+      "name": {
+        "en": "Skydiving Adventure",
+        "zh": "跳伞冒险",
+        "ja": "スカイダイビングアドベンチャー",
+        "ko": "스카이다이빙 모험",
+        "es": "Aventura de Paracaidismo",
+        "de": "Fallschirmsprung-Abenteuer",
+        "fr": "Aventure de Parachutisme",
+        "ar": "مغامرة القفز بالمظلات"
+      },
+      "description": {
+        "en": "Thrilling first-person perspective skydiving video with breathtaking aerial views and adrenaline rush",
+        "zh": "惊险刺激的第一人称视角跳伞视频，展现令人屏息的空中景色和肾上腺素飙升",
+        "ja": "息をのむような空中景色とアドレナリンラッシュを伴うスリリングな一人称視点スカイダイビングビデオ",
+        "ko": "숨막히는 공중 전망과 아드레날린 러시가 있는 스릴 넘치는 1인칭 시점 스카이다이빙 영상",
+        "es": "Emocionante video de paracaidismo en primera persona con vistas aéreas impresionantes y descarga de adrenalina",
+        "de": "Aufregendes Fallschirmsprung-Video aus der Erste-Person-Perspektive mit atemberaubenden Luftaufnahmen und Adrenalinschub",
+        "fr": "Vidéo de parachutisme palpitante à la première personne avec des vues aériennes à couper le souffle et une montée d'adrénaline",
+        "ar": "فيديو مثير للقفز بالمظلات من منظور الشخص الأول مع مناظر جوية خلابة واندفاع الأدرينالين"
+      },
+      "params": {
+        "location": {
+          "label": {
+            "en": "Jump Location",
+            "zh": "跳伞地点",
+            "ja": "ジャンプ場所",
+            "ko": "점프 위치",
+            "es": "Ubicación de Salto",
+            "de": "Sprungort",
+            "fr": "Lieu de Saut",
+            "ar": "موقع القفز"
+          }
+        },
+        "weather": {
+          "label": {
+            "en": "Weather Conditions",
+            "zh": "天气条件",
+            "ja": "天候条件",
+            "ko": "날씨 조건",
+            "es": "Condiciones Climáticas",
+            "de": "Wetterbedingungen",
+            "fr": "Conditions Météorologiques",
+            "ar": "الظروف الجوية"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "surveillance-animal-trampoline": {
+      "name": {
+        "en": "Surveillance Animal Trampoline",
+        "zh": "监控动物蹦床",
+        "ja": "監視動物トランポリン",
+        "ko": "감시 동물 트램폴린",
+        "es": "Trampolín de Animales de Vigilancia",
+        "de": "Überwachung Tier-Trampolin",
+        "fr": "Trampoline Animal de Surveillance",
+        "ar": "ترامبولين حيوان المراقبة"
+      },
+      "description": {
+        "en": "Security camera footage of animals discovered using trampolines in unexpected locations",
+        "zh": "安全摄像头拍摄到动物在意想不到的地方使用蹦床",
+        "ja": "予期しない場所でトランポリンを使用する動物が発見されたセキュリティカメラ映像",
+        "ko": "예상치 못한 장소에서 트램폴린을 사용하는 동물들이 발견된 보안 카메라 영상",
+        "es": "Metraje de cámara de seguridad de animales descubiertos usando trampolines en ubicaciones inesperadas",
+        "de": "Sicherheitskamera-Aufnahmen von Tieren, die dabei entdeckt wurden, wie sie Trampoline an unerwarteten Orten benutzen",
+        "fr": "Images de caméra de sécurité d'animaux découverts utilisant des trampolines dans des endroits inattendus",
+        "ar": "لقطات كاميرا أمنية للحيوانات المكتشفة وهي تستخدم الترامبولين في أماكن غير متوقعة"
+      },
+      "params": {
+        "animal": {
+          "label": {
+            "en": "Animal Type",
+            "zh": "动物类型",
+            "ja": "動物の種類",
+            "ko": "동물 종류",
+            "es": "Tipo de Animal",
+            "de": "Tierart",
+            "fr": "Type d'Animal",
+            "ar": "نوع الحيوان"
+          }
+        },
+        "location": {
+          "label": {
+            "en": "Trampoline Location",
+            "zh": "蹦床位置",
+            "ja": "トランポリンの場所",
+            "ko": "트램폴린 위치",
+            "es": "Ubicación del Trampolín",
+            "de": "Trampolin-Standort",
+            "fr": "Emplacement du Trampoline",
+            "ar": "موقع الترامبولين"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "time-travel-ancient-livestream": {
+      "name": {
+        "en": "Time Travel Ancient Livestream",
+        "zh": "时间旅行古代直播",
+        "ja": "タイムトラベル古代ライブストリーム",
+        "ko": "시간 여행 고대 라이브스트림",
+        "es": "Transmisión en Vivo Antigua de Viaje en el Tiempo",
+        "de": "Zeitreise Antike Livestream",
+        "fr": "Livestream Ancien de Voyage dans le Temps",
+        "ar": "بث مباشر قديم لسفر الزمن"
+      },
+      "description": {
+        "en": "Modern influencer accidentally livestreams from ancient civilizations after time travel mishap",
+        "zh": "现代网络红人在时间旅行意外后意外地从古代文明进行直播",
+        "ja": "現代のインフルエンサーがタイムトラベルの事故後、古代文明から誤ってライブストリームする",
+        "ko": "현대 인플루언서가 시간 여행 사고 후 고대 문명에서 실수로 라이브스트림을 하게 됨",
+        "es": "Influencer moderno transmite accidentalmente en vivo desde civilizaciones antiguas después de un percance de viaje en el tiempo",
+        "de": "Moderner Influencer streamt versehentlich live aus antiken Zivilisationen nach einem Zeitreise-Missgeschick",
+        "fr": "L'influenceur moderne diffuse accidentellement en direct depuis les civilisations anciennes après un accident de voyage dans le temps",
+        "ar": "مؤثر حديث يبث بطريق الخطأ مباشرة من الحضارات القديمة بعد حادث سفر عبر الزمن"
+      },
+      "params": {
+        "civilization": {
+          "label": {
+            "en": "Ancient Civilization",
+            "zh": "古代文明",
+            "ja": "古代文明",
+            "ko": "고대 문명",
+            "es": "Civilización Antigua",
+            "de": "Antike Zivilisation",
+            "fr": "Civilisation Antique",
+            "ar": "الحضارة القديمة"
+          }
+        },
+        "interaction": {
+          "label": {
+            "en": "Historical Interaction",
+            "zh": "历史互动",
+            "ja": "歴史的相互作用",
+            "ko": "역사적 상호작용",
+            "es": "Interacción Histórica",
+            "de": "Historische Interaktion",
+            "fr": "Interaction Historique",
+            "ar": "التفاعل التاريخي"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    }
+  }
+}

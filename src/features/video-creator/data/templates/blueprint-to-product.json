@@ -1,9 +1,27 @@
 {
   "id": "6f5e4d3c-2b1a-4e9f-8c7d-1a2b3c4d5e6f",
   "slug": "blueprint-to-product",
-  "name": "Blueprint to Product",
+  "name": {
+    "en": "Blueprint to Product",
+    "zh": "蓝图变产品",
+    "ja": "設計図から製品へ",
+    "ko": "청사진에서 제품으로",
+    "es": "De Plano a Producto",
+    "de": "Von der Blaupause zum Produkt",
+    "fr": "Du Plan au Produit",
+    "ar": "من المخطط إلى المنتج"
+  },
   "icon": "📐",
-  "description": "Transform technical blueprints into fully assembled products with stunning 3D effects",
+  "description": {
+    "en": "Magical transformation process from engineering blueprints to fully functional products",
+    "zh": "从工程蓝图到功能完整产品的神奇转换过程",
+    "ja": "エンジニアリング設計図から完全に機能する製品への魔法的な変換プロセス",
+    "ko": "엔지니어링 청사진에서 완전히 기능하는 제품으로의 마법적인 변환 과정",
+    "es": "Proceso de transformación mágica de planos de ingeniería a productos completamente funcionales",
+    "de": "Magischer Transformationsprozess von Ingenieursbauplänen zu voll funktionsfähigen Produkten",
+    "fr": "Processus de transformation magique des plans d'ingénierie aux produits entièrement fonctionnels",
+    "ar": "عملية تحويل سحرية من مخططات الهندسة إلى منتجات وظيفية بالكامل"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/blueprint-to-product.mp4?v=1758008502567",
   "credits": 20,
   "tags": [
@@ -19,7 +37,7 @@
   ],
   "createdAt": "2025-01-31T10:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.572Z",
+  "lastModified": "2025-09-18T04:11:01.422Z",
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
@@ -66,13 +84,31 @@
   "params": {
     "product_type": {
       "type": "select",
-      "label": "Product Type",
+      "label": {
+        "en": "Product Type",
+        "zh": "产品类型",
+        "ja": "製品タイプ",
+        "ko": "제품 유형",
+        "es": "Tipo de Producto",
+        "de": "Produkttyp",
+        "fr": "Type de Produit",
+        "ar": "نوع المنتج"
+      },
       "required": true,
       "default": "luxury_watch",
       "options": [
         {
           "value": "luxury_watch",
-          "label": "⌚ Luxury Watch",
+          "label": {
+            "en": "⌚ Luxury Watch",
+            "zh": "⌚ 豪华手表",
+            "ja": "⌚ 高級腕時計",
+            "ko": "⌚ 명품 시계",
+            "es": "⌚ Reloj de Lujo",
+            "de": "⌚ Luxusuhr",
+            "fr": "⌚ Montre de Luxe",
+            "ar": "⌚ ساعة فاخرة"
+          },
           "metadata": {
             "visual_description": "From an old leather-bound book illustration of a vintage pocket watch, golden gears rise and assemble into a ticking luxury timepiece, glowing with precision.",
             "style": "luxury cinematic, mechanical realism",
@@ -103,7 +139,16 @@
         },
         {
           "value": "sports_car",
-          "label": "🏎️ Sports Car",
+          "label": {
+            "en": "🏎️ Sports Car",
+            "zh": "🏎️ 跑车",
+            "ja": "🏎️ スポーツカー",
+            "ko": "🏎️ 스포츠카",
+            "es": "🏎️ Auto Deportivo",
+            "de": "🏎️ Sportwagen",
+            "fr": "🏎️ Voiture de Sport",
+            "ar": "🏎️ سيارة رياضية"
+          },
           "metadata": {
             "visual_description": "From automotive design blueprints on an illuminated desk, carbon fiber panels and chrome engine rise and assemble into a roaring supercar with glowing headlights.",
             "style": "automotive commercial, high-performance realism",
@@ -135,7 +180,16 @@
         },
         {
           "value": "smartphone",
-          "label": "📱 Smartphone",
+          "label": {
+            "en": "📱 Smartphone",
+            "zh": "📱 智能手机",
+            "ja": "📱 スマートフォン",
+            "ko": "📱 스마트폰",
+            "es": "📱 Smartphone",
+            "de": "📱 Smartphone",
+            "fr": "📱 Smartphone",
+            "ar": "📱 هاتف ذكي"
+          },
           "metadata": {
             "visual_description": "From holographic circuit board schematics floating above a tech lab, nano chips and OLED display rise and assemble into a flagship smartphone with holographic interface.",
             "style": "tech commercial, futuristic minimalism",
@@ -167,7 +221,16 @@
         },
         {
           "value": "transformer",
-          "label": "🤖 Transformer Robot",
+          "label": {
+            "en": "🤖 Transformer Robot",
+            "zh": "🤖 变形金刚",
+            "ja": "🤖 トランスフォーマー",
+            "ko": "🤖 트랜스포머",
+            "es": "🤖 Robot Transformer",
+            "de": "🤖 Transformer-Roboter",
+            "fr": "🤖 Robot Transformer",
+            "ar": "🤖 روبوت المحولات"
+          },
           "metadata": {
             "visual_description": "From ancient Cybertronian schematics with glowing alien symbols, armor plates and energon core rise and assemble into a massive Transformer robot in battle stance.",
             "style": "sci-fi cinematic, mechanical transformation realism",
@@ -199,7 +262,16 @@
         },
         {
           "value": "time_machine",
-          "label": "🔮 Time Machine",
+          "label": {
+            "en": "🔮 Time Machine",
+            "zh": "🔮 时光机器",
+            "ja": "🔮 タイムマシン",
+            "ko": "🔮 타임머신",
+            "es": "🔮 Máquina del Tiempo",
+            "de": "🔮 Zeitmaschine",
+            "fr": "🔮 Machine à Remonter le Temps",
+            "ar": "🔮 آلة الزمن"
+          },
           "metadata": {
             "visual_description": "From Leonardo da Vinci's mechanical sketches on aged parchment, bronze gears and crystal orbs rise and assemble into an intricate time travel device with swirling temporal energy.",
             "style": "steampunk renaissance, mechanical mysticism",
@@ -231,7 +303,16 @@
         },
         {
           "value": "dna_robot",
-          "label": "🧬 DNA Robot",
+          "label": {
+            "en": "🧬 DNA Robot",
+            "zh": "🧬 DNA机器人",
+            "ja": "🧬 DNAロボット",
+            "ko": "🧬 DNA 로봇",
+            "es": "🧬 Robot ADN",
+            "de": "🧬 DNA-Roboter",
+            "fr": "🧬 Robot ADN",
+            "ar": "🧬 روبوت الحمض النووي"
+          },
           "metadata": {
             "visual_description": "From scientific DNA helix diagrams on laboratory charts, glowing genetic strands unwind and reassemble into a sophisticated nanoscale medical robot with precision mechanical components.",
             "style": "bio-tech medical, futuristic nano-engineering",
@@ -263,7 +344,16 @@
         },
         {
           "value": "mechanical_dragon",
-          "label": "🐉 Mechanical Dragon",
+          "label": {
+            "en": "🐉 Mechanical Dragon",
+            "zh": "🐉 机械龙",
+            "ja": "🐉 機械ドラゴン",
+            "ko": "🐉 기계 용",
+            "es": "🐉 Dragón Mecánico",
+            "de": "🐉 Mechanischer Drache",
+            "fr": "🐉 Dragon Mécanique",
+            "ar": "🐉 تنين آلي"
+          },
           "metadata": {
             "visual_description": "From medieval bestiary illustrations on ancient parchment, steel plates and hydraulic mechanisms rise and assemble into a massive mechanical dragon with glowing eyes and fire-breathing capability.",
             "style": "medieval steampunk, mechanical beast realism",
@@ -397,7 +487,16 @@
     },
     "brand_text": {
       "type": "text",
-      "label": "Custom Text",
+      "label": {
+        "en": "Custom Text",
+        "zh": "自定义文字",
+        "ja": "カスタムテキスト",
+        "ko": "맞춤 텍스트",
+        "es": "Texto Personalizado",
+        "de": "Benutzerdefinierter Text",
+        "fr": "Texte Personnalisé",
+        "ar": "نص مخصص"
+      },
       "placeholder": "Enter your brand or message",
       "required": true,
       "default": "Engineered to Perfection",
@@ -405,7 +504,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

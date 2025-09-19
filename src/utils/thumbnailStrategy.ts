@@ -123,8 +123,6 @@ export function createIOSVideoPreview(videoUrl: string): HTMLVideoElement | null
   
   // 对需要CORS处理的URL设置crossOrigin
   if (videoUrl.includes('cdn.veo3video.me') || 
-      videoUrl.includes('filesystem.site') ||
-      videoUrl.includes('heyoo.oss-ap-southeast-1.aliyuncs.com') ||
       (videoUrl.startsWith('http://') || videoUrl.startsWith('https://'))) {
     video.crossOrigin = 'anonymous'
     video.setAttribute('crossorigin', 'anonymous')
@@ -188,49 +186,52 @@ function hasValidThumbnail(video: VideoRecord): boolean {
  * 主策略函数：决定是否应该使用服务端缩略图生成
  */
 export function shouldUseServerThumbnail(video: VideoRecord): boolean {
+  const videoTitle = video.title || video.templateName || '未知视频'
+  
   // 如果已有有效缩略图，不需要重新生成
   if (hasValidThumbnail(video)) {
-    console.log(`[THUMBNAIL STRATEGY] 已有有效缩略图，跳过: ${video.id}`)
+    console.log(`[ThumbnailStrategy] 已有有效缩略图，跳过: 视频ID[${video.id}] "${videoTitle}"`)
     return false
   }
 
   // 视频未完成，不生成缩略图
   if (video.status !== 'completed' || !video.videoUrl) {
+    console.log(`[ThumbnailStrategy] 视频未完成，跳过: 视频ID[${video.id}] "${videoTitle}" (状态: ${video.status})`)
     return false
   }
 
   // 🚀 移动端优先使用服务端生成（解决兼容性问题）
   if (isMobile()) {
-    console.log(`[THUMBNAIL STRATEGY] 移动端检测，使用服务端生成: ${video.id}`)
+    console.log(`[ThumbnailStrategy] 移动端检测，使用服务端生成: 视频ID[${video.id}] "${videoTitle}"`)
     return true
   }
 
   // 🚀 iOS Chrome特殊处理（已知问题）
   if (isiOSChrome()) {
-    console.log(`[THUMBNAIL STRATEGY] iOS Chrome检测，使用服务端生成: ${video.id}`)
+    console.log(`[ThumbnailStrategy] iOS Chrome检测，使用服务端生成: 视频ID[${video.id}] "${videoTitle}"`)
     return true
   }
 
   // 🚀 跨域视频使用服务端生成（避免CORS问题）
   if (needsCorsProxy(video.videoUrl)) {
-    console.log(`[THUMBNAIL STRATEGY] CORS域名检测，使用服务端生成: ${video.id}`)
+    console.log(`[ThumbnailStrategy] CORS域名检测，使用服务端生成: 视频ID[${video.id}] "${videoTitle}"`)
     return true
   }
 
   // 🚀 客户端生成失败过的视频使用服务端生成
   if (hasClientGenerationFailed(video.id)) {
-    console.log(`[THUMBNAIL STRATEGY] 客户端生成曾失败，使用服务端生成: ${video.id}`)
+    console.log(`[ThumbnailStrategy] 客户端生成曾失败，使用服务端生成: 视频ID[${video.id}] "${videoTitle}"`)
     return true
   }
 
   // 🚀 缩略图生成状态检查
   if (video.thumbnail_generation_status === 'failed') {
-    console.log(`[THUMBNAIL STRATEGY] 缩略图生成曾失败，重试服务端生成: ${video.id}`)
+    console.log(`[ThumbnailStrategy] 缩略图生成曾失败，重试服务端生成: 视频ID[${video.id}] "${videoTitle}"`)
     return true
   }
 
   // 默认尝试客户端生成（性能更好）
-  console.log(`[THUMBNAIL STRATEGY] 使用客户端生成: ${video.id}`)
+  console.log(`[ThumbnailStrategy] 使用客户端生成: 视频ID[${video.id}] "${videoTitle}"`)
   return false
 }
 

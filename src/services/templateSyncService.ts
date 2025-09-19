@@ -1,11 +1,46 @@
 /**
- * 模板同步服务
- * 处理管理员后台的模板修改与前端文件系统的同步
+ * Template Sync Service
+ * 模板同步服务 - 自动同步JSON模板文件到数据库
  */
 
 import { supabase } from '@/lib/supabase'
+import { templateList } from '@/features/video-creator/data/templates'
 
-// 将数据库模板数据转换为前端JSON格式
+export interface TemplateSyncResult {
+  success: boolean
+  total: number
+  created: number
+  updated: number
+  skipped: number
+  errors: string[]
+  details: {
+    created: string[]
+    updated: string[]
+    skipped: string[]
+    failed: Array<{ id: string; error: string }>
+  }
+}
+
+export interface TemplateRecord {
+  id: string
+  slug: string
+  name: any
+  description?: any
+  thumbnail_url?: string
+  preview_url?: string
+  category?: string
+  credit_cost: number
+  tags: string[]
+  parameters?: any
+  prompt_template?: string
+  veo3_settings?: any
+  like_count: number
+  is_active: boolean
+  is_public: boolean
+  version: string
+}
+
+// 将数据库模板数据转换为前端JSON格式（保留原有功能）
 export const convertDatabaseToFrontendFormat = (dbTemplate: any) => {
   return {
     id: dbTemplate.id,
@@ -26,6 +61,361 @@ export const convertDatabaseToFrontendFormat = (dbTemplate: any) => {
     veo3Settings: dbTemplate.veo3_settings || {}
   }
 }
+
+class TemplateSyncService {
+  private isRunning = false
+
+  /**
+   * 将JSON模板对象转换为数据库记录格式
+   */
+  private convertTemplateToRecord(template: any): TemplateRecord {
+    return {
+      id: template.id,
+      slug: template.slug || template.id,
+      name: typeof template.name === 'string' ? template.name : JSON.stringify(template.name || { en: template.id }),
+      description: typeof template.description === 'string' ? template.description : JSON.stringify(template.description || ''),
+      thumbnail_url: null, // JSON文件中没有缩略图URL
+      preview_url: template.previewUrl || null,
+      category: template.category || null,
+      credit_cost: Number(template.credits) || 0,
+      tags: Array.isArray(template.tags) ? template.tags : [],
+      parameters: template.params || {},
+      prompt_template: JSON.stringify(template.promptTemplate || {}),
+      veo3_settings: template.veo3Settings || {},
+      like_count: 0, // 新模板默认0赞
+      is_active: true,
+      is_public: true, // 默认公开
+      version: template.version || '1.0.0'
+    }
+  }
+
+  /**
+   * 检查模板是否需要更新（比较版本和关键字段）
+   */
+  private needsUpdate(jsonTemplate: any, dbTemplate: any): boolean {
+    // 比较版本号
+    if (jsonTemplate.version !== dbTemplate.version) {
+      return true
+    }
+
+    // 比较关键字段
+    const convertedRecord = this.convertTemplateToRecord(jsonTemplate)
+    const keyFields = ['name', 'description', 'credit_cost', 'tags', 'preview_url']
+    
+    for (const field of keyFields) {
+      const jsonValue = JSON.stringify(convertedRecord[field])
+      const dbValue = JSON.stringify(dbTemplate[field])
+      if (jsonValue !== dbValue) {
+        return true
+      }
+    }
+
+    return false
+  }
+
+  /**
+   * 批量同步所有模板
+   */
+  async syncAllTemplates(options: {
+    dryRun?: boolean
+    batchSize?: number
+    cleanupOrphaned?: boolean
+  } = {}): Promise<TemplateSyncResult> {
+    const {
+      dryRun = false,
+      batchSize = 20,
+      cleanupOrphaned = false
+    } = options
+
+    if (this.isRunning) {
+      throw new Error('模板同步正在进行中，请稍后再试')
+    }
+
+    this.isRunning = true
+    const startTime = performance.now()
+
+    try {
+      console.log(`[TemplateSyncService] 🚀 开始同步模板 (${dryRun ? '预览模式' : '执行模式'})`)
+      console.log(`[TemplateSyncService] 📊 发现 ${templateList.length} 个模板文件`)
+
+      const result: TemplateSyncResult = {
+        success: true,
+        total: templateList.length,
+        created: 0,
+        updated: 0,
+        skipped: 0,
+        errors: [],
+        details: {
+          created: [],
+          updated: [],
+          skipped: [],
+          failed: []
+        }
+      }
+
+      // 分批处理模板
+      const batches = []
+      for (let i = 0; i < templateList.length; i += batchSize) {
+        batches.push(templateList.slice(i, i + batchSize))
+      }
+
+      // 获取现有的数据库模板
+      const { data: existingTemplates, error: fetchError } = await supabase
+        .from('templates')
+        .select('*')
+
+      if (fetchError) {
+        console.error('[TemplateSyncService] ❌ 获取现有模板失败:', fetchError)
+        result.success = false
+        result.errors.push(`获取现有模板失败: ${fetchError.message}`)
+        return result
+      }
+
+      const existingTemplatesMap = new Map(
+        existingTemplates?.map(t => [t.id, t]) || []
+      )
+
+      console.log(`[TemplateSyncService] 📋 数据库中已有 ${existingTemplates?.length || 0} 个模板`)
+
+      // 处理每个批次
+      for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
+        const batch = batches[batchIndex]
+        console.log(`[TemplateSyncService] 🔄 处理批次 ${batchIndex + 1}/${batches.length} (${batch.length} 个模板)`)
+
+        for (const template of batch) {
+          try {
+            // 转换为数据库格式
+            const record = this.convertTemplateToRecord(template)
+            const existing = existingTemplatesMap.get(template.id)
+
+            if (!existing) {
+              // 新模板 - 需要创建
+              if (!dryRun) {
+                const { error: insertError } = await supabase
+                  .from('templates')
+                  .insert(record)
+
+                if (insertError) {
+                  console.error(`[TemplateSyncService] ❌ 创建模板失败 ${template.id}:`, insertError)
+                  result.errors.push(`创建模板 ${template.id} 失败: ${insertError.message}`)
+                  result.details.failed.push({
+                    id: template.id,
+                    error: insertError.message
+                  })
+                  continue
+                }
+              }
+
+              result.created++
+              result.details.created.push(template.id)
+              console.log(`[TemplateSyncService] ✅ ${dryRun ? '[预览]' : ''} 创建模板: ${template.id}`)
+
+            } else if (this.needsUpdate(template, existing)) {
+              // 现有模板 - 需要更新
+              if (!dryRun) {
+                const updateData = { ...record }
+                // 保留现有的点赞数
+                delete (updateData as any).like_count
+
+                const { error: updateError } = await supabase
+                  .from('templates')
+                  .update({
+                    ...updateData,
+                    updated_at: new Date().toISOString()
+                  })
+                  .eq('id', template.id)
+
+                if (updateError) {
+                  console.error(`[TemplateSyncService] ❌ 更新模板失败 ${template.id}:`, updateError)
+                  result.errors.push(`更新模板 ${template.id} 失败: ${updateError.message}`)
+                  result.details.failed.push({
+                    id: template.id,
+                    error: updateError.message
+                  })
+                  continue
+                }
+              }
+
+              result.updated++
+              result.details.updated.push(template.id)
+              console.log(`[TemplateSyncService] 🔄 ${dryRun ? '[预览]' : ''} 更新模板: ${template.id}`)
+
+            } else {
+              // 模板无变化 - 跳过
+              result.skipped++
+              result.details.skipped.push(template.id)
+            }
+
+          } catch (error) {
+            console.error(`[TemplateSyncService] ❌ 处理模板失败 ${template.id}:`, error)
+            result.errors.push(`处理模板 ${template.id} 失败: ${error}`)
+            result.details.failed.push({
+              id: template.id,
+              error: String(error)
+            })
+          }
+        }
+
+        // 批次间短暂延迟，避免过载
+        if (batchIndex < batches.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 100))
+        }
+      }
+
+      const endTime = performance.now()
+      const duration = (endTime - startTime).toFixed(1)
+
+      console.log(`[TemplateSyncService] 🎉 同步完成! 耗时: ${duration}ms`)
+      console.log(`[TemplateSyncService] 📊 统计: 创建${result.created}, 更新${result.updated}, 跳过${result.skipped}, 失败${result.details.failed.length}`)
+
+      if (result.errors.length > 0) {
+        result.success = false
+        console.warn(`[TemplateSyncService] ⚠️ 同步过程中发生 ${result.errors.length} 个错误`)
+      }
+
+      return result
+
+    } catch (error) {
+      console.error('[TemplateSyncService] ❌ 同步失败:', error)
+      return {
+        success: false,
+        total: templateList.length,
+        created: 0,
+        updated: 0,
+        skipped: 0,
+        errors: [String(error)],
+        details: {
+          created: [],
+          updated: [],
+          skipped: [],
+          failed: []
+        }
+      }
+    } finally {
+      this.isRunning = false
+    }
+  }
+
+  /**
+   * 同步单个模板
+   */
+  async syncSingleTemplate(templateId: string): Promise<boolean> {
+    try {
+      const template = templateList.find(t => t.id === templateId)
+      if (!template) {
+        console.error(`[TemplateSyncService] ❌ 未找到模板: ${templateId}`)
+        return false
+      }
+
+      const record = this.convertTemplateToRecord(template)
+
+      // 检查是否已存在
+      const { data: existing } = await supabase
+        .from('templates')
+        .select('*')
+        .eq('id', templateId)
+        .single()
+
+      if (existing) {
+        // 更新现有模板
+        const { error } = await supabase
+          .from('templates')
+          .update({
+            ...record,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', templateId)
+
+        if (error) {
+          console.error(`[TemplateSyncService] ❌ 更新模板失败: ${templateId}`, error)
+          return false
+        }
+
+        console.log(`[TemplateSyncService] ✅ 更新模板: ${templateId}`)
+      } else {
+        // 创建新模板
+        const { error } = await supabase
+          .from('templates')
+          .insert(record)
+
+        if (error) {
+          console.error(`[TemplateSyncService] ❌ 创建模板失败: ${templateId}`, error)
+          return false
+        }
+
+        console.log(`[TemplateSyncService] ✅ 创建模板: ${templateId}`)
+      }
+
+      return true
+    } catch (error) {
+      console.error(`[TemplateSyncService] ❌ 同步单个模板失败: ${templateId}`, error)
+      return false
+    }
+  }
+
+  /**
+   * 获取同步状态统计
+   */
+  async getSyncStatus(): Promise<{
+    jsonTemplateCount: number
+    dbTemplateCount: number
+    missingInDb: string[]
+    extraInDb: string[]
+    needsUpdate: string[]
+  }> {
+    try {
+      const { data: dbTemplates } = await supabase
+        .from('templates')
+        .select('id, version, name, credit_cost, tags')
+
+      const jsonTemplateIds = new Set(templateList.map(t => t.id))
+      const dbTemplateIds = new Set(dbTemplates?.map(t => t.id) || [])
+      const dbTemplatesMap = new Map(dbTemplates?.map(t => [t.id, t]) || [])
+
+      const missingInDb = templateList
+        .filter(t => !dbTemplateIds.has(t.id))
+        .map(t => t.id)
+
+      const extraInDb = Array.from(dbTemplateIds)
+        .filter(id => !jsonTemplateIds.has(id))
+
+      const needsUpdate = templateList
+        .filter(t => {
+          const dbTemplate = dbTemplatesMap.get(t.id)
+          return dbTemplate && this.needsUpdate(t, dbTemplate)
+        })
+        .map(t => t.id)
+
+      return {
+        jsonTemplateCount: templateList.length,
+        dbTemplateCount: dbTemplates?.length || 0,
+        missingInDb,
+        extraInDb,
+        needsUpdate
+      }
+    } catch (error) {
+      console.error('[TemplateSyncService] ❌ 获取同步状态失败:', error)
+      return {
+        jsonTemplateCount: templateList.length,
+        dbTemplateCount: 0,
+        missingInDb: [],
+        extraInDb: [],
+        needsUpdate: []
+      }
+    }
+  }
+
+  /**
+   * 检查是否正在同步
+   */
+  isSyncRunning(): boolean {
+    return this.isRunning
+  }
+}
+
+// 导出单例实例
+export const templateSyncService = new TemplateSyncService()
+export default templateSyncService
 
 // 同步单个模板到前端文件系统
 export const syncTemplateToFrontend = async (templateId: string): Promise<void> => {

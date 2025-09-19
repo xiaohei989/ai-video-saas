@@ -1,0 +1,688 @@
+{
+  "batch": 2,
+  "description": "第二批模板翻译 - 10个模板的完整8种语言翻译",
+  "templates": {
+    "tiny-pet-fingertip": {
+      "name": {
+        "en": "Tiny Pet on Fingertip",
+        "zh": "指尖微型宠物",
+        "ja": "指先の小さなペット",
+        "ko": "손끝의 작은 펫",
+        "es": "Mascota Diminuta en la Punta del Dedo",
+        "de": "Winziges Haustier auf der Fingerspitze",
+        "fr": "Animal de Compagnie Minuscule sur le Bout du Doigt",
+        "ar": "حيوان أليف صغير على طرف الإصبع"
+      },
+      "description": {
+        "en": "Ultra-realistic miniature pets that can comfortably sit on your fingertip with incredible detail",
+        "zh": "超逼真的微型宠物，可以舒适地坐在你的指尖上，细节令人难以置信",
+        "ja": "信じられないほどの細部を持つ、指先に快適に座ることができる超リアルなミニチュアペット",
+        "ko": "믿을 수 없을 정도로 디테일한, 손끝에 편안히 앉을 수 있는 초현실적인 미니어처 펫",
+        "es": "Mascotas en miniatura ultrarrealistas que pueden sentarse cómodamente en tu dedo con detalles increíbles",
+        "de": "Ultrarrealistische Miniatur-Haustiere, die bequem auf Ihrer Fingerspitze sitzen können mit unglaublichen Details",
+        "fr": "Animaux de compagnie miniatures ultra-réalistes qui peuvent confortablement s'asseoir sur votre bout de doigt avec des détails incroyables",
+        "ar": "حيوانات أليفة مصغرة فائقة الواقعية يمكنها الجلوس براحة على طرف إصبعك بتفاصيل مذهلة"
+      },
+      "params": {
+        "pet_type": {
+          "label": {
+            "en": "Pet Type",
+            "zh": "宠物类型",
+            "ja": "ペットの種類",
+            "ko": "펫 종류",
+            "es": "Tipo de Mascota",
+            "de": "Haustierart",
+            "fr": "Type d'Animal",
+            "ar": "نوع الحيوان الأليف"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "animal-skateboarding-street": {
+      "name": {
+        "en": "Animal Skateboarding Street",
+        "zh": "动物街头滑板",
+        "ja": "動物ストリートスケートボード",
+        "ko": "동물 스트리트 스케이트보딩",
+        "es": "Animales Haciendo Skateboard en la Calle",
+        "de": "Tier-Straßen-Skateboarding",
+        "fr": "Animaux Faisant du Skateboard dans la Rue",
+        "ar": "حيوانات تتزلج في الشارع"
+      },
+      "description": {
+        "en": "Documentary-style footage of various small animals performing skateboard tricks on city streets",
+        "zh": "纪录片风格的画面，展示各种小动物在城市街道上表演滑板技巧",
+        "ja": "都市の街路で様々な小動物がスケートボードトリックを披露する記録映画風の映像",
+        "ko": "도시 거리에서 다양한 작은 동물들이 스케이트보드 트릭을 선보이는 다큐멘터리 스타일 영상",
+        "es": "Metraje estilo documental de varios animales pequeños realizando trucos de skateboard en las calles de la ciudad",
+        "de": "Dokumentarfilm-artige Aufnahmen verschiedener kleiner Tiere, die Skateboard-Tricks auf Stadtstraßen aufführen",
+        "fr": "Images de style documentaire de divers petits animaux effectuant des tricks de skateboard dans les rues de la ville",
+        "ar": "لقطات بأسلوب وثائقي لحيوانات صغيرة مختلفة تؤدي حيل التزلج في شوارع المدينة"
+      },
+      "params": {
+        "animal": {
+          "label": {
+            "en": "Animal",
+            "zh": "动物",
+            "ja": "動物",
+            "ko": "동물",
+            "es": "Animal",
+            "de": "Tier",
+            "fr": "Animal",
+            "ar": "حيوان"
+          },
+          "options": {
+            "pigeon": {
+              "en": "Pigeon 🕊️",
+              "zh": "鸽子 🕊️",
+              "ja": "ハト 🕊️",
+              "ko": "비둘기 🕊️",
+              "es": "Paloma 🕊️",
+              "de": "Taube 🕊️",
+              "fr": "Pigeon 🕊️",
+              "ar": "حمامة 🕊️"
+            },
+            "squirrel": {
+              "en": "Squirrel 🐿️",
+              "zh": "松鼠 🐿️",
+              "ja": "リス 🐿️",
+              "ko": "다람쥐 🐿️",
+              "es": "Ardilla 🐿️",
+              "de": "Eichhörnchen 🐿️",
+              "fr": "Écureuil 🐿️",
+              "ar": "سنجاب 🐿️"
+            },
+            "cat": {
+              "en": "Cat 🐱",
+              "zh": "猫 🐱",
+              "ja": "猫 🐱",
+              "ko": "고양이 🐱",
+              "es": "Gato 🐱",
+              "de": "Katze 🐱",
+              "fr": "Chat 🐱",
+              "ar": "قطة 🐱"
+            },
+            "dog": {
+              "en": "Dog 🐶",
+              "zh": "狗 🐶",
+              "ja": "犬 🐶",
+              "ko": "개 🐶",
+              "es": "Perro 🐶",
+              "de": "Hund 🐶",
+              "fr": "Chien 🐶",
+              "ar": "كلب 🐶"
+            },
+            "raccoon": {
+              "en": "Raccoon 🦝",
+              "zh": "浣熊 🦝",
+              "ja": "アライグマ 🦝",
+              "ko": "너구리 🦝",
+              "es": "Mapache 🦝",
+              "de": "Waschbär 🦝",
+              "fr": "Raton Laveur 🦝",
+              "ar": "راكون 🦝"
+            },
+            "rabbit": {
+              "en": "Rabbit 🐰",
+              "zh": "兔子 🐰",
+              "ja": "ウサギ 🐰",
+              "ko": "토끼 🐰",
+              "es": "Conejo 🐰",
+              "de": "Kaninchen 🐰",
+              "fr": "Lapin 🐰",
+              "ar": "أرنب 🐰"
+            },
+            "duck": {
+              "en": "Duck 🦆",
+              "zh": "鸭子 🦆",
+              "ja": "アヒル 🦆",
+              "ko": "오리 🦆",
+              "es": "Pato 🦆",
+              "de": "Ente 🦆",
+              "fr": "Canard 🦆",
+              "ar": "بطة 🦆"
+            },
+            "rat": {
+              "en": "Rat 🐀",
+              "zh": "老鼠 🐀",
+              "ja": "ネズミ 🐀",
+              "ko": "쥐 🐀",
+              "es": "Rata 🐀",
+              "de": "Ratte 🐀",
+              "fr": "Rat 🐀",
+              "ar": "فأر 🐀"
+            },
+            "hamster": {
+              "en": "Hamster 🐹",
+              "zh": "仓鼠 🐹",
+              "ja": "ハムスター 🐹",
+              "ko": "햄스터 🐹",
+              "es": "Hámster 🐹",
+              "de": "Hamster 🐹",
+              "fr": "Hamster 🐹",
+              "ar": "همستر 🐹"
+            },
+            "hedgehog": {
+              "en": "Hedgehog 🦔",
+              "zh": "刺猬 🦔",
+              "ja": "ハリネズミ 🦔",
+              "ko": "고슴도치 🦔",
+              "es": "Erizo 🦔",
+              "de": "Igel 🦔",
+              "fr": "Hérisson 🦔",
+              "ar": "قنفذ 🦔"
+            },
+            "frog": {
+              "en": "Frog 🐸",
+              "zh": "青蛙 🐸",
+              "ja": "カエル 🐸",
+              "ko": "개구리 🐸",
+              "es": "Rana 🐸",
+              "de": "Frosch 🐸",
+              "fr": "Grenouille 🐸",
+              "ar": "ضفدع 🐸"
+            },
+            "turtle": {
+              "en": "Turtle 🐢",
+              "zh": "乌龟 🐢",
+              "ja": "カメ 🐢",
+              "ko": "거북이 🐢",
+              "es": "Tortuga 🐢",
+              "de": "Schildkröte 🐢",
+              "fr": "Tortue 🐢",
+              "ar": "سلحفاة 🐢"
+            },
+            "lizard": {
+              "en": "Lizard 🦎",
+              "zh": "蜥蜴 🦎",
+              "ja": "トカゲ 🦎",
+              "ko": "도마뱀 🦎",
+              "es": "Lagarto 🦎",
+              "de": "Echse 🦎",
+              "fr": "Lézard 🦎",
+              "ar": "سحلية 🦎"
+            },
+            "small_bird": {
+              "en": "Small Bird 🐦",
+              "zh": "小鸟 🐦",
+              "ja": "小鳥 🐦",
+              "ko": "작은 새 🐦",
+              "es": "Pájaro Pequeño 🐦",
+              "de": "Kleiner Vogel 🐦",
+              "fr": "Petit Oiseau 🐦",
+              "ar": "طائر صغير 🐦"
+            },
+            "parrot": {
+              "en": "Parrot 🦜",
+              "zh": "鹦鹉 🦜",
+              "ja": "オウム 🦜",
+              "ko": "앵무새 🦜",
+              "es": "Loro 🦜",
+              "de": "Papagei 🦜",
+              "fr": "Perroquet 🦜",
+              "ar": "ببغاء 🦜"
+            },
+            "penguin": {
+              "en": "Penguin 🐧",
+              "zh": "企鹅 🐧",
+              "ja": "ペンギン 🐧",
+              "ko": "펭귄 🐧",
+              "es": "Pingüino 🐧",
+              "de": "Pinguin 🐧",
+              "fr": "Pingouin 🐧",
+              "ar": "بطريق 🐧"
+            },
+            "piglet": {
+              "en": "Piglet 🐷",
+              "zh": "小猪 🐷",
+              "ja": "子豚 🐷",
+              "ko": "아기 돼지 🐷",
+              "es": "Cerdito 🐷",
+              "de": "Ferkel 🐷",
+              "fr": "Porcelet 🐷",
+              "ar": "خنزير صغير 🐷"
+            },
+            "chick": {
+              "en": "Chick 🐣",
+              "zh": "小鸡 🐣",
+              "ja": "ひよこ 🐣",
+              "ko": "병아리 🐣",
+              "es": "Pollito 🐣",
+              "de": "Küken 🐣",
+              "fr": "Poussin 🐣",
+              "ar": "كتكوت 🐣"
+            },
+            "duckling": {
+              "en": "Duckling 🐥",
+              "zh": "小鸭子 🐥",
+              "ja": "アヒルの子 🐥",
+              "ko": "새끼 오리 🐥",
+              "es": "Patito 🐥",
+              "de": "Entchen 🐥",
+              "fr": "Caneton 🐥",
+              "ar": "فرخ البط 🐥"
+            },
+            "lamb": {
+              "en": "Lamb 🐑",
+              "zh": "小羊羔 🐑",
+              "ja": "子羊 🐑",
+              "ko": "새끼 양 🐑",
+              "es": "Cordero 🐑",
+              "de": "Lamm 🐑",
+              "fr": "Agneau 🐑",
+              "ar": "حمل 🐑"
+            }
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "natural-phenomenon-cutting-asmr": {
+      "name": {
+        "en": "Natural Phenomenon Cutting ASMR",
+        "zh": "自然现象切割ASMR",
+        "ja": "自然現象カットASMR",
+        "ko": "자연 현상 자르기 ASMR",
+        "es": "Corte de Fenómenos Naturales ASMR",
+        "de": "Naturphänomene Schneiden ASMR",
+        "fr": "Découpe de Phénomènes Naturels ASMR",
+        "ar": "قطع الظواهر الطبيعية ASMR"
+      },
+      "description": {
+        "en": "Satisfying ASMR experience of cutting through natural phenomena like aurora, rainbow, and weather patterns",
+        "zh": "令人满足的ASMR体验，切割极光、彩虹和天气模式等自然现象",
+        "ja": "オーロラ、虹、気象パターンなどの自然現象をカットする満足感のあるASMR体験",
+        "ko": "오로라, 무지개, 날씨 패턴과 같은 자연 현상을 자르는 만족스러운 ASMR 경험",
+        "es": "Experiencia ASMR satisfactoria de cortar fenómenos naturales como aurora, arcoíris y patrones climáticos",
+        "de": "Befriedigende ASMR-Erfahrung beim Schneiden von Naturphänomenen wie Aurora, Regenbogen und Wettermustern",
+        "fr": "Expérience ASMR satisfaisante de découpe de phénomènes naturels comme l'aurore, l'arc-en-ciel et les motifs météorologiques",
+        "ar": "تجربة ASMR مرضية لقطع الظواهر الطبيعية مثل الشفق والقوس قزح وأنماط الطقس"
+      },
+      "params": {
+        "phenomenon": {
+          "label": {
+            "en": "Natural Phenomenon",
+            "zh": "自然现象",
+            "ja": "自然現象",
+            "ko": "자연 현상",
+            "es": "Fenómeno Natural",
+            "de": "Naturphänomen",
+            "fr": "Phénomène Naturel",
+            "ar": "الظاهرة الطبيعية"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "magical-creature-summon": {
+      "name": {
+        "en": "Magical Creature Summoning",
+        "zh": "魔法生物召唤",
+        "ja": "魔法クリーチャー召喚",
+        "ko": "마법 생물 소환",
+        "es": "Invocación de Criaturas Mágicas",
+        "de": "Magische Kreatur Beschwörung",
+        "fr": "Invocation de Créatures Magiques",
+        "ar": "استدعاء المخلوقات السحرية"
+      },
+      "description": {
+        "en": "Epic magical summoning ritual that brings mythical creatures to life with spectacular effects",
+        "zh": "史诗般的魔法召唤仪式，通过壮观的效果让神话生物栩栩如生",
+        "ja": "壮大な効果で神話の生き物を蘇らせる叙事詩的な魔法の召喚儀式",
+        "ko": "장대한 효과로 신화 생물을 생생하게 소환하는 서사적 마법 의식",
+        "es": "Ritual de invocación mágica épica que da vida a criaturas míticas con efectos espectaculares",
+        "de": "Episches magisches Beschwörungsritual, das mythische Kreaturen mit spektakulären Effekten zum Leben erweckt",
+        "fr": "Rituel d'invocation magique épique qui donne vie à des créatures mythiques avec des effets spectaculaires",
+        "ar": "طقوس استدعاء سحرية ملحمية تحيي المخلوقات الأسطورية بتأثيرات مذهلة"
+      },
+      "params": {
+        "creature": {
+          "label": {
+            "en": "Magical Creature",
+            "zh": "魔法生物",
+            "ja": "魔法クリーチャー",
+            "ko": "마법 생물",
+            "es": "Criatura Mágica",
+            "de": "Magische Kreatur",
+            "fr": "Créature Magique",
+            "ar": "مخلوق سحري"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "baby-adult-anxiety-comedy": {
+      "name": {
+        "en": "Baby Adult Anxiety Comedy",
+        "zh": "婴儿成人焦虑喜剧",
+        "ja": "赤ちゃん大人不安コメディ",
+        "ko": "아기 어른 불안 코미디",
+        "es": "Comedia de Ansiedad Adulta de Bebé",
+        "de": "Baby-Erwachsene Angst-Komödie",
+        "fr": "Comédie d'Anxiété Adulte de Bébé",
+        "ar": "كوميديا قلق الطفل البالغ"
+      },
+      "description": {
+        "en": "Hilarious comedy about a baby with adult-level worries and anxieties in everyday situations",
+        "zh": "关于婴儿在日常情况下拥有成人水平担忧和焦虑的搞笑喜剧",
+        "ja": "日常の状況で大人レベルの心配や不安を持つ赤ちゃんについての陽気なコメディ",
+        "ko": "일상 상황에서 성인 수준의 걱정과 불안을 가진 아기에 대한 유쾌한 코미디",
+        "es": "Comedia divertida sobre un bebé con preocupaciones y ansiedades de nivel adulto en situaciones cotidianas",
+        "de": "Urkomische Komödie über ein Baby mit Sorgen und Ängsten auf Erwachsenenniveau in alltäglichen Situationen",
+        "fr": "Comédie hilarante sur un bébé avec des inquiétudes et anxiétés de niveau adulte dans des situations quotidiennes",
+        "ar": "كوميديا مرحة عن طفل لديه مخاوف وقلق بمستوى البالغين في المواقف اليومية"
+      },
+      "params": {
+        "worry_topic": {
+          "label": {
+            "en": "Worry Topic",
+            "zh": "担忧话题",
+            "ja": "心配事のトピック",
+            "ko": "걱정 주제",
+            "es": "Tema de Preocupación",
+            "de": "Sorgen-Thema",
+            "fr": "Sujet d'Inquiétude",
+            "ar": "موضوع القلق"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "crystal-fruit-biting-asmr": {
+      "name": {
+        "en": "Crystal Fruit Biting ASMR",
+        "zh": "水晶水果咬食ASMR",
+        "ja": "クリスタルフルーツ噛みASMR",
+        "ko": "크리스탈 과일 씹기 ASMR",
+        "es": "ASMR de Morder Frutas de Cristal",
+        "de": "Kristall-Frucht Beißen ASMR",
+        "fr": "ASMR de Croquer des Fruits de Cristal",
+        "ar": "ASMR عض الفواكه الكريستالية"
+      },
+      "description": {
+        "en": "Satisfying ASMR experience of biting into crystal-like transparent fruits with crispy textures",
+        "zh": "令人满足的ASMR体验，咬食具有酥脆质地的水晶般透明水果",
+        "ja": "サクサクした食感の水晶のような透明フルーツを噛む満足感のあるASMR体験",
+        "ko": "바삭한 질감의 크리스탈처럼 투명한 과일을 씹는 만족스러운 ASMR 경험",
+        "es": "Experiencia ASMR satisfactoria de morder frutas transparentes como cristal con texturas crujientes",
+        "de": "Befriedigende ASMR-Erfahrung beim Beißen in kristallähnliche transparente Früchte mit knusprigen Texturen",
+        "fr": "Expérience ASMR satisfaisante de croquer des fruits transparents comme du cristal avec des textures croquantes",
+        "ar": "تجربة ASMR مرضية لعض الفواكه الشفافة الشبيهة بالكريستال ذات القوام المقرمش"
+      },
+      "params": {
+        "fruit_type": {
+          "label": {
+            "en": "Crystal Fruit Type",
+            "zh": "水晶水果类型",
+            "ja": "クリスタルフルーツの種類",
+            "ko": "크리스탈 과일 종류",
+            "es": "Tipo de Fruta de Cristal",
+            "de": "Kristall-Frucht Art",
+            "fr": "Type de Fruit de Cristal",
+            "ar": "نوع الفاكهة الكريستالية"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "windowsill-animal-interview": {
+      "name": {
+        "en": "Windowsill Animal Interview",
+        "zh": "窗台动物采访",
+        "ja": "窓際動物インタビュー",
+        "ko": "창틀 동물 인터뷰",
+        "es": "Entrevista a Animales del Alféizar",
+        "de": "Fensterbrett-Tier-Interview",
+        "fr": "Interview d'Animaux sur le Rebord de Fenêtre",
+        "ar": "مقابلة حيوانات عتبة النافذة"
+      },
+      "description": {
+        "en": "Whimsical mock interviews with small animals perched on windowsills sharing their daily observations",
+        "zh": "与栖息在窗台上的小动物进行奇幻模拟采访，分享它们的日常观察",
+        "ja": "窓際に止まった小動物たちとの風変わりな模擬インタビューで、彼らの日常観察を共有",
+        "ko": "창틀에 앉은 작은 동물들과의 기발한 모의 인터뷰로 그들의 일상 관찰을 공유",
+        "es": "Entrevistas simuladas caprichosas con pequeños animales posados en alféizares compartiendo sus observaciones diarias",
+        "de": "Skurrile Schein-Interviews mit kleinen Tieren auf Fensterbänken, die ihre täglichen Beobachtungen teilen",
+        "fr": "Interviews simulées fantaisistes avec de petits animaux perchés sur les rebords de fenêtre partageant leurs observations quotidiennes",
+        "ar": "مقابلات وهمية غريبة مع حيوانات صغيرة على عتبات النوافذ تشارك ملاحظاتها اليومية"
+      },
+      "params": {
+        "animal": {
+          "label": {
+            "en": "Interviewed Animal",
+            "zh": "被采访动物",
+            "ja": "インタビューする動物",
+            "ko": "인터뷰 동물",
+            "es": "Animal Entrevistado",
+            "de": "Interviewtes Tier",
+            "fr": "Animal Interviewé",
+            "ar": "الحيوان المُقابَل"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "newborn-baby-interview-comedy": {
+      "name": {
+        "en": "Newborn Baby Interview Comedy",
+        "zh": "新生儿采访喜剧",
+        "ja": "新生児インタビューコメディ",
+        "ko": "신생아 인터뷰 코미디",
+        "es": "Comedia de Entrevista a Bebé Recién Nacido",
+        "de": "Neugeborenen-Interview-Komödie",
+        "fr": "Comédie d'Interview de Nouveau-né",
+        "ar": "كوميديا مقابلة المولود الجديد"
+      },
+      "description": {
+        "en": "Hilarious mock interview with a newborn baby discussing their thoughts on life outside the womb",
+        "zh": "与新生儿进行搞笑模拟采访，讨论他们对子宫外生活的想法",
+        "ja": "胎外の生活についての考えを話し合う新生児との陽気な模擬インタビュー",
+        "ko": "자궁 밖 생활에 대한 생각을 논의하는 신생아와의 유쾌한 모의 인터뷰",
+        "es": "Entrevista simulada divertida con un bebé recién nacido discutiendo sus pensamientos sobre la vida fuera del útero",
+        "de": "Urkomisches Schein-Interview mit einem Neugeborenen über seine Gedanken zum Leben außerhalb der Gebärmutter",
+        "fr": "Interview simulée hilarante avec un nouveau-né discutant de ses pensées sur la vie hors de l'utérus",
+        "ar": "مقابلة وهمية مرحة مع مولود جديد يناقش أفكاره حول الحياة خارج الرحم"
+      },
+      "params": {
+        "interview_topic": {
+          "label": {
+            "en": "Interview Topic",
+            "zh": "采访话题",
+            "ja": "インタビューのトピック",
+            "ko": "인터뷰 주제",
+            "es": "Tema de Entrevista",
+            "de": "Interview-Thema",
+            "fr": "Sujet d'Interview",
+            "ar": "موضوع المقابلة"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "yeti-mountain-life-vlog": {
+      "name": {
+        "en": "Yeti Mountain Life Vlog",
+        "zh": "雪人山地生活视频博客",
+        "ja": "イエティ山岳生活ブログ",
+        "ko": "예티 산악 생활 브이로그",
+        "es": "Vlog de Vida en la Montaña del Yeti",
+        "de": "Yeti Bergleben Vlog",
+        "fr": "Vlog de Vie en Montagne du Yéti",
+        "ar": "مدونة فيديو حياة الييتي الجبلية"
+      },
+      "description": {
+        "en": "Documentary-style vlog following a friendly yeti's daily life in the snowy mountains",
+        "zh": "纪录片风格的视频博客，跟随友善雪人在雪山中的日常生活",
+        "ja": "雪山での友好的なイエティの日常生活を追うドキュメンタリー風のブログ",
+        "ko": "눈 덮인 산에서 친근한 예티의 일상 생활을 따라가는 다큐멘터리 스타일 브이로그",
+        "es": "Vlog estilo documental siguiendo la vida diaria de un yeti amigable en las montañas nevadas",
+        "de": "Dokumentarfilm-artiger Vlog über das tägliche Leben eines freundlichen Yetis in den verschneiten Bergen",
+        "fr": "Vlog de style documentaire suivant la vie quotidienne d'un yéti amical dans les montagnes enneigées",
+        "ar": "مدونة فيديو بأسلوب وثائقي تتبع الحياة اليومية لييتي ودود في الجبال المثلجة"
+      },
+      "params": {
+        "activity": {
+          "label": {
+            "en": "Daily Activity",
+            "zh": "日常活动",
+            "ja": "日常活動",
+            "ko": "일상 활동",
+            "es": "Actividad Diaria",
+            "de": "Tägliche Aktivität",
+            "fr": "Activité Quotidienne",
+            "ar": "النشاط اليومي"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    },
+    "asmr-surreal-toast-spread": {
+      "name": {
+        "en": "ASMR Surreal Toast Spread",
+        "zh": "ASMR超现实吐司涂抹",
+        "ja": "ASMRシュルレアリスムトースト塗り",
+        "ko": "ASMR 초현실적 토스트 발라기",
+        "es": "ASMR Untado Surrealista de Tostada",
+        "de": "ASMR Surrealer Toast-Aufstrich",
+        "fr": "ASMR Tartinage de Toast Surréaliste",
+        "ar": "ASMR دهن الخبز المحمص السريالي"
+      },
+      "description": {
+        "en": "Mesmerizing ASMR experience of spreading unusual and colorful substances on toast with satisfying textures",
+        "zh": "令人着迷的ASMR体验，在吐司上涂抹不寻常和色彩丰富的物质，具有令人满足的质感",
+        "ja": "満足感のある質感で、トーストに珍しくカラフルな物質を塗る魅惑的なASMR体験",
+        "ko": "만족스러운 질감으로 토스트에 특이하고 화려한 물질을 바르는 매혹적인 ASMR 경험",
+        "es": "Experiencia ASMR fascinante de untar sustancias inusuales y coloridas en tostadas con texturas satisfactorias",
+        "de": "Faszinierende ASMR-Erfahrung beim Auftragen ungewöhnlicher und farbenfroher Substanzen auf Toast mit befriedigenden Texturen",
+        "fr": "Expérience ASMR fascinante de tartinage de substances inhabituelles et colorées sur du pain grillé avec des textures satisfaisantes",
+        "ar": "تجربة ASMR ساحرة لدهن مواد غير عادية وملونة على الخبز المحمص بقوام مرضي"
+      },
+      "params": {
+        "spread_type": {
+          "label": {
+            "en": "Spread Type",
+            "zh": "涂抹类型",
+            "ja": "塗り物の種類",
+            "ko": "발라기 종류",
+            "es": "Tipo de Untado",
+            "de": "Aufstrich-Art",
+            "fr": "Type de Tartinage",
+            "ar": "نوع الدهن"
+          }
+        },
+        "makePublic": {
+          "label": {
+            "en": "Make video public",
+            "zh": "将视频设为公开",
+            "ja": "動画を公開する",
+            "ko": "비디오를 공개로 설정",
+            "es": "Hacer video público",
+            "de": "Video öffentlich machen",
+            "fr": "Rendre la vidéo publique",
+            "ar": "جعل الفيديو عامًا"
+          }
+        }
+      }
+    }
+  }
+}

@@ -101,14 +101,52 @@ class TemplateLikeService {
         .eq('template_id', templateId)
         .maybeSingle()
 
-      // 先获取当前的点赞数量，以便准确计算新的数量
-      const { data: currentTemplate } = await supabase
+      // 先获取当前的点赞数量，如果模板不存在则自动创建
+      const { data: currentTemplate, error: templateError } = await supabase
         .from('templates')
         .select('like_count')
         .eq('id', templateId)
         .single()
 
-      let currentLikeCount = currentTemplate?.like_count || 0
+      let currentLikeCount = 0
+
+      if (templateError && templateError.code === 'PGRST116') {
+        // 模板不存在，尝试自动创建
+        console.log(`[TemplateLikeService] 模板 ${templateId} 不存在，尝试自动同步...`)
+        
+        const { templateSyncService } = await import('./templateSyncService')
+        const syncSuccess = await templateSyncService.syncSingleTemplate(templateId)
+        
+        if (syncSuccess) {
+          // 重新获取模板
+          const { data: newTemplate } = await supabase
+            .from('templates')
+            .select('like_count')
+            .eq('id', templateId)
+            .single()
+          
+          currentLikeCount = newTemplate?.like_count || 0
+          console.log(`[TemplateLikeService] ✅ 模板 ${templateId} 自动同步成功`)
+        } else {
+          console.error(`[TemplateLikeService] ❌ 模板 ${templateId} 自动同步失败`)
+          return {
+            success: false,
+            is_liked: false,
+            like_count: 0,
+            error: '模板不存在且同步失败'
+          }
+        }
+      } else if (templateError) {
+        console.error('Error fetching template:', templateError)
+        return {
+          success: false,
+          is_liked: false,
+          like_count: 0,
+          error: '获取模板信息失败'
+        }
+      } else {
+        currentLikeCount = currentTemplate?.like_count || 0
+      }
       let isLiked: boolean
       let newLikeCount: number
 
@@ -231,14 +269,42 @@ class TemplateLikeService {
         }
       }
 
-      // 获取模板点赞数（无论是否登录都获取）
-      const { data: template } = await supabase
+      // 获取模板点赞数（无论是否登录都获取），如果不存在则自动创建
+      const { data: template, error: templateError } = await supabase
         .from('templates')
         .select('like_count')
         .eq('id', templateId)
         .single()
 
-      const likeCount = template?.like_count || 0
+      let likeCount = 0
+
+      if (templateError && templateError.code === 'PGRST116') {
+        // 模板不存在，尝试自动创建
+        console.log(`[TemplateLikeService] 检查点赞状态时发现模板 ${templateId} 不存在，尝试自动同步...`)
+        
+        const { templateSyncService } = await import('./templateSyncService')
+        const syncSuccess = await templateSyncService.syncSingleTemplate(templateId)
+        
+        if (syncSuccess) {
+          // 重新获取模板
+          const { data: newTemplate } = await supabase
+            .from('templates')
+            .select('like_count')
+            .eq('id', templateId)
+            .single()
+          
+          likeCount = newTemplate?.like_count || 0
+          console.log(`[TemplateLikeService] ✅ 模板 ${templateId} 自动同步成功`)
+        } else {
+          console.warn(`[TemplateLikeService] ⚠️ 模板 ${templateId} 自动同步失败，使用默认值`)
+          likeCount = 0
+        }
+      } else if (templateError) {
+        console.warn(`[TemplateLikeService] 获取模板 ${templateId} 信息失败:`, templateError)
+        likeCount = 0
+      } else {
+        likeCount = template?.like_count || 0
+      }
 
       const status = {
         template_id: templateId,
@@ -323,25 +389,62 @@ class TemplateLikeService {
         return cachedResults
       }
 
-      // 直接使用UUID查询，无需转换
+      // 🚀 优化：分批并行查询，避免单次查询数据量过大
+      const BATCH_SIZE = 10 // 每批查询10个模板，平衡性能和并发数
       const uuids = uncachedIds
-
-      // 批量查询用户的点赞记录（只有登录用户才查询）
-      let likes: any[] = []
-      if (user) {
-        const { data: userLikes } = await supabase
-          .from('template_likes')
-          .select('template_id')
-          .eq('user_id', user.id)
-          .in('template_id', uuids)
-        likes = userLikes || []
+      
+      // 分批处理未缓存的ID
+      const batches = []
+      for (let i = 0; i < uuids.length; i += BATCH_SIZE) {
+        batches.push(uuids.slice(i, i + BATCH_SIZE))
       }
+      
+      console.log(`[TemplateLikeService] 🔄 分批查询: ${batches.length}批，每批${BATCH_SIZE}个，总计${uuids.length}个模板`)
 
-      // 批量查询模板的点赞数（无论是否登录都查询）
-      const { data: templates } = await supabase
-        .from('templates')
-        .select('id, like_count')
-        .in('id', uuids)
+      // 并行执行所有批次查询
+      const batchPromises = batches.map(async (batch, batchIndex) => {
+        const batchStartTime = performance.now()
+        
+        try {
+          // 批量查询用户的点赞记录（只有登录用户才查询）
+          let batchUserLikes: any[] = []
+          if (user) {
+            const { data: userLikes } = await supabase
+              .from('template_likes')
+              .select('template_id')
+              .eq('user_id', user.id)
+              .in('template_id', batch)
+            batchUserLikes = userLikes || []
+          }
+
+          // 批量查询模板的点赞数（无论是否登录都查询）
+          const { data: batchTemplates } = await supabase
+            .from('templates')
+            .select('id, like_count')
+            .in('id', batch)
+            
+          const batchEndTime = performance.now()
+          console.log(`[TemplateLikeService] ✅ 批次${batchIndex + 1}完成: ${batch.length}个模板，耗时${(batchEndTime - batchStartTime).toFixed(1)}ms`)
+          
+          return {
+            userLikes: batchUserLikes,
+            templates: batchTemplates || []
+          }
+        } catch (error) {
+          console.error(`[TemplateLikeService] ❌ 批次${batchIndex + 1}失败:`, error)
+          return {
+            userLikes: [],
+            templates: []
+          }
+        }
+      })
+
+      // 等待所有批次完成
+      const batchResults = await Promise.all(batchPromises)
+      
+      // 合并所有批次的结果
+      const likes = batchResults.flatMap(result => result.userLikes)
+      const templates = batchResults.flatMap(result => result.templates)
 
       // 创建点赞状态映射
       const likedTemplateUuids = new Set(likes?.map(like => like.template_id) || [])

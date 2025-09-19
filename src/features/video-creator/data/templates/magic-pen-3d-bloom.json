@@ -1,9 +1,27 @@
 {
   "id": "09423d7c-ef56-4ba6-8955-0d9b8b35dbff",
   "slug": "magic-pen-3d-bloom",
-  "name": "Magic Pen 3D Bloom",
+  "name": {
+    "en": "Magic Pen 3D Bloom",
+    "zh": "魔法笔3D绽放",
+    "ja": "マジックペン3D開花",
+    "ko": "마법 펜 3D 블룸",
+    "es": "Florecimiento 3D de Pluma Mágica",
+    "de": "Magischer Stift 3D-Blüte",
+    "fr": "Épanouissement 3D de Stylo Magique",
+    "ar": "قلم سحري تفتح ثلاثي الأبعاد"
+  },
   "icon": "✨",
-  "description": "Use a magic pen to trigger 3D bloom effects on book pages for ASMR videos",
+  "description": {
+    "en": "Magical pen that draws objects which then bloom into three-dimensional reality from the paper",
+    "zh": "神奇的笔画出物体，然后从纸上绽放成三维现实",
+    "ja": "物体を描き、それが紙から三次元の現実に開花する魔法のペン",
+    "ko": "물체를 그리면 종이에서 3차원 현실로 피어나는 마법의 펜",
+    "es": "Pluma mágica que dibuja objetos que luego florecen en realidad tridimensional desde el papel",
+    "de": "Magischer Stift, der Objekte zeichnet, die dann aus dem Papier in die dreidimensionale Realität blühen",
+    "fr": "Stylo magique qui dessine des objets qui s'épanouissent ensuite en réalité tridimensionnelle depuis le papier",
+    "ar": "قلم سحري يرسم أشياء تتفتح بعد ذلك إلى واقع ثلاثي الأبعاد من الورق"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/magic-pen-3d-bloom.mp4?v=1758008502567",
   "category": "Art/ASMR",
   "tags": [
@@ -19,7 +37,7 @@
   ],
   "createdAt": "2025-01-24T11:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.577Z",
+  "lastModified": "2025-09-18T03:33:06.786Z",
   "promptTemplate": "This surreal AI-generated ASMR video, presented in extreme close-up, features a delicate hand holding a {pen_type} as it slowly moves across a black and white sketch of {base_sketch} on the pages of a vintage book. The brush's touch triggers a 3D explosion of {creation_type} ({color_palette} colors, with elements unfolding and popping out). Warm yellow lighting illuminates the illustration, creating a soothing atmosphere. The ASMR sound effects include the rustling of the brush and the crisp sound of {sound_effect}. The close-up footage captures the interaction between the pen and the illustration, with motion blur simulating the movement and delivering HD hyper-realistic detail.",
   "params": {
     "pen_type": {
@@ -30,31 +48,94 @@
       "options": [
         {
           "value": "transparent pen containing colored particles",
-          "label": "Transparent Particle Pen ✨"
+          "label": {
+            "en": "Transparent Particle Pen ✨",
+            "zh": "transparent pen containing colored particles ✨",
+            "ja": "transparent pen containing colored particles ✨",
+            "ko": "transparent pen containing colored particles ✨",
+            "es": "transparent pen containing colored particles ✨",
+            "de": "transparent pen containing colored particles ✨",
+            "fr": "transparent pen containing colored particles ✨",
+            "ar": "transparent pen containing colored particles ✨"
+          }
         },
         {
           "value": "crystal wand with glowing core",
-          "label": "Crystal Wand 🔮"
+          "label": {
+            "en": "Crystal Wand 🔮",
+            "zh": "crystal wand with glowing core 🔮",
+            "ja": "crystal wand with glowing core 🔮",
+            "ko": "crystal wand with glowing core 🔮",
+            "es": "crystal wand with glowing core 🔮",
+            "de": "crystal wand with glowing core 🔮",
+            "fr": "crystal wand with glowing core 🔮",
+            "ar": "crystal wand with glowing core 🔮"
+          }
         },
         {
           "value": "wooden paintbrush with magic bristles",
-          "label": "Magic Paintbrush 🖌️"
+          "label": {
+            "en": "Magic Paintbrush 🖌️",
+            "zh": "wooden paintbrush with magic bristles 🖌️",
+            "ja": "wooden paintbrush with magic bristles 🖌️",
+            "ko": "wooden paintbrush with magic bristles 🖌️",
+            "es": "wooden paintbrush with magic bristles 🖌️",
+            "de": "wooden paintbrush with magic bristles 🖌️",
+            "fr": "wooden paintbrush with magic bristles 🖌️",
+            "ar": "wooden paintbrush with magic bristles 🖌️"
+          }
         },
         {
           "value": "metallic calligraphy pen",
-          "label": "Metallic Calligraphy Pen 🖋️"
+          "label": {
+            "en": "Metallic Calligraphy Pen 🖋️",
+            "zh": "metallic calligraphy pen 🖋️",
+            "ja": "metallic calligraphy pen 🖋️",
+            "ko": "metallic calligraphy pen 🖋️",
+            "es": "metallic calligraphy pen 🖋️",
+            "de": "metallic calligraphy pen 🖋️",
+            "fr": "metallic calligraphy pen 🖋️",
+            "ar": "metallic calligraphy pen 🖋️"
+          }
         },
         {
           "value": "glass fountain pen with liquid ink",
-          "label": "Glass Fountain Pen ✒️"
+          "label": {
+            "en": "Glass Fountain Pen ✒️",
+            "zh": "glass fountain pen with liquid ink ✒️",
+            "ja": "glass fountain pen with liquid ink ✒️",
+            "ko": "glass fountain pen with liquid ink ✒️",
+            "es": "glass fountain pen with liquid ink ✒️",
+            "de": "glass fountain pen with liquid ink ✒️",
+            "fr": "glass fountain pen with liquid ink ✒️",
+            "ar": "glass fountain pen with liquid ink ✒️"
+          }
         },
         {
           "value": "feather quill with shimmering tip",
-          "label": "Feather Quill 🪶"
+          "label": {
+            "en": "Feather Quill 🪶",
+            "zh": "feather quill with shimmering tip 🪶",
+            "ja": "feather quill with shimmering tip 🪶",
+            "ko": "feather quill with shimmering tip 🪶",
+            "es": "feather quill with shimmering tip 🪶",
+            "de": "feather quill with shimmering tip 🪶",
+            "fr": "feather quill with shimmering tip 🪶",
+            "ar": "feather quill with shimmering tip 🪶"
+          }
         },
         {
           "value": "bamboo brush with ink",
-          "label": "Bamboo Brush 🖌️"
+          "label": {
+            "en": "Bamboo Brush 🖌️",
+            "zh": "bamboo brush with ink 🖌️",
+            "ja": "bamboo brush with ink 🖌️",
+            "ko": "bamboo brush with ink 🖌️",
+            "es": "bamboo brush with ink 🖌️",
+            "de": "bamboo brush with ink 🖌️",
+            "fr": "bamboo brush with ink 🖌️",
+            "ar": "bamboo brush with ink 🖌️"
+          }
         }
       ]
     },
@@ -66,39 +147,120 @@
       "options": [
         {
           "value": "cracked earth",
-          "label": "Cracked Earth 🏜️"
+          "label": {
+            "en": "Cracked Earth 🏜️",
+            "zh": "cracked earth 🏜️",
+            "ja": "cracked earth 🏜️",
+            "ko": "cracked earth 🏜️",
+            "es": "cracked earth 🏜️",
+            "de": "cracked earth 🏜️",
+            "fr": "cracked earth 🏜️",
+            "ar": "cracked earth 🏜️"
+          }
         },
         {
           "value": "desert dunes",
-          "label": "Desert Dunes 🏖️"
+          "label": {
+            "en": "Desert Dunes 🏖️",
+            "zh": "desert dunes 🏖️",
+            "ja": "desert dunes 🏖️",
+            "ko": "desert dunes 🏖️",
+            "es": "desert dunes 🏖️",
+            "de": "desert dunes 🏖️",
+            "fr": "desert dunes 🏖️",
+            "ar": "desert dunes 🏖️"
+          }
         },
         {
           "value": "ocean waves",
-          "label": "Ocean Waves 🌊"
+          "label": {
+            "en": "Ocean Waves 🌊",
+            "zh": "ocean waves 🌊",
+            "ja": "ocean waves 🌊",
+            "ko": "ocean waves 🌊",
+            "es": "ocean waves 🌊",
+            "de": "ocean waves 🌊",
+            "fr": "ocean waves 🌊",
+            "ar": "ocean waves 🌊"
+          }
         },
         {
           "value": "mountain landscape",
-          "label": "Mountain Landscape 🏔️"
+          "label": {
+            "en": "Mountain Landscape 🏔️",
+            "zh": "mountain landscape 🏔️",
+            "ja": "mountain landscape 🏔️",
+            "ko": "mountain landscape 🏔️",
+            "es": "mountain landscape 🏔️",
+            "de": "mountain landscape 🏔️",
+            "fr": "mountain landscape 🏔️",
+            "ar": "mountain landscape 🏔️"
+          }
         },
         {
           "value": "abstract patterns",
-          "label": "Abstract Patterns 🎨"
+          "label": {
+            "en": "Abstract Patterns 🎨",
+            "zh": "abstract patterns 🎨",
+            "ja": "abstract patterns 🎨",
+            "ko": "abstract patterns 🎨",
+            "es": "abstract patterns 🎨",
+            "de": "abstract patterns 🎨",
+            "fr": "abstract patterns 🎨",
+            "ar": "abstract patterns 🎨"
+          }
         },
         {
           "value": "geometric shapes",
-          "label": "Geometric Shapes 📐"
+          "label": {
+            "en": "Geometric Shapes 📐",
+            "zh": "geometric shapes 📐",
+            "ja": "geometric shapes 📐",
+            "ko": "geometric shapes 📐",
+            "es": "geometric shapes 📐",
+            "de": "geometric shapes 📐",
+            "fr": "geometric shapes 📐",
+            "ar": "geometric shapes 📐"
+          }
         },
         {
           "value": "tree branches",
-          "label": "Tree Branches 🌳"
+          "label": {
+            "en": "Tree Branches 🌳",
+            "zh": "tree branches 🌳",
+            "ja": "tree branches 🌳",
+            "ko": "tree branches 🌳",
+            "es": "tree branches 🌳",
+            "de": "tree branches 🌳",
+            "fr": "tree branches 🌳",
+            "ar": "tree branches 🌳"
+          }
         },
         {
           "value": "city skyline",
-          "label": "City Skyline 🏙️"
+          "label": {
+            "en": "City Skyline 🏙️",
+            "zh": "city skyline 🏙️",
+            "ja": "city skyline 🏙️",
+            "ko": "city skyline 🏙️",
+            "es": "city skyline 🏙️",
+            "de": "city skyline 🏙️",
+            "fr": "city skyline 🏙️",
+            "ar": "city skyline 🏙️"
+          }
         },
         {
           "value": "spiral galaxy",
-          "label": "Spiral Galaxy 🌌"
+          "label": {
+            "en": "Spiral Galaxy 🌌",
+            "zh": "spiral galaxy 🌌",
+            "ja": "spiral galaxy 🌌",
+            "ko": "spiral galaxy 🌌",
+            "es": "spiral galaxy 🌌",
+            "de": "spiral galaxy 🌌",
+            "fr": "spiral galaxy 🌌",
+            "ar": "spiral galaxy 🌌"
+          }
         }
       ]
     },
@@ -110,43 +272,133 @@
       "options": [
         {
           "value": "colorful flowers with petals unfolding and stamens popping out",
-          "label": "Blooming Flowers 🌸"
+          "label": {
+            "en": "Blooming Flowers 🌸",
+            "zh": "colorful flowers with petals unfolding and stamens popping out 🌸",
+            "ja": "colorful flowers with petals unfolding and stamens popping out 🌸",
+            "ko": "colorful flowers with petals unfolding and stamens popping out 🌸",
+            "es": "colorful flowers with petals unfolding and stamens popping out 🌸",
+            "de": "colorful flowers with petals unfolding and stamens popping out 🌸",
+            "fr": "colorful flowers with petals unfolding and stamens popping out 🌸",
+            "ar": "colorful flowers with petals unfolding and stamens popping out 🌸"
+          }
         },
         {
           "value": "butterflies emerging and flying",
-          "label": "Flying Butterflies 🦋"
+          "label": {
+            "en": "Flying Butterflies 🦋",
+            "zh": "butterflies emerging and flying 🦋",
+            "ja": "butterflies emerging and flying 🦋",
+            "ko": "butterflies emerging and flying 🦋",
+            "es": "butterflies emerging and flying 🦋",
+            "de": "butterflies emerging and flying 🦋",
+            "fr": "butterflies emerging and flying 🦋",
+            "ar": "butterflies emerging and flying 🦋"
+          }
         },
         {
           "value": "birds taking flight",
-          "label": "Flying Birds 🐦"
+          "label": {
+            "en": "Flying Birds 🐦",
+            "zh": "birds taking flight 🐦",
+            "ja": "birds taking flight 🐦",
+            "ko": "birds taking flight 🐦",
+            "es": "birds taking flight 🐦",
+            "de": "birds taking flight 🐦",
+            "fr": "birds taking flight 🐦",
+            "ar": "birds taking flight 🐦"
+          }
         },
         {
           "value": "crystals growing and sparkling",
-          "label": "Growing Crystals 💎"
+          "label": {
+            "en": "Growing Crystals 💎",
+            "zh": "crystals growing and sparkling 💎",
+            "ja": "crystals growing and sparkling 💎",
+            "ko": "crystals growing and sparkling 💎",
+            "es": "crystals growing and sparkling 💎",
+            "de": "crystals growing and sparkling 💎",
+            "fr": "crystals growing and sparkling 💎",
+            "ar": "crystals growing and sparkling 💎"
+          }
         },
         {
           "value": "stars and galaxies swirling",
-          "label": "Swirling Stars ⭐"
+          "label": {
+            "en": "Swirling Stars ⭐",
+            "zh": "stars and galaxies swirling ⭐",
+            "ja": "stars and galaxies swirling ⭐",
+            "ko": "stars and galaxies swirling ⭐",
+            "es": "stars and galaxies swirling ⭐",
+            "de": "stars and galaxies swirling ⭐",
+            "fr": "stars and galaxies swirling ⭐",
+            "ar": "stars and galaxies swirling ⭐"
+          }
         },
         {
           "value": "coral reef blooming",
-          "label": "Coral Reef Blooming 🪸"
+          "label": {
+            "en": "Coral Reef Blooming 🪸",
+            "zh": "coral reef blooming 🪸",
+            "ja": "coral reef blooming 🪸",
+            "ko": "coral reef blooming 🪸",
+            "es": "coral reef blooming 🪸",
+            "de": "coral reef blooming 🪸",
+            "fr": "coral reef blooming 🪸",
+            "ar": "coral reef blooming 🪸"
+          }
         },
         {
           "value": "mushrooms sprouting",
-          "label": "Mushrooms Sprouting 🍄"
+          "label": {
+            "en": "Mushrooms Sprouting 🍄",
+            "zh": "mushrooms sprouting 🍄",
+            "ja": "mushrooms sprouting 🍄",
+            "ko": "mushrooms sprouting 🍄",
+            "es": "mushrooms sprouting 🍄",
+            "de": "mushrooms sprouting 🍄",
+            "fr": "mushrooms sprouting 🍄",
+            "ar": "mushrooms sprouting 🍄"
+          }
         },
         {
           "value": "vines and leaves growing",
-          "label": "Vines Growing 🌿"
+          "label": {
+            "en": "Vines Growing 🌿",
+            "zh": "vines and leaves growing 🌿",
+            "ja": "vines and leaves growing 🌿",
+            "ko": "vines and leaves growing 🌿",
+            "es": "vines and leaves growing 🌿",
+            "de": "vines and leaves growing 🌿",
+            "fr": "vines and leaves growing 🌿",
+            "ar": "vines and leaves growing 🌿"
+          }
         },
         {
           "value": "fireworks exploding",
-          "label": "Fireworks Exploding 🎆"
+          "label": {
+            "en": "Fireworks Exploding 🎆",
+            "zh": "fireworks exploding 🎆",
+            "ja": "fireworks exploding 🎆",
+            "ko": "fireworks exploding 🎆",
+            "es": "fireworks exploding 🎆",
+            "de": "fireworks exploding 🎆",
+            "fr": "fireworks exploding 🎆",
+            "ar": "fireworks exploding 🎆"
+          }
         },
         {
           "value": "bubbles floating up",
-          "label": "Bubbles Floating 🫧"
+          "label": {
+            "en": "Bubbles Floating 🫧",
+            "zh": "bubbles floating up 🫧",
+            "ja": "bubbles floating up 🫧",
+            "ko": "bubbles floating up 🫧",
+            "es": "bubbles floating up 🫧",
+            "de": "bubbles floating up 🫧",
+            "fr": "bubbles floating up 🫧",
+            "ar": "bubbles floating up 🫧"
+          }
         }
       ]
     },
@@ -158,39 +410,120 @@
       "options": [
         {
           "value": "red, yellow, pink, and blue",
-          "label": "Red Yellow Pink Blue 🌈"
+          "label": {
+            "en": "Red Yellow Pink Blue 🌈",
+            "zh": "red, yellow, pink, and blue 🌈",
+            "ja": "red, yellow, pink, and blue 🌈",
+            "ko": "red, yellow, pink, and blue 🌈",
+            "es": "red, yellow, pink, and blue 🌈",
+            "de": "red, yellow, pink, and blue 🌈",
+            "fr": "red, yellow, pink, and blue 🌈",
+            "ar": "red, yellow, pink, and blue 🌈"
+          }
         },
         {
           "value": "soft pastel rainbow",
-          "label": "Soft Pastel Rainbow 🎨"
+          "label": {
+            "en": "Soft Pastel Rainbow 🎨",
+            "zh": "soft pastel rainbow 🎨",
+            "ja": "soft pastel rainbow 🎨",
+            "ko": "soft pastel rainbow 🎨",
+            "es": "soft pastel rainbow 🎨",
+            "de": "soft pastel rainbow 🎨",
+            "fr": "soft pastel rainbow 🎨",
+            "ar": "soft pastel rainbow 🎨"
+          }
         },
         {
           "value": "autumn orange, red, and brown",
-          "label": "Autumn Warm Colors 🍂"
+          "label": {
+            "en": "Autumn Warm Colors 🍂",
+            "zh": "autumn orange, red, and brown 🍂",
+            "ja": "autumn orange, red, and brown 🍂",
+            "ko": "autumn orange, red, and brown 🍂",
+            "es": "autumn orange, red, and brown 🍂",
+            "de": "autumn orange, red, and brown 🍂",
+            "fr": "autumn orange, red, and brown 🍂",
+            "ar": "autumn orange, red, and brown 🍂"
+          }
         },
         {
           "value": "ocean blues and greens",
-          "label": "Ocean Blues Greens 🌊"
+          "label": {
+            "en": "Ocean Blues Greens 🌊",
+            "zh": "ocean blues and greens 🌊",
+            "ja": "ocean blues and greens 🌊",
+            "ko": "ocean blues and greens 🌊",
+            "es": "ocean blues and greens 🌊",
+            "de": "ocean blues and greens 🌊",
+            "fr": "ocean blues and greens 🌊",
+            "ar": "ocean blues and greens 🌊"
+          }
         },
         {
           "value": "sunset orange, purple, and pink",
-          "label": "Sunset Colors 🌅"
+          "label": {
+            "en": "Sunset Colors 🌅",
+            "zh": "sunset orange, purple, and pink 🌅",
+            "ja": "sunset orange, purple, and pink 🌅",
+            "ko": "sunset orange, purple, and pink 🌅",
+            "es": "sunset orange, purple, and pink 🌅",
+            "de": "sunset orange, purple, and pink 🌅",
+            "fr": "sunset orange, purple, and pink 🌅",
+            "ar": "sunset orange, purple, and pink 🌅"
+          }
         },
         {
           "value": "monochrome black to white gradient",
-          "label": "Black White Gradient ⚫⚪"
+          "label": {
+            "en": "Black White Gradient ⚫⚪",
+            "zh": "monochrome black to white gradient ⚫⚪",
+            "ja": "monochrome black to white gradient ⚫⚪",
+            "ko": "monochrome black to white gradient ⚫⚪",
+            "es": "monochrome black to white gradient ⚫⚪",
+            "de": "monochrome black to white gradient ⚫⚪",
+            "fr": "monochrome black to white gradient ⚫⚪",
+            "ar": "monochrome black to white gradient ⚫⚪"
+          }
         },
         {
           "value": "neon vibrant colors",
-          "label": "Neon Vibrant Colors 💫"
+          "label": {
+            "en": "Neon Vibrant Colors 💫",
+            "zh": "neon vibrant colors 💫",
+            "ja": "neon vibrant colors 💫",
+            "ko": "neon vibrant colors 💫",
+            "es": "neon vibrant colors 💫",
+            "de": "neon vibrant colors 💫",
+            "fr": "neon vibrant colors 💫",
+            "ar": "neon vibrant colors 💫"
+          }
         },
         {
           "value": "gold and silver metallic",
-          "label": "Gold Silver Metallic ✨"
+          "label": {
+            "en": "Gold Silver Metallic ✨",
+            "zh": "gold and silver metallic ✨",
+            "ja": "gold and silver metallic ✨",
+            "ko": "gold and silver metallic ✨",
+            "es": "gold and silver metallic ✨",
+            "de": "gold and silver metallic ✨",
+            "fr": "gold and silver metallic ✨",
+            "ar": "gold and silver metallic ✨"
+          }
         },
         {
           "value": "purple and teal mystical",
-          "label": "Purple Teal Mystical 🔮"
+          "label": {
+            "en": "Purple Teal Mystical 🔮",
+            "zh": "purple and teal mystical 🔮",
+            "ja": "purple and teal mystical 🔮",
+            "ko": "purple and teal mystical 🔮",
+            "es": "purple and teal mystical 🔮",
+            "de": "purple and teal mystical 🔮",
+            "fr": "purple and teal mystical 🔮",
+            "ar": "purple and teal mystical 🔮"
+          }
         }
       ]
     },
@@ -201,23 +534,68 @@
       "options": [
         {
           "value": "flowers blooming",
-          "label": "Flowers Blooming"
+          "label": {
+            "en": "Flowers Blooming",
+            "zh": "flowers blooming ",
+            "ja": "flowers blooming ",
+            "ko": "flowers blooming ",
+            "es": "flowers blooming ",
+            "de": "flowers blooming ",
+            "fr": "flowers blooming ",
+            "ar": "flowers blooming "
+          }
         },
         {
           "value": "crystals chiming",
-          "label": "Crystals Chiming"
+          "label": {
+            "en": "Crystals Chiming",
+            "zh": "crystals chiming ",
+            "ja": "crystals chiming ",
+            "ko": "crystals chiming ",
+            "es": "crystals chiming ",
+            "de": "crystals chiming ",
+            "fr": "crystals chiming ",
+            "ar": "crystals chiming "
+          }
         },
         {
           "value": "paper crinkling",
-          "label": "Paper Crinkling"
+          "label": {
+            "en": "Paper Crinkling",
+            "zh": "paper crinkling ",
+            "ja": "paper crinkling ",
+            "ko": "paper crinkling ",
+            "es": "paper crinkling ",
+            "de": "paper crinkling ",
+            "fr": "paper crinkling ",
+            "ar": "paper crinkling "
+          }
         },
         {
           "value": "magical sparkles",
-          "label": "Magical Sparkles"
+          "label": {
+            "en": "Magical Sparkles",
+            "zh": "magical sparkles ",
+            "ja": "magical sparkles ",
+            "ko": "magical sparkles ",
+            "es": "magical sparkles ",
+            "de": "magical sparkles ",
+            "fr": "magical sparkles ",
+            "ar": "magical sparkles "
+          }
         },
         {
           "value": "gentle whoosh",
-          "label": "Gentle Whoosh"
+          "label": {
+            "en": "Gentle Whoosh",
+            "zh": "gentle whoosh ",
+            "ja": "gentle whoosh ",
+            "ko": "gentle whoosh ",
+            "es": "gentle whoosh ",
+            "de": "gentle whoosh ",
+            "fr": "gentle whoosh ",
+            "ar": "gentle whoosh "
+          }
         }
       ]
     }

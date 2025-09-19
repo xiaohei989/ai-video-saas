@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from './hooks/useTheme'
 import { AuthProvider } from './contexts/AuthContext'
+import { VideoPlaybackProvider } from './contexts/VideoPlaybackContext'
 import { Layout } from './components/layout/Layout'
 import FullScreenLayout from './components/layout/FullScreenLayout'
 import ProtectedRoute from './components/auth/ProtectedRoute'
@@ -15,6 +16,7 @@ import { csrfService } from './services/csrfService'
 import { securityMonitor } from './services/securityMonitorService'
 import { validateSecurityConfig } from './config/security'
 import redisCacheIntegrationService from './services/RedisCacheIntegrationService'
+import RoutePreloader from './components/preload/RoutePreloader'
 
 // 调试工具（开发环境）
 if (process.env.NODE_ENV === 'development') {
@@ -36,8 +38,6 @@ import TestVeoApi from './pages/TestVeoApi'
 import TitleEffectDemo from './pages/TitleEffectDemo'
 import TestWatermark from './pages/TestWatermark'
 import SimpleWatermarkTest from './pages/SimpleWatermarkTest'
-import TestProtection from './pages/TestProtection'
-import TestiOSFullscreen from './pages/TestiOSFullscreen'
 
 // Auth pages
 import SignInForm from './components/auth/SignInForm'
@@ -70,6 +70,9 @@ import SimpleAITest from './pages/SimpleAITest'
 // Admin pages
 import AdminRoute from './components/admin/AdminRoute'
 import AdminApp from './components/admin/AdminApp'
+
+// Translation pages
+import TemplateTranslationPage from './features/translation/TemplateTranslationPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -134,8 +137,10 @@ function App() {
       <ThemeProvider>
         <Router>
           <AuthProvider>
-            <TemplateSync />
-            <Routes>
+            <VideoPlaybackProvider>
+              <RoutePreloader />
+              <TemplateSync />
+              <Routes>
               {/* Public routes */}
               <Route path="/" element={<FullScreenLayout><HomePage /></FullScreenLayout>} />
               <Route path="/templates" element={<Layout><TemplatesPage /></Layout>} />
@@ -162,7 +167,9 @@ function App() {
               {/* Test pages (development only) */}
               <Route path="/test/apicore" element={<Layout><TestApicoreApi /></Layout>} />
               <Route path="/test/analytics" element={<Layout><TestAnalytics /></Layout>} />
-              <Route path="/test-ios-fullscreen" element={<Layout><TestiOSFullscreen /></Layout>} />
+              
+              {/* Translation tool (temporarily unprotected for testing) */}
+              <Route path="/translation" element={<Layout showFooter={false}><TemplateTranslationPage /></Layout>} />
               
               {/* Protected routes */}
               <Route element={<ProtectedRoute />}>
@@ -186,14 +193,14 @@ function App() {
               <Route path="/test-veo" element={<Layout><TestVeoApi /></Layout>} />
               <Route path="/test-watermark" element={<Layout><TestWatermark /></Layout>} />
               <Route path="/test-watermark-simple" element={<Layout><SimpleWatermarkTest /></Layout>} />
-              <Route path="/test-protection" element={<Layout><TestProtection /></Layout>} />
               <Route path="/test-ai-content" element={<Layout><TestAIContent /></Layout>} />
               <Route path="/simple-ai-test" element={<SimpleAITest />} />
               <Route path="/title-effects" element={<TitleEffectDemo />} />
-            </Routes>
-            <Toaster />
-            <EnvironmentIndicator />
-            <CookieConsentBanner />
+              </Routes>
+              <Toaster />
+              <EnvironmentIndicator />
+              <CookieConsentBanner />
+            </VideoPlaybackProvider>
           </AuthProvider>
         </Router>
       </ThemeProvider>

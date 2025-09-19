@@ -1,14 +1,15 @@
 import { createCorsVideo } from './videoUrlProxy'
+import { generateOptimizedThumbnail } from './webpThumbnailOptimizer'
 
 /**
  * 从视频中提取缩略图
  * @param videoUrl 视频URL
- * @param frameTime 提取的时间点（秒），默认为第10帧（约0.33秒）
+ * @param frameTime 提取的时间点（秒），优化为0.2秒以获得更好的画面
  * @returns Promise<string> 返回base64格式的图片数据
  */
 export async function extractVideoThumbnail(
   videoUrl: string,
-  frameTime: number = 0.33
+  frameTime: number = 0.2
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     // 🔧 使用CORS安全的视频元素
@@ -35,21 +36,33 @@ export async function extractVideoThumbnail(
     })
     
     // 监听跳转完成
-    video.addEventListener('seeked', () => {
+    video.addEventListener('seeked', async () => {
       try {
-        // 绘制当前帧到画布
-        context.drawImage(video, 0, 0, canvas.width, canvas.height)
-        
-        // 转换为base64
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8)
+        // 🚀 使用优化的 WebP 缩略图生成
+        const thumbnailUrl = await generateOptimizedThumbnail(video, {
+          quality: 0.8,
+          format: 'auto',  // 自动选择最佳格式
+          maxWidth: 320,
+          maxHeight: 180
+        })
         
         // 清理资源
         video.remove()
         canvas.remove()
         
-        resolve(dataUrl)
+        resolve(thumbnailUrl)
       } catch (error) {
-        reject(error)
+        // 如果 WebP 生成失败，回退到原始方法
+        console.warn('[VIDEO THUMBNAIL] WebP 生成失败，使用 JPEG 回退:', error)
+        try {
+          context.drawImage(video, 0, 0, canvas.width, canvas.height)
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8)
+          video.remove()
+          canvas.remove()
+          resolve(dataUrl)
+        } catch (fallbackError) {
+          reject(fallbackError)
+        }
       }
     })
     
@@ -58,14 +71,12 @@ export async function extractVideoThumbnail(
       console.error(`[VIDEO THUMBNAIL] 视频加载失败: ${videoUrl}`, e)
       
       // 如果是代理请求失败，尝试直接访问原始URL
-      if (videoUrl.startsWith('/api/filesystem/') || videoUrl.startsWith('/api/heyoo/')) {
+      if (videoUrl.startsWith('/api/r2/')) {
         console.warn(`[VIDEO THUMBNAIL] 代理请求失败，尝试直接访问原始URL`)
         
         let originalUrl = videoUrl
-        if (videoUrl.startsWith('/api/filesystem/')) {
-          originalUrl = `https://filesystem.site${videoUrl.replace('/api/filesystem', '')}`
-        } else if (videoUrl.startsWith('/api/heyoo/')) {
-          originalUrl = `https://heyoo.oss-ap-southeast-1.aliyuncs.com${videoUrl.replace('/api/heyoo', '')}`
+        if (videoUrl.startsWith('/api/r2/')) {
+          originalUrl = `https://cdn.veo3video.me${videoUrl.replace('/api/r2', '')}`
         }
         
         try {
@@ -79,7 +90,7 @@ export async function extractVideoThumbnail(
       }
       
       // 根据不同域名提供不同的备用缩略图
-      if (videoUrl.includes('filesystem.site') || videoUrl.includes('heyoo.oss')) {
+      if (videoUrl.includes('cdn.veo3video.me')) {
         console.warn(`[VIDEO THUMBNAIL] 检测到第三方域名问题，使用高质量备用缩略图`)
         resolve(getEnhancedDefaultThumbnail())
         return
@@ -116,8 +127,6 @@ export async function extractVideoThumbnails(
     
     // 对需要CORS处理的URL设置crossOrigin
     if (videoUrl.includes('cdn.veo3video.me') || 
-        videoUrl.includes('filesystem.site') ||
-        videoUrl.includes('heyoo.oss-ap-southeast-1.aliyuncs.com') ||
         (videoUrl.startsWith('http://') || videoUrl.startsWith('https://'))) {
       video.crossOrigin = 'anonymous'
       video.setAttribute('crossorigin', 'anonymous')
@@ -210,7 +219,7 @@ export class VideoPreviewAnimation {
  */
 async function extractVideoThumbnailDirect(
   videoUrl: string,
-  frameTime: number = 0.33
+  frameTime: number = 0.2
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const video = document.createElement('video')
@@ -224,8 +233,6 @@ async function extractVideoThumbnailDirect(
     
     // 对需要CORS处理的URL设置crossOrigin
     if (videoUrl.includes('cdn.veo3video.me') || 
-        videoUrl.includes('filesystem.site') ||
-        videoUrl.includes('heyoo.oss-ap-southeast-1.aliyuncs.com') ||
         (videoUrl.startsWith('http://') || videoUrl.startsWith('https://'))) {
       video.crossOrigin = 'anonymous'
       video.setAttribute('crossorigin', 'anonymous')

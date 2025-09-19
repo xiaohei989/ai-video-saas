@@ -1,9 +1,27 @@
 {
   "id": "7e9a2b4c-6d8f-4c2a-9e7b-3a1f5d8c2e4b",
   "slug": "country-historical-evolution",
-  "name": "Country Historical Evolution",
+  "name": {
+    "en": "Country Historical Evolution",
+    "zh": "国家历史演变",
+    "ja": "国の歴史的進化",
+    "ko": "국가 역사적 진화",
+    "es": "Evolución Histórica del País",
+    "de": "Historische Entwicklung des Landes",
+    "fr": "Évolution Historique du Pays",
+    "ar": "التطور التاريخي للبلد"
+  },
   "icon": "🌍",
-  "description": "Transform ancient maps into living 3D miniature countries with tilt-shift effect",
+  "description": {
+    "en": "Time-lapse visualization of a country's borders, culture, and development through different historical periods",
+    "zh": "通过不同历史时期的时间流逝可视化展示国家边界、文化和发展",
+    "ja": "異なる歴史的時代を通じた国の国境、文化、発展のタイムラプス可視化",
+    "ko": "다양한 역사적 시대를 통한 국가의 국경, 문화, 발전의 타임랩스 시각화",
+    "es": "Visualización en time-lapse de las fronteras, cultura y desarrollo de un país a través de diferentes períodos históricos",
+    "de": "Zeitraffer-Visualisierung der Grenzen, Kultur und Entwicklung eines Landes durch verschiedene historische Perioden",
+    "fr": "Visualisation en accéléré des frontières, de la culture et du développement d'un pays à travers différentes périodes historiques",
+    "ar": "تصور بالفاصل الزمني لحدود البلد وثقافته وتطوره عبر فترات تاريخية مختلفة"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/country-historical-evolution.mp4?v=1758008502567",
   "credits": 10,
   "tags": [
@@ -17,7 +35,7 @@
   ],
   "createdAt": "2025-01-31T10:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.574Z",
+  "lastModified": "2025-09-18T03:33:06.779Z",
   "promptTemplate": {
     "model": "veo3",
     "duration": "8s",
@@ -55,13 +73,31 @@
   "params": {
     "country": {
       "type": "select",
-      "label": "Select Country",
+      "label": {
+        "en": "Country",
+        "zh": "国家",
+        "ja": "国",
+        "ko": "국가",
+        "es": "País",
+        "de": "Land",
+        "fr": "Pays",
+        "ar": "البلد"
+      },
       "required": true,
       "default": "italy",
       "options": [
         {
           "value": "italy",
-          "label": "🇮🇹 Italy",
+          "label": {
+            "en": "🇮🇹 Italy",
+            "zh": "italy ",
+            "ja": "italy ",
+            "ko": "italy ",
+            "es": "italy ",
+            "de": "italy ",
+            "fr": "italy ",
+            "ar": "italy "
+          },
           "metadata": {
             "country_name": "Italy",
             "country_display_name": "ITALIA",
@@ -89,7 +125,16 @@
         },
         {
           "value": "egypt",
-          "label": "🇪🇬 Egypt",
+          "label": {
+            "en": "🇪🇬 Egypt",
+            "zh": "egypt ",
+            "ja": "egypt ",
+            "ko": "egypt ",
+            "es": "egypt ",
+            "de": "egypt ",
+            "fr": "egypt ",
+            "ar": "egypt "
+          },
           "metadata": {
             "country_name": "Egypt",
             "country_display_name": "EGYPT",
@@ -117,7 +162,16 @@
         },
         {
           "value": "india",
-          "label": "🇮🇳 India",
+          "label": {
+            "en": "🇮🇳 India",
+            "zh": "india ",
+            "ja": "india ",
+            "ko": "india ",
+            "es": "india ",
+            "de": "india ",
+            "fr": "india ",
+            "ar": "india "
+          },
           "metadata": {
             "country_name": "India",
             "country_display_name": "INDIA",
@@ -145,7 +199,16 @@
         },
         {
           "value": "saudi_arabia",
-          "label": "🇸🇦 Saudi Arabia",
+          "label": {
+            "en": "🇸🇦 Saudi Arabia",
+            "zh": "saudi_arabia ",
+            "ja": "saudi_arabia ",
+            "ko": "saudi_arabia ",
+            "es": "saudi_arabia ",
+            "de": "saudi_arabia ",
+            "fr": "saudi_arabia ",
+            "ar": "saudi_arabia "
+          },
           "metadata": {
             "country_name": "Arabia",
             "country_display_name": "ARABIA",
@@ -173,7 +236,16 @@
         },
         {
           "value": "france",
-          "label": "🇫🇷 France",
+          "label": {
+            "en": "🇫🇷 France",
+            "zh": "france ",
+            "ja": "france ",
+            "ko": "france ",
+            "es": "france ",
+            "de": "france ",
+            "fr": "france ",
+            "ar": "france "
+          },
           "metadata": {
             "country_name": "France",
             "country_display_name": "FRANCE",
@@ -201,7 +273,16 @@
         },
         {
           "value": "japan",
-          "label": "🇯🇵 Japan",
+          "label": {
+            "en": "🇯🇵 Japan",
+            "zh": "japan ",
+            "ja": "japan ",
+            "ko": "japan ",
+            "es": "japan ",
+            "de": "japan ",
+            "fr": "japan ",
+            "ar": "japan "
+          },
           "metadata": {
             "country_name": "Japan",
             "country_display_name": "JAPAN",
@@ -229,7 +310,16 @@
         },
         {
           "value": "uk",
-          "label": "🇬🇧 United Kingdom",
+          "label": {
+            "en": "🇬🇧 United Kingdom",
+            "zh": "uk ",
+            "ja": "uk ",
+            "ko": "uk ",
+            "es": "uk ",
+            "de": "uk ",
+            "fr": "uk ",
+            "ar": "uk "
+          },
           "metadata": {
             "country_name": "United Kingdom",
             "country_display_name": "UNITED KINGDOM",
@@ -257,7 +347,16 @@
         },
         {
           "value": "usa",
-          "label": "🇺🇸 United States",
+          "label": {
+            "en": "🇺🇸 United States",
+            "zh": "usa ",
+            "ja": "usa ",
+            "ko": "usa ",
+            "es": "usa ",
+            "de": "usa ",
+            "fr": "usa ",
+            "ar": "usa "
+          },
           "metadata": {
             "country_name": "United States",
             "country_display_name": "UNITED STATES",
@@ -285,7 +384,16 @@
         },
         {
           "value": "china",
-          "label": "🇨🇳 China",
+          "label": {
+            "en": "🇨🇳 China",
+            "zh": "china ",
+            "ja": "china ",
+            "ko": "china ",
+            "es": "china ",
+            "de": "china ",
+            "fr": "china ",
+            "ar": "china "
+          },
           "metadata": {
             "country_name": "China",
             "country_display_name": "CHINA",
@@ -313,7 +421,16 @@
         },
         {
           "value": "turkey",
-          "label": "🇹🇷 Turkey",
+          "label": {
+            "en": "🇹🇷 Turkey",
+            "zh": "turkey ",
+            "ja": "turkey ",
+            "ko": "turkey ",
+            "es": "turkey ",
+            "de": "turkey ",
+            "fr": "turkey ",
+            "ar": "turkey "
+          },
           "metadata": {
             "country_name": "Turkey",
             "country_display_name": "TURKEY",
@@ -341,7 +458,16 @@
         },
         {
           "value": "russia",
-          "label": "🇷🇺 Russia",
+          "label": {
+            "en": "🇷🇺 Russia",
+            "zh": "russia ",
+            "ja": "russia ",
+            "ko": "russia ",
+            "es": "russia ",
+            "de": "russia ",
+            "fr": "russia ",
+            "ar": "russia "
+          },
           "metadata": {
             "country_name": "Russia",
             "country_display_name": "RUSSIA",
@@ -369,7 +495,16 @@
         },
         {
           "value": "australia",
-          "label": "🇦🇺 Australia",
+          "label": {
+            "en": "🇦🇺 Australia",
+            "zh": "australia ",
+            "ja": "australia ",
+            "ko": "australia ",
+            "es": "australia ",
+            "de": "australia ",
+            "fr": "australia ",
+            "ar": "australia "
+          },
           "metadata": {
             "country_name": "Australia",
             "country_display_name": "AUSTRALIA",
@@ -397,7 +532,16 @@
         },
         {
           "value": "germany",
-          "label": "🇩🇪 Germany",
+          "label": {
+            "en": "🇩🇪 Germany",
+            "zh": "germany ",
+            "ja": "germany ",
+            "ko": "germany ",
+            "es": "germany ",
+            "de": "germany ",
+            "fr": "germany ",
+            "ar": "germany "
+          },
           "metadata": {
             "country_name": "Germany",
             "country_display_name": "DEUTSCHLAND",
@@ -425,7 +569,16 @@
         },
         {
           "value": "spain",
-          "label": "🇪🇸 Spain",
+          "label": {
+            "en": "🇪🇸 Spain",
+            "zh": "spain ",
+            "ja": "spain ",
+            "ko": "spain ",
+            "es": "spain ",
+            "de": "spain ",
+            "fr": "spain ",
+            "ar": "spain "
+          },
           "metadata": {
             "country_name": "Spain",
             "country_display_name": "ESPAÑA",
@@ -453,7 +606,16 @@
         },
         {
           "value": "mexico",
-          "label": "🇲🇽 Mexico",
+          "label": {
+            "en": "🇲🇽 Mexico",
+            "zh": "mexico ",
+            "ja": "mexico ",
+            "ko": "mexico ",
+            "es": "mexico ",
+            "de": "mexico ",
+            "fr": "mexico ",
+            "ar": "mexico "
+          },
           "metadata": {
             "country_name": "Mexico",
             "country_display_name": "MÉXICO",
@@ -481,7 +643,16 @@
         },
         {
           "value": "brazil",
-          "label": "🇧🇷 Brazil",
+          "label": {
+            "en": "🇧🇷 Brazil",
+            "zh": "brazil ",
+            "ja": "brazil ",
+            "ko": "brazil ",
+            "es": "brazil ",
+            "de": "brazil ",
+            "fr": "brazil ",
+            "ar": "brazil "
+          },
           "metadata": {
             "country_name": "Brazil",
             "country_display_name": "BRASIL",
@@ -621,7 +792,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

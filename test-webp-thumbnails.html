@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebP 缩略图测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .thumbnail-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .thumbnail-item {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        
+        .thumbnail-item img {
+            width: 100%;
+            max-width: 320px;
+            height: auto;
+            border-radius: 4px;
+        }
+        
+        .stats {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .button:hover {
+            background: #0056b3;
+        }
+        
+        .progress {
+            width: 100%;
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: #007bff;
+            transition: width 0.3s ease;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .summary h3 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🚀 WebP 缩略图优化测试</h1>
+        <p>测试您的浏览器对 WebP 格式的支持，并比较 JPEG vs WebP 的文件大小差异。</p>
+        
+        <div>
+            <button class="button" onclick="testWebPSupport()">检测 WebP 支持</button>
+            <button class="button" onclick="generateTestThumbnails()">生成测试缩略图</button>
+            <button class="button" onclick="runPerformanceTest()">性能测试</button>
+        </div>
+        
+        <div id="webp-support-result" class="stats" style="display: none;"></div>
+        
+        <div class="progress" style="display: none;" id="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        
+        <div class="thumbnail-comparison" id="comparison-container" style="display: none;">
+            <div class="thumbnail-item">
+                <h3>📄 JPEG 格式</h3>
+                <img id="jpeg-thumbnail" alt="JPEG缩略图">
+                <div class="stats" id="jpeg-stats"></div>
+            </div>
+            
+            <div class="thumbnail-item">
+                <h3>🎯 WebP 格式</h3>
+                <img id="webp-thumbnail" alt="WebP缩略图">
+                <div class="stats" id="webp-stats"></div>
+            </div>
+        </div>
+        
+        <div class="summary" id="summary" style="display: none;">
+            <h3>📊 优化效果总结</h3>
+            <div id="summary-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // WebP 支持检测
+        function supportsWebP() {
+            return new Promise((resolve) => {
+                const canvas = document.createElement('canvas')
+                canvas.width = 1
+                canvas.height = 1
+                
+                canvas.toBlob((blob) => {
+                    resolve(blob !== null)
+                }, 'image/webp')
+            })
+        }
+        
+        // 测试 WebP 支持
+        async function testWebPSupport() {
+            const resultDiv = document.getElementById('webp-support-result')
+            const supported = await supportsWebP()
+            
+            resultDiv.style.display = 'block'
+            resultDiv.innerHTML = `
+                <strong>WebP 支持检测结果:</strong><br>
+                状态: ${supported ? '✅ 支持' : '❌ 不支持'}<br>
+                浏览器: ${navigator.userAgent}<br>
+                建议: ${supported ? 'WebP 可以减少 25-35% 的文件大小' : '将回退到 JPEG 格式'}
+            `
+        }
+        
+        // 创建测试视频
+        function createTestVideo() {
+            const canvas = document.createElement('canvas')
+            canvas.width = 640
+            canvas.height = 360
+            const ctx = canvas.getContext('2d')
+            
+            // 绘制测试图案
+            const gradient = ctx.createLinearGradient(0, 0, 640, 360)
+            gradient.addColorStop(0, '#667eea')
+            gradient.addColorStop(1, '#764ba2')
+            ctx.fillStyle = gradient
+            ctx.fillRect(0, 0, 640, 360)
+            
+            // 添加文字
+            ctx.fillStyle = 'white'
+            ctx.font = '48px Arial'
+            ctx.textAlign = 'center'
+            ctx.fillText('缩略图测试', 320, 150)
+            ctx.font = '24px Arial'
+            ctx.fillText('WebP vs JPEG', 320, 200)
+            ctx.fillText(new Date().toLocaleTimeString(), 320, 250)
+            
+            // 添加一些复杂图案（测试压缩效果）
+            for (let i = 0; i < 50; i++) {
+                ctx.fillStyle = `hsl(${Math.random() * 360}, 70%, 60%)`
+                ctx.beginPath()
+                ctx.arc(
+                    Math.random() * 640,
+                    Math.random() * 360,
+                    Math.random() * 20 + 5,
+                    0,
+                    Math.PI * 2
+                )
+                ctx.fill()
+            }
+            
+            return canvas
+        }
+        
+        // 生成缩略图并比较
+        async function generateTestThumbnails() {
+            const progressContainer = document.getElementById('progress-container')
+            const progressBar = document.getElementById('progress-bar')
+            const comparisonContainer = document.getElementById('comparison-container')
+            
+            progressContainer.style.display = 'block'
+            progressBar.style.width = '0%'
+            
+            try {
+                // 创建测试画布
+                progressBar.style.width = '20%'
+                const testCanvas = createTestVideo()
+                
+                // 生成 JPEG 缩略图
+                progressBar.style.width = '50%'
+                const jpegDataUrl = testCanvas.toDataURL('image/jpeg', 0.8)
+                
+                // 生成 WebP 缩略图
+                progressBar.style.width = '80%'
+                const webpDataUrl = await new Promise((resolve) => {
+                    testCanvas.toBlob((blob) => {
+                        if (blob) {
+                            const reader = new FileReader()
+                            reader.onload = () => resolve(reader.result)
+                            reader.readAsDataURL(blob)
+                        } else {
+                            resolve(jpegDataUrl) // 回退
+                        }
+                    }, 'image/webp', 0.8)
+                })
+                
+                // 显示结果
+                progressBar.style.width = '100%'
+                displayComparison(jpegDataUrl, webpDataUrl)
+                
+                setTimeout(() => {
+                    progressContainer.style.display = 'none'
+                    comparisonContainer.style.display = 'grid'
+                }, 500)
+                
+            } catch (error) {
+                console.error('生成缩略图失败:', error)
+                progressContainer.style.display = 'none'
+            }
+        }
+        
+        // 显示比较结果
+        function displayComparison(jpegDataUrl, webpDataUrl) {
+            // 显示图片
+            document.getElementById('jpeg-thumbnail').src = jpegDataUrl
+            document.getElementById('webp-thumbnail').src = webpDataUrl
+            
+            // 计算文件大小
+            const jpegSize = Math.round((jpegDataUrl.length * 0.75) / 1024)
+            const webpSize = Math.round((webpDataUrl.length * 0.75) / 1024)
+            const savings = ((jpegSize - webpSize) / jpegSize * 100).toFixed(1)
+            
+            // 显示统计信息
+            document.getElementById('jpeg-stats').innerHTML = `
+                格式: JPEG<br>
+                质量: 80%<br>
+                大小: ${jpegSize} KB<br>
+                兼容性: 100%
+            `
+            
+            document.getElementById('webp-stats').innerHTML = `
+                格式: WebP<br>
+                质量: 80%<br>
+                大小: ${webpSize} KB<br>
+                节省: ${savings}%
+            `
+            
+            // 显示总结
+            const summary = document.getElementById('summary')
+            const summaryContent = document.getElementById('summary-content')
+            
+            summaryContent.innerHTML = `
+                <p><strong>优化效果:</strong></p>
+                <ul>
+                    <li>文件大小减少: <strong>${savings}%</strong></li>
+                    <li>预计加载速度提升: <strong>${(parseFloat(savings) * 0.8).toFixed(1)}%</strong></li>
+                    <li>带宽节省: <strong>${jpegSize - webpSize} KB</strong> 每张缩略图</li>
+                    <li>用户体验: ${parseFloat(savings) > 20 ? '🚀 显著提升' : '📈 小幅改善'}</li>
+                </ul>
+                <p><strong>建议:</strong> ${parseFloat(savings) > 15 ? 
+                    '启用 WebP 优化可以显著改善缩略图加载性能' : 
+                    '考虑进一步优化图片质量或尺寸'}</p>
+            `
+            
+            summary.style.display = 'block'
+        }
+        
+        // 性能测试
+        async function runPerformanceTest() {
+            console.log('🚀 开始性能测试...')
+            
+            const testCount = 10
+            const jpegTimes = []
+            const webpTimes = []
+            
+            for (let i = 0; i < testCount; i++) {
+                const testCanvas = createTestVideo()
+                
+                // 测试 JPEG 生成时间
+                const jpegStart = performance.now()
+                testCanvas.toDataURL('image/jpeg', 0.8)
+                jpegTimes.push(performance.now() - jpegStart)
+                
+                // 测试 WebP 生成时间
+                const webpStart = performance.now()
+                await new Promise((resolve) => {
+                    testCanvas.toBlob((blob) => {
+                        resolve(blob)
+                    }, 'image/webp', 0.8)
+                })
+                webpTimes.push(performance.now() - webpStart)
+            }
+            
+            const avgJpeg = jpegTimes.reduce((a, b) => a + b) / testCount
+            const avgWebp = webpTimes.reduce((a, b) => a + b) / testCount
+            
+            console.log(`📊 性能测试结果 (${testCount} 次测试):`)
+            console.log(`JPEG 平均生成时间: ${avgJpeg.toFixed(2)}ms`)
+            console.log(`WebP 平均生成时间: ${avgWebp.toFixed(2)}ms`)
+            console.log(`性能差异: ${((avgWebp - avgJpeg) / avgJpeg * 100).toFixed(1)}%`)
+            
+            alert(`性能测试完成！\n\nJPEG: ${avgJpeg.toFixed(2)}ms\nWebP: ${avgWebp.toFixed(2)}ms\n\n请查看控制台了解详细结果。`)
+        }
+        
+        // 页面加载时自动检测 WebP 支持
+        window.onload = function() {
+            testWebPSupport()
+        }
+    </script>
+</body>
+</html>

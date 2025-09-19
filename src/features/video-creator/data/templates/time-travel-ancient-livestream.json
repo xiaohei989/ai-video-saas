@@ -1,10 +1,28 @@
 {
   "id": "f3e6b9c2-5d8a-4f7e-9c1b-8a2f5e3d6c1b",
   "slug": "time-travel-ancient-livestream",
-  "name": "Time Travel Ancient Livestream",
+  "name": {
+    "en": "Time Travel Ancient Livestream",
+    "zh": "时间旅行古代直播",
+    "ja": "タイムトラベル古代ライブストリーム",
+    "ko": "시간 여행 고대 라이브스트림",
+    "es": "Transmisión en Vivo Antigua de Viaje en el Tiempo",
+    "de": "Zeitreise Antike Livestream",
+    "fr": "Livestream Ancien de Voyage dans le Temps",
+    "ar": "بث مباشر قديم لسفر الزمن"
+  },
   "icon": "⏰",
   "credits": 10,
-  "description": "Time-traveling streamers broadcasting live from ancient historical scenes with modern equipment",
+  "description": {
+    "en": "Modern influencer accidentally livestreams from ancient civilizations after time travel mishap",
+    "zh": "现代网络红人在时间旅行意外后意外地从古代文明进行直播",
+    "ja": "現代のインフルエンサーがタイムトラベルの事故後、古代文明から誤ってライブストリームする",
+    "ko": "현대 인플루언서가 시간 여행 사고 후 고대 문명에서 실수로 라이브스트림을 하게 됨",
+    "es": "Influencer moderno transmite accidentalmente en vivo desde civilizaciones antiguas después de un percance de viaje en el tiempo",
+    "de": "Moderner Influencer streamt versehentlich live aus antiken Zivilisationen nach einem Zeitreise-Missgeschick",
+    "fr": "L'influenceur moderne diffuse accidentellement en direct depuis les civilisations anciennes après un accident de voyage dans le temps",
+    "ar": "مؤثر حديث يبث بطريق الخطأ مباشرة من الحضارات القديمة بعد حادث سفر عبر الزمن"
+  },
   "previewUrl": "https://cdn.veo3video.me/templates/videos/time-travel-ancient-livestream.mp4?v=1758008502567",
   "tags": [
     "comedy",
@@ -18,7 +36,7 @@
   ],
   "createdAt": "2025-01-30T10:00:00Z",
   "version": "1.0.0",
-  "lastModified": "2025-09-16T07:41:42.581Z",
+  "lastModified": "2025-09-18T03:33:06.817Z",
   "promptTemplate": "A first-person perspective selfie: {character_description}, moving through {ancient_scene_description}. With focused expression, {pronoun_subject} explains the unfolding scene. {pronoun_subject} reacts with {voice_tone}, exclaiming '{scene_dialogue}' The camera, at a dynamic low angle, vibrates with the action, creating a jittery first-person view as the streamer navigates through the historical chaos. Cinema-quality realistic visuals with dramatic lighting and immersive atmosphere, emphasizing the striking contrast between modern streaming technology and the ancient world.",
   "params": {
     "character_description": {
@@ -29,7 +47,16 @@
       "options": [
         {
           "value": "a modern female live streamer, 25 years old, with colorful hair and wireless earbuds, wearing ripped jeans and sneakers, holding a selfie stick",
-          "label": "Modern Female Streamer 👩‍💻",
+          "label": {
+            "en": "Modern Female Streamer 👩‍💻",
+            "zh": "a modern female live streamer, 25 years old, with colorful hair and wireless earbuds, wearing ripped jeans and sneakers, holding a selfie stick 👩‍💻",
+            "ja": "a modern female live streamer, 25 years old, with colorful hair and wireless earbuds, wearing ripped jeans and sneakers, holding a selfie stick 👩‍💻",
+            "ko": "a modern female live streamer, 25 years old, with colorful hair and wireless earbuds, wearing ripped jeans and sneakers, holding a selfie stick 👩‍💻",
+            "es": "a modern female live streamer, 25 years old, with colorful hair and wireless earbuds, wearing ripped jeans and sneakers, holding a selfie stick 👩‍💻",
+            "de": "a modern female live streamer, 25 years old, with colorful hair and wireless earbuds, wearing ripped jeans and sneakers, holding a selfie stick 👩‍💻",
+            "fr": "a modern female live streamer, 25 years old, with colorful hair and wireless earbuds, wearing ripped jeans and sneakers, holding a selfie stick 👩‍💻",
+            "ar": "a modern female live streamer, 25 years old, with colorful hair and wireless earbuds, wearing ripped jeans and sneakers, holding a selfie stick 👩‍💻"
+          },
           "metadata": {
             "voice_tone": "high-pitched excited voice with slight trembling",
             "pronoun_subject": "she",
@@ -39,7 +66,16 @@
         },
         {
           "value": "a tech-savvy male content creator, 28 years old, with glasses and smartwatch, wearing a hoodie and cargo pants, holding camera equipment",
-          "label": "Tech Male Blogger 👨‍💻",
+          "label": {
+            "en": "Tech Male Blogger 👨‍💻",
+            "zh": "a tech-savvy male content creator, 28 years old, with glasses and smartwatch, wearing a hoodie and cargo pants, holding camera equipment 👨‍💻",
+            "ja": "a tech-savvy male content creator, 28 years old, with glasses and smartwatch, wearing a hoodie and cargo pants, holding camera equipment 👨‍💻",
+            "ko": "a tech-savvy male content creator, 28 years old, with glasses and smartwatch, wearing a hoodie and cargo pants, holding camera equipment 👨‍💻",
+            "es": "a tech-savvy male content creator, 28 years old, with glasses and smartwatch, wearing a hoodie and cargo pants, holding camera equipment 👨‍💻",
+            "de": "a tech-savvy male content creator, 28 years old, with glasses and smartwatch, wearing a hoodie and cargo pants, holding camera equipment 👨‍💻",
+            "fr": "a tech-savvy male content creator, 28 years old, with glasses and smartwatch, wearing a hoodie and cargo pants, holding camera equipment 👨‍💻",
+            "ar": "a tech-savvy male content creator, 28 years old, with glasses and smartwatch, wearing a hoodie and cargo pants, holding camera equipment 👨‍💻"
+          },
           "metadata": {
             "voice_tone": "analytical tone mixed with genuine shock",
             "pronoun_subject": "he",
@@ -49,7 +85,16 @@
         },
         {
           "value": "a massive wild polar bear with thick white fur and dark eyes, naturally holding a selfie stick with powerful paws, wearing a wireless headset, displaying surprising intelligence",
-          "label": "Polar Bear Streamer 🐻‍❄️",
+          "label": {
+            "en": "Polar Bear Streamer 🐻‍❄️",
+            "zh": "a massive wild polar bear with thick white fur and dark eyes, naturally holding a selfie stick with powerful paws, wearing a wireless headset, displaying surprising intelligence 🐻‍❄️",
+            "ja": "a massive wild polar bear with thick white fur and dark eyes, naturally holding a selfie stick with powerful paws, wearing a wireless headset, displaying surprising intelligence 🐻‍❄️",
+            "ko": "a massive wild polar bear with thick white fur and dark eyes, naturally holding a selfie stick with powerful paws, wearing a wireless headset, displaying surprising intelligence 🐻‍❄️",
+            "es": "a massive wild polar bear with thick white fur and dark eyes, naturally holding a selfie stick with powerful paws, wearing a wireless headset, displaying surprising intelligence 🐻‍❄️",
+            "de": "a massive wild polar bear with thick white fur and dark eyes, naturally holding a selfie stick with powerful paws, wearing a wireless headset, displaying surprising intelligence 🐻‍❄️",
+            "fr": "a massive wild polar bear with thick white fur and dark eyes, naturally holding a selfie stick with powerful paws, wearing a wireless headset, displaying surprising intelligence 🐻‍❄️",
+            "ar": "a massive wild polar bear with thick white fur and dark eyes, naturally holding a selfie stick with powerful paws, wearing a wireless headset, displaying surprising intelligence 🐻‍❄️"
+          },
           "metadata": {
             "voice_tone": "cute fluffy voice with adorable amazement",
             "pronoun_subject": "he",
@@ -59,7 +104,16 @@
         },
         {
           "value": "a legendary wild yeti with shaggy white-gray fur, piercing ice-blue eyes, and prominent fangs, naturally holding streaming equipment with enormous hands, wearing a clip-on microphone",
-          "label": "Yeti Influencer 🏔️",
+          "label": {
+            "en": "Yeti Influencer 🏔️",
+            "zh": "a legendary wild yeti with shaggy white-gray fur, piercing ice-blue eyes, and prominent fangs, naturally holding streaming equipment with enormous hands, wearing a clip-on microphone 🏔️",
+            "ja": "a legendary wild yeti with shaggy white-gray fur, piercing ice-blue eyes, and prominent fangs, naturally holding streaming equipment with enormous hands, wearing a clip-on microphone 🏔️",
+            "ko": "a legendary wild yeti with shaggy white-gray fur, piercing ice-blue eyes, and prominent fangs, naturally holding streaming equipment with enormous hands, wearing a clip-on microphone 🏔️",
+            "es": "a legendary wild yeti with shaggy white-gray fur, piercing ice-blue eyes, and prominent fangs, naturally holding streaming equipment with enormous hands, wearing a clip-on microphone 🏔️",
+            "de": "a legendary wild yeti with shaggy white-gray fur, piercing ice-blue eyes, and prominent fangs, naturally holding streaming equipment with enormous hands, wearing a clip-on microphone 🏔️",
+            "fr": "a legendary wild yeti with shaggy white-gray fur, piercing ice-blue eyes, and prominent fangs, naturally holding streaming equipment with enormous hands, wearing a clip-on microphone 🏔️",
+            "ar": "a legendary wild yeti with shaggy white-gray fur, piercing ice-blue eyes, and prominent fangs, naturally holding streaming equipment with enormous hands, wearing a clip-on microphone 🏔️"
+          },
           "metadata": {
             "voice_tone": "deep gentle voice with mystical wonder",
             "pronoun_subject": "he",
@@ -69,7 +123,16 @@
         },
         {
           "value": "a massive wild bigfoot with dark matted fur and intelligent amber eyes, naturally holding streaming equipment with large hands, wearing a wireless microphone",
-          "label": "Bigfoot Streamer 👣",
+          "label": {
+            "en": "Bigfoot Streamer 👣",
+            "zh": "a massive wild bigfoot with dark matted fur and intelligent amber eyes, naturally holding streaming equipment with large hands, wearing a wireless microphone 👣",
+            "ja": "a massive wild bigfoot with dark matted fur and intelligent amber eyes, naturally holding streaming equipment with large hands, wearing a wireless microphone 👣",
+            "ko": "a massive wild bigfoot with dark matted fur and intelligent amber eyes, naturally holding streaming equipment with large hands, wearing a wireless microphone 👣",
+            "es": "a massive wild bigfoot with dark matted fur and intelligent amber eyes, naturally holding streaming equipment with large hands, wearing a wireless microphone 👣",
+            "de": "a massive wild bigfoot with dark matted fur and intelligent amber eyes, naturally holding streaming equipment with large hands, wearing a wireless microphone 👣",
+            "fr": "a massive wild bigfoot with dark matted fur and intelligent amber eyes, naturally holding streaming equipment with large hands, wearing a wireless microphone 👣",
+            "ar": "a massive wild bigfoot with dark matted fur and intelligent amber eyes, naturally holding streaming equipment with large hands, wearing a wireless microphone 👣"
+          },
           "metadata": {
             "voice_tone": "rough hearty voice with wild enthusiasm",
             "pronoun_subject": "he",
@@ -87,49 +150,112 @@
       "options": [
         {
           "value": "a primitive hunting scene in icy tundra, where cavemen with spears chase a mammoth, with smoke rising from campfires and ancient rock paintings glowing on cave walls, featuring earthy color tones and vibration effects",
-          "label": "Primitive Mammoth Hunt 🏹",
+          "label": {
+            "en": "Primitive Mammoth Hunt 🏹",
+            "zh": "a primitive hunting scene in icy tundra, where cavemen with spears chase a mammoth, with smoke rising from campfires and ancient rock paintings glowing on cave walls, featuring earthy color tones and vibration effects 🏹",
+            "ja": "a primitive hunting scene in icy tundra, where cavemen with spears chase a mammoth, with smoke rising from campfires and ancient rock paintings glowing on cave walls, featuring earthy color tones and vibration effects 🏹",
+            "ko": "a primitive hunting scene in icy tundra, where cavemen with spears chase a mammoth, with smoke rising from campfires and ancient rock paintings glowing on cave walls, featuring earthy color tones and vibration effects 🏹",
+            "es": "a primitive hunting scene in icy tundra, where cavemen with spears chase a mammoth, with smoke rising from campfires and ancient rock paintings glowing on cave walls, featuring earthy color tones and vibration effects 🏹",
+            "de": "a primitive hunting scene in icy tundra, where cavemen with spears chase a mammoth, with smoke rising from campfires and ancient rock paintings glowing on cave walls, featuring earthy color tones and vibration effects 🏹",
+            "fr": "a primitive hunting scene in icy tundra, where cavemen with spears chase a mammoth, with smoke rising from campfires and ancient rock paintings glowing on cave walls, featuring earthy color tones and vibration effects 🏹",
+            "ar": "a primitive hunting scene in icy tundra, where cavemen with spears chase a mammoth, with smoke rising from campfires and ancient rock paintings glowing on cave walls, featuring earthy color tones and vibration effects 🏹"
+          },
           "metadata": {
             "scene_dialogue": "OMG! Real mammoths! This is insane!"
           }
         },
         {
           "value": "the active pyramid construction worksite in ancient Egypt, dodging massive stone blocks being dragged across sand by teams of straining workers, walking past sweating laborers hauling ropes and positioning limestone with wooden levers, dust and sand swirling around as foremen shout commands, the towering pyramid structure rising stone by stone overhead, featuring the intense desert heat and constant motion of the bustling construction zone",
-          "label": "Egyptian Pyramid Construction 🏜️",
+          "label": {
+            "en": "Egyptian Pyramid Construction 🏜️",
+            "zh": "the active pyramid construction worksite in ancient Egypt, dodging massive stone blocks being dragged across sand by teams of straining workers, walking past sweating laborers hauling ropes and positioning limestone with wooden levers, dust and sand swirling around as foremen shout commands, the towering pyramid structure rising stone by stone overhead, featuring the intense desert heat and constant motion of the bustling construction zone 🏜️",
+            "ja": "the active pyramid construction worksite in ancient Egypt, dodging massive stone blocks being dragged across sand by teams of straining workers, walking past sweating laborers hauling ropes and positioning limestone with wooden levers, dust and sand swirling around as foremen shout commands, the towering pyramid structure rising stone by stone overhead, featuring the intense desert heat and constant motion of the bustling construction zone 🏜️",
+            "ko": "the active pyramid construction worksite in ancient Egypt, dodging massive stone blocks being dragged across sand by teams of straining workers, walking past sweating laborers hauling ropes and positioning limestone with wooden levers, dust and sand swirling around as foremen shout commands, the towering pyramid structure rising stone by stone overhead, featuring the intense desert heat and constant motion of the bustling construction zone 🏜️",
+            "es": "the active pyramid construction worksite in ancient Egypt, dodging massive stone blocks being dragged across sand by teams of straining workers, walking past sweating laborers hauling ropes and positioning limestone with wooden levers, dust and sand swirling around as foremen shout commands, the towering pyramid structure rising stone by stone overhead, featuring the intense desert heat and constant motion of the bustling construction zone 🏜️",
+            "de": "the active pyramid construction worksite in ancient Egypt, dodging massive stone blocks being dragged across sand by teams of straining workers, walking past sweating laborers hauling ropes and positioning limestone with wooden levers, dust and sand swirling around as foremen shout commands, the towering pyramid structure rising stone by stone overhead, featuring the intense desert heat and constant motion of the bustling construction zone 🏜️",
+            "fr": "the active pyramid construction worksite in ancient Egypt, dodging massive stone blocks being dragged across sand by teams of straining workers, walking past sweating laborers hauling ropes and positioning limestone with wooden levers, dust and sand swirling around as foremen shout commands, the towering pyramid structure rising stone by stone overhead, featuring the intense desert heat and constant motion of the bustling construction zone 🏜️",
+            "ar": "the active pyramid construction worksite in ancient Egypt, dodging massive stone blocks being dragged across sand by teams of straining workers, walking past sweating laborers hauling ropes and positioning limestone with wooden levers, dust and sand swirling around as foremen shout commands, the towering pyramid structure rising stone by stone overhead, featuring the intense desert heat and constant motion of the bustling construction zone 🏜️"
+          },
           "metadata": {
             "scene_dialogue": "Holy crap! Actual pyramid building!"
           }
         },
         {
           "value": "the Roman Colosseum arena where gladiators are fighting wild lions and tigers with swords and shields, sand flying as warriors dodge and strike, crowds roaring with excitement, featuring intense combat action with swirling dust and dramatic arena lighting",
-          "label": "Roman Gladiator Arena ⚔️",
+          "label": {
+            "en": "Roman Gladiator Arena ⚔️",
+            "zh": "the Roman Colosseum arena where gladiators are fighting wild lions and tigers with swords and shields, sand flying as warriors dodge and strike, crowds roaring with excitement, featuring intense combat action with swirling dust and dramatic arena lighting ⚔️",
+            "ja": "the Roman Colosseum arena where gladiators are fighting wild lions and tigers with swords and shields, sand flying as warriors dodge and strike, crowds roaring with excitement, featuring intense combat action with swirling dust and dramatic arena lighting ⚔️",
+            "ko": "the Roman Colosseum arena where gladiators are fighting wild lions and tigers with swords and shields, sand flying as warriors dodge and strike, crowds roaring with excitement, featuring intense combat action with swirling dust and dramatic arena lighting ⚔️",
+            "es": "the Roman Colosseum arena where gladiators are fighting wild lions and tigers with swords and shields, sand flying as warriors dodge and strike, crowds roaring with excitement, featuring intense combat action with swirling dust and dramatic arena lighting ⚔️",
+            "de": "the Roman Colosseum arena where gladiators are fighting wild lions and tigers with swords and shields, sand flying as warriors dodge and strike, crowds roaring with excitement, featuring intense combat action with swirling dust and dramatic arena lighting ⚔️",
+            "fr": "the Roman Colosseum arena where gladiators are fighting wild lions and tigers with swords and shields, sand flying as warriors dodge and strike, crowds roaring with excitement, featuring intense combat action with swirling dust and dramatic arena lighting ⚔️",
+            "ar": "the Roman Colosseum arena where gladiators are fighting wild lions and tigers with swords and shields, sand flying as warriors dodge and strike, crowds roaring with excitement, featuring intense combat action with swirling dust and dramatic arena lighting ⚔️"
+          },
           "metadata": {
             "scene_dialogue": "No way! Real gladiators fighting!"
           }
         },
         {
           "value": "aboard a Viking longship during a fierce coastal raid, with the massive dragon-headed vessel cutting through stormy seas as fierce Norse warriors row in synchronized rhythm, shields and rune-engraved axes at the ready, sea spray crashing over the deck, coastal villages visible in the distance with smoke rising from targeted settlements, featuring the ship's wooden deck perspective with dramatic ocean swells and storm effects",
-          "label": "Viking Coastal Raid ⚓",
+          "label": {
+            "en": "Viking Coastal Raid ⚓",
+            "zh": "aboard a Viking longship during a fierce coastal raid, with the massive dragon-headed vessel cutting through stormy seas as fierce Norse warriors row in synchronized rhythm, shields and rune-engraved axes at the ready, sea spray crashing over the deck, coastal villages visible in the distance with smoke rising from targeted settlements, featuring the ship's wooden deck perspective with dramatic ocean swells and storm effects ⚓",
+            "ja": "aboard a Viking longship during a fierce coastal raid, with the massive dragon-headed vessel cutting through stormy seas as fierce Norse warriors row in synchronized rhythm, shields and rune-engraved axes at the ready, sea spray crashing over the deck, coastal villages visible in the distance with smoke rising from targeted settlements, featuring the ship's wooden deck perspective with dramatic ocean swells and storm effects ⚓",
+            "ko": "aboard a Viking longship during a fierce coastal raid, with the massive dragon-headed vessel cutting through stormy seas as fierce Norse warriors row in synchronized rhythm, shields and rune-engraved axes at the ready, sea spray crashing over the deck, coastal villages visible in the distance with smoke rising from targeted settlements, featuring the ship's wooden deck perspective with dramatic ocean swells and storm effects ⚓",
+            "es": "aboard a Viking longship during a fierce coastal raid, with the massive dragon-headed vessel cutting through stormy seas as fierce Norse warriors row in synchronized rhythm, shields and rune-engraved axes at the ready, sea spray crashing over the deck, coastal villages visible in the distance with smoke rising from targeted settlements, featuring the ship's wooden deck perspective with dramatic ocean swells and storm effects ⚓",
+            "de": "aboard a Viking longship during a fierce coastal raid, with the massive dragon-headed vessel cutting through stormy seas as fierce Norse warriors row in synchronized rhythm, shields and rune-engraved axes at the ready, sea spray crashing over the deck, coastal villages visible in the distance with smoke rising from targeted settlements, featuring the ship's wooden deck perspective with dramatic ocean swells and storm effects ⚓",
+            "fr": "aboard a Viking longship during a fierce coastal raid, with the massive dragon-headed vessel cutting through stormy seas as fierce Norse warriors row in synchronized rhythm, shields and rune-engraved axes at the ready, sea spray crashing over the deck, coastal villages visible in the distance with smoke rising from targeted settlements, featuring the ship's wooden deck perspective with dramatic ocean swells and storm effects ⚓",
+            "ar": "aboard a Viking longship during a fierce coastal raid, with the massive dragon-headed vessel cutting through stormy seas as fierce Norse warriors row in synchronized rhythm, shields and rune-engraved axes at the ready, sea spray crashing over the deck, coastal villages visible in the distance with smoke rising from targeted settlements, featuring the ship's wooden deck perspective with dramatic ocean swells and storm effects ⚓"
+          },
           "metadata": {
             "scene_dialogue": "Vikings! They're actually coming!"
           }
         },
         {
           "value": "prehistoric Jurassic jungle with massive ferns and ancient trees, where a thunderous T-Rex roars nearby while pterodactyls soar overhead, the ground shaking with dinosaur footsteps, glowing predator eyes piercing through the misty primordial forest, featuring vibrant green tones and prehistoric atmosphere with dangerous wildlife sounds",
-          "label": "Jurassic Dinosaur Encounter 🦕",
+          "label": {
+            "en": "Jurassic Dinosaur Encounter 🦕",
+            "zh": "prehistoric Jurassic jungle with massive ferns and ancient trees, where a thunderous T-Rex roars nearby while pterodactyls soar overhead, the ground shaking with dinosaur footsteps, glowing predator eyes piercing through the misty primordial forest, featuring vibrant green tones and prehistoric atmosphere with dangerous wildlife sounds 🦕",
+            "ja": "prehistoric Jurassic jungle with massive ferns and ancient trees, where a thunderous T-Rex roars nearby while pterodactyls soar overhead, the ground shaking with dinosaur footsteps, glowing predator eyes piercing through the misty primordial forest, featuring vibrant green tones and prehistoric atmosphere with dangerous wildlife sounds 🦕",
+            "ko": "prehistoric Jurassic jungle with massive ferns and ancient trees, where a thunderous T-Rex roars nearby while pterodactyls soar overhead, the ground shaking with dinosaur footsteps, glowing predator eyes piercing through the misty primordial forest, featuring vibrant green tones and prehistoric atmosphere with dangerous wildlife sounds 🦕",
+            "es": "prehistoric Jurassic jungle with massive ferns and ancient trees, where a thunderous T-Rex roars nearby while pterodactyls soar overhead, the ground shaking with dinosaur footsteps, glowing predator eyes piercing through the misty primordial forest, featuring vibrant green tones and prehistoric atmosphere with dangerous wildlife sounds 🦕",
+            "de": "prehistoric Jurassic jungle with massive ferns and ancient trees, where a thunderous T-Rex roars nearby while pterodactyls soar overhead, the ground shaking with dinosaur footsteps, glowing predator eyes piercing through the misty primordial forest, featuring vibrant green tones and prehistoric atmosphere with dangerous wildlife sounds 🦕",
+            "fr": "prehistoric Jurassic jungle with massive ferns and ancient trees, where a thunderous T-Rex roars nearby while pterodactyls soar overhead, the ground shaking with dinosaur footsteps, glowing predator eyes piercing through the misty primordial forest, featuring vibrant green tones and prehistoric atmosphere with dangerous wildlife sounds 🦕",
+            "ar": "prehistoric Jurassic jungle with massive ferns and ancient trees, where a thunderous T-Rex roars nearby while pterodactyls soar overhead, the ground shaking with dinosaur footsteps, glowing predator eyes piercing through the misty primordial forest, featuring vibrant green tones and prehistoric atmosphere with dangerous wildlife sounds 🦕"
+          },
           "metadata": {
             "scene_dialogue": "Holy crap! Real dinosaurs everywhere!"
           }
         },
         {
           "value": "D-Day Normandy beach landing during WWII, where soldiers advance through heavy artillery fire and exploding shells, with ruined tanks scattered across the sand, warplanes streaking overhead through thick smoke, distant gunfire echoing as Allied forces storm the fortified coastline, featuring desaturated war-torn colors and intense battlefield vibration effects",
-          "label": "D-Day Normandy Landing 🪖",
+          "label": {
+            "en": "D-Day Normandy Landing 🪖",
+            "zh": "D-Day Normandy beach landing during WWII, where soldiers advance through heavy artillery fire and exploding shells, with ruined tanks scattered across the sand, warplanes streaking overhead through thick smoke, distant gunfire echoing as Allied forces storm the fortified coastline, featuring desaturated war-torn colors and intense battlefield vibration effects 🪖",
+            "ja": "D-Day Normandy beach landing during WWII, where soldiers advance through heavy artillery fire and exploding shells, with ruined tanks scattered across the sand, warplanes streaking overhead through thick smoke, distant gunfire echoing as Allied forces storm the fortified coastline, featuring desaturated war-torn colors and intense battlefield vibration effects 🪖",
+            "ko": "D-Day Normandy beach landing during WWII, where soldiers advance through heavy artillery fire and exploding shells, with ruined tanks scattered across the sand, warplanes streaking overhead through thick smoke, distant gunfire echoing as Allied forces storm the fortified coastline, featuring desaturated war-torn colors and intense battlefield vibration effects 🪖",
+            "es": "D-Day Normandy beach landing during WWII, where soldiers advance through heavy artillery fire and exploding shells, with ruined tanks scattered across the sand, warplanes streaking overhead through thick smoke, distant gunfire echoing as Allied forces storm the fortified coastline, featuring desaturated war-torn colors and intense battlefield vibration effects 🪖",
+            "de": "D-Day Normandy beach landing during WWII, where soldiers advance through heavy artillery fire and exploding shells, with ruined tanks scattered across the sand, warplanes streaking overhead through thick smoke, distant gunfire echoing as Allied forces storm the fortified coastline, featuring desaturated war-torn colors and intense battlefield vibration effects 🪖",
+            "fr": "D-Day Normandy beach landing during WWII, where soldiers advance through heavy artillery fire and exploding shells, with ruined tanks scattered across the sand, warplanes streaking overhead through thick smoke, distant gunfire echoing as Allied forces storm the fortified coastline, featuring desaturated war-torn colors and intense battlefield vibration effects 🪖",
+            "ar": "D-Day Normandy beach landing during WWII, where soldiers advance through heavy artillery fire and exploding shells, with ruined tanks scattered across the sand, warplanes streaking overhead through thick smoke, distant gunfire echoing as Allied forces storm the fortified coastline, featuring desaturated war-torn colors and intense battlefield vibration effects 🪖"
+          },
           "metadata": {
             "scene_dialogue": "This is D-Day! History happening!"
           }
         },
         {
           "value": "walking along the ancient Chinese Great Wall during a fierce siege battle, where Chinese soldiers fight desperately against nomadic invaders climbing the fortifications, arrows flying in both directions as defenders and attackers clash with swords and spears, war drums pounding from watchtowers while beacon fires send urgent smoke signals across the mountain peaks, featuring the stone battlements perspective with dramatic mountain warfare and sunset lighting",
-          "label": "Great Wall Defense Battle 🏯",
+          "label": {
+            "en": "Great Wall Defense Battle 🏯",
+            "zh": "walking along the ancient Chinese Great Wall during a fierce siege battle, where Chinese soldiers fight desperately against nomadic invaders climbing the fortifications, arrows flying in both directions as defenders and attackers clash with swords and spears, war drums pounding from watchtowers while beacon fires send urgent smoke signals across the mountain peaks, featuring the stone battlements perspective with dramatic mountain warfare and sunset lighting 🏯",
+            "ja": "walking along the ancient Chinese Great Wall during a fierce siege battle, where Chinese soldiers fight desperately against nomadic invaders climbing the fortifications, arrows flying in both directions as defenders and attackers clash with swords and spears, war drums pounding from watchtowers while beacon fires send urgent smoke signals across the mountain peaks, featuring the stone battlements perspective with dramatic mountain warfare and sunset lighting 🏯",
+            "ko": "walking along the ancient Chinese Great Wall during a fierce siege battle, where Chinese soldiers fight desperately against nomadic invaders climbing the fortifications, arrows flying in both directions as defenders and attackers clash with swords and spears, war drums pounding from watchtowers while beacon fires send urgent smoke signals across the mountain peaks, featuring the stone battlements perspective with dramatic mountain warfare and sunset lighting 🏯",
+            "es": "walking along the ancient Chinese Great Wall during a fierce siege battle, where Chinese soldiers fight desperately against nomadic invaders climbing the fortifications, arrows flying in both directions as defenders and attackers clash with swords and spears, war drums pounding from watchtowers while beacon fires send urgent smoke signals across the mountain peaks, featuring the stone battlements perspective with dramatic mountain warfare and sunset lighting 🏯",
+            "de": "walking along the ancient Chinese Great Wall during a fierce siege battle, where Chinese soldiers fight desperately against nomadic invaders climbing the fortifications, arrows flying in both directions as defenders and attackers clash with swords and spears, war drums pounding from watchtowers while beacon fires send urgent smoke signals across the mountain peaks, featuring the stone battlements perspective with dramatic mountain warfare and sunset lighting 🏯",
+            "fr": "walking along the ancient Chinese Great Wall during a fierce siege battle, where Chinese soldiers fight desperately against nomadic invaders climbing the fortifications, arrows flying in both directions as defenders and attackers clash with swords and spears, war drums pounding from watchtowers while beacon fires send urgent smoke signals across the mountain peaks, featuring the stone battlements perspective with dramatic mountain warfare and sunset lighting 🏯",
+            "ar": "walking along the ancient Chinese Great Wall during a fierce siege battle, where Chinese soldiers fight desperately against nomadic invaders climbing the fortifications, arrows flying in both directions as defenders and attackers clash with swords and spears, war drums pounding from watchtowers while beacon fires send urgent smoke signals across the mountain peaks, featuring the stone battlements perspective with dramatic mountain warfare and sunset lighting 🏯"
+          },
           "metadata": {
             "scene_dialogue": "The Great Wall! Epic battle!"
           }
@@ -168,7 +294,16 @@
     },
     "makePublic": {
       "type": "toggle",
-      "label": "Make video public",
+      "label": {
+        "en": "Make video public",
+        "zh": "将视频设为公开",
+        "ja": "動画を公開する",
+        "ko": "비디오를 공개로 설정",
+        "es": "Hacer video público",
+        "de": "Video öffentlich machen",
+        "fr": "Rendre la vidéo publique",
+        "ar": "جعل الفيديو عامًا"
+      },
       "default": false
     }
   },

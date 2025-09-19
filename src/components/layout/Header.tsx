@@ -415,8 +415,8 @@ export function Header({ className = "" }: HeaderProps = {}) {
                 console.log('[Header] 🖱️ 鼠标按下: 首页')
               }}
             >
-              <Home className="h-4 w-4" />
-              <span className="text-xs">{t('nav.home')}</span>
+              <Home className="h-5 w-5" />
+              <span className="text-xs font-medium">{t('nav.home')}</span>
             </button>
             <button 
               type="button"
@@ -430,8 +430,8 @@ export function Header({ className = "" }: HeaderProps = {}) {
                 console.log('[Header] 🖱️ 鼠标按下: 模板')
               }}
             >
-              <TrendingUp className="h-4 w-4" />
-              <span className="text-xs">{t('nav.templates')}</span>
+              <TrendingUp className="h-5 w-5" />
+              <span className="text-xs font-medium">{t('nav.templates')}</span>
             </button>
             <button 
               type="button"
@@ -445,8 +445,8 @@ export function Header({ className = "" }: HeaderProps = {}) {
                 console.log('[Header] 🖱️ 鼠标按下: 视频')
               }}
             >
-              <Video className="h-4 w-4" />
-              <span className="text-xs">{t('nav.videos')}</span>
+              <Video className="h-5 w-5" />
+              <span className="text-xs font-medium">{t('nav.videos')}</span>
             </button>
             <button 
               type="button"
@@ -460,8 +460,8 @@ export function Header({ className = "" }: HeaderProps = {}) {
                 console.log('[Header] 🖱️ 鼠标按下: 定价')
               }}
             >
-              <DollarSign className="h-4 w-4" />
-              <span className="text-xs">{t('nav.pricing')}</span>
+              <DollarSign className="h-5 w-5" />
+              <span className="text-xs font-medium">{t('nav.pricing')}</span>
             </button>
           </nav>
 
