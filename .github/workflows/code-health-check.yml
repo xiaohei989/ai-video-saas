@@ -1,0 +1,66 @@
+name: Code Health Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # 每周一早上8点运行
+    - cron: '0 8 * * 1'
+
+jobs:
+  dead-code-detection:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run TypeScript check
+      run: npm run type-check
+    
+    - name: Run ESLint unused imports check
+      run: npm run lint
+    
+    - name: Run Knip dead code detection
+      run: npm run dead-code:knip
+    
+    - name: Run ts-prune unused exports detection
+      run: npm run dead-code:prune > dead-code-report.txt
+    
+    - name: Check dead code results
+      run: |
+        echo "## 🔍 Dead Code Detection Results" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Knip Results:" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        npm run dead-code:knip || echo "Found issues" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Unused Exports Count:" >> $GITHUB_STEP_SUMMARY
+        UNUSED_COUNT=$(wc -l < dead-code-report.txt)
+        echo "Total unused exports: $UNUSED_COUNT" >> $GITHUB_STEP_SUMMARY
+        
+        # 如果未使用导出数量超过阈值，则失败
+        if [ $UNUSED_COUNT -gt 500 ]; then
+          echo "❌ Too many unused exports ($UNUSED_COUNT > 500)" >> $GITHUB_STEP_SUMMARY
+          exit 1
+        else
+          echo "✅ Unused exports within acceptable range ($UNUSED_COUNT <= 500)" >> $GITHUB_STEP_SUMMARY
+        fi
+    
+    - name: Upload dead code report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: dead-code-report
+        path: dead-code-report.txt

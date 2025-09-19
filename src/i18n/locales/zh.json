@@ -386,6 +386,7 @@
     "filterConditions": "筛选条件:",
     "removeTagAria": "移除 {{tag}} 标签",
     "countDisplay": "({{count}} 个模板)",
+    "loading": "正在加载模板列表...",
     "sortBy": {
       "popular": "最流行的",
       "latest": "最新的",
@@ -1167,7 +1168,13 @@
     "apiTest": "API测试",
     "authRefreshed": "管理员认证已刷新",
     "noPermission": "当前用户没有管理员权限",
-    "refreshFailed": "刷新失败"
+    "refreshFailed": "刷新失败",
+    "videoLoader": "视频加载器",
+    "loading": "正在加载",
+    "inQueue": "队列中",
+    "thumbnailCache": "缩略图缓存",
+    "memoryItems": "内存项",
+    "dbItems": "数据库项"
   },
   "seo": {
     "pages": {

@@ -266,33 +266,4 @@ export function useBackgroundVideo(config: BackgroundVideoConfig) {
   return [state, actions, eventHandlers] as const
 }
 
-// 简化版 Hook，用于基础背景视频需求
-export function useSimpleBackgroundVideo(videoSrc: string, options: {
-  autoPlay?: boolean
-  loop?: boolean
-  muted?: boolean
-  fallbackImage?: string
-} = {}) {
-  const [state, actions, eventHandlers] = useBackgroundVideo({
-    videos: [videoSrc],
-    autoPlay: options.autoPlay,
-    loop: options.loop,
-    muted: options.muted,
-    enablePlaylist: false,
-    fallbackImage: options.fallbackImage
-  })
-
-  return {
-    isPlaying: state.isPlaying,
-    isMuted: state.isMuted,
-    isLoading: state.isLoading,
-    hasError: state.hasError,
-    isMobile: state.isMobile,
-    togglePlay: actions.togglePlay,
-    toggleMute: actions.toggleMute,
-    retry: actions.retry,
-    eventHandlers
-  }
-}
-
 export default useBackgroundVideo

@@ -910,16 +910,7 @@ export default function VideosPageNew() {
     setPage(1)
   }, [filter, searchTerm])
 
-  // 智能虚拟滚动：当视频数量超过阈值时自动启用
-  React.useEffect(() => {
-    const VIRTUALIZATION_THRESHOLD = isMobile ? 20 : 50
-    const shouldUseVirtualization = filteredVideos.length > VIRTUALIZATION_THRESHOLD
-    
-    if (shouldUseVirtualization !== useVirtualization) {
-      setUseVirtualization(shouldUseVirtualization)
-      console.log(`[VideosPage] ${shouldUseVirtualization ? '启用' : '禁用'}虚拟滚动 (${filteredVideos.length} 个视频)`)
-    }
-  }, [filteredVideos.length, isMobile, useVirtualization])
+  // 虚拟滚动已禁用自动启用，默认使用传统分页模式
 
   // 响应式容器尺寸更新
   React.useEffect(() => {
@@ -1090,17 +1081,6 @@ export default function VideosPageNew() {
         // 虚拟滚动模式：大量视频时自动启用
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-muted-foreground">
-              🚀 虚拟滚动已启用 ({filteredVideos.length} 个视频)
-            </p>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setUseVirtualization(false)}
-              className="text-xs"
-            >
-              切换到普通模式
-            </Button>
           </div>
           <VirtualizedVideoGrid
             videos={filteredVideos}
@@ -1123,19 +1103,6 @@ export default function VideosPageNew() {
         // 传统分页模式：少量视频时使用
         <>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-muted-foreground">
-              传统分页模式 ({paginatedVideos.length} / {filteredVideos.length} 个视频)
-            </p>
-            {filteredVideos.length > (isMobile ? 20 : 50) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setUseVirtualization(true)}
-                className="text-xs"
-              >
-                启用虚拟滚动
-              </Button>
-            )}
           </div>
           <div className={viewMode === 'grid' ? 
             'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' : 

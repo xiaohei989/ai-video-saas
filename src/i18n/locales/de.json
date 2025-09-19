@@ -368,6 +368,7 @@
     "filterConditions": "Filter-Bedingungen:",
     "removeTagAria": "{{tag}} Tag entfernen",
     "countDisplay": "({{count}} Vorlagen)",
+    "loading": "Vorlagenliste wird geladen...",
     "sortBy": {
       "popular": "Beliebt",
       "latest": "Neueste",

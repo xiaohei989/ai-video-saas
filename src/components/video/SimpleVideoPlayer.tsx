@@ -525,14 +525,6 @@ export default function SimpleVideoPlayer({
         </div>
       )}
       
-      {/* iOS全屏提示 */}
-      {deviceCapabilities.isiOS && showControls && !isCurrentlyPlaying(playerId) && !isPendingPlay(playerId) && (
-        <div className="absolute top-4 right-4 bg-black/70 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
-          iOS: 点击全屏按钮进入全屏
-        </div>
-      )}
-
-
       {/* 播放控制栏 - 悬停时显示 */}
       {showControls && duration > 0 && (
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent">

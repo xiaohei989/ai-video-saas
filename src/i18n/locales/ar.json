@@ -368,6 +368,7 @@
     "filterConditions": "شروط التصفية:",
     "removeTagAria": "إزالة علامة {{tag}}",
     "countDisplay": "({{count}} قالب)",
+    "loading": "جاري تحميل قائمة القوالب...",
     "sortBy": {
       "popular": "الشائع",
       "latest": "الأحدث",

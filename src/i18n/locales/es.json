@@ -357,6 +357,7 @@
     "filterConditions": "Condiciones de filtro:",
     "removeTagAria": "Eliminar etiqueta {{tag}}",
     "countDisplay": "({{count}} plantillas)",
+    "loading": "Cargando lista de plantillas...",
     "sortBy": {
       "popular": "Más Popular",
       "latest": "Más Reciente",

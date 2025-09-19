@@ -363,6 +363,7 @@
     "filterConditions": "フィルター条件:",
     "removeTagAria": "{{tag}} タグを削除",
     "countDisplay": "({{count}} テンプレート)",
+    "loading": "テンプレートリストを読み込み中...",
     "sortBy": {
       "popular": "人気順",
       "latest": "最新順",

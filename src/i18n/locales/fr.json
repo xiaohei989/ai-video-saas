@@ -368,6 +368,7 @@
     "filterConditions": "Conditions de filtre:",
     "removeTagAria": "Supprimer l'étiquette {{tag}}",
     "countDisplay": "({{count}} modèles)",
+    "loading": "Chargement de la liste des modèles...",
     "sortBy": {
       "popular": "Populaire",
       "latest": "Récent",

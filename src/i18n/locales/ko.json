@@ -357,6 +357,7 @@
     "filterConditions": "필터 조건:",
     "removeTagAria": "{{tag}} 태그 제거",
     "countDisplay": "({{count}} 템플릿)",
+    "loading": "템플릿 목록을 불러오는 중...",
     "sortBy": {
       "popular": "인기순",
       "latest": "최신순",

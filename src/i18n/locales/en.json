@@ -386,6 +386,7 @@
     "filterConditions": "Filters:",
     "removeTagAria": "Remove {{tag}} tag",
     "countDisplay": "({{count}} templates)",
+    "loading": "Loading template list...",
     "sortBy": {
       "popular": "Popular",
       "latest": "Latest",
