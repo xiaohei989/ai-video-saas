@@ -705,33 +705,33 @@ export default function SimpleVideoPlayer({
         }}
       />
 
-      {/* 🚀 简化UI渲染：鼠标进入时根据视频状态显示不同内容 */}
-      {isHovered && autoPlayOnHover && (
+      {/* 🚀 修复UI渲染：桌面端悬停显示，移动端始终显示播放按钮 */}
+      {((isHovered && autoPlayOnHover) || (!autoPlayOnHover && showPlayButton)) && (
         <>
           {/* 加载状态：显示转圈动画 */}
           {isBuffering && (
-            <div className="absolute inset-0 flex items-center justify-center z-10">
-              <div className="h-12 w-12 md:h-14 md:w-14 bg-black/60 rounded-full flex items-center justify-center backdrop-blur-sm relative border border-white/20">
+            <div className="absolute inset-0 flex flex-col items-center justify-center z-10 gap-2">
+              <div className="h-12 w-12 md:h-14 md:w-14 bg-black/60 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/20">
                 {/* 旋转动画 */}
                 <div className="h-6 w-6 md:h-7 md:w-7 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                
-                {/* 百分比显示 - 使用更显眼的样式 */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-white text-xs font-bold bg-black/80 px-2 py-1 rounded-md border border-white/30 shadow-lg">
-                    {Math.round(bufferProgress)}%
-                  </span>
-                </div>
               </div>
+              
+              {/* 百分比显示 - 独立显示在动画下方 */}
+              <span className="text-white text-xs font-bold bg-black/80 px-2 py-1 rounded-md border border-white/30 shadow-lg backdrop-blur-sm">
+                {Math.round(bufferProgress)}%
+              </span>
             </div>
           )}
           
           {/* 非加载状态且未播放：显示播放按钮 */}
           {!isBuffering && showPlayButton && !isCurrentlyPlaying(playerId) && !isPendingPlay(playerId) && (
             <div 
-              className="absolute inset-0 flex items-center justify-center cursor-pointer transition-opacity duration-200"
+              className="absolute inset-0 flex items-center justify-center cursor-pointer transition-opacity duration-200 z-10"
               onClick={handlePlayPause}
             >
-              <Play className="h-6 w-6 md:h-8 md:w-8 text-white" />
+              <div className="bg-black/60 rounded-full p-3 backdrop-blur-sm border border-white/20 hover:bg-black/80 transition-all duration-200">
+                <Play className="h-6 w-6 md:h-8 md:w-8 text-white" />
+              </div>
             </div>
           )}
         </>

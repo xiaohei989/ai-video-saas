@@ -13,6 +13,8 @@ interface ThumbnailUploadRequest {
   contentType?: string
   fileSize?: number
   expiresIn?: number
+  base64Data?: string
+  directUpload?: boolean
 }
 
 serve(async (req) => {
@@ -36,7 +38,9 @@ serve(async (req) => {
       videoId, 
       contentType = 'image/webp', 
       fileSize = 0,
-      expiresIn = 3600 
+      expiresIn = 3600,
+      base64Data,
+      directUpload = false
     }: ThumbnailUploadRequest = await req.json()
 
     if (!videoId) {
@@ -49,7 +53,7 @@ serve(async (req) => {
       )
     }
 
-    console.log(`[UploadThumbnail] 处理缩略图上传请求: videoId=${videoId}, contentType=${contentType}, fileSize=${fileSize}`)
+    console.log(`[UploadThumbnail] 处理缩略图上传请求: videoId=${videoId}, contentType=${contentType}, fileSize=${fileSize}, directUpload=${directUpload}`)
 
     // 初始化R2客户端
     const r2Client = new S3Client({
@@ -79,7 +83,70 @@ serve(async (req) => {
     const extension = getFileExtension(contentType)
     const key = `thumbnails/${videoId}.${extension}`
 
-    // 创建上传命令
+    // 生成最终的公开访问URL
+    const publicDomain = Deno.env.get('VITE_CLOUDFLARE_R2_PUBLIC_DOMAIN')
+    const publicUrl = publicDomain 
+      ? `https://${publicDomain}/${key}`
+      : `https://pub-${Deno.env.get('VITE_CLOUDFLARE_ACCOUNT_ID')}.r2.dev/${key}`
+
+    // 如果是直接上传模式，服务端处理上传
+    if (directUpload && base64Data) {
+      try {
+        console.log(`[UploadThumbnail] 服务端直接上传模式`)
+        
+        // 将Base64数据转换为Uint8Array
+        const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0))
+        
+        // 直接上传到R2
+        const command = new PutObjectCommand({
+          Bucket: Deno.env.get('VITE_CLOUDFLARE_R2_BUCKET_NAME') || 'ai-video-storage',
+          Key: key,
+          Body: binaryData,
+          ContentType: contentType,
+          CacheControl: 'public, max-age=31536000', // 1年缓存
+          Metadata: {
+            uploadedAt: new Date().toISOString(),
+            videoId: videoId,
+            source: 'thumbnail-upload-direct',
+            fileSize: binaryData.length.toString()
+          }
+        })
+
+        await r2Client.send(command)
+        
+        console.log(`[UploadThumbnail] 直接上传成功: ${publicUrl}`)
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              publicUrl,
+              key,
+              contentType,
+              uploadedAt: new Date().toISOString()
+            }
+          }),
+          {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          }
+        )
+        
+      } catch (uploadError) {
+        console.error(`[UploadThumbnail] 直接上传失败:`, uploadError)
+        return new Response(
+          JSON.stringify({ 
+            success: false,
+            error: `Direct upload failed: ${uploadError.message}`
+          }),
+          {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          }
+        )
+      }
+    }
+
+    // 原有的预签名URL模式
     const command = new PutObjectCommand({
       Bucket: Deno.env.get('VITE_CLOUDFLARE_R2_BUCKET_NAME') || 'ai-video-storage',
       Key: key,
@@ -97,12 +164,6 @@ serve(async (req) => {
     const signedUrl = await getSignedUrl(r2Client, command, { 
       expiresIn: expiresIn // 默认1小时有效期
     })
-
-    // 生成最终的公开访问URL
-    const publicDomain = Deno.env.get('VITE_CLOUDFLARE_R2_PUBLIC_DOMAIN')
-    const publicUrl = publicDomain 
-      ? `https://${publicDomain}/${key}`
-      : `https://pub-${Deno.env.get('VITE_CLOUDFLARE_ACCOUNT_ID')}.r2.dev/${key}`
 
     console.log(`[UploadThumbnail] 预签名URL生成成功`)
     console.log(`[UploadThumbnail] 公开URL: ${publicUrl}`)

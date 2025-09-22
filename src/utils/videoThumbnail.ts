@@ -7,7 +7,7 @@ const OPTIMAL_THUMBNAIL_CONFIG = {
   height: 180,
   quality: 0.75,        // 平衡质量和大小
   format: 'auto' as const,       // WebP优先，JPEG回退
-  frameTime: 0.5        // 0.5秒处截取，画面更稳定
+  frameTime: 0.1        // 0.1秒处截取，快速获取画面
 }
 
 /**
@@ -168,12 +168,12 @@ async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
 /**
  * 从视频中提取缩略图
  * @param videoUrl 视频URL
- * @param frameTime 提取的时间点（秒），优化为0.2秒以获得更好的画面
+ * @param frameTime 提取的时间点（秒），优化为0.1秒以获得快速画面
  * @returns Promise<string> 返回base64格式的图片数据
  */
 export async function extractVideoThumbnail(
   videoUrl: string,
-  frameTime: number = 0.2
+  frameTime: number = 0.1
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     // 🔧 使用CORS安全的视频元素
@@ -383,7 +383,7 @@ export class VideoPreviewAnimation {
  */
 async function extractVideoThumbnailDirect(
   videoUrl: string,
-  frameTime: number = 0.2
+  frameTime: number = 0.1
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const video = document.createElement('video')

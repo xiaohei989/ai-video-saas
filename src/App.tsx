@@ -73,6 +73,8 @@ import SimpleAITest from './pages/SimpleAITest'
 // Admin pages
 import AdminRoute from './components/admin/AdminRoute'
 import AdminApp from './components/admin/AdminApp'
+import ThumbnailGeneratorPage from './pages/ThumbnailGeneratorPage'
+import ThumbnailTestPage from './pages/ThumbnailTestPage'
 
 // Translation pages
 import TemplateTranslationPage from './features/translation/TemplateTranslationPage'
@@ -176,6 +178,10 @@ function App() {
               {/* Test pages (development only) */}
               <Route path="/test/apicore" element={<Layout><TestApicoreApi /></Layout>} />
               <Route path="/test/analytics" element={<Layout><TestAnalytics /></Layout>} />
+              
+              {/* Admin tools */}
+              <Route path="/admin/thumbnails" element={<ThumbnailGeneratorPage />} />
+              <Route path="/test/thumbnails" element={<Layout><ThumbnailTestPage /></Layout>} />
               
               {/* Translation tool (temporarily unprotected for testing) */}
               <Route path="/translation" element={<Layout showFooter={false}><TemplateTranslationPage /></Layout>} />

@@ -54,6 +54,7 @@ import { videoCacheService } from '@/services/videoCacheService'
 import analyticsService from '@/services/analyticsService'
 import PerformanceStats from '@/components/debug/PerformanceStats'
 import VirtualizedVideoGrid from '@/components/video/VirtualizedVideoGrid'
+import { useThumbnailUpload } from '@/hooks/useThumbnailUpload'
 
 type Video = Database['public']['Tables']['videos']['Row']
 
@@ -134,6 +135,10 @@ export default function VideosPageNew() {
   // 虚拟滚动配置
   const [useVirtualization, setUseVirtualization] = useState(false)
   const [containerDimensions, setContainerDimensions] = useState({ width: 1200, height: 600 })
+
+  // 动态缩略图生成
+  const { generateAndUploadThumbnail } = useThumbnailUpload()
+  const [thumbnailGeneratingVideos, setThumbnailGeneratingVideos] = useState<Set<string>>(new Set())
 
   /**
    * 📊 初始化性能监控
@@ -784,11 +789,99 @@ export default function VideosPageNew() {
   }
 
   /**
+   * 处理动态缩略图生成
+   * 当用户播放没有缩略图的视频时触发
+   */
+  const handleDynamicThumbnailGeneration = useCallback(async (video: Video) => {
+    // 检查是否需要生成缩略图：没有静态缩略图且有视频URL
+    if (video.thumbnail_url || !video.video_url || !video.id) {
+      return
+    }
+
+    // 避免重复生成
+    if (thumbnailGeneratingVideos.has(video.id)) {
+      return
+    }
+
+    try {
+      setThumbnailGeneratingVideos(prev => new Set(prev).add(video.id))
+      
+      console.log(`[VideosPage] 开始为视频生成动态缩略图: ${video.id}`)
+
+      // 获取最佳视频URL
+      const videoUrl = getPlayerUrl(video) || video.video_url
+      if (!videoUrl) {
+        console.warn(`[VideosPage] 视频 ${video.id} 没有有效的视频URL`)
+        return
+      }
+
+      // 生成并上传缩略图
+      const thumbnailUrl = await generateAndUploadThumbnail({
+        videoId: video.id,
+        videoUrl: videoUrl,
+        frameTime: 0.1,
+        onSuccess: (thumbnailUrl) => {
+          console.log(`[VideosPage] 缩略图生成成功: ${video.id} -> ${thumbnailUrl}`)
+          
+          // 更新本地视频状态
+          setVideos(prevVideos => 
+            prevVideos.map(v => 
+              v.id === video.id 
+                ? { ...v, thumbnail_url: thumbnailUrl }
+                : v
+            )
+          )
+          
+          // 显示成功提示
+          toast.success('缩略图生成成功', {
+            description: `已为"${video.title || '未命名视频'}"生成缩略图`
+          })
+        },
+        onError: (error) => {
+          console.error(`[VideosPage] 缩略图生成失败: ${video.id}`, error)
+          toast.error('缩略图生成失败', {
+            description: error.message
+          })
+        }
+      })
+
+      if (thumbnailUrl) {
+        console.log(`[VideosPage] 动态缩略图生成完成: ${video.id}`)
+      }
+
+    } catch (error) {
+      console.error(`[VideosPage] 动态缩略图生成异常: ${video.id}`, error)
+    } finally {
+      setThumbnailGeneratingVideos(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(video.id)
+        return newSet
+      })
+    }
+  }, [generateAndUploadThumbnail, thumbnailGeneratingVideos])
+
+  /**
+   * 处理视频播放 - 增加动态缩略图生成逻辑
+   */
+  const handleVideoPlay = useCallback(async (video: Video) => {
+    // 增加播放计数
+    await supabaseVideoService.incrementInteraction(video.id, 'view_count')
+    
+    // 检查是否需要生成动态缩略图
+    if (!video.thumbnail_url && video.video_url) {
+      // 延迟一秒后生成缩略图，避免影响播放体验
+      setTimeout(() => {
+        handleDynamicThumbnailGeneration(video)
+      }, 1000)
+    }
+  }, [handleDynamicThumbnailGeneration])
+
+  /**
    * 虚拟滚动回调函数
    */
   const handleVirtualPlay = useCallback(async (video: Video) => {
-    await supabaseVideoService.incrementInteraction(video.id, 'view_count')
-  }, [])
+    await handleVideoPlay(video)
+  }, [handleVideoPlay])
 
   const handleVirtualRegenerate = useCallback((video: Video) => {
     const templateId = video.metadata?.templateId || video.template_id
@@ -1137,10 +1230,7 @@ export default function VideosPageNew() {
                             videoId={video.id}
                             videoTitle={video.title || 'video'}
                             alt={video.title || 'Video preview'}
-                            onPlay={() => {
-                              // 增加播放计数
-                              supabaseVideoService.incrementInteraction(video.id, 'view_count')
-                            }}
+                            onPlay={() => handleVideoPlay(video)}
                           />
                         )
                       })()
