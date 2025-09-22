@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
 import { Layout } from '@/components/layout/Layout'
 import SimpleVideoPlayer from '@/components/video/SimpleVideoPlayer'
 import { useThumbnailUpload } from '@/hooks/useThumbnailUpload'
@@ -12,9 +12,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Play, Upload, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 interface TestVideo {
   id: string
@@ -29,7 +26,6 @@ export default function ThumbnailTestPage() {
   const [processingVideos, setProcessingVideos] = useState<Set<string>>(new Set())
   const [uploadResults, setUploadResults] = useState<Record<string, { success: boolean; url?: string; error?: string }>>({})
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   const { generateAndUploadThumbnail, isProcessing, getCachedThumbnail } = useThumbnailUpload()
 
   // 加载测试视频数据

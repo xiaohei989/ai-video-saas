@@ -149,8 +149,20 @@ const TemplateCard = memo(({
   const { trackTemplateView, trackEvent } = useAnalytics()
   const navigate = useNavigate()
   
-  // 检测移动端
-  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768
+  // 检测移动端 - 使用响应式检测并监听窗口变化
+  const [isMobile, setIsMobile] = useState(() => 
+    typeof window !== 'undefined' && window.innerWidth <= 768
+  )
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    
+    checkMobile() // 立即检查一次
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
   
   // 视频加载状态管理
   const [isVideoLoading, setIsVideoLoading] = useState(false)

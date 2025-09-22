@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom'
 import { referralService } from '@/services/referralService'
 import { edgeCacheClient } from '@/services/EdgeFunctionCacheClient'
 import i18n from '@/i18n/config'
-import { useTranslation } from 'react-i18next'
 import { languageDebugger } from '@/utils/languageDebugger'
 import { toast } from 'sonner'
+import { userSettingsService, UserSettings, UserSettingsUpdate } from '@/services/userSettingsService'
 
 // 认证上下文类型定义
 interface AuthContextType {
@@ -15,6 +15,7 @@ interface AuthContextType {
   user: User | null
   session: Session | null
   profile: Profile | null
+  settings: UserSettings | null
   loading: boolean
   error: AuthError | null
 
@@ -30,6 +31,10 @@ interface AuthContextType {
   // 用户资料方法
   updateProfile: (updates: ProfileUpdate) => Promise<void>
   refreshProfile: () => Promise<void>
+  
+  // 用户设置方法
+  updateSettings: (updates: UserSettingsUpdate) => Promise<void>
+  refreshSettings: () => Promise<void>
 }
 
 // 用户资料类型
@@ -51,7 +56,12 @@ interface Profile {
   following_count: number
   template_count: number
   is_verified: boolean
-  role?: string | null // 添加用户角色字段
+  role?: string | null
+  // 用户设置字段
+  theme?: 'light' | 'dark' | 'system'
+  timezone?: string
+  date_format?: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD'
+  notification_preferences?: Record<string, any>
   created_at: string
   updated_at: string
 }
@@ -74,6 +84,10 @@ interface ProfileUpdate {
   website?: string
   social_links?: Record<string, any>
   language?: string
+  theme?: 'light' | 'dark' | 'system'
+  timezone?: string
+  date_format?: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD'
+  notification_preferences?: Record<string, any>
 }
 
 // 创建认证上下文
@@ -117,6 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null) 
   const [profile, setProfile] = useState<Profile | null>(null)
+  const [settings, setSettings] = useState<UserSettings | null>(null)
   // 🚀 关键优化：智能初始loading状态，完全避免不必要的loading显示
   const [loading, setLoading] = useState(!initialAuthState.shouldSkipLoading)
   const [error, setError] = useState<AuthError | null>(null)
@@ -129,11 +144,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 🚀 监听积分变更事件，立即更新并刷新profile
   useEffect(() => {
-    const handleCreditsChanged = (event: CustomEvent) => {
-      const { userId, newCredits, reason, timestamp } = event.detail
+    const handleCreditsChanged = (event: Event) => {
+      const detail = (event as CustomEvent<{
+        userId?: string
+        newCredits?: number
+        reason?: string
+      }>).detail
+
+      if (!detail?.userId) {
+        return
+      }
+
+      const { userId, newCredits, reason } = detail
+
       if (user?.id === userId) {
         console.log(`[AUTH] 收到积分变更通知 - 用户:${userId}, 新积分:${newCredits}, 原因:${reason}`)
-        
+
         // 🔧 立即更新本地profile状态（避免等待API响应）
         if (profile && newCredits !== undefined) {
           const updatedProfile = { ...profile, credits: newCredits }
@@ -302,6 +328,98 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // 获取用户设置
+  const fetchSettings = async (userId: string) => {
+    try {
+      console.log('[AUTH] 获取用户设置:', userId)
+      const result = await userSettingsService.getUserSettings(userId)
+      
+      if (result.success && result.data) {
+        setSettings(result.data)
+        // 同步设置到本地存储作为备份
+        userSettingsService.syncToLocalStorage(result.data)
+        console.log('[AUTH] ✅ 设置获取成功:', result.data)
+        return result.data
+      } else {
+        console.warn('[AUTH] 设置获取失败，使用默认设置:', result.message)
+        const defaultSettings: UserSettings = {
+          theme: 'system',
+          timezone: 'UTC',
+          date_format: 'MM/DD/YYYY',
+          language: 'en',
+          notification_preferences: {
+            email_notifications: true,
+            push_notifications: true,
+            marketing_emails: false,
+            video_completion: true,
+            template_likes: true,
+            referral_rewards: true
+          }
+        }
+        setSettings(defaultSettings)
+        return defaultSettings
+      }
+    } catch (error) {
+      console.error('[AUTH] 获取设置异常:', error)
+      // 返回默认设置，确保应用不会崩溃
+      const defaultSettings: UserSettings = {
+        theme: 'system',
+        timezone: 'UTC',
+        date_format: 'MM/DD/YYYY',
+        language: 'en',
+        notification_preferences: {
+          email_notifications: true,
+          push_notifications: true,
+          marketing_emails: false,
+          video_completion: true,
+          template_likes: true,
+          referral_rewards: true
+        }
+      }
+      setSettings(defaultSettings)
+      return defaultSettings
+    }
+  }
+
+  // 更新用户设置
+  const updateSettings = async (updates: UserSettingsUpdate) => {
+    try {
+      setError(null)
+      if (!user) throw new Error('用户未登录')
+      
+      console.log('[AUTH] 更新用户设置:', updates)
+      const result = await userSettingsService.updateUserSettings(user.id, updates)
+      
+      if (result.success && result.data) {
+        setSettings(result.data)
+        // 同步到本地存储
+        userSettingsService.syncToLocalStorage(result.data)
+        
+        // 如果更新了语言，立即应用到 i18n
+        if (updates.language && result.data.language) {
+          i18n.changeLanguage(result.data.language)
+        }
+        
+        console.log('[AUTH] ✅ 设置更新成功:', result.data)
+        toast.success('设置更新成功')
+      } else {
+        throw new Error(result.message || '设置更新失败')
+      }
+    } catch (error) {
+      console.error('[AUTH] 更新设置失败:', error)
+      setError(error as AuthError)
+      toast.error((error as Error).message || '设置更新失败')
+      throw error
+    }
+  }
+
+  // 刷新用户设置
+  const refreshSettings = async () => {
+    if (user) {
+      await fetchSettings(user.id)
+    }
+  }
+
   // Token检查定时器
   const tokenCheckIntervalRef = useRef<NodeJS.Timeout | null>(null)
   
@@ -329,6 +447,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setSession(null)
           setUser(null)
           setProfile(null)
+          setSettings(null)
         }
       }
     }, 30000) // 30秒检查一次
@@ -391,11 +510,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
           
           
-          // 在后台异步获取profile，不阻塞应用
+          // 在后台异步获取profile和设置，不阻塞应用
           if (session?.user) {
-            fetchProfile(session.user.id, session.user.email).then(() => {
+            Promise.all([
+              fetchProfile(session.user.id, session.user.email),
+              fetchSettings(session.user.id)
+            ]).then(([profileData, settingsData]) => {
+              // 如果是第一次登录，尝试迁移本地设置
+              if (profileData && settingsData) {
+                userSettingsService.migrateLocalSettings(session.user.id).catch(err => {
+                  console.warn('[AUTH] 本地设置迁移失败:', err)
+                })
+              }
             }).catch(err => {
-              console.error('AuthContext: Profile fetch failed:', err)
+              console.error('AuthContext: Profile/Settings fetch failed:', err)
             })
           }
         }
@@ -488,6 +616,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           })
         } else {
           setProfile(null)
+          setSettings(null)
         }
 
         // 处理认证事件
@@ -915,6 +1044,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null)
       setSession(null)
       setProfile(null)
+      setSettings(null)
       
       console.log('AuthContext: Local cleanup completed successfully')
     } catch (err) {
@@ -925,6 +1055,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null)
       setSession(null)
       setProfile(null)
+      setSettings(null)
       
       // 清除localStorage
       Object.keys(localStorage).forEach(key => {
@@ -1081,6 +1212,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     session,
     profile,
+    settings,
     loading,
     error,
     signUp,
@@ -1092,6 +1224,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     updatePassword,
     updateProfile,
     refreshProfile,
+    updateSettings,
+    refreshSettings,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
@@ -1111,4 +1245,4 @@ export const useAuthContext = useAuth
 
 // 导出上下文和类型
 export { AuthContext }
-export type { Profile, ProfileUpdate, SignUpMetadata }
+export type { Profile, ProfileUpdate, SignUpMetadata, UserSettings, UserSettingsUpdate }

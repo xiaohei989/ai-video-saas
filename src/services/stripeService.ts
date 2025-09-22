@@ -1,5 +1,5 @@
 import { loadStripe, Stripe } from '@stripe/stripe-js'
-import { supabase, secureSupabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { getStripePriceId, getStripePublishableKey, getStripeEnvironmentInfo, getStripePriceIdByInterval, getStripeAnnualPriceId } from '@/config/stripe-env'
 import { securityMonitor } from './securityMonitorService'
 import { ThreatType, SecurityLevel } from '@/config/security'

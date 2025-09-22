@@ -32,40 +32,43 @@ export default function VideoLoadingSpinner({
 
   return (
     <div className={`
-      flex items-center justify-center
-      bg-black/50 backdrop-blur-sm rounded-full
-      ${sizeClasses[size]}
+      flex flex-col items-center justify-center gap-2
       ${className}
     `}>
-      <div className="relative">
-        {/* 旋转的加载圆环 */}
-        <Loader2 className={`
-          ${iconSizeClasses[size]} 
-          text-white 
-          animate-spin
-          drop-shadow-lg
-        `} />
-        
-        {/* 进度百分比 */}
-        {progress !== undefined && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-white text-xs font-bold bg-black/80 px-1 py-0.5 rounded border border-white/30 shadow-lg">
-              {Math.round(progress)}%
-            </span>
-          </div>
-        )}
-        
-        {/* 可选的播放图标 */}
-        {showPlayIcon && !progress && (
-          <Play className={`
-            absolute inset-0 
-            ${iconSizeClasses[size]}
-            text-white/70
-            animate-pulse
+      {/* 旋转的加载圆环容器 */}
+      <div className={`
+        flex items-center justify-center
+        bg-black/50 backdrop-blur-sm rounded-full
+        ${sizeClasses[size]}
+      `}>
+        <div className="relative">
+          {/* 旋转的加载圆环 */}
+          <Loader2 className={`
+            ${iconSizeClasses[size]} 
+            text-white 
+            animate-spin
             drop-shadow-lg
           `} />
-        )}
+          
+          {/* 可选的播放图标 - 只在没有进度时显示 */}
+          {showPlayIcon && progress === undefined && (
+            <Play className={`
+              absolute inset-0 
+              ${iconSizeClasses[size]}
+              text-white/70
+              animate-pulse
+              drop-shadow-lg
+            `} />
+          )}
+        </div>
       </div>
+      
+      {/* 进度百分比 - 独立显示在圆环下方 */}
+      {progress !== undefined && (
+        <span className="text-white text-xs font-bold bg-black/80 px-2 py-1 rounded-md border border-white/30 shadow-lg backdrop-blur-sm">
+          {Math.round(progress)}%
+        </span>
+      )}
     </div>
   )
 }

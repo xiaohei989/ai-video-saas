@@ -66,6 +66,7 @@ export interface UserProfileCache {
   following_count: number
   template_count: number
   is_verified: boolean
+  role?: string | null
   created_at: string
   updated_at: string
   last_updated: string

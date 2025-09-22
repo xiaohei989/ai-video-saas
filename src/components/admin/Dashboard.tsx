@@ -428,7 +428,10 @@ export const Dashboard: React.FC = () => {
                   cy="50%"
                   outerRadius={80}
                   dataKey="value"
-                  label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => {
+                    const value = typeof percent === 'number' ? percent : 0
+                    return `${name} ${(value * 100).toFixed(0)}%`
+                  }}
                 >
                   {formatSubscriptionData(stats.subscription_breakdown || {}).map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />

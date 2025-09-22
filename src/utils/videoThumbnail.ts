@@ -1,5 +1,6 @@
 import { createCorsVideo } from './videoUrlProxy'
 import { generateOptimizedThumbnail } from './webpThumbnailOptimizer'
+import { supabase } from '@/lib/supabase'
 
 // 最优缩略图配置
 const OPTIMAL_THUMBNAIL_CONFIG = {
@@ -108,44 +109,40 @@ export async function extractAndUploadThumbnail(
  */
 async function uploadThumbnailToR2(thumbnailDataUrl: string, videoId: string): Promise<string> {
   try {
-    // 将Base64转换为Blob
+    // 将DataURL转换为Blob
     const blob = await dataUrlToBlob(thumbnailDataUrl)
     
-    // 获取上传URL
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-    const uploadResponse = await fetch(`${supabaseUrl}/functions/v1/upload-thumbnail`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-      },
-      body: JSON.stringify({
-        videoId,
-        contentType: blob.type,
-        fileSize: blob.size
-      })
+    // 将Blob转换为Base64
+    const reader = new FileReader()
+    const base64Data = await new Promise<string>((resolve, reject) => {
+      reader.onload = () => {
+        const result = reader.result as string
+        resolve(result.split(',')[1]) // 移除data:image/webp;base64,前缀
+      }
+      reader.onerror = reject
+      reader.readAsDataURL(blob)
     })
     
-    if (!uploadResponse.ok) {
-      throw new Error(`获取上传URL失败: ${uploadResponse.status}`)
-    }
-    
-    const { data } = await uploadResponse.json()
-    const { signedUrl, publicUrl } = data
-    
-    // 使用预签名URL上传文件
-    const uploadResult = await fetch(signedUrl, {
-      method: 'PUT',
-      body: blob,
-      headers: {
-        'Content-Type': blob.type,
+    // 使用统一的supabase客户端调用Edge Function - 直接上传模式
+    const { data: uploadData, error: uploadError } = await supabase.functions.invoke('upload-thumbnail', {
+      body: {
+        videoId,
+        base64Data,
+        contentType: blob.type,
+        fileSize: blob.size,
+        directUpload: true // 关键：使用直接上传模式
       }
     })
     
-    if (!uploadResult.ok) {
-      throw new Error(`上传文件失败: ${uploadResult.status}`)
+    if (uploadError) {
+      throw new Error(`上传失败: ${uploadError.message}`)
     }
     
+    if (!uploadData?.success) {
+      throw new Error(`上传响应异常: ${uploadData?.error || '未知错误'}`)
+    }
+    
+    const publicUrl = uploadData.data.publicUrl
     console.log(`[ThumbnailUpload] R2上传成功: ${videoId} -> ${publicUrl}`)
     return publicUrl
     

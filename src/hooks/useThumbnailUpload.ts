@@ -4,10 +4,7 @@
  */
 
 import { useCallback, useRef } from 'react'
-import { createClient } from '@supabase/supabase-js'
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+import { supabase } from '@/lib/supabase'
 
 interface ThumbnailUploadOptions {
   videoId: string
@@ -18,7 +15,6 @@ interface ThumbnailUploadOptions {
 }
 
 export function useThumbnailUpload() {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   const processingRef = useRef<Set<string>>(new Set())
   const successCacheRef = useRef<Map<string, string>>(new Map())
 
@@ -140,29 +136,22 @@ export function useThumbnailUpload() {
         reader.readAsDataURL(blob)
       })
       
-      // 通过Edge Function上传（服务端代理）
-      const uploadResponse = await fetch(`${SUPABASE_URL}/functions/v1/upload-thumbnail`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({
+      // 通过统一的supabase客户端调用Edge Function
+      const { data: uploadData, error: uploadError } = await supabase.functions.invoke('upload-thumbnail', {
+        body: {
           videoId,
           base64Data,
           contentType: blob.type,
           fileSize: blob.size,
           directUpload: true // 标记为直接上传模式
-        })
+        }
       })
       
-      if (!uploadResponse.ok) {
-        const errorText = await uploadResponse.text()
-        throw new Error(`上传失败: ${uploadResponse.status} - ${errorText}`)
+      if (uploadError) {
+        throw new Error(`上传失败: ${uploadError.message}`)
       }
       
-      const { data } = await uploadResponse.json()
-      return data.publicUrl
+      return uploadData.data.publicUrl
       
     } catch (error: any) {
       throw new Error(`R2上传失败: ${error.message}`)

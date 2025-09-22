@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试修复后的缩略图功能</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.processing {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .video-preview {
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 16/9;
+            background: #f0f0f0;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .thumbnail-preview {
+            width: 320px;
+            height: 180px;
+            background: #f8f8f8;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .thumbnail-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 4px;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 测试修复后的缩略图功能</h1>
+    <p>验证 videoThumbnail.ts 修复后是否解决 "R2上传失败" 问题</p>
+
+    <div class="container">
+        <h2>📋 测试状态</h2>
+        <div id="testStatus" class="status">准备进行测试...</div>
+        <div class="controls">
+            <button id="testUnified" class="btn">测试统一接口</button>
+            <button id="testVideoThumbnail" class="btn">测试videoThumbnail.ts</button>
+            <button id="clearLog" class="btn">清空日志</button>
+        </div>
+        <div id="logContainer" class="log"></div>
+    </div>
+
+    <div class="container">
+        <h2>🎥 视频缩略图测试</h2>
+        <div class="video-preview">
+            <video 
+                id="testVideo" 
+                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" 
+                muted 
+                style="width: 100%; height: 100%; object-fit: cover;"
+                crossorigin="anonymous"
+            ></video>
+        </div>
+        <div class="thumbnail-preview" id="thumbnailContainer">
+            点击测试按钮生成缩略图
+        </div>
+        <div id="videoStatus" class="status" style="display: none;"></div>
+    </div>
+
+    <script>
+        let logContainer, testStatus, videoStatus;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            logContainer = document.getElementById('logContainer');
+            testStatus = document.getElementById('testStatus');
+            videoStatus = document.getElementById('videoStatus');
+            
+            document.getElementById('testUnified').addEventListener('click', testUnifiedInterface);
+            document.getElementById('testVideoThumbnail').addEventListener('click', testVideoThumbnailInterface);
+            document.getElementById('clearLog').addEventListener('click', clearLog);
+            
+            addLog('🚀 页面初始化完成，准备测试修复后的功能');
+        });
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString('zh-CN');
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function clearLog() {
+            logContainer.innerHTML = '';
+        }
+
+        function updateStatus(message, type = 'processing') {
+            testStatus.textContent = message;
+            testStatus.className = `status ${type}`;
+        }
+
+        function updateVideoStatus(message, type = 'processing') {
+            videoStatus.style.display = 'block';
+            videoStatus.textContent = message;
+            videoStatus.className = `status ${type}`;
+        }
+
+        // 测试统一的直接上传接口（应该成功）
+        async function testUnifiedInterface() {
+            addLog('🔧 测试1: 统一的直接上传接口');
+            updateStatus('测试统一接口...', 'processing');
+            
+            try {
+                const testVideoId = 'unified-web-test-' + Date.now();
+                const thumbnailBase64 = 'UklGRkoAAABXRUJQVlA4WAoAAAAQAAAAAAAAAAAAQUxQSAIAAAABBVBYDwAAAAIAAQEAAQAAAQAAAAAAAAAA';
+                
+                const response = await fetch('https://hvkzwrnvxsleeonqqrzq.supabase.co/functions/v1/upload-thumbnail', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2a3p3cm52eHNsZWVvbnFxcnpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3NjQ1NjAsImV4cCI6MjA3MTM0MDU2MH0.VOHVXCUFRk83t1cfPHd6Lf5SwWDQHn1Hl2Mn0qqiyPk'
+                    },
+                    body: JSON.stringify({
+                        videoId: testVideoId,
+                        base64Data: thumbnailBase64,
+                        contentType: 'image/webp',
+                        fileSize: Math.floor(thumbnailBase64.length * 0.75),
+                        directUpload: true
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    addLog(`✅ 统一接口测试成功: ${result.data.publicUrl}`);
+                    updateStatus('统一接口测试成功！', 'success');
+                } else {
+                    throw new Error(result.error || '上传失败');
+                }
+                
+            } catch (error) {
+                addLog(`❌ 统一接口测试失败: ${error.message}`, 'error');
+                updateStatus('统一接口测试失败', 'error');
+            }
+        }
+
+        // 测试模拟videoThumbnail.ts的调用方式
+        async function testVideoThumbnailInterface() {
+            addLog('🔧 测试2: 模拟videoThumbnail.ts的调用方式');
+            updateStatus('测试videoThumbnail.ts...', 'processing');
+            updateVideoStatus('正在生成缩略图...', 'processing');
+            
+            try {
+                const video = document.getElementById('testVideo');
+                const testVideoId = 'videothumb-test-' + Date.now();
+                
+                // 等待视频加载
+                await new Promise((resolve, reject) => {
+                    if (video.readyState >= 1) {
+                        resolve();
+                        return;
+                    }
+                    
+                    video.addEventListener('loadedmetadata', resolve, { once: true });
+                    video.addEventListener('error', reject, { once: true });
+                    video.load();
+                    
+                    setTimeout(() => reject(new Error('视频加载超时')), 10000);
+                });
+                
+                addLog('📹 视频加载完成，开始提取缩略图');
+                
+                // 提取缩略图
+                const thumbnailDataUrl = await extractVideoFrame(video, 0.1);
+                
+                // 显示缩略图
+                const thumbnailContainer = document.getElementById('thumbnailContainer');
+                thumbnailContainer.innerHTML = `<img src="${thumbnailDataUrl}" alt="生成的缩略图" />`;
+                
+                addLog('🖼️ 缩略图提取成功，开始上传');
+                updateVideoStatus('正在上传到R2...', 'processing');
+                
+                // 模拟videoThumbnail.ts的上传方式（现在应该使用修复后的直接上传）
+                const blob = await (await fetch(thumbnailDataUrl)).blob();
+                
+                // 将Blob转换为Base64（模拟修复后的videoThumbnail.ts逻辑）
+                const reader = new FileReader();
+                const base64Data = await new Promise((resolve, reject) => {
+                    reader.onload = () => {
+                        const result = reader.result;
+                        resolve(result.split(',')[1]);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+                
+                // 使用修复后的直接上传模式
+                const response = await fetch('https://hvkzwrnvxsleeonqqrzq.supabase.co/functions/v1/upload-thumbnail', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2a3p3cm52eHNsZWVvbnFxcnpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3NjQ1NjAsImV4cCI6MjA3MTM0MDU2MH0.VOHVXCUFRk83t1cfPHd6Lf5SwWDQHn1Hl2Mn0qqiyPk'
+                    },
+                    body: JSON.stringify({
+                        videoId: testVideoId,
+                        base64Data: base64Data,
+                        contentType: blob.type,
+                        fileSize: blob.size,
+                        directUpload: true // 修复后的关键参数
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    addLog(`✅ videoThumbnail.ts模拟测试成功: ${result.data.publicUrl}`);
+                    updateStatus('videoThumbnail.ts测试成功！', 'success');
+                    updateVideoStatus(`上传成功！可访问: ${result.data.publicUrl}`, 'success');
+                } else {
+                    throw new Error(result.error || '上传失败');
+                }
+                
+            } catch (error) {
+                addLog(`❌ videoThumbnail.ts模拟测试失败: ${error.message}`, 'error');
+                updateStatus('videoThumbnail.ts测试失败', 'error');
+                updateVideoStatus(`测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 提取视频帧
+        function extractVideoFrame(video, frameTime = 0.1) {
+            return new Promise((resolve, reject) => {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                
+                if (!context) {
+                    reject(new Error('无法获取Canvas上下文'));
+                    return;
+                }
+                
+                canvas.width = 320;
+                canvas.height = 180;
+                video.currentTime = Math.min(frameTime, video.duration || 0.1);
+                
+                const handleSeeked = () => {
+                    try {
+                        const videoAspect = video.videoWidth / video.videoHeight;
+                        const canvasAspect = canvas.width / canvas.height;
+                        
+                        let drawWidth, drawHeight, drawX, drawY;
+                        
+                        if (videoAspect > canvasAspect) {
+                            drawHeight = canvas.height;
+                            drawWidth = drawHeight * videoAspect;
+                            drawX = (canvas.width - drawWidth) / 2;
+                            drawY = 0;
+                        } else {
+                            drawWidth = canvas.width;
+                            drawHeight = drawWidth / videoAspect;
+                            drawX = 0;
+                            drawY = (canvas.height - drawHeight) / 2;
+                        }
+                        
+                        context.fillStyle = '#000000';
+                        context.fillRect(0, 0, canvas.width, canvas.height);
+                        context.drawImage(video, drawX, drawY, drawWidth, drawHeight);
+                        
+                        let dataUrl;
+                        try {
+                            dataUrl = canvas.toDataURL('image/webp', 0.75);
+                            if (!dataUrl.startsWith('data:image/webp')) {
+                                throw new Error('WebP not supported');
+                            }
+                        } catch (webpError) {
+                            dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        }
+                        
+                        resolve(dataUrl);
+                        
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                
+                video.addEventListener('seeked', handleSeeked, { once: true });
+                
+                if (Math.abs(video.currentTime - frameTime) < 0.1) {
+                    handleSeeked();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

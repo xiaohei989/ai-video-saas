@@ -3,7 +3,7 @@
  * 管理视频数据的 CRUD 操作，使用 Supabase 作为后端存储
  */
 
-import { supabase, secureSupabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
 
 type Video = Database['public']['Tables']['videos']['Row']

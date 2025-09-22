@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端缩略图生成测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .video-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .video-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .video-preview {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #f0f0f0;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .thumbnail-preview {
+            width: 100%;
+            height: 180px;
+            background: #f8f8f8;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .thumbnail-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 4px;
+        }
+        .controls {
+            margin: 10px 0;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.processing {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎬 前端缩略图生成测试</h1>
+    <p>这个页面用于测试前端缩略图生成功能，包括Canvas提取、WebP转换和R2上传。</p>
+
+    <div class="test-container">
+        <h2>📋 测试状态</h2>
+        <div id="testStatus" class="status">准备进行测试...</div>
+        <div class="controls">
+            <button id="startTest" class="btn">开始测试</button>
+            <button id="clearLog" class="btn">清空日志</button>
+        </div>
+        <div id="logContainer" class="log"></div>
+    </div>
+
+    <div class="test-container">
+        <h2>🎥 测试视频</h2>
+        <div class="video-container" id="videoContainer">
+            <!-- 测试视频将在这里动态生成 -->
+        </div>
+    </div>
+
+    <script>
+        // 测试视频URL列表（包括一些可能失败的URL用于测试降级功能）
+        const testVideos = [
+            {
+                id: 'test-video-1',
+                title: '测试视频 1 - 在线MP4',
+                url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+            },
+            {
+                id: 'test-video-2', 
+                title: '测试视频 2 - Supabase存储',
+                url: 'https://hvkzwrnvxsleeonqqrzq.supabase.co/storage/v1/object/public/videos/test-video.mp4'
+            },
+            {
+                id: 'test-video-3',
+                title: '测试视频 3 - CDN (可能失败)',
+                url: 'https://cdn.veo3video.me/videos/58cc9e51-f3ef-4ca6-b397-bca3b80b8662.mp4'
+            }
+        ];
+
+        let logContainer, testStatus;
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            logContainer = document.getElementById('logContainer');
+            testStatus = document.getElementById('testStatus');
+            
+            // 绑定事件
+            document.getElementById('startTest').addEventListener('click', startTest);
+            document.getElementById('clearLog').addEventListener('click', clearLog);
+            
+            // 生成测试视频卡片
+            generateVideoCards();
+            
+            addLog('🚀 页面初始化完成，准备开始测试');
+        });
+
+        // 添加日志
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString('zh-CN');
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        // 清空日志
+        function clearLog() {
+            logContainer.innerHTML = '';
+        }
+
+        // 更新测试状态
+        function updateStatus(message, type = 'processing') {
+            testStatus.textContent = message;
+            testStatus.className = `status ${type}`;
+        }
+
+        // 生成视频卡片
+        function generateVideoCards() {
+            const container = document.getElementById('videoContainer');
+            
+            testVideos.forEach(video => {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.innerHTML = `
+                    <h3>${video.title}</h3>
+                    <div class="video-preview">
+                        <video 
+                            id="video-${video.id}" 
+                            src="${video.url}" 
+                            muted 
+                            style="width: 100%; height: 100%; object-fit: cover;"
+                            crossorigin="anonymous"
+                        ></video>
+                    </div>
+                    <div class="thumbnail-preview" id="thumbnail-${video.id}">
+                        点击"生成缩略图"开始测试
+                    </div>
+                    <div class="controls">
+                        <button class="btn" onclick="generateThumbnail('${video.id}', '${video.url}')">
+                            生成缩略图
+                        </button>
+                        <button class="btn" onclick="uploadThumbnail('${video.id}')">
+                            上传到R2
+                        </button>
+                    </div>
+                    <div id="status-${video.id}" class="status" style="display: none;"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // 生成单个视频的缩略图
+        async function generateThumbnail(videoId, videoUrl) {
+            const video = document.getElementById(`video-${videoId}`);
+            const thumbnailContainer = document.getElementById(`thumbnail-${videoId}`);
+            const statusContainer = document.getElementById(`status-${videoId}`);
+            
+            try {
+                addLog(`🎬 开始为视频 ${videoId} 生成缩略图`);
+                statusContainer.style.display = 'block';
+                statusContainer.className = 'status processing';
+                statusContainer.textContent = '正在生成缩略图...';
+                
+                // 等待视频加载
+                await new Promise((resolve, reject) => {
+                    if (video.readyState >= 1) {
+                        resolve();
+                        return;
+                    }
+                    
+                    video.addEventListener('loadedmetadata', resolve, { once: true });
+                    video.addEventListener('error', reject, { once: true });
+                    
+                    // 强制加载
+                    video.load();
+                    
+                    // 超时处理
+                    setTimeout(() => reject(new Error('视频加载超时')), 10000);
+                });
+                
+                // 提取缩略图
+                const thumbnailDataUrl = await extractVideoFrame(video, 0.1);
+                
+                // 显示缩略图
+                thumbnailContainer.innerHTML = `<img src="${thumbnailDataUrl}" alt="缩略图" />`;
+                
+                // 保存到全局变量供上传使用
+                window[`thumbnail_${videoId}`] = thumbnailDataUrl;
+                
+                statusContainer.className = 'status success';
+                statusContainer.textContent = '缩略图生成成功！';
+                addLog(`✅ 视频 ${videoId} 缩略图生成成功`);
+                
+            } catch (error) {
+                addLog(`❌ 视频 ${videoId} 缩略图生成失败: ${error.message}`, 'error');
+                statusContainer.className = 'status error';
+                statusContainer.textContent = `生成失败: ${error.message}`;
+                thumbnailContainer.innerHTML = '生成失败';
+            }
+        }
+
+        // 提取视频帧
+        function extractVideoFrame(video, frameTime = 0.1) {
+            return new Promise((resolve, reject) => {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                
+                if (!context) {
+                    reject(new Error('无法获取Canvas上下文'));
+                    return;
+                }
+                
+                // 设置画布尺寸
+                canvas.width = 320;
+                canvas.height = 180;
+                
+                // 跳转到指定时间点
+                video.currentTime = Math.min(frameTime, video.duration || 0.1);
+                
+                const handleSeeked = () => {
+                    try {
+                        // 计算视频在画布中的位置（保持宽高比）
+                        const videoAspect = video.videoWidth / video.videoHeight;
+                        const canvasAspect = canvas.width / canvas.height;
+                        
+                        let drawWidth, drawHeight, drawX, drawY;
+                        
+                        if (videoAspect > canvasAspect) {
+                            drawHeight = canvas.height;
+                            drawWidth = drawHeight * videoAspect;
+                            drawX = (canvas.width - drawWidth) / 2;
+                            drawY = 0;
+                        } else {
+                            drawWidth = canvas.width;
+                            drawHeight = drawWidth / videoAspect;
+                            drawX = 0;
+                            drawY = (canvas.height - drawHeight) / 2;
+                        }
+                        
+                        // 填充背景色
+                        context.fillStyle = '#000000';
+                        context.fillRect(0, 0, canvas.width, canvas.height);
+                        
+                        // 绘制视频帧
+                        context.drawImage(video, drawX, drawY, drawWidth, drawHeight);
+                        
+                        // 转换为WebP或JPEG
+                        let dataUrl;
+                        try {
+                            dataUrl = canvas.toDataURL('image/webp', 0.75);
+                            if (!dataUrl.startsWith('data:image/webp')) {
+                                throw new Error('WebP not supported');
+                            }
+                        } catch (webpError) {
+                            dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        }
+                        
+                        resolve(dataUrl);
+                        
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                
+                video.addEventListener('seeked', handleSeeked, { once: true });
+                
+                // 如果已经在正确位置，直接处理
+                if (Math.abs(video.currentTime - frameTime) < 0.1) {
+                    handleSeeked();
+                }
+            });
+        }
+
+        // 上传缩略图到R2
+        async function uploadThumbnail(videoId) {
+            const thumbnailDataUrl = window[`thumbnail_${videoId}`];
+            const statusContainer = document.getElementById(`status-${videoId}`);
+            
+            if (!thumbnailDataUrl) {
+                addLog(`❌ 视频 ${videoId} 没有可上传的缩略图`, 'error');
+                return;
+            }
+            
+            try {
+                addLog(`📤 开始上传视频 ${videoId} 的缩略图到R2`);
+                statusContainer.className = 'status processing';
+                statusContainer.textContent = '正在上传到R2...';
+                
+                // 将DataURL转换为Blob
+                const response = await fetch(thumbnailDataUrl);
+                const blob = await response.blob();
+                
+                // 转换为Base64
+                const base64Data = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const result = reader.result;
+                        resolve(result.split(',')[1]); // 移除data:image/webp;base64,前缀
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+                
+                // 调用Supabase Edge Function
+                const uploadResponse = await fetch('https://hvkzwrnvxsleeonqqrzq.supabase.co/functions/v1/upload-thumbnail', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2a3p3cm52eHNsZWVvbnFxcnpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3NjQ1NjAsImV4cCI6MjA3MTM0MDU2MH0.VOHVXCUFRk83t1cfPHd6Lf5SwWDQHn1Hl2Mn0qqiyPk'
+                    },
+                    body: JSON.stringify({
+                        videoId: videoId,
+                        base64Data: base64Data,
+                        contentType: blob.type,
+                        fileSize: blob.size,
+                        directUpload: true
+                    })
+                });
+                
+                if (!uploadResponse.ok) {
+                    const errorText = await uploadResponse.text();
+                    throw new Error(`HTTP ${uploadResponse.status}: ${errorText}`);
+                }
+                
+                const uploadResult = await uploadResponse.json();
+                
+                if (uploadResult.success) {
+                    addLog(`✅ 视频 ${videoId} 缩略图上传成功: ${uploadResult.data.publicUrl}`);
+                    statusContainer.className = 'status success';
+                    statusContainer.innerHTML = `上传成功！<br><a href="${uploadResult.data.publicUrl}" target="_blank">查看缩略图</a>`;
+                } else {
+                    throw new Error(uploadResult.error || '上传失败');
+                }
+                
+            } catch (error) {
+                addLog(`❌ 视频 ${videoId} 缩略图上传失败: ${error.message}`, 'error');
+                statusContainer.className = 'status error';
+                statusContainer.textContent = `上传失败: ${error.message}`;
+            }
+        }
+
+        // 开始完整测试
+        async function startTest() {
+            addLog('🚀 开始完整缩略图测试流程');
+            updateStatus('正在进行完整测试...', 'processing');
+            
+            let successCount = 0;
+            let failCount = 0;
+            
+            for (const video of testVideos) {
+                try {
+                    addLog(`📋 测试视频: ${video.title}`);
+                    
+                    // 生成缩略图
+                    await generateThumbnail(video.id, video.url);
+                    
+                    // 等待1秒
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // 上传缩略图
+                    await uploadThumbnail(video.id);
+                    
+                    successCount++;
+                    addLog(`✅ 视频 ${video.id} 测试完成`);
+                    
+                } catch (error) {
+                    failCount++;
+                    addLog(`❌ 视频 ${video.id} 测试失败: ${error.message}`, 'error');
+                }
+                
+                // 测试间隔
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+            
+            // 测试总结
+            addLog(`🎉 测试完成！成功: ${successCount}, 失败: ${failCount}`);
+            
+            if (failCount === 0) {
+                updateStatus(`测试完成！所有 ${successCount} 个视频都成功生成并上传了缩略图`, 'success');
+            } else {
+                updateStatus(`测试完成！${successCount} 个成功，${failCount} 个失败`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -4,7 +4,17 @@
  */
 
 import supabaseVideoService from './supabaseVideoService'
+import { supabase } from '@/lib/supabase'
 import i18n from '@/i18n/config'
+
+interface ShortLinkResponse {
+  success: boolean
+  shortCode?: string
+  shortUrl?: string
+  targetUrl?: string
+  reused?: boolean
+  error?: string
+}
 
 export interface ShareOptions {
   platform?: 'twitter' | 'facebook' | 'linkedin' | 'whatsapp' | 'telegram' | 'copy'
@@ -30,19 +40,66 @@ class VideoShareService {
   /**
    * 生成分享链接
    */
+  generateDefaultShareLink(videoId: string): string {
+    return `${this.shareBaseUrl.replace(/\/$/, '')}/video/${videoId}`
+  }
+
   generateShareLink(videoId: string): string {
-    return `${this.shareBaseUrl}/video/${videoId}`
+    return this.generateDefaultShareLink(videoId)
   }
 
   /**
    * 生成短链接（可以集成短链接服务）
    */
-  async generateShortLink(videoId: string): Promise<string> {
-    const longUrl = this.generateShareLink(videoId)
-    
-    // TODO: 集成短链接服务（如bit.ly, tinyurl等）
-    // 暂时返回原链接
-    return longUrl
+  async ensureShortLink(videoId: string, platform?: string, targetUrl?: string): Promise<string> {
+    const resolvedTarget = targetUrl || this.generateDefaultShareLink(videoId)
+
+    try {
+      const { data, error } = await supabase.functions.invoke<ShortLinkResponse>('create-short-link', {
+        body: {
+          videoId,
+          platform,
+          targetUrl: resolvedTarget
+        }
+      })
+
+      if (error) {
+        console.error('[VIDEO SHARE] 创建短链接失败:', error)
+        return resolvedTarget
+      }
+
+      if (data?.success && data.shortUrl) {
+        return data.shortUrl
+      }
+
+      return resolvedTarget
+    } catch (error) {
+      console.error('[VIDEO SHARE] 调用短链接函数失败:', error)
+      return resolvedTarget
+    }
+  }
+
+  private async recordShareEvent(params: {
+    videoId: string
+    action: 'share' | 'copy'
+    platform?: string
+    shortCode?: string
+    metadata?: Record<string, any>
+  }) {
+    try {
+      const { data, error } = await supabase.functions.invoke<{ success: boolean }>('record-share-event', {
+        body: params
+      })
+
+      if (error) {
+        console.error('[VIDEO SHARE] 记录分享事件失败:', error)
+      }
+
+      return data?.success ?? false
+    } catch (error) {
+      console.error('[VIDEO SHARE] 调用分享事件函数失败:', error)
+      return false
+    }
   }
 
   /**
@@ -54,10 +111,23 @@ class VideoShareService {
       throw new Error('Video not found')
     }
 
-    const shareUrl = await this.generateShortLink(videoId)
+    const shareUrl = await this.ensureShortLink(videoId, options.platform)
     const title = options.title || video.title || 'AI Generated Video'
     const description = options.description || video.prompt || ''
     const hashtags = options.hashtags?.join(',') || 'AIVideo,VideoGeneration'
+
+    this.recordShareEvent({
+      videoId,
+      action: 'share',
+      platform: options.platform,
+      metadata: {
+        title,
+        description,
+        generated_at: new Date().toISOString()
+      }
+    }).catch(err => {
+      console.error('[VIDEO SHARE] 分享事件异步记录失败:', err)
+    })
 
     // 分享计数在调用方处理
 
@@ -79,7 +149,17 @@ class VideoShareService {
       
       case 'copy':
       default:
-        return this.copyToClipboard(shareUrl)
+        const copied = await this.copyToClipboard(shareUrl)
+        if (copied) {
+          this.recordShareEvent({
+            videoId,
+            action: 'copy',
+            platform: 'copy'
+          }).catch(err => {
+            console.error('[VIDEO SHARE] 记录复制事件失败:', err)
+          })
+        }
+        return copied
     }
   }
 
@@ -167,7 +247,7 @@ class VideoShareService {
       throw new Error('Video not found')
     }
 
-    const shareUrl = await this.generateShortLink(videoId)
+    const shareUrl = await this.ensureShortLink(videoId, options.platform)
     const title = options.title || video.title || 'AI Generated Video'
     const text = options.description || video.prompt || ''
 

@@ -11,8 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
 import { useTranslation } from 'react-i18next'
-// import { useNavigate } from 'react-router-dom' // unused
 import { 
   Settings,
   Globe,
@@ -23,17 +23,19 @@ import {
   X,
   Loader2,
   Lock,
-  CreditCard
+  CreditCard,
+  Bell
 } from 'lucide-react'
 import { useTheme } from '@/hooks/useTheme'
 import SubscriptionStatus from '@/components/subscription/SubscriptionStatus'
 import { SubscriptionService } from '@/services/subscriptionService'
+import { userSettingsService, UserSettings } from '@/services/userSettingsService'
 import type { Subscription } from '@/types'
 
 
 export default function AccountSettingsPage() {
   const { t, i18n } = useTranslation()
-  const { user, updatePassword } = useAuth()
+  const { user, updatePassword, settings, updateSettings, refreshSettings } = useAuth()
   const { theme, setTheme } = useTheme()
   
   // 账户设置状态
@@ -42,47 +44,51 @@ export default function AccountSettingsPage() {
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   
-  // 偏好设置状态
-  const [language, setLanguage] = useState(i18n.language)
-  const [timezone, setTimezone] = useState('UTC')
-  const [dateFormat, setDateFormat] = useState('MM/DD/YYYY')
+  // 用户设置状态（从 AuthContext 获取）
+  const [localSettings, setLocalSettings] = useState<UserSettings | null>(settings)
   
   // 订阅状态
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   
-  // 避免未使用变量警告
-  void subscription
-  
   // UI 状态
   const [isSaving, setIsSaving] = useState(false)
-  const [activeTab, setActiveTab] = useState<'account' | 'preferences' | 'subscription'>('account')
+  const [activeTab, setActiveTab] = useState<'account' | 'preferences' | 'subscription' | 'notifications'>('account')
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const [settingsLoading, setSettingsLoading] = useState(false)
+
+  // 同步设置状态
+  useEffect(() => {
+    if (settings) {
+      setLocalSettings(settings)
+    }
+  }, [settings])
 
   useEffect(() => {
     if (user) {
       setEmail(user.email || '')
+      // 加载用户设置
+      loadSettings()
     }
-    // 从本地存储或数据库加载设置
-    loadSettings()
   }, [user])
 
   const loadSettings = async () => {
-    // TODO: 从数据库加载用户设置
-    const savedLanguage = localStorage.getItem('language') || 'en'
-    setLanguage(savedLanguage)
+    if (!user) return
     
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | 'system' || 'system'
-    setTheme(savedTheme)
-
-    // 加载订阅信息
-    if (user) {
-      try {
-        const subscriptionData = await SubscriptionService.getCurrentSubscription(user.id)
-        setSubscription(subscriptionData)
-      } catch (error) {
-        console.error('加载订阅信息失败:', error)
-      }
+    setSettingsLoading(true)
+    try {
+      // 从 AuthContext 中刷新设置
+      await refreshSettings()
+      
+      // 加载订阅信息
+      const subscriptionData = await SubscriptionService.getCurrentSubscription(user.id)
+      setSubscription(subscriptionData)
+      
+    } catch (error) {
+      console.error('加载设置失败:', error)
+      setErrorMessage('加载设置失败，请刷新页面重试')
+    } finally {
+      setSettingsLoading(false)
     }
   }
 
@@ -124,25 +130,65 @@ export default function AccountSettingsPage() {
   }
 
   const handleSavePreferences = async () => {
+    if (!localSettings) return
+    
     try {
       setIsSaving(true)
+      setErrorMessage('')
       
-      // 保存语言设置
-      localStorage.setItem('language', language)
-      i18n.changeLanguage(language)
+      // 更新设置到数据库
+      await updateSettings({
+        theme: localSettings.theme,
+        timezone: localSettings.timezone,
+        date_format: localSettings.date_format,
+        language: localSettings.language,
+        notification_preferences: localSettings.notification_preferences
+      })
       
-      // 保存主题设置
-      localStorage.setItem('theme', theme)
+      // 应用主题变更
+      setTheme(localSettings.theme)
       
-      // TODO: 保存其他设置到数据库
+      // 应用语言变更
+      i18n.changeLanguage(localSettings.language)
       
       setSuccessMessage(t('settings.preferencesSaved'))
       setTimeout(() => setSuccessMessage(''), 3000)
+      
     } catch (error) {
+      console.error('保存设置失败:', error)
       setErrorMessage(t('settings.saveError'))
+      setTimeout(() => setErrorMessage(''), 5000)
     } finally {
       setIsSaving(false)
     }
+  }
+  
+  // 更新本地设置状态的帮助函数
+  const updateLocalSetting = <K extends keyof UserSettings>(
+    key: K, 
+    value: UserSettings[K]
+  ) => {
+    if (!localSettings) return
+    
+    setLocalSettings({
+      ...localSettings,
+      [key]: value
+    })
+  }
+  
+  const updateNotificationPreference = (
+    key: string, 
+    value: boolean
+  ) => {
+    if (!localSettings) return
+    
+    setLocalSettings({
+      ...localSettings,
+      notification_preferences: {
+        ...localSettings.notification_preferences,
+        [key]: value
+      }
+    })
   }
 
 
@@ -207,6 +253,18 @@ export default function AccountSettingsPage() {
             >
               <CreditCard className="h-4 w-4" />
               {t('settings.subscription')}
+            </button>
+            
+            <button
+              onClick={() => setActiveTab('notifications')}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === 'notifications' 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'hover:bg-muted'
+              }`}
+            >
+              <Bell className="h-4 w-4" />
+              {t('settings.notifications')}
             </button>
           </nav>
         </div>
@@ -324,7 +382,11 @@ export default function AccountSettingsPage() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="language">{t('settings.language')}</Label>
-                    <Select value={language} onValueChange={setLanguage}>
+                    <Select 
+                      value={localSettings?.language || 'en'} 
+                      onValueChange={(value) => updateLocalSetting('language', value)}
+                      disabled={settingsLoading}
+                    >
                       <SelectTrigger id="language">
                         <SelectValue />
                       </SelectTrigger>
@@ -340,7 +402,11 @@ export default function AccountSettingsPage() {
                   
                   <div className="space-y-2">
                     <Label htmlFor="theme">{t('settings.theme')}</Label>
-                    <Select value={theme} onValueChange={(value: 'light' | 'dark' | 'system') => setTheme(value)}>
+                    <Select 
+                      value={localSettings?.theme || 'system'} 
+                      onValueChange={(value: 'light' | 'dark' | 'system') => updateLocalSetting('theme', value)}
+                      disabled={settingsLoading}
+                    >
                       <SelectTrigger id="theme">
                         <SelectValue />
                       </SelectTrigger>
@@ -369,7 +435,11 @@ export default function AccountSettingsPage() {
                   
                   <div className="space-y-2">
                     <Label htmlFor="timezone">{t('settings.timezone')}</Label>
-                    <Select value={timezone} onValueChange={setTimezone}>
+                    <Select 
+                      value={localSettings?.timezone || 'UTC'} 
+                      onValueChange={(value) => updateLocalSetting('timezone', value)}
+                      disabled={settingsLoading}
+                    >
                       <SelectTrigger id="timezone">
                         <SelectValue />
                       </SelectTrigger>
@@ -388,7 +458,11 @@ export default function AccountSettingsPage() {
                   
                   <div className="space-y-2">
                     <Label htmlFor="dateFormat">{t('settings.dateFormat')}</Label>
-                    <Select value={dateFormat} onValueChange={setDateFormat}>
+                    <Select 
+                      value={localSettings?.date_format || 'MM/DD/YYYY'} 
+                      onValueChange={(value: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD') => updateLocalSetting('date_format', value)}
+                      disabled={settingsLoading}
+                    >
                       <SelectTrigger id="dateFormat">
                         <SelectValue />
                       </SelectTrigger>
@@ -400,7 +474,10 @@ export default function AccountSettingsPage() {
                     </Select>
                   </div>
                   
-                  <Button onClick={handleSavePreferences} disabled={isSaving}>
+                  <Button 
+                    onClick={handleSavePreferences} 
+                    disabled={isSaving || settingsLoading || !localSettings}
+                  >
                     {isSaving ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -425,6 +502,151 @@ export default function AccountSettingsPage() {
                 showManageButton={true}
                 className="w-full"
               />
+            </div>
+          )}
+          
+          {activeTab === 'notifications' && (
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('settings.notificationPreferences')}</CardTitle>
+                  <CardDescription>
+                    {t('settings.notificationPreferencesDescription')}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {settingsLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-8 w-8 animate-spin" />
+                      <span className="ml-2">{t('common.loading')}</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-0.5">
+                            <Label htmlFor="email-notifications">
+                              {t('settings.emailNotifications')}
+                            </Label>
+                            <p className="text-sm text-muted-foreground">
+                              {t('settings.emailNotificationsDescription')}
+                            </p>
+                          </div>
+                          <Switch
+                            id="email-notifications"
+                            checked={localSettings?.notification_preferences?.email_notifications ?? true}
+                            onCheckedChange={(checked) => updateNotificationPreference('email_notifications', checked)}
+                            disabled={settingsLoading}
+                          />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-0.5">
+                            <Label htmlFor="push-notifications">
+                              {t('settings.pushNotifications')}
+                            </Label>
+                            <p className="text-sm text-muted-foreground">
+                              {t('settings.pushNotificationsDescription')}
+                            </p>
+                          </div>
+                          <Switch
+                            id="push-notifications"
+                            checked={localSettings?.notification_preferences?.push_notifications ?? true}
+                            onCheckedChange={(checked) => updateNotificationPreference('push_notifications', checked)}
+                            disabled={settingsLoading}
+                          />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-0.5">
+                            <Label htmlFor="video-completion">
+                              {t('settings.videoCompletionNotifications')}
+                            </Label>
+                            <p className="text-sm text-muted-foreground">
+                              {t('settings.videoCompletionNotificationsDescription')}
+                            </p>
+                          </div>
+                          <Switch
+                            id="video-completion"
+                            checked={localSettings?.notification_preferences?.video_completion ?? true}
+                            onCheckedChange={(checked) => updateNotificationPreference('video_completion', checked)}
+                            disabled={settingsLoading}
+                          />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-0.5">
+                            <Label htmlFor="template-likes">
+                              {t('settings.templateLikeNotifications')}
+                            </Label>
+                            <p className="text-sm text-muted-foreground">
+                              {t('settings.templateLikeNotificationsDescription')}
+                            </p>
+                          </div>
+                          <Switch
+                            id="template-likes"
+                            checked={localSettings?.notification_preferences?.template_likes ?? true}
+                            onCheckedChange={(checked) => updateNotificationPreference('template_likes', checked)}
+                            disabled={settingsLoading}
+                          />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-0.5">
+                            <Label htmlFor="referral-rewards">
+                              {t('settings.referralRewardNotifications')}
+                            </Label>
+                            <p className="text-sm text-muted-foreground">
+                              {t('settings.referralRewardNotificationsDescription')}
+                            </p>
+                          </div>
+                          <Switch
+                            id="referral-rewards"
+                            checked={localSettings?.notification_preferences?.referral_rewards ?? true}
+                            onCheckedChange={(checked) => updateNotificationPreference('referral_rewards', checked)}
+                            disabled={settingsLoading}
+                          />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-0.5">
+                            <Label htmlFor="marketing-emails">
+                              {t('settings.marketingEmails')}
+                            </Label>
+                            <p className="text-sm text-muted-foreground">
+                              {t('settings.marketingEmailsDescription')}
+                            </p>
+                          </div>
+                          <Switch
+                            id="marketing-emails"
+                            checked={localSettings?.notification_preferences?.marketing_emails ?? false}
+                            onCheckedChange={(checked) => updateNotificationPreference('marketing_emails', checked)}
+                            disabled={settingsLoading}
+                          />
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        onClick={handleSavePreferences} 
+                        disabled={isSaving || settingsLoading || !localSettings}
+                        className="w-full"
+                      >
+                        {isSaving ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            {t('common.saving')}
+                          </>
+                        ) : (
+                          <>
+                            <Check className="mr-2 h-4 w-4" />
+                            {t('settings.saveNotificationPreferences')}
+                          </>
+                        )}
+                      </Button>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
             </div>
           )}
 

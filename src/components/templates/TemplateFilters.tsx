@@ -49,66 +49,44 @@ export default function TemplateFilters({
 
   return (
     <div className={`template-filters space-y-3 ${className || ''}`}>
-      {/* 排序选择器和第一排标签 */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
-        {/* 排序选择器 - 移动端在上方独占一行 */}
-        <div className="order-1 md:order-2 flex justify-end">
-          <Select value={sortBy} onValueChange={handleSortChange}>
-            <SelectTrigger className="w-full max-w-[180px] md:w-[180px] flex-shrink-0">
-              <SelectValue placeholder={t('template.sortBy.placeholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="popular">
-                <span className="flex items-center gap-2 whitespace-nowrap">
-                  <TrendingUp className="h-4 w-4" />
-                  {t('template.sortBy.popular')}
-                </span>
-              </SelectItem>
-              <SelectItem value="latest">
-                <span className="flex items-center gap-2 whitespace-nowrap">
-                  <Sparkles className="h-4 w-4" />
-                  {t('template.sortBy.latest')}
-                </span>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        {/* 第一排标签 - 移动端在下方占满宽度 */}
-        <div className="order-2 md:order-1 flex flex-wrap gap-1.5 md:gap-2 flex-1 md:flex-none">
-          {popularTags.slice(0, 6).map((tag) => (
-            <Badge
-              key={tag}
-              variant={selectedTags.includes(tag) ? "default" : "secondary"}
-              className={`cursor-pointer transition-all duration-200 hover:scale-105 text-xs md:text-sm px-2 md:px-3 py-1 ${
-                selectedTags.includes(tag) 
-                  ? 'bg-primary text-primary-foreground shadow-md' 
-                  : 'hover:bg-primary/10 hover:border-primary/20'
-              }`}
-              onClick={() => handleTagClick(tag)}
-            >
-              <Hash className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1" />
-              {tag}
-            </Badge>
-          ))}
-        </div>
+      {/* 排序选择器 - 水平居中 */}
+      <div className="flex justify-center">
+        <Select value={sortBy} onValueChange={handleSortChange}>
+          <SelectTrigger className="w-[180px] flex-shrink-0">
+            <SelectValue placeholder={t('template.sortBy.placeholder')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="popular">
+              <span className="flex items-center gap-2 whitespace-nowrap">
+                <TrendingUp className="h-4 w-4" />
+                {t('template.sortBy.popular')}
+              </span>
+            </SelectItem>
+            <SelectItem value="latest">
+              <span className="flex items-center gap-2 whitespace-nowrap">
+                <Sparkles className="h-4 w-4" />
+                {t('template.sortBy.latest')}
+              </span>
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
-      {/* 第二排标签 - 紧凑布局 */}
-      <div className="flex flex-wrap gap-1.5 md:gap-2">
-        {popularTags.slice(6, 16).map((tag) => (
+      {/* 标签网格 - 每行4个 */}
+      <div className="grid grid-cols-4 gap-1 md:gap-2">
+        {popularTags.slice(0, 16).map((tag) => (
           <Badge
             key={tag}
             variant={selectedTags.includes(tag) ? "default" : "secondary"}
-            className={`cursor-pointer transition-all duration-200 hover:scale-105 text-xs md:text-sm px-2 md:px-3 py-1 ${
+            className={`cursor-pointer transition-all duration-200 hover:scale-105 text-[9px] md:text-xs px-0.5 md:px-2 py-1 justify-center min-h-[22px] md:min-h-[24px] ${
               selectedTags.includes(tag) 
                 ? 'bg-primary text-primary-foreground shadow-md' 
                 : 'hover:bg-primary/10 hover:border-primary/20'
             }`}
             onClick={() => handleTagClick(tag)}
           >
-            <Hash className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1" />
-            {tag}
+            <Hash className="h-1.5 w-1.5 md:h-2.5 md:w-2.5 mr-0.5 md:mr-1 flex-shrink-0" />
+            <span className="leading-none">{tag}</span>
           </Badge>
         ))}
       </div>

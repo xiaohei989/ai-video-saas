@@ -1,4 +1,4 @@
-import { supabase, secureSupabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import type { Subscription, SubscriptionPlanId, BasePlanId, BillingInterval } from '@/types'
 
 export class SubscriptionService {

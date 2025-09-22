@@ -60,10 +60,8 @@ class VideoPreloadService {
         memoryGB
       }
       
-      console.log('[VideoPreload] 📱 设备性能检测:', this.deviceCapabilities)
-      
     } catch (error) {
-      console.warn('[VideoPreload] 设备检测失败，使用默认配置:', error)
+      // 设备检测失败，使用默认配置
     }
   }
 
@@ -74,10 +72,8 @@ class VideoPreloadService {
     // 页面可见性变化时调整预加载策略
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
-        console.log('[VideoPreload] 页面不可见，暂停预加载')
         this.pausePreload()
       } else {
-        console.log('[VideoPreload] 页面可见，恢复预加载')
         this.resumePreload()
       }
     })
@@ -87,7 +83,6 @@ class VideoPreloadService {
       (navigator as any).getBattery().then((battery: any) => {
         battery.addEventListener('levelchange', () => {
           if (battery.level < 0.2) {
-            console.log('[VideoPreload] 🔋 低电量模式，减少预加载')
             this.pausePreload()
           }
         })
@@ -106,13 +101,11 @@ class VideoPreloadService {
     
     // 检查是否已经预加载过
     if (this.completedTasks.has(`videos_${userId}`) || videoCacheService.getCachedVideos(userId)) {
-      console.log('[VideoPreload] 📦 数据已缓存，跳过预加载')
       return true
     }
     
     // 检查设备是否适合预加载
     if (!this.shouldPreload(options)) {
-      console.log('[VideoPreload] 🚫 设备条件不适合预加载')
       return false
     }
     
@@ -162,12 +155,10 @@ class VideoPreloadService {
    * 🎯 路由预加载 - 在用户即将访问页面时预加载
    */
   preloadOnRouteChange(toRoute: string, userId: string): void {
-    console.log(`[VideoPreload] 🗺️ 检测路由变化: ${toRoute}`)
     
     if (toRoute.includes('/videos') || toRoute.includes('/my-videos')) {
       // 用户即将访问视频页面，高优先级预加载
       this.preloadUserVideos(userId, { priority: 'high' })
-      console.log('[VideoPreload] 🚀 高优先级预加载视频数据')
     } else if (toRoute.includes('/create')) {
       // 用户在创建页面，中等优先级预加载（用户可能想查看历史视频）
       this.preloadOnIdle(userId, 'medium')
@@ -186,13 +177,11 @@ class VideoPreloadService {
     
     // 如果用户经常访问视频页面
     if (userBehavior.lastVideoPageVisit && (now - userBehavior.lastVideoPageVisit < 10 * 60 * 1000)) {
-      console.log('[VideoPreload] 🔮 预测用户可能再次访问视频页面')
       this.preloadOnIdle(userId, 'medium')
     }
     
     // 如果用户创建视频后经常查看列表
     if (userBehavior.createToVideoPageRatio && userBehavior.createToVideoPageRatio > 0.7) {
-      console.log('[VideoPreload] 🔮 预测用户创建后会查看视频')
       this.preloadOnIdle(userId, 'high')
     }
   }
@@ -210,7 +199,6 @@ class VideoPreloadService {
       if (!task) continue
       
       try {
-        console.log(`[VideoPreload] 📥 处理任务: ${task.type} (${task.priority})`)
         
         switch (task.type) {
           case 'videos':
@@ -224,7 +212,6 @@ class VideoPreloadService {
         await new Promise(resolve => setTimeout(resolve, 10))
         
       } catch (error) {
-        console.warn(`[VideoPreload] 任务失败: ${task.id}`, error)
       }
     }
     
@@ -239,7 +226,6 @@ class VideoPreloadService {
     const pageSize = this.getOptimalPreloadSize()
     
     try {
-      console.log(`[VideoPreload] 🎬 开始预加载视频数据 (${pageSize}个)`)
       
       const result = await supabaseVideoService.getUserVideos(
         task.userId,
@@ -258,10 +244,8 @@ class VideoPreloadService {
         { page: 1, pageSize }
       )
       
-      console.log(`[VideoPreload] ✅ 预加载完成: ${result.videos.length}个视频`)
       
     } catch (error) {
-      console.warn('[VideoPreload] 视频预加载失败:', error)
       throw error
     }
   }
@@ -308,7 +292,6 @@ class VideoPreloadService {
     this.preloadQueue.forEach(task => {
       if (task.promise) {
         // 注意：这里不能真正取消Promise，只是标记
-        console.log(`[VideoPreload] ⏸️ 暂停任务: ${task.id}`)
       }
     })
   }
@@ -318,7 +301,6 @@ class VideoPreloadService {
    */
   private resumePreload(): void {
     if (!this.isProcessing && this.preloadQueue.length > 0) {
-      console.log('[VideoPreload] ▶️ 恢复预加载处理')
       this.processQueue()
     }
   }
@@ -350,7 +332,6 @@ class VideoPreloadService {
       this.completedTasks.clear()
     }
     
-    console.log('[VideoPreload] 🗑️ 预加载缓存已清理')
   }
 
   /**

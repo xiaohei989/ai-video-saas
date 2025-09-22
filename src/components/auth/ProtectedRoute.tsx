@@ -2,6 +2,8 @@ import React from 'react'
 import { Navigate, useLocation, Outlet } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { Loader2 } from 'lucide-react'
+import { SubscriptionService } from '@/services/subscriptionService'
+import type { Subscription } from '@/types'
 
 interface ProtectedRouteProps {
   children?: React.ReactNode
@@ -20,6 +22,9 @@ export default function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { user, profile, loading } = useAuth()
   const location = useLocation()
+  const [subscriptionStatus, setSubscriptionStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [subscription, setSubscription] = React.useState<Subscription | null>(null)
+  const [subscriptionError, setSubscriptionError] = React.useState<Error | null>(null)
   
   // 🚀 关键修复：添加认证完成的缓冲时间，避免误判
   const [authBuffer, setAuthBuffer] = React.useState(true)
@@ -43,6 +48,38 @@ export default function ProtectedRoute({
       clearTimeout(forceRedirectId)
     }
   }, [user, requireAuth])
+
+  // 订阅状态检查
+  React.useEffect(() => {
+    if (!requireSubscription || !user?.id) {
+      setSubscription(null)
+      setSubscriptionStatus('idle')
+      setSubscriptionError(null)
+      return
+    }
+
+    let cancelled = false
+    setSubscriptionStatus('loading')
+    setSubscriptionError(null)
+
+    SubscriptionService.getCurrentSubscription(user.id)
+      .then(result => {
+        if (cancelled) return
+        setSubscription(result)
+        setSubscriptionStatus('success')
+      })
+      .catch(error => {
+        if (cancelled) return
+        console.error('[PROTECTED ROUTE] 获取订阅信息失败:', error)
+        setSubscriptionError(error instanceof Error ? error : new Error(String(error)))
+        setSubscription(null)
+        setSubscriptionStatus('error')
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [requireSubscription, user?.id])
 
   // 🚀 关键优化：更智能的loading显示条件，进一步减少loading闪烁
   const shouldShowLoading = React.useMemo(() => {
@@ -104,8 +141,11 @@ export default function ProtectedRoute({
     return true
   }, [requireAuth, user, loading, authBuffer, forceRedirect])
 
+  const isSubscriptionLoading = requireSubscription && subscriptionStatus === 'loading'
+
   // 🚀 性能优化：只在真正需要时显示loading界面
-  if (shouldShowLoading) {
+  if (shouldShowLoading || isSubscriptionLoading) {
+    const loadingText = shouldShowLoading ? '正在初始化应用...' : '正在检查订阅状态...'
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
         <div className="text-center">
@@ -124,9 +164,7 @@ export default function ProtectedRoute({
           {/* Loading spinner */}
           <div className="relative">
             <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              正在初始化应用...
-            </div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">{loadingText}</div>
           </div>
         </div>
       </div>
@@ -146,11 +184,28 @@ export default function ProtectedRoute({
 
   // 检查订阅要求
   if (requireSubscription) {
-    // TODO: 实现订阅检查逻辑
-    // const hasActiveSubscription = profile?.subscription_status === 'active'
-    // if (!hasActiveSubscription) {
-    //   return <Navigate to="/pricing" state={{ from: location }} replace />
-    // }
+    const hasActiveSubscription = subscription?.status === 'active'
+
+    if (subscriptionStatus === 'error') {
+      console.warn('[PROTECTED ROUTE] 订阅检查失败，跳转到定价页面', subscriptionError)
+      return (
+        <Navigate
+          to="/pricing"
+          state={{ from: location, reason: 'subscription_check_failed' }}
+          replace
+        />
+      )
+    }
+
+    if (!hasActiveSubscription) {
+      return (
+        <Navigate
+          to="/pricing"
+          state={{ from: location, reason: 'subscription_required' }}
+          replace
+        />
+      )
+    }
   }
 
   // 如果没有传入 children，使用 Outlet（用于嵌套路由）

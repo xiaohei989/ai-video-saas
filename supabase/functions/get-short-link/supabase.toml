@@ -1,0 +1,2 @@
+[functions.get-short-link]
+verify_jwt = false

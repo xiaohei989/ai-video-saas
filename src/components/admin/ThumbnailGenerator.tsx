@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
 import { Play, Pause, Download, RefreshCw, AlertCircle, CheckCircle } from 'lucide-react'
-
-// 环境变量
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 interface Video {
   id: string
@@ -28,8 +24,6 @@ export default function ThumbnailGenerator({ className }: ThumbnailGeneratorProp
   
   // 使用ref来跟踪处理状态，避免React状态更新延迟问题
   const processingRef = React.useRef(false)
-  
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
   // 添加日志
   const addLog = (message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info') => {
@@ -193,29 +187,22 @@ export default function ThumbnailGenerator({ className }: ThumbnailGeneratorProp
         reader.readAsDataURL(blob)
       })
       
-      // 直接通过Edge Function上传（服务端代理）
-      const uploadResponse = await fetch(`${SUPABASE_URL}/functions/v1/upload-thumbnail`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({
+      // 通过统一的supabase客户端调用Edge Function
+      const { data: uploadData, error: uploadError } = await supabase.functions.invoke('upload-thumbnail', {
+        body: {
           videoId,
           base64Data,
           contentType: blob.type,
           fileSize: blob.size,
           directUpload: true // 标记为直接上传模式
-        })
+        }
       })
       
-      if (!uploadResponse.ok) {
-        const errorText = await uploadResponse.text()
-        throw new Error(`上传失败: ${uploadResponse.status} - ${errorText}`)
+      if (uploadError) {
+        throw new Error(`上传失败: ${uploadError.message}`)
       }
       
-      const { data } = await uploadResponse.json()
-      return data.publicUrl
+      return uploadData.data.publicUrl
       
     } catch (error: any) {
       throw new Error(`R2上传失败: ${error.message}`)

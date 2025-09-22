@@ -56,7 +56,21 @@ export default function CachedImage({
 
   const getCacheKey = (url: string, level?: 'blur' | 'final') => {
     const suffix = level ? `_${level}` : ''
-    return cacheKey ? `${cacheKey}${suffix}` : `cached_img${suffix}_${btoa(url).slice(0, 20)}`
+
+    if (cacheKey) {
+      return `${cacheKey}${suffix}`
+    }
+
+    // 使用完整URL生成唯一缓存键，避免不同模板命中同一条目
+    const encodedUrl = (() => {
+      try {
+        return encodeURIComponent(url)
+      } catch {
+        return encodeURIComponent(String(url ?? ''))
+      }
+    })()
+
+    return `cached_img${suffix}_${encodedUrl}`
   }
   
   // 生成两级质量的URL：模糊图 → 最终缩略图

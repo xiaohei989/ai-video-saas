@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import analyticsService, { 
   AnalyticsEvent, 
@@ -7,20 +7,49 @@ import analyticsService, {
   UserProperties 
 } from '@/services/analyticsService'
 import { AuthContext } from '@/contexts/AuthContext'
+import { SubscriptionService } from '@/services/subscriptionService'
 
 export const useAnalytics = () => {
   const authContext = useContext(AuthContext)
   const user = authContext?.user
   const profile = authContext?.profile
   const location = useLocation()
+  const [userTier, setUserTier] = useState<string>('free')
+
+  useEffect(() => {
+    let isMounted = true
+
+    if (!user) {
+      setUserTier('free')
+      return
+    }
+
+    SubscriptionService.getCurrentSubscription(user.id)
+      .then(subscription => {
+        if (isMounted) {
+          const tier = subscription?.planId?.replace('-annual', '') || 'free'
+          setUserTier(tier)
+        }
+      })
+      .catch(error => {
+        console.warn('[Analytics] 获取订阅信息失败:', error)
+        if (isMounted) {
+          setUserTier('free')
+        }
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [user?.id])
 
   // 自动跟踪页面浏览
   useEffect(() => {
     analyticsService.trackPageView(location.pathname, document.title, {
       user_authenticated: !!user,
-      user_tier: 'free' // TODO: 需要从订阅服务获取
+      user_tier: userTier
     })
-  }, [location.pathname, user])
+  }, [location.pathname, user, userTier])
 
   // 设置用户属性
   useEffect(() => {
@@ -35,7 +64,7 @@ export const useAnalytics = () => {
 
       const userProperties: UserProperties = {
         user_id: user.id,
-        subscription_tier: 'free', // TODO: 需要从订阅服务获取
+        subscription_tier: userTier,
         credits_balance_range: getCreditsBalanceRange(profile?.credits || 0),
         language: profile?.language || 'en',
         registration_method: 'email' // TODO: 需要从用户配置获取
@@ -43,7 +72,7 @@ export const useAnalytics = () => {
 
       analyticsService.setUserProperties(userProperties)
     }
-  }, [user, profile])
+  }, [user, profile, userTier])
 
   // 通用事件跟踪
   const trackEvent = useCallback((event: AnalyticsEvent) => {
