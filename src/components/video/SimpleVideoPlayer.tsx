@@ -465,6 +465,11 @@ export default function SimpleVideoPlayer({
 
   // 🎯 简化悬停播放控制 - 根据用户要求完全重写
   const handleMouseEnter = useCallback(() => {
+    // 移动端或触控环境不触发鼠标悬停逻辑，避免首次点击只显示控件
+    if (deviceCapabilities.isMobile) {
+      return
+    }
+
     setIsHovered(true)
     setShowControls(true)
     
@@ -495,9 +500,13 @@ export default function SimpleVideoPlayer({
         video.load()
       }
     }
-  }, [autoPlayOnHover, currentPreload, playerId, requestPlay, userPaused])
+  }, [autoPlayOnHover, currentPreload, deviceCapabilities.isMobile, playerId, requestPlay, userPaused])
 
   const handleMouseLeave = useCallback(() => {
+    if (deviceCapabilities.isMobile) {
+      return
+    }
+
     setIsHovered(false)
     setShowControls(false)
     
@@ -519,7 +528,7 @@ export default function SimpleVideoPlayer({
     // 🔧 重置用户暂停状态，下次鼠标进入时可以重新自动播放
     setUserPaused(false)
     
-  }, [autoPlayOnHover, playerId, notifyPause])
+  }, [autoPlayOnHover, deviceCapabilities.isMobile, playerId, notifyPause])
 
   // 🎯 修复点击播放/暂停 - 确保播放状态与UI同步
   const handlePlayPause = useCallback(async (e?: React.MouseEvent) => {
@@ -527,6 +536,9 @@ export default function SimpleVideoPlayer({
     
     const video = videoRef.current
     if (!video) return
+
+    // 移动端点击时立即显示控制层，避免用户没有反馈
+    setShowControls(true)
 
     const isCurrentlyPlayingNow = isCurrentlyPlaying(playerId)
 
@@ -544,6 +556,20 @@ export default function SimpleVideoPlayer({
         // 先检查是否可以播放
         if (!video.src || video.networkState === video.NETWORK_NO_SOURCE) {
           return
+        }
+
+        // 移动端在用户点击时开启完整预加载，防止只显示0%缓冲
+        if (deviceCapabilities.isMobile && currentPreload !== "auto") {
+          setCurrentPreload("auto")
+          video.preload = "auto"
+          if (video.readyState < 3) {
+            setIsBuffering(true)
+            try {
+              video.load()
+            } catch (loadError) {
+              // 静默处理加载触发异常
+            }
+          }
         }
 
         // 🔧 用户主动播放时，清除暂停标记
@@ -570,7 +596,14 @@ export default function SimpleVideoPlayer({
         notifyPause(playerId)
       }
     }
-  }, [playerId, isCurrentlyPlaying, notifyPause, requestPlay])
+  }, [
+    playerId,
+    currentPreload,
+    deviceCapabilities.isMobile,
+    isCurrentlyPlaying,
+    notifyPause,
+    requestPlay
+  ])
 
   // 点击视频区域播放/暂停
   const handleVideoClick = (e: React.MouseEvent) => {

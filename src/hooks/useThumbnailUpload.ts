@@ -148,12 +148,14 @@ export function useThumbnailUpload() {
       })
       
       if (uploadError) {
+        console.error(`[ThumbnailUpload] 上传失败: ${uploadError.message}`)
         throw new Error(`上传失败: ${uploadError.message}`)
       }
       
       return uploadData.data.publicUrl
       
     } catch (error: any) {
+      console.error(`[ThumbnailUpload] R2上传失败: ${error.message}`)
       throw new Error(`R2上传失败: ${error.message}`)
     }
   }, [])

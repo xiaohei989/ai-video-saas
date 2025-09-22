@@ -1104,8 +1104,7 @@ class SupabaseVideoService {
       
       // 更新视频记录的缩略图URL
       const updateResult = await this.updateVideoAsSystem(video.id, {
-        thumbnail_url: thumbnailUrl,
-        thumbnail_generation_status: 'ai_generated'
+        thumbnail_url: thumbnailUrl
       })
 
       if (updateResult) {
@@ -1119,14 +1118,7 @@ class SupabaseVideoService {
     } catch (error) {
       console.error(`[AutoThumbnail] ❌ 生成缩略图失败: ${video.id}`, error)
       
-      // 标记生成失败状态
-      try {
-        await this.updateVideoAsSystem(video.id, {
-          thumbnail_generation_status: 'failed'
-        })
-      } catch (updateError) {
-        console.error(`[AutoThumbnail] 更新失败状态也失败: ${video.id}`, updateError)
-      }
+      // 生成失败时不更新数据库状态，仅记录日志
       
       return false
     }
@@ -1151,10 +1143,10 @@ class SupabaseVideoService {
       // 查询需要生成缩略图的视频
       let query = supabase
         .from('videos')
-        .select('id, video_url, title, status, thumbnail_url, thumbnail_generation_status')
+        .select('id, video_url, title, status, thumbnail_url')
         .eq('status', 'completed')
         .not('video_url', 'is', null)
-        .or('thumbnail_url.is.null,thumbnail_url.like.data:image/svg+xml%,thumbnail_generation_status.eq.failed')
+        .or('thumbnail_url.is.null,thumbnail_url.like.data:image/svg+xml%')
         .order('created_at', { ascending: false })
         .limit(limit)
 

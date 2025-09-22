@@ -142,7 +142,6 @@ export type Database = {
           thumbnail_url: string | null
           thumbnail_blur_url: string | null
           thumbnail_generated_at: string | null
-          thumbnail_generation_status: 'pending' | 'processing' | 'completed' | 'failed'
           thumbnail_metadata: Record<string, any>
           duration: number | null
           resolution: string | null

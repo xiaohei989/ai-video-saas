@@ -224,11 +224,7 @@ export function shouldUseServerThumbnail(video: VideoRecord): boolean {
     return true
   }
 
-  // 🚀 缩略图生成状态检查
-  if (video.thumbnail_generation_status === 'failed') {
-    console.log(`[ThumbnailStrategy] 缩略图生成曾失败，重试服务端生成: 视频ID[${video.id}] "${videoTitle}"`)
-    return true
-  }
+  // 移除缩略图生成状态检查，简化逻辑
 
   // 默认尝试客户端生成（性能更好）
   console.log(`[ThumbnailStrategy] 使用客户端生成: 视频ID[${video.id}] "${videoTitle}"`)
@@ -245,6 +241,6 @@ export function getThumbnailStrategyReason(video: VideoRecord): string {
   if (isiOSChrome()) return 'iOS Chrome浏览器'
   if (needsCorsProxy(video.videoUrl)) return 'CORS跨域视频'
   if (hasClientGenerationFailed(video.id)) return '客户端生成曾失败'
-  if (video.thumbnail_generation_status === 'failed') return '服务端生成曾失败'
+  // 移除thumbnail_generation_status检查
   return '默认客户端生成'
 }

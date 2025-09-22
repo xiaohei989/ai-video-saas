@@ -832,16 +832,12 @@ export default function VideosPageNew() {
             )
           )
           
-          // 显示成功提示
-          toast.success('缩略图生成成功', {
-            description: `已为"${video.title || '未命名视频'}"生成缩略图`
-          })
+          // 记录成功日志
+          console.log(`[VideosPage] 缩略图生成成功: 已为"${video.title || '未命名视频'}"生成缩略图`)
         },
         onError: (error) => {
           console.error(`[VideosPage] 缩略图生成失败: ${video.id}`, error)
-          toast.error('缩略图生成失败', {
-            description: error.message
-          })
+          console.error(`[VideosPage] 缩略图生成错误详情: ${error.message}`)
         }
       })
 
