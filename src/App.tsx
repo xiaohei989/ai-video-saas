@@ -21,12 +21,13 @@ import RoutePreloader from './components/preload/RoutePreloader'
 // 调试工具（开发环境）
 if (process.env.NODE_ENV === 'development') {
   import('./utils/debugSupabase')
-  import('./utils/templateHotReload').then(({ templateHotReload }) => {
-    // 延迟启动热重载，确保应用完全初始化
-    setTimeout(() => {
-      templateHotReload.start()
-    }, 3000)
-  })
+  // 模版热重载已禁用 - 解决页面卡住问题
+  // import('./utils/templateHotReload').then(({ templateHotReload }) => {
+  //   // 延迟启动热重载，确保应用完全初始化
+  //   setTimeout(() => {
+  //     templateHotReload.start()
+  //   }, 3000)
+  // })
 }
 import HomePage from './pages/HomePage'
 import VideoCreator from './features/video-creator/components/VideoCreator'
@@ -65,6 +66,8 @@ import HelpCenterPage from './pages/HelpCenterPage'
 import TestApicoreApi from './pages/TestApicoreApi'
 import TestAnalytics from './pages/TestAnalytics'
 import TestAIContent from './pages/TestAIContent'
+import VideoDetailPage from './pages/VideoDetailPage'
+import VideoEmbedPage from './pages/VideoEmbedPage'
 import SimpleAITest from './pages/SimpleAITest'
 
 // Admin pages
@@ -145,6 +148,12 @@ function App() {
               <Route path="/" element={<FullScreenLayout><HomePage /></FullScreenLayout>} />
               <Route path="/templates" element={<Layout><TemplatesPage /></Layout>} />
               <Route path="/pricing" element={<Layout><PricingPage /></Layout>} />
+              
+              {/* Video detail page - public access for sharing */}
+              <Route path="/video/:id" element={<Layout><VideoDetailPage /></Layout>} />
+              
+              {/* Video embed page - for Twitter Player Card */}
+              <Route path="/embed/:id" element={<VideoEmbedPage />} />
               
               {/* Auth routes */}
               <Route path="/signin" element={<Layout><SignInForm /></Layout>} />

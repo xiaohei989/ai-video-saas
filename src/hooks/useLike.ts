@@ -128,6 +128,20 @@ export function useLike({
     }
   }, [user?.id, templateId, initialIsLiked, initialLikeCount, onLikeChange]) // 简化依赖，避免无限循环
 
+  // 🚀 订阅缓存更新，当缓存中的数据更新时自动重新渲染
+  useEffect(() => {
+    if (!templateId) return
+
+    const unsubscribe = likesCacheService.subscribe(templateId, (updatedStatus) => {
+      // 防递归：只更新状态，不调用onLikeChange避免触发父组件重渲染
+      setIsLiked(updatedStatus.is_liked)
+      setLikeCount(updatedStatus.like_count)
+      // 注释掉这行避免递归调用：onLikeChange?.(updatedStatus.is_liked, updatedStatus.like_count)
+    })
+
+    return unsubscribe
+  }, [templateId]) // 移除 onLikeChange 依赖避免不必要的重新订阅
+
   // 切换点赞状态
   const toggleLike = useCallback(async () => {
     if (!user) {

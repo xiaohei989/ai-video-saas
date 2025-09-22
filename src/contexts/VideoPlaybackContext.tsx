@@ -13,8 +13,7 @@ import React, {
   useContext, 
   useReducer, 
   useCallback, 
-  useMemo,
-  useRef
+  useMemo
 } from 'react'
 
 // 视频播放器实例接口
@@ -86,19 +85,16 @@ function videoPlaybackReducer(
       
       // 防抖：如果距离上次播放请求太近，忽略
       if (now - state.lastPlayTime < 100) {
-        console.log(`[VideoPlaybackContext] 防抖忽略播放请求 ${action.payload.id}`)
         return state
       }
       
       // 如果互斥锁被占用且不是同一个视频，忽略新请求
       if (state.playMutex && state.pendingPlayId !== action.payload.id) {
-        console.log(`[VideoPlaybackContext] 互斥锁忙，忽略播放请求 ${action.payload.id}`)
         return state
       }
       
       // 如果请求的就是当前播放的视频，直接返回不变
       if (state.currentPlayingId === action.payload.id && !state.isPlayRequesting) {
-        console.log(`[VideoPlaybackContext] 视频 ${action.payload.id} 已经在播放，忽略请求`)
         return state
       }
       
@@ -119,7 +115,6 @@ function videoPlaybackReducer(
     case 'START_PLAYING': {
       // 只有当请求的ID匹配时才开始播放
       if (state.pendingPlayId && state.pendingPlayId !== action.payload.id) {
-        console.warn(`[VideoPlaybackContext] 播放请求不匹配: 期望 ${state.pendingPlayId}, 实际 ${action.payload.id}`)
         return state
       }
       
@@ -159,13 +154,13 @@ function videoPlaybackReducer(
     
     case 'PAUSE_ALL': {
       // 暂停所有播放器
-      state.registeredPlayers.forEach((player, id) => {
+      state.registeredPlayers.forEach((player) => {
         try {
           if (player.isPlaying()) {
             player.pause()
           }
-        } catch (error) {
-          console.warn(`[VideoPlaybackContext] 暂停视频失败 ${id}:`, error)
+        } catch {
+          // 暂停失败静默处理
         }
       })
       
@@ -181,7 +176,6 @@ function videoPlaybackReducer(
     case 'ACQUIRE_PLAY_MUTEX': {
       // 获取播放互斥锁
       if (state.playMutex) {
-        console.log(`[VideoPlaybackContext] 互斥锁已被占用，拒绝请求: ${action.payload.id}`)
         return state
       }
       
@@ -203,11 +197,11 @@ function videoPlaybackReducer(
     
     case 'IMMEDIATE_STOP_ALL': {
       // 立即停止所有播放器，使用stopImmediate方法
-      state.registeredPlayers.forEach((player, id) => {
+      state.registeredPlayers.forEach((player) => {
         try {
           player.stopImmediate()
-        } catch (error) {
-          console.warn(`[VideoPlaybackContext] 立即停止视频失败 ${id}:`, error)
+        } catch {
+          // 停止失败静默处理
         }
       })
       
@@ -268,13 +262,9 @@ const initialState: VideoPlaybackState = {
 // Provider 组件
 export function VideoPlaybackProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(videoPlaybackReducer, initialState)
-  const debugRef = useRef(false)
 
   // 注册播放器
   const registerPlayer = useCallback((id: string, instance: VideoPlayerInstance) => {
-    if (debugRef.current) {
-      console.log(`[VideoPlaybackContext] 注册播放器: ${id}`)
-    }
     
     dispatch({
       type: 'REGISTER_PLAYER',
@@ -284,9 +274,6 @@ export function VideoPlaybackProvider({ children }: { children: React.ReactNode 
 
   // 注销播放器
   const unregisterPlayer = useCallback((id: string) => {
-    if (debugRef.current) {
-      console.log(`[VideoPlaybackContext] 注销播放器: ${id}`)
-    }
     
     dispatch({
       type: 'UNREGISTER_PLAYER',
@@ -300,23 +287,18 @@ export function VideoPlaybackProvider({ children }: { children: React.ReactNode 
     const player = state.registeredPlayers.get(id)
     
     if (!player) {
-      console.warn(`[VideoPlaybackContext] 播放器不存在: ${id}`)
       VideoPlaybackPerformanceMonitor.recordPlayRequest(id, false)
       return false
     }
 
     // 如果已经是当前播放的视频，直接返回成功
     if (state.currentPlayingId === id) {
-      if (debugRef.current) {
-        console.log(`[VideoPlaybackContext] 视频已在播放: ${id}`)
-      }
       VideoPlaybackPerformanceMonitor.recordPlayRequest(id, true, performance.now() - requestStartTime)
       return true
     }
 
     // 尝试获取播放互斥锁
     if (state.playMutex && state.pendingPlayId !== id) {
-      console.log(`[VideoPlaybackContext] 互斥锁忙，拒绝播放请求: ${id}`)
       VideoPlaybackPerformanceMonitor.recordMutexWait()
       VideoPlaybackPerformanceMonitor.recordPlayRequest(id, false, performance.now() - requestStartTime)
       return false
@@ -326,10 +308,9 @@ export function VideoPlaybackProvider({ children }: { children: React.ReactNode 
     state.registeredPlayers.forEach((otherPlayer, otherId) => {
       if (otherId !== id) {
         try {
-          console.log(`[VideoPlaybackContext] 停止其他视频: ${otherId}`)
           otherPlayer.stopImmediate()
-        } catch (error) {
-          console.warn(`[VideoPlaybackContext] 立即停止视频失败 ${otherId}:`, error)
+        } catch {
+          // 停止失败静默处理
         }
       }
     })
@@ -340,28 +321,32 @@ export function VideoPlaybackProvider({ children }: { children: React.ReactNode 
       payload: { id }
     })
 
-    // 异步播放，不等待结果
-    console.log(`[VideoPlaybackContext] 🎬 开始异步播放请求: ${id}`)
-    player.play().then(() => {
-      const playDuration = performance.now() - requestStartTime
-      console.log(`[VideoPlaybackContext] ✅ 播放Promise成功: ${id}, 耗时: ${playDuration.toFixed(1)}ms`)
+    // 🔧 移动端修复：仅在必要时进行异步播放
+    // 如果视频已经在播放器实例中被用户交互启动，不要重复播放
+    if (!player.isPlaying()) {
+      player.play().then(() => {
+        const playDuration = performance.now() - requestStartTime
+        dispatch({
+          type: 'START_PLAYING',
+          payload: { id }
+        })
+        VideoPlaybackPerformanceMonitor.recordPlayRequest(id, true, playDuration)
+      }).catch(() => {
+        const errorDuration = performance.now() - requestStartTime
+        dispatch({
+          type: 'PLAY_REQUEST_FAILED',
+          payload: { id }
+        })
+        VideoPlaybackPerformanceMonitor.recordPlayRequest(id, false, errorDuration)
+      })
+    } else {
+      // 视频已经在播放，直接标记为成功
       dispatch({
         type: 'START_PLAYING',
         payload: { id }
       })
-      if (debugRef.current) {
-        console.log(`[VideoPlaybackContext] 播放成功: ${id}`)
-      }
-      VideoPlaybackPerformanceMonitor.recordPlayRequest(id, true, playDuration)
-    }).catch((error) => {
-      const errorDuration = performance.now() - requestStartTime
-      console.warn(`[VideoPlaybackContext] ❌ 播放Promise失败 ${id}:`, error)
-      dispatch({
-        type: 'PLAY_REQUEST_FAILED',
-        payload: { id }
-      })
-      VideoPlaybackPerformanceMonitor.recordPlayRequest(id, false, errorDuration)
-    })
+      VideoPlaybackPerformanceMonitor.recordPlayRequest(id, true, performance.now() - requestStartTime)
+    }
 
     return true  // 立即返回成功，表示请求已被接受
   }, [state.registeredPlayers, state.currentPlayingId, state.playMutex, state.pendingPlayId])
@@ -370,23 +355,16 @@ export function VideoPlaybackProvider({ children }: { children: React.ReactNode 
   const requestPlayAsync = useCallback(async (id: string): Promise<boolean> => {
     const player = state.registeredPlayers.get(id)
     if (!player) {
-      console.warn(`[VideoPlaybackContext] 播放器不存在: ${id}`)
       return false
     }
 
     // 如果已经是当前播放的视频，直接返回成功
     if (state.currentPlayingId === id && player.isPlaying()) {
-      if (debugRef.current) {
-        console.log(`[VideoPlaybackContext] 视频已在播放: ${id}`)
-      }
       return true
     }
 
     // 如果有播放请求正在进行且不是同一个视频，忽略此请求
     if (state.isPlayRequesting && state.pendingPlayId !== id) {
-      if (debugRef.current) {
-        console.log(`[VideoPlaybackContext] 忽略播放请求 ${id}，当前正在处理 ${state.pendingPlayId}`)
-      }
       return false
     }
 
@@ -406,14 +384,8 @@ export function VideoPlaybackProvider({ children }: { children: React.ReactNode 
         payload: { id }
       })
       
-      if (debugRef.current) {
-        console.log(`[VideoPlaybackContext] 异步播放成功: ${id}`)
-      }
-      
       return true
-    } catch (error) {
-      console.warn(`[VideoPlaybackContext] 异步播放失败 ${id}:`, error)
-      
+    } catch {
       // 播放失败，清除请求状态
       dispatch({
         type: 'PLAY_REQUEST_FAILED',
@@ -426,9 +398,6 @@ export function VideoPlaybackProvider({ children }: { children: React.ReactNode 
 
   // 通知暂停
   const notifyPause = useCallback((id: string) => {
-    if (debugRef.current) {
-      console.log(`[VideoPlaybackContext] 通知暂停: ${id}`)
-    }
     
     dispatch({
       type: 'STOP_PLAYING',
@@ -438,18 +407,12 @@ export function VideoPlaybackProvider({ children }: { children: React.ReactNode 
 
   // 暂停所有视频
   const pauseAll = useCallback(() => {
-    if (debugRef.current) {
-      console.log(`[VideoPlaybackContext] 暂停所有视频`)
-    }
     
     dispatch({ type: 'PAUSE_ALL' })
   }, [])
 
   // 立即停止所有视频
   const immediateStopAll = useCallback(() => {
-    if (debugRef.current) {
-      console.log(`[VideoPlaybackContext] 立即停止所有视频`)
-    }
     
     dispatch({ type: 'IMMEDIATE_STOP_ALL' })
   }, [])
@@ -457,9 +420,6 @@ export function VideoPlaybackProvider({ children }: { children: React.ReactNode 
   // 获取播放互斥锁
   const acquirePlayMutex = useCallback((id: string): boolean => {
     if (state.playMutex) {
-      if (debugRef.current) {
-        console.log(`[VideoPlaybackContext] 互斥锁已被占用，拒绝: ${id}`)
-      }
       return false
     }
     
@@ -473,9 +433,6 @@ export function VideoPlaybackProvider({ children }: { children: React.ReactNode 
 
   // 释放播放互斥锁
   const releasePlayMutex = useCallback(() => {
-    if (debugRef.current) {
-      console.log(`[VideoPlaybackContext] 释放互斥锁`)
-    }
     
     dispatch({ type: 'RELEASE_PLAY_MUTEX' })
   }, [])
@@ -611,9 +568,6 @@ export const VideoPlaybackPerformanceMonitor = {
     
     performanceMetrics.lastActionTime = Date.now()
     
-    if (import.meta.env.DEV) {
-      console.log(`[VideoPlaybackMonitor] 播放请求 ${playerId.slice(-8)}: ${success ? '✅' : '❌'}${duration !== undefined ? ` (${duration.toFixed(1)}ms)` : ''}`)
-    }
   },
   
   recordMutexWait: () => {
@@ -648,7 +602,6 @@ export function useVideoPlaybackDebug() {
   return {
     ...context,
     enableDebug: () => {
-      console.log('[VideoPlaybackContext] Debug 模式已启用')
     },
     getDebugInfo: () => ({
       currentPlayingId: context.currentPlayingId,

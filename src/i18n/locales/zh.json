@@ -804,6 +804,9 @@
     "remaining": "剩余",
     "confirm": "确认"
   },
+  "video": {
+    "madeWith": "使用 veo3video.me 制作"
+  },
   "shareModal": {
     "title": "分享视频获得积分",
     "description": "展示你的作品，邀请朋友注册，双方都能获得积分奖励！",
@@ -815,6 +818,7 @@
     "copied": "已复制！",
     "copiedToClipboard": "已复制到剪贴板！",
     "shareContentText": "🤯 我用4块钱做了这个爆款视频！\n\n📺 直接观看：{{videoUrl}}\n\n以前要花几千块的专业视频，现在AI帮你4块钱搞定！零技术，普通人也能做！\n\n💰 想试试吗？\n用我的邀请码注册，免费获得20积分：\n👉 {{inviteUrl}}\n\n#4块钱视频 #AI神器 #免费积分 #零门槛 #爆款秘籍",
+    "twitterShareText": "🤯 4块钱AI做爆款视频！\n👉 {{videoUrl}}\n邀请码注册送20积分：{{inviteUrl}}\n#AI视频 #爆款",
     "instagramCopied": "Instagram内容已复制！请在Instagram中粘贴发布",
     "platformOpened": "已打开{{platform}}分享页面！",
     "getReferralCodeFailed": "获取邀请码失败"

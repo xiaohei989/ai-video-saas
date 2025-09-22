@@ -1,6 +1,170 @@
 import { createCorsVideo } from './videoUrlProxy'
 import { generateOptimizedThumbnail } from './webpThumbnailOptimizer'
 
+// 最优缩略图配置
+const OPTIMAL_THUMBNAIL_CONFIG = {
+  width: 320,
+  height: 180,
+  quality: 0.75,        // 平衡质量和大小
+  format: 'auto' as const,       // WebP优先，JPEG回退
+  frameTime: 0.5        // 0.5秒处截取，画面更稳定
+}
+
+/**
+ * 提取视频缩略图并上传到R2存储
+ * @param videoUrl 视频URL
+ * @param videoId 视频ID
+ * @param options 可选配置
+ * @returns Promise<string> 返回R2 CDN访问URL
+ */
+export async function extractAndUploadThumbnail(
+  videoUrl: string,
+  videoId: string,
+  options: {
+    frameTime?: number
+    quality?: number
+    format?: 'webp' | 'jpeg' | 'auto'
+  } = {}
+): Promise<string> {
+  const config = { ...OPTIMAL_THUMBNAIL_CONFIG, ...options }
+  
+  console.log(`[ThumbnailUpload] 开始提取和上传缩略图: ${videoId}`)
+  console.log(`[ThumbnailUpload] 配置:`, config)
+  
+  return new Promise((resolve, reject) => {
+    const video = createCorsVideo(videoUrl)
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')
+    
+    if (!context) {
+      reject(new Error('Failed to get canvas context'))
+      return
+    }
+    
+    video.muted = true
+    
+    // 监听视频加载元数据
+    video.addEventListener('loadedmetadata', () => {
+      // 设置画布尺寸
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
+      
+      // 跳转到指定时间点
+      video.currentTime = Math.min(config.frameTime, video.duration)
+    })
+    
+    // 监听跳转完成
+    video.addEventListener('seeked', async () => {
+      try {
+        console.log(`[ThumbnailUpload] 开始生成缩略图: ${videoId}`)
+        
+        // 生成优化的缩略图
+        const thumbnailDataUrl = await generateOptimizedThumbnail(video, {
+          quality: config.quality,
+          format: config.format,
+          maxWidth: config.width,
+          maxHeight: config.height
+        })
+        
+        // 清理资源
+        video.remove()
+        canvas.remove()
+        
+        console.log(`[ThumbnailUpload] 缩略图生成成功，开始上传到R2: ${videoId}`)
+        
+        // 上传到R2
+        const r2Url = await uploadThumbnailToR2(thumbnailDataUrl, videoId)
+        
+        console.log(`[ThumbnailUpload] 上传成功: ${videoId} -> ${r2Url}`)
+        resolve(r2Url)
+        
+      } catch (error) {
+        console.error(`[ThumbnailUpload] 处理失败: ${videoId}`, error)
+        
+        // 清理资源
+        video.remove()
+        canvas.remove()
+        
+        reject(error)
+      }
+    })
+    
+    // 错误处理
+    video.addEventListener('error', (e) => {
+      console.error(`[ThumbnailUpload] 视频加载失败: ${videoId}`, e)
+      reject(new Error(`Failed to load video: ${e}`))
+    })
+    
+    // 开始加载
+    video.load()
+  })
+}
+
+/**
+ * 将Base64缩略图上传到R2存储
+ * @param thumbnailDataUrl Base64格式的缩略图
+ * @param videoId 视频ID
+ * @returns Promise<string> 返回R2 CDN访问URL
+ */
+async function uploadThumbnailToR2(thumbnailDataUrl: string, videoId: string): Promise<string> {
+  try {
+    // 将Base64转换为Blob
+    const blob = await dataUrlToBlob(thumbnailDataUrl)
+    
+    // 获取上传URL
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+    const uploadResponse = await fetch(`${supabaseUrl}/functions/v1/upload-thumbnail`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      },
+      body: JSON.stringify({
+        videoId,
+        contentType: blob.type,
+        fileSize: blob.size
+      })
+    })
+    
+    if (!uploadResponse.ok) {
+      throw new Error(`获取上传URL失败: ${uploadResponse.status}`)
+    }
+    
+    const { data } = await uploadResponse.json()
+    const { signedUrl, publicUrl } = data
+    
+    // 使用预签名URL上传文件
+    const uploadResult = await fetch(signedUrl, {
+      method: 'PUT',
+      body: blob,
+      headers: {
+        'Content-Type': blob.type,
+      }
+    })
+    
+    if (!uploadResult.ok) {
+      throw new Error(`上传文件失败: ${uploadResult.status}`)
+    }
+    
+    console.log(`[ThumbnailUpload] R2上传成功: ${videoId} -> ${publicUrl}`)
+    return publicUrl
+    
+  } catch (error) {
+    console.error(`[ThumbnailUpload] R2上传失败: ${videoId}`, error)
+    throw error
+  }
+}
+
+/**
+ * 将DataURL转换为Blob
+ * @param dataUrl Base64数据URL
+ * @returns Promise<Blob>
+ */
+async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
+  const response = await fetch(dataUrl)
+  return response.blob()
+}
+
 /**
  * 从视频中提取缩略图
  * @param videoUrl 视频URL

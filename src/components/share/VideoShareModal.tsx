@@ -62,10 +62,20 @@ export default function VideoShareModal({ open, onOpenChange, video }: VideoShar
   // 生成邀请链接
   const inviteUrl = referralCode ? referralService.generateInviteLink(referralCode) : ''
   
-  // 生成融合内容
+  // 生成视频详情页链接
+  const videoDetailUrl = `${window.location.origin}/video/${video.id}`
+  
+  // 生成融合内容（通用版本）
   const fusionContent = referralCode ? 
     t('shareModal.shareContentText', { 
       videoUrl: video.video_url,
+      inviteUrl: inviteUrl
+    }) : ''
+  
+  // 生成Twitter专用简短内容
+  const twitterContent = referralCode ? 
+    t('shareModal.twitterShareText', { 
+      videoUrl: videoDetailUrl,
       inviteUrl: inviteUrl
     }) : ''
 
@@ -86,7 +96,9 @@ export default function VideoShareModal({ open, onOpenChange, video }: VideoShar
 
   // 分享到平台
   const shareToPlatform = (platform: string) => {
-    const encodedText = encodeURIComponent(fusionContent)
+    // 为不同平台选择合适的内容
+    const contentToShare = platform === 'twitter' ? twitterContent : fusionContent
+    const encodedText = encodeURIComponent(contentToShare)
     
     let shareUrl = ''
     

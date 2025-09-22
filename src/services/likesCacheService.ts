@@ -29,6 +29,11 @@ class LikesCacheService {
   // 🚀 新增：预加载缓存管理
   private preloadQueue: Set<string> = new Set()
   private preloadInProgress: Set<string> = new Set()
+  // 🚀 新增：事件监听器，用于通知组件缓存更新
+  private listeners: Map<string, Set<(status: CachedLikeStatus) => void>> = new Map()
+  // 🔧 防递归保护
+  private notificationQueue: Set<string> = new Set()
+  private isNotifying: boolean = false
 
   constructor() {
     // 启动定期清理过期缓存
@@ -65,6 +70,9 @@ class LikesCacheService {
     
     // 同时更新批量缓存中的数据
     this.updateBatchCaches(templateId, cached)
+    
+    // 🚀 通知监听器缓存已更新
+    this.notifyListeners(templateId, cached)
   }
 
   /**
@@ -150,6 +158,9 @@ class LikesCacheService {
     
     // 更新批量缓存
     this.updateBatchCaches(templateId, updated)
+    
+    // 🚀 通知监听器缓存已更新
+    this.notifyListeners(templateId, updated)
   }
 
   /**
@@ -410,6 +421,61 @@ class LikesCacheService {
   }
 
   /**
+   * 🚀 添加缓存更新监听器
+   */
+  subscribe(templateId: string, callback: (status: CachedLikeStatus) => void): () => void {
+    if (!this.listeners.has(templateId)) {
+      this.listeners.set(templateId, new Set())
+    }
+    
+    this.listeners.get(templateId)!.add(callback)
+    
+    // 返回取消订阅函数
+    return () => {
+      const listeners = this.listeners.get(templateId)
+      if (listeners) {
+        listeners.delete(callback)
+        if (listeners.size === 0) {
+          this.listeners.delete(templateId)
+        }
+      }
+    }
+  }
+
+  /**
+   * 🚀 通知监听器缓存已更新（防递归版本）
+   */
+  private notifyListeners(templateId: string, status: CachedLikeStatus): void {
+    // 防递归：如果已在通知队列中，跳过
+    if (this.notificationQueue.has(templateId)) {
+      console.debug(`[LikesCacheService] 跳过重复通知: ${templateId}`)
+      return
+    }
+
+    // 加入通知队列
+    this.notificationQueue.add(templateId)
+
+    // 异步处理通知，避免阻塞主线程和递归调用
+    setTimeout(() => {
+      try {
+        const listeners = this.listeners.get(templateId)
+        if (listeners) {
+          listeners.forEach(callback => {
+            try {
+              callback(status)
+            } catch (error) {
+              console.error('[LikesCacheService] Listener callback error:', error)
+            }
+          })
+        }
+      } finally {
+        // 从通知队列中移除
+        this.notificationQueue.delete(templateId)
+      }
+    }, 0) // 使用 setTimeout(0) 让通知异步执行
+  }
+
+  /**
    * 销毁缓存服务
    */
   destroy(): void {
@@ -418,6 +484,10 @@ class LikesCacheService {
       this.cleanupInterval = null
     }
     this.clear()
+    this.listeners.clear()
+    // 清理防递归状态
+    this.notificationQueue.clear()
+    this.isNotifying = false
   }
 }
 

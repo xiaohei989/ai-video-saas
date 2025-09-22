@@ -1,0 +1,261 @@
+{
+  "config": {
+    "configFile": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/playwright.config.ts",
+    "rootDir": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "apple-test",
+        "name": "apple-test",
+        "testDir": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/apple-login-language-test.spec.ts"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 5,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3001",
+      "reuseExistingServer": true
+    }
+  },
+  "suites": [
+    {
+      "title": "template-hover-loading-test.spec.ts",
+      "file": "template-hover-loading-test.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "模板视频悬浮加载状态测试",
+          "file": "template-hover-loading-test.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "检查视频悬浮加载状态是否正确显示",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 16404,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"template-card\"]') to be visible\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"template-card\"]') to be visible\u001b[22m\n\n    at /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/template-hover-loading-test.spec.ts:12:16",
+                        "location": {
+                          "file": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/template-hover-loading-test.spec.ts",
+                          "column": 16,
+                          "line": 12
+                        },
+                        "snippet": "  10 |     \n  11 |     // 等待模板卡片加载完成\n> 12 |     await page.waitForSelector('[data-testid=\"template-card\"]', { timeout: 10000 });\n     |                ^\n  13 |     \n  14 |     // 获取第一个模板卡片\n  15 |     const templateCard = page.locator('[data-testid=\"template-card\"]').first();"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/template-hover-loading-test.spec.ts",
+                            "column": 16,
+                            "line": 12
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"template-card\"]') to be visible\u001b[22m\n\n\n  10 |     \n  11 |     // 等待模板卡片加载完成\n> 12 |     await page.waitForSelector('[data-testid=\"template-card\"]', { timeout: 10000 });\n     |                ^\n  13 |     \n  14 |     // 获取第一个模板卡片\n  15 |     const templateCard = page.locator('[data-testid=\"template-card\"]').first();\n    at /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/template-hover-loading-test.spec.ts:12:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-21T07:25:34.761Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-results/template-hover-loading-test-模板视频悬浮加载状态测试-检查视频悬浮加载状态是否正确显示-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-results/template-hover-loading-test-模板视频悬浮加载状态测试-检查视频悬浮加载状态是否正确显示-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/template-hover-loading-test.spec.ts",
+                        "column": 16,
+                        "line": 12
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7ff2e899f7685857155e-6a1e32f99d2affe8418c",
+              "file": "template-hover-loading-test.spec.ts",
+              "line": 4,
+              "column": 3
+            },
+            {
+              "title": "检查视频悬浮加载状态是否正确显示",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 16476,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"template-card\"]') to be visible\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"template-card\"]') to be visible\u001b[22m\n\n    at /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/template-hover-loading-test.spec.ts:12:16",
+                        "location": {
+                          "file": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/template-hover-loading-test.spec.ts",
+                          "column": 16,
+                          "line": 12
+                        },
+                        "snippet": "  10 |     \n  11 |     // 等待模板卡片加载完成\n> 12 |     await page.waitForSelector('[data-testid=\"template-card\"]', { timeout: 10000 });\n     |                ^\n  13 |     \n  14 |     // 获取第一个模板卡片\n  15 |     const templateCard = page.locator('[data-testid=\"template-card\"]').first();"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/template-hover-loading-test.spec.ts",
+                            "column": 16,
+                            "line": 12
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"template-card\"]') to be visible\u001b[22m\n\n\n  10 |     \n  11 |     // 等待模板卡片加载完成\n> 12 |     await page.waitForSelector('[data-testid=\"template-card\"]', { timeout: 10000 });\n     |                ^\n  13 |     \n  14 |     // 获取第一个模板卡片\n  15 |     const templateCard = page.locator('[data-testid=\"template-card\"]').first();\n    at /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/template-hover-loading-test.spec.ts:12:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-21T07:25:34.761Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-results/template-hover-loading-test-模板视频悬浮加载状态测试-检查视频悬浮加载状态是否正确显示-webkit/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-results/template-hover-loading-test-模板视频悬浮加载状态测试-检查视频悬浮加载状态是否正确显示-webkit/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/template-hover-loading-test.spec.ts",
+                        "column": 16,
+                        "line": 12
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7ff2e899f7685857155e-3a1c6b10141681c3bf90",
+              "file": "template-hover-loading-test.spec.ts",
+              "line": 4,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-09-21T07:25:34.377Z",
+    "duration": 23035.617000000002,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

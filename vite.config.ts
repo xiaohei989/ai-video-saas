@@ -83,8 +83,9 @@ export default defineConfig(({ mode }) => {
           target: 'https://cdn.veo3video.me',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api\/r2/, ''),
-          timeout: 45000, // 🚀 延长到45秒超时
+          timeout: 30000, // 🚀 减少到30秒超时避免过长等待
           secure: true, // 🚀 启用SSL验证
+          followRedirects: true, // 🚀 自动跟随重定向
           configure: (proxy, options) => {
             let retryCount = new Map(); // 🚀 重试计数器
             
@@ -100,8 +101,8 @@ export default defineConfig(({ mode }) => {
               proxyReq.setHeader('Accept-Encoding', 'gzip, deflate, br');
               
               // 🚀 设置增强的超时处理
-              proxyReq.setTimeout(45000, () => {
-                console.error(`❌ [R2 PROXY:${currentPort}] 请求超时 (45s):`, req.url);
+              proxyReq.setTimeout(30000, () => {
+                console.error(`❌ [R2 PROXY:${currentPort}] 请求超时 (30s):`, req.url);
                 proxyReq.destroy();
               });
             });
@@ -267,6 +268,111 @@ export default defineConfig(({ mode }) => {
                   retry: retries < 2,
                   retryCount: retries,
                   fallbackUrl: `https://cdn.veo3video.me${url}`,
+                  timestamp: new Date().toISOString(),
+                  port: currentPort
+                }));
+              }
+            });
+          }
+        },
+        // 🚀 Transform API代理配置 - 解决CORS问题
+        '/cdn-cgi/image': {
+          target: 'https://cdn.veo3video.me',
+          changeOrigin: true,
+          timeout: 30000,
+          secure: true,
+          configure: (proxy, options) => {
+            let transformRetryCount = new Map();
+            
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              const currentPort = req.socket.localPort || process.env.PORT || '3000';
+              console.log(`🖼️ [TRANSFORM PROXY:${currentPort}] 请求:`, req.url);
+              
+              // 🚀 解析Transform API参数并重写为原始资源请求
+              const originalPath = req.url;
+              if (originalPath && originalPath.includes('/cdn-cgi/image/')) {
+                // 提取原始资源路径 (去掉Transform参数)
+                // 例: /cdn-cgi/image/w=450,q=85,f=auto/templates/thumbnails/xxx.jpg -> /templates/thumbnails/xxx.jpg
+                const match = originalPath.match(/\/cdn-cgi\/image\/[^\/]*(\/.+)$/);
+                if (match) {
+                  const resourcePath = match[1];
+                  console.log(`🔄 [TRANSFORM PROXY:${currentPort}] 重写路径:`, originalPath, '->', resourcePath);
+                  proxyReq.path = resourcePath;
+                } else {
+                  // 如果没有匹配到，尝试简单的路径提取
+                  const simplePath = originalPath.replace(/^\/cdn-cgi\/image\/[^\/]*/, '');
+                  if (simplePath && simplePath !== originalPath) {
+                    console.log(`🔄 [TRANSFORM PROXY:${currentPort}] 简单重写:`, originalPath, '->', simplePath);
+                    proxyReq.path = simplePath;
+                  }
+                }
+              }
+              
+              // 🚀 设置增强请求头
+              proxyReq.setHeader('Access-Control-Allow-Origin', '*');
+              proxyReq.setHeader('User-Agent', 'Mozilla/5.0 (compatible; TransformProxy/1.0)');
+              proxyReq.setHeader('Accept', 'image/webp,image/avif,image/*,*/*;q=0.8');
+              proxyReq.setHeader('Accept-Encoding', 'gzip, deflate, br');
+              
+              proxyReq.setTimeout(30000, () => {
+                console.error(`❌ [TRANSFORM PROXY:${currentPort}] 请求超时:`, req.url);
+                proxyReq.destroy();
+              });
+            });
+            
+            proxy.on('proxyRes', (proxyRes, req, res) => {
+              const currentPort = req.socket.localPort || process.env.PORT || '3000';
+              console.log(`✅ [TRANSFORM PROXY:${currentPort}] 响应:`, proxyRes.statusCode, req.url);
+              
+              // 🚀 添加CORS头支持Transform API
+              proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+              proxyRes.headers['Access-Control-Allow-Methods'] = 'GET,HEAD,OPTIONS';
+              proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type,Range,Authorization';
+              proxyRes.headers['Access-Control-Expose-Headers'] = 'Content-Length,Content-Range,Accept-Ranges';
+              
+              // 🚀 优化缓存策略
+              if (proxyRes.statusCode === 200) {
+                proxyRes.headers['Cache-Control'] = 'public, max-age=3600, s-maxage=86400';
+                proxyRes.headers['ETag'] = `"transform-${Date.now()}-${Math.random().toString(36).substr(2, 9)}"`;
+                console.log(`📦 [TRANSFORM PROXY:${currentPort}] Transform缓存头已设置:`, req.url);
+                
+                // 重置重试计数
+                transformRetryCount.delete(req.url);
+              }
+            });
+            
+            proxy.on('error', (err, req, res) => {
+              const currentPort = req.socket.localPort || process.env.PORT || '3000';
+              const url = req.url;
+              const retries = transformRetryCount.get(url) || 0;
+              
+              console.error(`💥 [TRANSFORM PROXY:${currentPort}] Transform代理错误 (重试${retries}/2):`, err.message, url);
+              
+              if (!res.headersSent) {
+                let statusCode = 500;
+                let errorType = 'transform_proxy_error';
+                
+                if (err.message.includes('ENOTFOUND')) {
+                  statusCode = 503;
+                  errorType = 'transform_service_unavailable';
+                } else if (err.message.includes('timeout')) {
+                  statusCode = 504;
+                  errorType = 'transform_timeout';
+                }
+                
+                res.writeHead(statusCode, {
+                  'Content-Type': 'application/json',
+                  'Access-Control-Allow-Origin': '*',
+                  'X-Transform-Proxy-Error': errorType
+                });
+                
+                res.end(JSON.stringify({
+                  error: 'Transform Proxy Error',
+                  type: errorType,
+                  message: err.message,
+                  retry: retries < 2,
+                  retryCount: retries,
+                  fallbackUrl: `https://cdn.veo3video.me${url.replace('/cdn-cgi/image/', '/').replace(/^[^\/]*\//, '/')}`,
                   timestamp: new Date().toISOString(),
                   port: currentPort
                 }));

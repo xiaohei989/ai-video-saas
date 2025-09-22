@@ -68,24 +68,29 @@ export function TemplateSync() {
     // 防止无限循环的标志
     let hasRun = false
 
+    // 🚀 关键修复：移除1秒延迟，立即执行同步以避免空白页面
     // 无论是否登录都需要同步模板，因为点赞功能依赖数据库中的模板记录
-    const timer = setTimeout(async () => {
+    const executeSync = async () => {
       if (hasRun) return // 防止重复执行
       hasRun = true
 
       try {
+        console.log('🔄 [TemplateSync] 立即开始模板同步')
         const result = await checkSync()
         // 如果同步成功，更新缓存
         if (result && !result.needsSync) {
           updateCache(result.totalDbTemplates)
+          console.log('✅ [TemplateSync] 模板同步完成')
         }
       } catch (error) {
-        console.error('模板同步失败:', error)
+        console.error('❌ [TemplateSync] 模板同步失败:', error)
       }
-    }, 1000) // 延迟1秒执行，确保其他初始化完成
+    }
+
+    // 立即执行，不再延迟
+    executeSync()
 
     return () => {
-      clearTimeout(timer)
       hasRun = true // 组件卸载时标记已运行
     }
   }, []) // 移除 checkSync 依赖，避免无限循环

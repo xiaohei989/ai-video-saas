@@ -140,6 +140,44 @@ class VideoTaskManager {
     this.activeTasks.delete(taskId)
     
     console.log(`[TASK MANAGER] 任务完成处理完毕: ${taskId}`)
+
+    // 🚀 自动生成缩略图（异步执行，不阻塞任务完成流程）
+    this.triggerThumbnailGeneration(taskId, videoUrl)
+  }
+
+  /**
+   * 🚀 触发缩略图自动生成
+   * @param taskId 任务ID
+   * @param videoUrl 视频URL
+   */
+  private async triggerThumbnailGeneration(taskId: string, videoUrl: string): Promise<void> {
+    try {
+      console.log(`[TASK MANAGER] 🖼️ 开始为完成的视频生成缩略图: ${taskId}`)
+      
+      // 获取完整的视频记录
+      const video = await supabaseVideoService.getVideo(taskId)
+      if (!video) {
+        console.warn(`[TASK MANAGER] 无法找到视频记录，跳过缩略图生成: ${taskId}`)
+        return
+      }
+
+      // 异步生成缩略图，不影响主流程
+      setTimeout(async () => {
+        try {
+          const success = await supabaseVideoService.autoGenerateThumbnailOnComplete(video)
+          if (success) {
+            console.log(`[TASK MANAGER] ✅ 缩略图生成成功: ${taskId}`)
+          } else {
+            console.warn(`[TASK MANAGER] ⚠️ 缩略图生成失败: ${taskId}`)
+          }
+        } catch (error) {
+          console.error(`[TASK MANAGER] ❌ 缩略图生成异常: ${taskId}`, error)
+        }
+      }, 2000) // 2秒延迟，确保视频完全处理完成
+
+    } catch (error) {
+      console.error(`[TASK MANAGER] 触发缩略图生成失败: ${taskId}`, error)
+    }
   }
 
   /**

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDN连通性测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .warning { background-color: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
+        .loading { background-color: #cce7ff; border: 1px solid #99d6ff; color: #004085; }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .video-container {
+            position: relative;
+            margin: 15px 0;
+        }
+        
+        video {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 4px;
+        }
+        
+        .stats {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        
+        .url-display {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 8px;
+            border-radius: 4px;
+            word-break: break-all;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 CDN连通性测试工具</h1>
+    <p>测试R2视频代理和CDN直接访问的连通性</p>
+    
+    <div class="test-card">
+        <h2>🔍 连通性测试</h2>
+        <button onclick="runConnectivityTests()">开始测试</button>
+        <button onclick="clearResults()">清除结果</button>
+        <div id="connectivity-results"></div>
+    </div>
+    
+    <div class="test-card">
+        <h2>🎬 视频播放测试</h2>
+        <div>
+            <label>选择测试视频:</label>
+            <select id="video-selector" onchange="loadSelectedVideo()">
+                <option value="/api/r2/templates/videos/animal-skateboarding-street.mp4">动物滑板 (代理)</option>
+                <option value="https://cdn.veo3video.me/templates/videos/animal-skateboarding-street.mp4">动物滑板 (直接CDN)</option>
+                <option value="/api/r2/templates/videos/yeti-mountain-life-vlog.mp4">雪人生活 (代理)</option>
+                <option value="https://cdn.veo3video.me/templates/videos/yeti-mountain-life-vlog.mp4">雪人生活 (直接CDN)</option>
+            </select>
+        </div>
+        <div class="video-container">
+            <video id="test-video" controls preload="metadata" style="display: none;">
+                您的浏览器不支持视频播放。
+            </video>
+        </div>
+        <div id="video-info"></div>
+    </div>
+    
+    <div class="test-card">
+        <h2>📊 测试统计</h2>
+        <div id="test-stats" class="stats">点击开始测试按钮来查看统计信息</div>
+    </div>
+
+    <script>
+        let testResults = [];
+        
+        async function testUrl(url, description) {
+            const startTime = Date.now();
+            const result = {
+                url,
+                description,
+                startTime,
+                success: false,
+                responseTime: 0,
+                error: null,
+                status: null
+            };
+            
+            try {
+                console.log(`🔍 测试: ${description} - ${url}`);
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
+                const response = await fetch(url, {
+                    method: 'HEAD',
+                    signal: controller.signal,
+                    cache: 'no-cache',
+                    headers: {
+                        'Range': 'bytes=0-1'
+                    }
+                });
+                
+                clearTimeout(timeoutId);
+                result.responseTime = Date.now() - startTime;
+                result.status = response.status;
+                
+                if (response.ok || response.status === 206) {
+                    result.success = true;
+                    console.log(`✅ ${description}: ${result.responseTime}ms`);
+                } else {
+                    result.error = `HTTP ${response.status}: ${response.statusText}`;
+                    console.warn(`⚠️ ${description}: ${result.error}`);
+                }
+                
+            } catch (error) {
+                result.responseTime = Date.now() - startTime;
+                result.error = error.message;
+                console.error(`❌ ${description}: ${error.message}`);
+            }
+            
+            testResults.push(result);
+            return result;
+        }
+        
+        async function runConnectivityTests() {
+            const resultsDiv = document.getElementById('connectivity-results');
+            resultsDiv.innerHTML = '<div class="test-result loading">🔄 正在测试连通性...</div>';
+            
+            testResults = [];
+            
+            const testUrls = [
+                {
+                    url: '/api/r2/templates/videos/animal-skateboarding-street.mp4',
+                    description: '代理 - 动物滑板视频'
+                },
+                {
+                    url: 'https://cdn.veo3video.me/templates/videos/animal-skateboarding-street.mp4',
+                    description: 'CDN直接 - 动物滑板视频'
+                },
+                {
+                    url: '/api/r2/templates/videos/yeti-mountain-life-vlog.mp4',
+                    description: '代理 - 雪人生活视频'
+                },
+                {
+                    url: 'https://cdn.veo3video.me/templates/videos/yeti-mountain-life-vlog.mp4',
+                    description: 'CDN直接 - 雪人生活视频'
+                },
+                {
+                    url: '/api/r2/templates/thumbnails/animal-skateboarding-street-thumbnail.jpg',
+                    description: '代理 - 动物滑板缩略图'
+                },
+                {
+                    url: 'https://cdn.veo3video.me/templates/thumbnails/animal-skateboarding-street-thumbnail.jpg',
+                    description: 'CDN直接 - 动物滑板缩略图'
+                }
+            ];
+            
+            let html = '';
+            
+            for (const test of testUrls) {
+                const result = await testUrl(test.url, test.description);
+                const className = result.success ? 'success' : 'error';
+                
+                html += `
+                    <div class="test-result ${className}">
+                        <strong>${result.description}</strong><br>
+                        <div class="url-display">${result.url}</div>
+                        状态: ${result.success ? '✅ 成功' : '❌ 失败'}<br>
+                        响应时间: ${result.responseTime}ms<br>
+                        ${result.error ? `错误: ${result.error}<br>` : ''}
+                        ${result.status ? `HTTP状态: ${result.status}<br>` : ''}
+                    </div>
+                `;
+                
+                resultsDiv.innerHTML = html;
+                await new Promise(resolve => setTimeout(resolve, 500)); // 间隔500ms
+            }
+            
+            updateStats();
+        }
+        
+        function loadSelectedVideo() {
+            const selector = document.getElementById('video-selector');
+            const video = document.getElementById('test-video');
+            const infoDiv = document.getElementById('video-info');
+            
+            const selectedUrl = selector.value;
+            
+            video.style.display = 'block';
+            video.src = selectedUrl;
+            
+            infoDiv.innerHTML = `
+                <div class="url-display">${selectedUrl}</div>
+                <div class="test-result loading">📺 正在加载视频...</div>
+            `;
+            
+            video.onloadstart = () => {
+                infoDiv.innerHTML += '<div class="test-result loading">🔄 开始加载...</div>';
+            };
+            
+            video.onloadedmetadata = () => {
+                infoDiv.innerHTML += '<div class="test-result success">✅ 元数据加载成功</div>';
+            };
+            
+            video.oncanplay = () => {
+                infoDiv.innerHTML += '<div class="test-result success">✅ 视频可以播放</div>';
+            };
+            
+            video.onerror = (e) => {
+                const error = video.error;
+                let errorMsg = '未知错误';
+                
+                if (error) {
+                    switch(error.code) {
+                        case error.MEDIA_ERR_ABORTED:
+                            errorMsg = '播放被中止';
+                            break;
+                        case error.MEDIA_ERR_NETWORK:
+                            errorMsg = '网络错误';
+                            break;
+                        case error.MEDIA_ERR_DECODE:
+                            errorMsg = '解码错误';
+                            break;
+                        case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                            errorMsg = '格式不支持';
+                            break;
+                    }
+                }
+                
+                infoDiv.innerHTML += `<div class="test-result error">❌ 视频加载失败: ${errorMsg}</div>`;
+            };
+        }
+        
+        function updateStats() {
+            const statsDiv = document.getElementById('test-stats');
+            
+            if (testResults.length === 0) {
+                statsDiv.textContent = '暂无测试数据';
+                return;
+            }
+            
+            const successful = testResults.filter(r => r.success).length;
+            const failed = testResults.length - successful;
+            const avgResponseTime = testResults.reduce((sum, r) => sum + r.responseTime, 0) / testResults.length;
+            
+            const proxyResults = testResults.filter(r => r.url.startsWith('/api/r2/'));
+            const cdnResults = testResults.filter(r => r.url.startsWith('https://cdn.veo3video.me/'));
+            
+            const proxySuccess = proxyResults.filter(r => r.success).length;
+            const cdnSuccess = cdnResults.filter(r => r.success).length;
+            
+            statsDiv.textContent = `
+测试总数: ${testResults.length}
+成功: ${successful} (${((successful/testResults.length)*100).toFixed(1)}%)
+失败: ${failed} (${((failed/testResults.length)*100).toFixed(1)}%)
+平均响应时间: ${avgResponseTime.toFixed(0)}ms
+
+代理测试: ${proxySuccess}/${proxyResults.length} 成功
+CDN直接测试: ${cdnSuccess}/${cdnResults.length} 成功
+
+最快响应: ${Math.min(...testResults.map(r => r.responseTime))}ms
+最慢响应: ${Math.max(...testResults.map(r => r.responseTime))}ms
+
+测试时间: ${new Date().toLocaleString()}
+            `;
+        }
+        
+        function clearResults() {
+            testResults = [];
+            document.getElementById('connectivity-results').innerHTML = '';
+            document.getElementById('test-stats').textContent = '点击开始测试按钮来查看统计信息';
+            
+            const video = document.getElementById('test-video');
+            video.style.display = 'none';
+            video.src = '';
+            document.getElementById('video-info').innerHTML = '';
+        }
+        
+        // 页面加载完成后自动加载第一个视频
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 CDN连通性测试页面已加载');
+        });
+    </script>
+</body>
+</html>

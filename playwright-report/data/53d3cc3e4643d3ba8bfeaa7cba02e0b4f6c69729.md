@@ -1,0 +1,620 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e6]:
+        - link "Logo Viral Videos Made Simple" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img "Logo" [ref=e8] [cursor=pointer]
+          - generic [ref=e10] [cursor=pointer]:
+            - generic [ref=e11] [cursor=pointer]: Viral Videos
+            - generic [ref=e12] [cursor=pointer]: Made Simple
+        - navigation [ref=e13]:
+          - link "Home" [ref=e15] [cursor=pointer]:
+            - /url: /
+          - link "Trending" [ref=e16] [cursor=pointer]:
+            - /url: /templates
+          - link "My Videos" [ref=e17] [cursor=pointer]:
+            - /url: /videos
+          - link "Pricing" [ref=e18] [cursor=pointer]:
+            - /url: /pricing
+        - generic [ref=e19]:
+          - button "US flag EN" [ref=e21]:
+            - img "US flag" [ref=e22]
+            - generic [ref=e23]: EN
+            - img [ref=e24]
+          - generic [ref=e26]:
+            - link "Sign In" [ref=e27] [cursor=pointer]:
+              - /url: /signin
+              - button "Sign In" [ref=e28]:
+                - img [ref=e29]
+                - text: Sign In
+            - link "Sign Up" [ref=e32] [cursor=pointer]:
+              - /url: /signup
+              - button "Sign Up" [ref=e33]
+    - main [ref=e35]:
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - combobox [ref=e41]:
+              - generic:
+                - generic:
+                  - img
+                  - text: Latest
+              - img [ref=e42]
+            - generic [ref=e44]:
+              - generic [ref=e45] [cursor=pointer]:
+                - img [ref=e46] [cursor=pointer]
+                - text: animals
+              - generic [ref=e49] [cursor=pointer]:
+                - img [ref=e50] [cursor=pointer]
+                - text: asmr
+              - generic [ref=e53] [cursor=pointer]:
+                - img [ref=e54] [cursor=pointer]
+                - text: comedy
+              - generic [ref=e57] [cursor=pointer]:
+                - img [ref=e58] [cursor=pointer]
+                - text: miniature
+              - generic [ref=e61] [cursor=pointer]:
+                - img [ref=e62] [cursor=pointer]
+                - text: magic
+              - generic [ref=e65] [cursor=pointer]:
+                - img [ref=e66] [cursor=pointer]
+                - text: cinematic
+          - generic [ref=e69]:
+            - generic [ref=e70] [cursor=pointer]:
+              - img [ref=e71] [cursor=pointer]
+              - text: realistic
+            - generic [ref=e74] [cursor=pointer]:
+              - img [ref=e75] [cursor=pointer]
+              - text: vlog
+            - generic [ref=e78] [cursor=pointer]:
+              - img [ref=e79] [cursor=pointer]
+              - text: pov
+            - generic [ref=e82] [cursor=pointer]:
+              - img [ref=e83] [cursor=pointer]
+              - text: book
+            - generic [ref=e86] [cursor=pointer]:
+              - img [ref=e87] [cursor=pointer]
+              - text: creative
+            - generic [ref=e90] [cursor=pointer]:
+              - img [ref=e91] [cursor=pointer]
+              - text: surreal
+            - generic [ref=e94] [cursor=pointer]:
+              - img [ref=e95] [cursor=pointer]
+              - text: baby
+            - generic [ref=e98] [cursor=pointer]:
+              - img [ref=e99] [cursor=pointer]
+              - text: interview
+            - generic [ref=e102] [cursor=pointer]:
+              - img [ref=e103] [cursor=pointer]
+              - text: selfie
+            - generic [ref=e106] [cursor=pointer]:
+              - img [ref=e107] [cursor=pointer]
+              - text: fantasy
+        - generic [ref=e110]:
+          - generic [ref=e111]:
+            - generic [ref=e112]:
+              - generic [ref=e114]:
+                - img [ref=e115]
+                - paragraph [ref=e117]: Finger Touch Book Magic
+                - paragraph [ref=e118]: Touch an illustration in a book to bring it to life with spectacular magical effects
+              - button "Generate" [ref=e120]:
+                - img [ref=e121]
+                - generic [ref=e124]: Generate
+              - generic [ref=e125]:
+                - button "加载中..."
+            - generic [ref=e127]:
+              - paragraph [ref=e128]: Touch an illustration in a book to bring it to life with spectacular magical effects
+              - generic [ref=e129]:
+                - generic [ref=e130]:
+                  - img [ref=e131]
+                  - text: magic
+                - generic [ref=e134]:
+                  - img [ref=e135]
+                  - text: book
+                - generic [ref=e138]:
+                  - img [ref=e139]
+                  - text: touch
+                - generic [ref=e142]:
+                  - img [ref=e143]
+                  - text: activation
+                - generic [ref=e146]:
+                  - img [ref=e147]
+                  - text: 3D
+                - generic [ref=e150]:
+                  - img [ref=e151]
+                  - text: transformation
+                - generic [ref=e154]:
+                  - img [ref=e155]
+                  - text: interactive
+          - generic [ref=e158]:
+            - generic [ref=e159]:
+              - generic [ref=e161]:
+                - img [ref=e162]
+                - paragraph [ref=e164]: Fireplace Cozy International Beauty Selfie
+                - paragraph [ref=e165]: Cozy POV selfie with international beauties in a warm fireplace-lit room
+              - button "Generate" [ref=e167]:
+                - img [ref=e168]
+                - generic [ref=e171]: Generate
+              - generic [ref=e172]:
+                - button "加载中..."
+            - generic [ref=e174]:
+              - paragraph [ref=e175]: Cozy POV selfie with international beauties in a warm fireplace-lit room
+              - generic [ref=e176]:
+                - generic [ref=e177]:
+                  - img [ref=e178]
+                  - text: selfie
+                - generic [ref=e181]:
+                  - img [ref=e182]
+                  - text: cozy
+                - generic [ref=e185]:
+                  - img [ref=e186]
+                  - text: fireplace
+                - generic [ref=e189]:
+                  - img [ref=e190]
+                  - text: charming
+                - generic [ref=e193]:
+                  - img [ref=e194]
+                  - text: pov
+                - generic [ref=e197]:
+                  - img [ref=e198]
+                  - text: asmr
+                - generic [ref=e201]:
+                  - img [ref=e202]
+                  - text: international
+                - generic [ref=e205]:
+                  - img [ref=e206]
+                  - text: beauty
+          - generic [ref=e209]:
+            - generic [ref=e210]:
+              - generic [ref=e212]:
+                - img [ref=e213]
+                - paragraph [ref=e215]: Ocean Selfie Predator Surprise
+                - paragraph [ref=e216]: POV selfie video on a speedboat with a surprise marine predator appearance
+              - button "Generate" [ref=e218]:
+                - img [ref=e219]
+                - generic [ref=e222]: Generate
+              - generic [ref=e223]:
+                - button "加载中..."
+            - generic [ref=e225]:
+              - paragraph [ref=e226]: POV selfie video on a speedboat with a surprise marine predator appearance
+              - generic [ref=e227]:
+                - generic [ref=e228]:
+                  - img [ref=e229]
+                  - text: selfie
+                - generic [ref=e232]:
+                  - img [ref=e233]
+                  - text: ocean
+                - generic [ref=e236]:
+                  - img [ref=e237]
+                  - text: predator
+                - generic [ref=e240]:
+                  - img [ref=e241]
+                  - text: surprise
+                - generic [ref=e244]:
+                  - img [ref=e245]
+                  - text: vlog
+                - generic [ref=e248]:
+                  - img [ref=e249]
+                  - text: comedy
+                - generic [ref=e252]:
+                  - img [ref=e253]
+                  - text: pov
+                - generic [ref=e256]:
+                  - img [ref=e257]
+                  - text: marine
+                - generic [ref=e260]:
+                  - img [ref=e261]
+                  - text: bigfoot
+                - generic [ref=e264]:
+                  - img [ref=e265]
+                  - text: yeti
+          - generic [ref=e268]:
+            - generic [ref=e269]:
+              - generic [ref=e271]:
+                - img [ref=e272]
+                - paragraph [ref=e274]: Country Historical Evolution
+                - paragraph [ref=e275]: Transform ancient maps into living 3D miniature countries with tilt-shift effect
+              - button "Generate" [ref=e277]:
+                - img [ref=e278]
+                - generic [ref=e281]: Generate
+              - generic [ref=e282]:
+                - button "加载中..."
+            - generic [ref=e284]:
+              - paragraph [ref=e285]: Transform ancient maps into living 3D miniature countries with tilt-shift effect
+              - generic [ref=e286]:
+                - generic [ref=e287]:
+                  - img [ref=e288]
+                  - text: country
+                - generic [ref=e291]:
+                  - img [ref=e292]
+                  - text: history
+                - generic [ref=e295]:
+                  - img [ref=e296]
+                  - text: 3d
+                - generic [ref=e299]:
+                  - img [ref=e300]
+                  - text: miniature
+                - generic [ref=e303]:
+                  - img [ref=e304]
+                  - text: tilt-shift
+                - generic [ref=e307]:
+                  - img [ref=e308]
+                  - text: map
+                - generic [ref=e311]:
+                  - img [ref=e312]
+                  - text: evolution
+          - generic [ref=e315]:
+            - generic [ref=e316]:
+              - generic [ref=e318]:
+                - img [ref=e319]
+                - paragraph [ref=e321]: Baby Professional Interview
+                - paragraph [ref=e322]: Cynical reporter interviews an optimistic baby about their tough late-night job
+              - button "Generate" [ref=e324]:
+                - img [ref=e325]
+                - generic [ref=e328]: Generate
+              - generic [ref=e329]:
+                - button "加载中..."
+            - generic [ref=e331]:
+              - paragraph [ref=e332]: Cynical reporter interviews an optimistic baby about their tough late-night job
+              - generic [ref=e333]:
+                - generic [ref=e334]:
+                  - img [ref=e335]
+                  - text: comedy
+                - generic [ref=e338]:
+                  - img [ref=e339]
+                  - text: baby
+                - generic [ref=e342]:
+                  - img [ref=e343]
+                  - text: interview
+                - generic [ref=e346]:
+                  - img [ref=e347]
+                  - text: profession
+                - generic [ref=e350]:
+                  - img [ref=e351]
+                  - text: night
+                - generic [ref=e354]:
+                  - img [ref=e355]
+                  - text: neon
+                - generic [ref=e358]:
+                  - img [ref=e359]
+                  - text: city
+          - generic [ref=e362]:
+            - generic [ref=e363]:
+              - generic [ref=e365]:
+                - img [ref=e366]
+                - paragraph [ref=e368]: City Landmarks from Book
+                - paragraph [ref=e369]: A book page transforms into famous city landmarks rising in miniature
+              - button "Generate" [ref=e371]:
+                - img [ref=e372]
+                - generic [ref=e375]: Generate
+              - generic [ref=e376]:
+                - button "加载中..."
+            - generic [ref=e378]:
+              - paragraph [ref=e379]: A book page transforms into famous city landmarks rising in miniature
+              - generic [ref=e380]:
+                - generic [ref=e381]:
+                  - img [ref=e382]
+                  - text: city
+                - generic [ref=e385]:
+                  - img [ref=e386]
+                  - text: landmarks
+                - generic [ref=e389]:
+                  - img [ref=e390]
+                  - text: architecture
+                - generic [ref=e393]:
+                  - img [ref=e394]
+                  - text: book
+                - generic [ref=e397]:
+                  - img [ref=e398]
+                  - text: miniature
+                - generic [ref=e401]:
+                  - img [ref=e402]
+                  - text: travel
+                - generic [ref=e405]:
+                  - img [ref=e406]
+                  - text: urban
+          - generic [ref=e409]:
+            - generic [ref=e410]:
+              - generic [ref=e412]:
+                - img [ref=e413]
+                - paragraph [ref=e415]: Blueprint to Product
+                - paragraph [ref=e416]: Transform technical blueprints into fully assembled products with stunning 3D effects
+              - button "Generate" [ref=e418]:
+                - img [ref=e419]
+                - generic [ref=e422]: Generate
+              - generic [ref=e423]:
+                - button "加载中..."
+            - generic [ref=e425]:
+              - paragraph [ref=e426]: Transform technical blueprints into fully assembled products with stunning 3D effects
+              - generic [ref=e427]:
+                - generic [ref=e428]:
+                  - img [ref=e429]
+                  - text: blueprint
+                - generic [ref=e432]:
+                  - img [ref=e433]
+                  - text: 3d
+                - generic [ref=e436]:
+                  - img [ref=e437]
+                  - text: assembly
+                - generic [ref=e440]:
+                  - img [ref=e441]
+                  - text: product
+                - generic [ref=e444]:
+                  - img [ref=e445]
+                  - text: luxury
+                - generic [ref=e448]:
+                  - img [ref=e449]
+                  - text: tech
+                - generic [ref=e452]:
+                  - img [ref=e453]
+                  - text: transformer
+                - generic [ref=e456]:
+                  - img [ref=e457]
+                  - text: cinematic
+          - generic [ref=e460]:
+            - generic [ref=e461]:
+              - generic [ref=e463]:
+                - img [ref=e464]
+                - paragraph [ref=e466]: Extreme Skydiving Adventure
+                - paragraph [ref=e467]: Create a cinematic skydiving scene with customizable character and dialogue
+              - button "Generate" [ref=e469]:
+                - img [ref=e470]
+                - generic [ref=e473]: Generate
+              - generic [ref=e474]:
+                - button "加载中..."
+            - generic [ref=e476]:
+              - paragraph [ref=e477]: Create a cinematic skydiving scene with customizable character and dialogue
+              - generic [ref=e478]:
+                - generic [ref=e479]:
+                  - img [ref=e480]
+                  - text: skydiving
+                - generic [ref=e483]:
+                  - img [ref=e484]
+                  - text: extreme
+                - generic [ref=e487]:
+                  - img [ref=e488]
+                  - text: adventure
+                - generic [ref=e491]:
+                  - img [ref=e492]
+                  - text: comedy
+                - generic [ref=e495]:
+                  - img [ref=e496]
+                  - text: cinematic
+                - generic [ref=e499]:
+                  - img [ref=e500]
+                  - text: animals
+                - generic [ref=e503]:
+                  - img [ref=e504]
+                  - text: action
+          - generic [ref=e507]:
+            - generic [ref=e508]:
+              - generic [ref=e510]:
+                - img [ref=e511]
+                - paragraph [ref=e513]: Selfie Vlog Animals
+                - paragraph [ref=e514]: Two anthropomorphic animals having a casual conversation in selfie-style video format
+              - button "Generate" [ref=e516]:
+                - img [ref=e517]
+                - generic [ref=e520]: Generate
+              - generic [ref=e521]:
+                - button "加载中..."
+            - generic [ref=e523]:
+              - paragraph [ref=e524]: Two anthropomorphic animals having a casual conversation in selfie-style video format
+              - generic [ref=e525]:
+                - generic [ref=e526]:
+                  - img [ref=e527]
+                  - text: animals
+                - generic [ref=e530]:
+                  - img [ref=e531]
+                  - text: selfie
+                - generic [ref=e534]:
+                  - img [ref=e535]
+                  - text: vlog
+                - generic [ref=e538]:
+                  - img [ref=e539]
+                  - text: conversation
+                - generic [ref=e542]:
+                  - img [ref=e543]
+                  - text: anthropomorphic
+                - generic [ref=e546]:
+                  - img [ref=e547]
+                  - text: casual
+                - generic [ref=e550]:
+                  - img [ref=e551]
+                  - text: forest
+          - generic [ref=e554]:
+            - generic [ref=e555]:
+              - generic [ref=e557]:
+                - img [ref=e558]
+                - paragraph [ref=e560]: Magical Creature Summoning
+                - paragraph [ref=e561]: An ancient spellbook summons legendary creatures through elemental magic
+              - button "Generate" [ref=e563]:
+                - img [ref=e564]
+                - generic [ref=e567]: Generate
+              - generic [ref=e568]:
+                - button "加载中..."
+            - generic [ref=e570]:
+              - paragraph [ref=e571]: An ancient spellbook summons legendary creatures through elemental magic
+              - generic [ref=e572]:
+                - generic [ref=e573]:
+                  - img [ref=e574]
+                  - text: magic
+                - generic [ref=e577]:
+                  - img [ref=e578]
+                  - text: fantasy
+                - generic [ref=e581]:
+                  - img [ref=e582]
+                  - text: creature
+                - generic [ref=e585]:
+                  - img [ref=e586]
+                  - text: book
+                - generic [ref=e589]:
+                  - img [ref=e590]
+                  - text: summoning
+                - generic [ref=e593]:
+                  - img [ref=e594]
+                  - text: epic
+                - generic [ref=e597]:
+                  - img [ref=e598]
+                  - text: elemental
+          - generic [ref=e601]:
+            - generic [ref=e602]:
+              - generic [ref=e604]:
+                - img [ref=e605]
+                - paragraph [ref=e607]: Living Book of Storms
+                - paragraph [ref=e608]: An ancient book transforms into a living diorama with ships battling through storms
+              - button "Generate" [ref=e610]:
+                - img [ref=e611]
+                - generic [ref=e614]: Generate
+              - generic [ref=e615]:
+                - button "加载中..."
+            - generic [ref=e617]:
+              - paragraph [ref=e618]: An ancient book transforms into a living diorama with ships battling through storms
+              - generic [ref=e619]:
+                - generic [ref=e620]:
+                  - img [ref=e621]
+                  - text: magic
+                - generic [ref=e624]:
+                  - img [ref=e625]
+                  - text: book
+                - generic [ref=e628]:
+                  - img [ref=e629]
+                  - text: storm
+                - generic [ref=e632]:
+                  - img [ref=e633]
+                  - text: ship
+                - generic [ref=e636]:
+                  - img [ref=e637]
+                  - text: fantasy
+                - generic [ref=e640]:
+                  - img [ref=e641]
+                  - text: cinematic
+                - generic [ref=e644]:
+                  - img [ref=e645]
+                  - text: diorama
+          - generic [ref=e648]:
+            - generic [ref=e649]:
+              - generic [ref=e651]:
+                - img [ref=e652]
+                - paragraph [ref=e654]: Time Travel Ancient Livestream
+                - paragraph [ref=e655]: Time-traveling streamers broadcasting live from ancient historical scenes with modern equipment
+              - button "Generate" [ref=e657]:
+                - img [ref=e658]
+                - generic [ref=e661]: Generate
+              - generic [ref=e662]:
+                - button "加载中..."
+            - generic [ref=e664]:
+              - paragraph [ref=e665]: Time-traveling streamers broadcasting live from ancient historical scenes with modern equipment
+              - generic [ref=e666]:
+                - generic [ref=e667]:
+                  - img [ref=e668]
+                  - text: comedy
+                - generic [ref=e671]:
+                  - img [ref=e672]
+                  - text: time-travel
+                - generic [ref=e675]:
+                  - img [ref=e676]
+                  - text: history
+                - generic [ref=e679]:
+                  - img [ref=e680]
+                  - text: livestream
+                - generic [ref=e683]:
+                  - img [ref=e684]
+                  - text: first-person
+                - generic [ref=e687]:
+                  - img [ref=e688]
+                  - text: ancient
+                - generic [ref=e691]:
+                  - img [ref=e692]
+                  - text: streamer
+                - generic [ref=e695]:
+                  - img [ref=e696]
+                  - text: realistic
+        - navigation "Pagination navigation" [ref=e701]:
+          - button "First page" [disabled]:
+            - img
+          - button "Previous" [disabled]:
+            - img
+            - generic: Previous
+          - generic [ref=e702]:
+            - button "1" [ref=e703]
+            - button "2" [ref=e704]
+            - button "3" [ref=e705]
+          - button "Next" [ref=e706]:
+            - generic [ref=e707]: Next
+            - img [ref=e708]
+          - button "Last page" [ref=e710]:
+            - img [ref=e711]
+    - contentinfo [ref=e714]:
+      - generic [ref=e715]:
+        - generic [ref=e716]:
+          - generic [ref=e717]:
+            - heading "Quick Links" [level=3] [ref=e718]
+            - list [ref=e719]:
+              - listitem [ref=e720]:
+                - link "Trending" [ref=e721] [cursor=pointer]:
+                  - /url: /templates
+              - listitem [ref=e722]:
+                - link "Pricing" [ref=e723] [cursor=pointer]:
+                  - /url: /pricing
+              - listitem [ref=e724]:
+                - link "Help Center" [ref=e725] [cursor=pointer]:
+                  - /url: /help
+          - generic [ref=e726]:
+            - heading "Legal" [level=3] [ref=e727]
+            - list [ref=e728]:
+              - listitem [ref=e729]:
+                - link "Privacy Policy" [ref=e730] [cursor=pointer]:
+                  - /url: /privacy
+              - listitem [ref=e731]:
+                - link "Terms of Service" [ref=e732] [cursor=pointer]:
+                  - /url: /terms
+              - listitem [ref=e733]:
+                - link "Cookie Policy" [ref=e734] [cursor=pointer]:
+                  - /url: /cookies
+          - generic [ref=e735]:
+            - heading "Connect" [level=3] [ref=e736]
+            - generic [ref=e737]:
+              - link "X (Twitter)" [ref=e738] [cursor=pointer]:
+                - /url: https://x.com/veo3video_me
+                - img [ref=e739] [cursor=pointer]
+              - link "Discord" [ref=e741] [cursor=pointer]:
+                - /url: https://discord.com/invite/UxFhMG7fyY
+                - img [ref=e742] [cursor=pointer]
+              - link "Facebook" [ref=e744] [cursor=pointer]:
+                - /url: https://www.facebook.com/profile.php?id=61579879903619
+                - img [ref=e745] [cursor=pointer]
+              - link "TikTok" [ref=e747] [cursor=pointer]:
+                - /url: https://www.tiktok.com/@veo3video.me
+                - img [ref=e748] [cursor=pointer]
+              - link "Instagram" [ref=e750] [cursor=pointer]:
+                - /url: https://www.instagram.com/veo3video.me
+                - img [ref=e751] [cursor=pointer]
+        - paragraph [ref=e754]: © 2025 veo3video.me. All rights reserved.
+  - region "Notifications alt+T"
+  - img [ref=e757] [cursor=pointer]
+  - generic [ref=e762]:
+    - img [ref=e763]
+    - generic [ref=e765]:
+      - generic [ref=e766]:
+        - paragraph [ref=e767]: We use cookies to improve your experience
+        - paragraph [ref=e768]: We use Google Analytics to understand how you use our website so we can improve our services. This data is anonymous and not used for advertising.
+      - generic [ref=e769]:
+        - button "Accept All" [ref=e770]
+        - button "Essential Only" [ref=e771]
+        - button "Learn More" [ref=e772]:
+          - img [ref=e773]
+          - text: Learn More
+      - paragraph [ref=e776]:
+        - text: View our
+        - link "Privacy Policy" [ref=e777] [cursor=pointer]:
+          - /url: /privacy
+        - text: and
+        - link "Cookie Policy" [ref=e778] [cursor=pointer]:
+          - /url: /cookies
+    - button "关闭" [ref=e779]:
+      - img [ref=e780]
+```

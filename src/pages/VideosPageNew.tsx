@@ -997,13 +997,7 @@ export default function VideosPageNew() {
       {/* 页面头部 */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold">{t('videos.title')}</h1>
-          <p className="text-muted-foreground mt-1">
-            {t('videos.description', { 
-              count: filteredVideos.length, 
-              pagination: totalPages > 1 ? t('videos.paginationText', { current: page, total: totalPages }) : ''
-            })}
-          </p>
+          {/* 标题和描述已移除 */}
         </div>
         
         <Link to="/create">

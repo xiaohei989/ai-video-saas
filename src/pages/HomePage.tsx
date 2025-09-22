@@ -83,7 +83,7 @@ export default function HomePage() {
             {t('app.tagline')}
           </p>
           <div className="flex gap-4 justify-center">
-            <Link to="/create">
+            <Link to="/templates">
               <Button size="lg" variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm">
                 {t('template.selectTemplate')}
                 <ArrowRight className="ml-2 h-4 w-4" />

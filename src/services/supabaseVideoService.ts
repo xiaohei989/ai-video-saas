@@ -1073,6 +1073,133 @@ class SupabaseVideoService {
       subscription.unsubscribe()
     }
   }
+
+  /**
+   * 🚀 当视频完成时自动生成并上传缩略图
+   * @param video 视频记录
+   * @returns Promise<boolean> 是否成功生成缩略图
+   */
+  async autoGenerateThumbnailOnComplete(video: Video): Promise<boolean> {
+    try {
+      // 检查是否需要生成缩略图
+      if (video.status !== 'completed' || !video.video_url) {
+        console.log(`[AutoThumbnail] 跳过缩略图生成: 视频未完成或无URL - ${video.id}`)
+        return false
+      }
+
+      // 检查是否已有缩略图
+      if (video.thumbnail_url && !video.thumbnail_url.startsWith('data:image/svg+xml')) {
+        console.log(`[AutoThumbnail] 跳过缩略图生成: 已有缩略图 - ${video.id}`)
+        return false
+      }
+
+      console.log(`[AutoThumbnail] 开始为视频生成缩略图: ${video.id}`)
+      console.log(`[AutoThumbnail] 视频URL: ${video.video_url}`)
+
+      // 动态导入避免循环依赖
+      const { extractAndUploadThumbnail } = await import('../utils/videoThumbnail')
+      
+      // 生成并上传缩略图
+      const thumbnailUrl = await extractAndUploadThumbnail(video.video_url, video.id)
+      
+      // 更新视频记录的缩略图URL
+      const updateResult = await this.updateVideoAsSystem(video.id, {
+        thumbnail_url: thumbnailUrl,
+        thumbnail_generation_status: 'ai_generated'
+      })
+
+      if (updateResult) {
+        console.log(`[AutoThumbnail] ✅ 缩略图生成成功: ${video.id} -> ${thumbnailUrl}`)
+        return true
+      } else {
+        console.error(`[AutoThumbnail] ❌ 更新数据库失败: ${video.id}`)
+        return false
+      }
+
+    } catch (error) {
+      console.error(`[AutoThumbnail] ❌ 生成缩略图失败: ${video.id}`, error)
+      
+      // 标记生成失败状态
+      try {
+        await this.updateVideoAsSystem(video.id, {
+          thumbnail_generation_status: 'failed'
+        })
+      } catch (updateError) {
+        console.error(`[AutoThumbnail] 更新失败状态也失败: ${video.id}`, updateError)
+      }
+      
+      return false
+    }
+  }
+
+  /**
+   * 🚀 批量为现有已完成视频生成缩略图
+   * @param userId 用户ID（可选，不传则处理所有用户）
+   * @param limit 一次处理的数量限制
+   * @returns Promise<{processed: number, succeeded: number, failed: number}>
+   */
+  async batchGenerateThumbnails(userId?: string, limit: number = 10): Promise<{
+    processed: number
+    succeeded: number
+    failed: number
+  }> {
+    console.log(`[BatchThumbnail] 开始批量生成缩略图 - 用户: ${userId || 'all'}, 限制: ${limit}`)
+    
+    const stats = { processed: 0, succeeded: 0, failed: 0 }
+    
+    try {
+      // 查询需要生成缩略图的视频
+      let query = supabase
+        .from('videos')
+        .select('id, video_url, title, status, thumbnail_url, thumbnail_generation_status')
+        .eq('status', 'completed')
+        .not('video_url', 'is', null)
+        .or('thumbnail_url.is.null,thumbnail_url.like.data:image/svg+xml%,thumbnail_generation_status.eq.failed')
+        .order('created_at', { ascending: false })
+        .limit(limit)
+
+      if (userId) {
+        query = query.eq('user_id', userId)
+      }
+
+      const { data: videos, error } = await query
+
+      if (error) {
+        throw new Error(`查询视频失败: ${error.message}`)
+      }
+
+      if (!videos || videos.length === 0) {
+        console.log('[BatchThumbnail] 没有找到需要生成缩略图的视频')
+        return stats
+      }
+
+      console.log(`[BatchThumbnail] 找到 ${videos.length} 个需要处理的视频`)
+
+      // 逐个处理视频（避免并发过多）
+      for (const video of videos) {
+        console.log(`[BatchThumbnail] 处理视频: ${video.id} - ${video.title}`)
+        
+        const success = await this.autoGenerateThumbnailOnComplete(video as Video)
+        
+        stats.processed++
+        if (success) {
+          stats.succeeded++
+        } else {
+          stats.failed++
+        }
+
+        // 添加短暂延迟避免过载
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
+
+      console.log(`[BatchThumbnail] 批量处理完成:`, stats)
+      return stats
+
+    } catch (error) {
+      console.error('[BatchThumbnail] 批量生成失败:', error)
+      return stats
+    }
+  }
 }
 
 // 导出单例实例

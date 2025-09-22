@@ -348,5 +348,7 @@
       },
       "default": false
     }
-  }
+  },
+  "thumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/fireplace-cozy-selfie-thumbnail.jpg",
+  "blurThumbnailUrl": "https://cdn.veo3video.me/templates/thumbnails/fireplace-cozy-selfie-thumbnail-blur.jpg"
 }

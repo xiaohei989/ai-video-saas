@@ -810,6 +810,9 @@
     "remaining": "Remaining",
     "confirm": "Confirm"
   },
+  "video": {
+    "madeWith": "Made with veo3video.me"
+  },
   "shareModal": {
     "title": "Share Video & Earn Credits",
     "description": "Showcase your work, invite friends to join, and both earn credit rewards!",
@@ -821,6 +824,7 @@
     "copied": "Copied!",
     "copiedToClipboard": "Copied to clipboard!",
     "shareContentText": "🤯 I just made this VIRAL VIDEO for only $0.60!\n\n📺 Watch directly: {{videoUrl}}\n\nProfessional quality that used to cost $500+ per video! No skills needed - AI does EVERYTHING!\n\n💰 Want to create your own?\nJoin with my invite code and get 20 FREE credits:\n👉 {{inviteUrl}}\n\n#60CentVideos #AIVideo #BudgetCreator #FreeCredits #ViralHack",
+    "twitterShareText": "🤯 AI-made viral video for $0.60!\n👉 {{videoUrl}}\nInvite code = 20 FREE credits: {{inviteUrl}}\n#AIVideo #Viral",
     "instagramCopied": "Instagram content copied! Please paste in Instagram",
     "platformOpened": "{{platform}} share page opened!",
     "getReferralCodeFailed": "Failed to get referral code"
