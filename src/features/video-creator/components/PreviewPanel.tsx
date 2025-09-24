@@ -86,7 +86,8 @@ export default function PreviewPanel({
     updateStatus
   } = useTemplateLikes({
     templateIds,
-    enableAutoRefresh: false
+    enableAutoRefresh: false,
+    silent: true
   })
   
   

@@ -28,6 +28,7 @@ export default function TemplatesContainer({ className }: TemplatesContainerProp
     filters,
     pagination,
     showBackToTop,
+    showSkeleton, // 🚀 新增：智能骨架屏控制
     updateFilters,
     updatePagination
   } = useTemplatesData()
@@ -75,6 +76,7 @@ export default function TemplatesContainer({ className }: TemplatesContainerProp
           loading={loading}
           error={error}
           showBackToTop={showBackToTop}
+          showSkeleton={showSkeleton} // 🚀 传递智能骨架屏控制参数
         />
         
         {/* 分页控制 */}

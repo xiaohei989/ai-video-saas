@@ -2,11 +2,11 @@ import { createCorsVideo } from './videoUrlProxy'
 import { generateOptimizedThumbnail } from './webpThumbnailOptimizer'
 import { supabase } from '@/lib/supabase'
 
-// 最优缩略图配置
+// 高质量缩略图配置 - 提升到与模板缩略图相近的质量
 const OPTIMAL_THUMBNAIL_CONFIG = {
-  width: 320,
-  height: 180,
-  quality: 0.75,        // 平衡质量和大小
+  width: 640,           // 提高分辨率：320 -> 640
+  height: 360,          // 提高分辨率：180 -> 360  
+  quality: 0.90,        // 提高质量：0.75 -> 0.90
   format: 'auto' as const,       // WebP优先，JPEG回退
   frameTime: 0.1        // 0.1秒处截取，快速获取画面
 }
@@ -199,12 +199,12 @@ export async function extractVideoThumbnail(
     // 监听跳转完成
     video.addEventListener('seeked', async () => {
       try {
-        // 🚀 使用优化的 WebP 缩略图生成
+        // 🚀 使用高质量 WebP 缩略图生成
         const thumbnailUrl = await generateOptimizedThumbnail(video, {
-          quality: 0.8,
-          format: 'auto',  // 自动选择最佳格式
-          maxWidth: 320,
-          maxHeight: 180
+          quality: 0.90,    // 提高质量：0.8 -> 0.90
+          format: 'auto',   // 自动选择最佳格式
+          maxWidth: 640,    // 提高分辨率：320 -> 640
+          maxHeight: 360    // 提高分辨率：180 -> 360
         })
         
         // 清理资源

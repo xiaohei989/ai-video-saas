@@ -13,6 +13,7 @@ interface UseTemplateLikesOptions {
   enableAutoRefresh?: boolean
   refreshInterval?: number
   priority?: 'high' | 'normal' | 'low' // 🚀 添加优先级支持
+  silent?: boolean // 🚀 静默模式：仅更新本Hook本地状态，不回写全局likes缓存
 }
 
 interface UseTemplateLikesReturn {
@@ -28,7 +29,8 @@ export function useTemplateLikes({
   templateIds,
   enableAutoRefresh = false,
   refreshInterval = 60000, // 1分钟
-  priority = 'normal' // 🚀 默认优先级
+  priority = 'normal', // 🚀 默认优先级
+  silent = false
 }: UseTemplateLikesOptions): UseTemplateLikesReturn {
   const { user } = useAuthState()
   const [likeStatuses, setLikeStatuses] = useState<Map<string, LikeStatus>>(new Map())
@@ -72,12 +74,14 @@ export function useTemplateLikes({
       
       newMap.set(templateId, updatedStatus)
       
-      // 同步更新缓存
-      likesCacheService.set(templateId, updatedStatus)
+      // 同步更新缓存（非静默模式）
+      if (!silent) {
+        likesCacheService.set(templateId, updatedStatus)
+      }
       
       return newMap
     })
-  }, [])
+  }, [silent])
 
   // 从缓存加载点赞状态
   const loadFromCache = useCallback(() => {
@@ -177,8 +181,10 @@ export function useTemplateLikes({
         ttl: ttl
       }))
 
-      // 存储到缓存
-      likesCacheService.setBatch(stableTemplateIds, cachedStatuses)
+      // 存储到缓存（非静默模式）
+      if (!silent) {
+        likesCacheService.setBatch(stableTemplateIds, cachedStatuses)
+      }
 
       // 更新状态
       const newMap = new Map<string, LikeStatus>()
@@ -196,8 +202,10 @@ export function useTemplateLikes({
           }
           newMap.set(templateId, defaultStatus)
           
-          // 也缓存默认状态
-          likesCacheService.set(templateId, defaultStatus)
+          // 也缓存默认状态（非静默模式）
+          if (!silent) {
+            likesCacheService.set(templateId, defaultStatus)
+          }
         }
       })
 
@@ -242,7 +250,7 @@ export function useTemplateLikes({
     } finally {
       setLoading(false)
     }
-  }, [user, stableTemplateIds, loadFromCache])
+  }, [user, stableTemplateIds, loadFromCache, priority, silent])
 
   // 初始化时获取点赞状态（优先从缓存加载）
   useEffect(() => {

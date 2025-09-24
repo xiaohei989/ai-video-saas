@@ -4,6 +4,7 @@
  */
 
 import { supabase } from '@/lib/supabase'
+import edgeCacheClient from '@/services/EdgeFunctionCacheClient'
 
 // 轻量级模板数据类型（仅列表页面需要的字段）
 export interface TemplateListItem {
@@ -155,8 +156,34 @@ class TemplatesApiService {
         throw new Error(`获取模板列表失败: ${error.message}`)
       }
 
-      // 处理模板数据（like_count已包含在查询结果中，排序已在数据库层面完成）
-      const finalData = await this.processTemplatesData(data || [])
+      // 覆盖like_count为实时计数（基于template_likes，避免触发器延迟导致的旧值）
+      let templates = data || []
+      if (templates.length > 0) {
+        try {
+          const ids = templates.map(t => t.id)
+          const { data: likesList, error: likesError } = await supabase
+            .from('template_likes')
+            .select('template_id')
+            .in('template_id', ids)
+
+          if (!likesError && likesList) {
+            const likeMap = new Map<string, number>()
+            for (const row of likesList) {
+              const id = (row as any).template_id as string
+              likeMap.set(id, (likeMap.get(id) || 0) + 1)
+            }
+            templates = templates.map(t => ({
+              ...t,
+              like_count: likeMap.get(t.id) ?? (t.like_count || 0)
+            }))
+          }
+        } catch (e) {
+          console.warn('[TemplatesApiService] 覆盖实时点赞计数失败（忽略）：', e)
+        }
+      }
+
+      // 处理模板数据（使用覆盖后的like_count）
+      const finalData = await this.processTemplatesData(templates)
 
       const totalCount = count || 0
       const totalPages = Math.ceil(totalCount / pageSize)
@@ -197,6 +224,20 @@ class TemplatesApiService {
         }
         console.error('[TemplatesApiService] 获取模板详情失败:', error)
         throw new Error(`获取模板详情失败: ${error.message}`)
+      }
+
+      // 优先使用Redis缓存的统计数据（like/comment/view/usage/share）
+      try {
+        const stats = await edgeCacheClient.getTemplateStats(templateId)
+        if (stats) {
+          (data as any).like_count = stats.like_count
+          ;(data as any).comment_count = stats.comment_count
+          ;(data as any).view_count = stats.view_count
+          ;(data as any).usage_count = stats.usage_count
+          ;(data as any).share_count = stats.share_count
+        }
+      } catch (e) {
+        console.warn('[TemplatesApiService] 加载Redis统计失败（忽略）：', e)
       }
 
       console.log(`[TemplatesApiService] 获取模板详情成功: ${templateId}`)

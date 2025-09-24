@@ -628,7 +628,7 @@
     "canChangePlan": "Puis-je changer mon plan d'abonnement ?",
     "changePlanDescription": "Vous pouvez mettre à niveau ou rétrograder votre plan d'abonnement à tout moment. Les changements prendront effet au prochain cycle de facturation.",
     "doCreditsRollover": "Les crédits non utilisés sont-ils reportés ?",
-    "creditsRolloverDescription": "Les crédits d'abonnement se réinitialisent à chaque cycle de facturation. Nous recommandons de choisir un plan qui correspond à votre utilisation.",
+    "creditsRolloverDescription": "Les crédits d'abonnement sont ajoutés à votre compte à chaque cycle de facturation et les crédits non utilisés sont conservés. Choisissez le plan qui convient le mieux à vos besoins.",
     "paymentMethods": "Quelles méthodes de paiement sont prises en charge ?",
     "paymentMethodsDescription": "Nous prenons en charge les principales cartes de crédit et de débit incluant Visa, Mastercard et American Express."
   },

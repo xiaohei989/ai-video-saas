@@ -52,14 +52,23 @@ class VideoTaskManager {
       
       const allActiveVideos = [...processingResult.videos, ...pendingResult.videos]
       
-      // 转换为任务对象
+      // 转换为任务对象，但先进行实时状态验证
       for (const video of allActiveVideos) {
+        // 🔧 添加实时状态检查：如果视频实际上已经完成，跳过添加到任务管理器
+        if (video.status === 'completed' && (video.video_url || video.r2_url)) {
+          console.log(`[TASK MANAGER] 跳过已完成的视频: ${video.id} (数据库滞后检测)`)
+          continue
+        }
+        
         const task = this.videoToTask(video)
         this.activeTasks.set(video.id, task)
         console.log(`[TASK MANAGER] 加载任务: ${video.id} (${task.status})`)
       }
       
       this.initialized = true
+      
+      // 🔧 立即执行一次状态同步，清理可能的滞后任务
+      setTimeout(() => this.syncAllTasksFromDB(), 1000)
       
       return Array.from(this.activeTasks.values())
     } catch (error) {
@@ -97,10 +106,13 @@ class VideoTaskManager {
 
       const task = this.videoToTask(video)
       
-      // 如果任务已完成或失败，移除活跃任务
-      if (task.status === 'completed' || task.status === 'failed') {
+      // 🔧 改进的状态判断：检查视频是否真正完成
+      if (video.status === 'completed' && (video.video_url || video.r2_url)) {
         this.activeTasks.delete(taskId)
-        console.log(`[TASK MANAGER] 任务结束，从活跃列表移除: ${taskId}`)
+        console.log(`[TASK MANAGER] 视频已完成，从活跃列表移除: ${taskId}`)
+      } else if (task.status === 'failed') {
+        this.activeTasks.delete(taskId)
+        console.log(`[TASK MANAGER] 任务失败，从活跃列表移除: ${taskId}`)
       } else {
         this.activeTasks.set(taskId, task)
       }
@@ -113,6 +125,23 @@ class VideoTaskManager {
       console.error(`[TASK MANAGER] 更新任务失败 ${taskId}:`, error)
       return null
     }
+  }
+
+  /**
+   * 🔧 新增：同步所有任务状态，清理滞后的已完成任务
+   */
+  async syncAllTasksFromDB(): Promise<void> {
+    const taskIds = Array.from(this.activeTasks.keys())
+    
+    for (const taskId of taskIds) {
+      try {
+        await this.updateTaskFromDB(taskId)
+      } catch (error) {
+        console.error(`[TASK MANAGER] 同步任务失败 ${taskId}:`, error)
+      }
+    }
+    
+    console.log(`[TASK MANAGER] 任务状态同步完成，当前活跃任务数: ${this.activeTasks.size}`)
   }
 
   /**
@@ -301,8 +330,12 @@ class VideoTaskManager {
     let progress = 0
     let statusText = i18n.t('videoCreator.preparing')
 
-    // 从metadata中提取进度信息
-    if (video.metadata?.progressData) {
+    // 🔧 优先检查视频是否实际已完成
+    if (video.status === 'completed' && (video.video_url || video.r2_url)) {
+      progress = 100
+      statusText = i18n.t('videoCreator.completed')
+    } else if (video.metadata?.progressData) {
+      // 从metadata中提取进度信息
       progress = video.metadata.progressData.percentage || 0
       statusText = video.metadata.progressData.statusText || statusText
     } else {

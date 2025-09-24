@@ -4,6 +4,7 @@
 
 import { useRef, useState, useEffect } from 'react'
 import { cn } from '@/utils/cn'
+import { useTranslation } from 'react-i18next'
 
 interface TestBackgroundVideoProps {
   src: string
@@ -16,6 +17,7 @@ export default function TestBackgroundVideo({
   className,
   fallbackImage = '/logo.png' 
 }: TestBackgroundVideoProps) {
+  const { t } = useTranslation()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
@@ -100,8 +102,8 @@ export default function TestBackgroundVideo({
           />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-white text-center bg-black/50 p-4 rounded-lg">
-              <p className="text-sm font-medium">视频加载失败</p>
-              <p className="text-xs opacity-70 mt-1">使用后备图片</p>
+              <p className="text-sm font-medium">{t('video.loadFailed')}</p>
+              <p className="text-xs opacity-70 mt-1">{t('video.usingFallback')}</p>
             </div>
           </div>
         </div>
@@ -109,7 +111,7 @@ export default function TestBackgroundVideo({
 
       {/* 状态指示器 */}
       <div className="absolute top-4 left-4 z-10 bg-black/50 text-white px-2 py-1 rounded text-xs">
-        {isLoading ? '加载中...' : hasError ? '加载失败' : videoReady ? '视频就绪' : '初始化'}
+        {isLoading ? t('common.loading') : hasError ? t('components.templateGrid.loadFailed') : videoReady ? t('video.ready') : t('video.initializing')}
       </div>
     </div>
   )

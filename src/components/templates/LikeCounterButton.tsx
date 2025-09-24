@@ -23,6 +23,9 @@ interface LikeCounterButtonProps {
   onLikeChange?: (isLiked: boolean, likeCount: number) => void
   dataLoading?: boolean // 🚀 新增：数据加载中状态（区别于点赞操作加载）
   skeleton?: boolean   // 🚀 新增：显示骨架屏
+  subscribeToCache?: boolean // 🚀 新增：是否订阅全局likes缓存
+  optimistic?: boolean // 🚀 新增：是否启用乐观更新
+  disableBaselineLoad?: boolean // 🚀 列表页默认禁用基线拉取，零等待更新
 }
 
 export function LikeCounterButton({
@@ -36,7 +39,10 @@ export function LikeCounterButton({
   animated = true,
   onLikeChange,
   dataLoading = false,
-  skeleton = false
+  skeleton = false,
+  optimistic = true,
+  subscribeToCache = true,
+  disableBaselineLoad = false // 🚀 改为false，允许在需要时进行基线加载
 }: LikeCounterButtonProps) {
   const { user } = useAuthState()
   const navigate = useNavigate()
@@ -52,7 +58,9 @@ export function LikeCounterButton({
     initialLikeCount,
     initialIsLiked,
     onLikeChange,
-    enableOptimisticUpdate: true
+    enableOptimisticUpdate: optimistic,
+    subscribeToCache,
+    disableBaselineLoad
   })
 
   // 尺寸配置

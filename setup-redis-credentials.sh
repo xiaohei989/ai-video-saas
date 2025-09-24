@@ -26,15 +26,17 @@ echo "🔑 设置Redis环境变量..."
 
 # 设置Supabase Edge Functions环境变量
 echo "📤 配置Supabase secrets..."
-SUPABASE_ACCESS_TOKEN=sbp_bce3f20e1be1fe5cab227066d5b9567973cb46bb supabase secrets set UPSTASH_REDIS_REST_URL="$REDIS_URL"
-SUPABASE_ACCESS_TOKEN=sbp_bce3f20e1be1fe5cab227066d5b9567973cb46bb supabase secrets set UPSTASH_REDIS_REST_TOKEN="$REDIS_TOKEN"
+# 从环境变量读取Access Token，如果没有则使用默认值
+ACCESS_TOKEN=${SUPABASE_ACCESS_TOKEN:-"sbp_bce3f20e1be1fe5cab227066d5b9567973cb46bb"}
+SUPABASE_ACCESS_TOKEN=$ACCESS_TOKEN supabase secrets set UPSTASH_REDIS_REST_URL="$REDIS_URL"
+SUPABASE_ACCESS_TOKEN=$ACCESS_TOKEN supabase secrets set UPSTASH_REDIS_REST_TOKEN="$REDIS_TOKEN"
 
 echo "✅ Redis凭证配置完成！"
 
 # 验证配置
 echo "🔍 验证配置..."
 echo "当前Supabase secrets:"
-SUPABASE_ACCESS_TOKEN=sbp_bce3f20e1be1fe5cab227066d5b9567973cb46bb supabase secrets list
+SUPABASE_ACCESS_TOKEN=$ACCESS_TOKEN supabase secrets list
 
 echo ""
 echo "🚀 下一步："

@@ -1,9 +1,10 @@
 /**
  * 视频缓存服务 - 移动端优化的本地缓存机制
- * 提供多层缓存：内存缓存 + localStorage + 预加载
+ * 提供多层缓存：内存缓存 + 统一缓存系统(IndexedDB) + 预加载
  */
 
 import type { Database } from '@/lib/supabase'
+import { unifiedCache } from './UnifiedCacheService'
 
 type Video = Database['public']['Tables']['videos']['Row']
 
@@ -29,6 +30,10 @@ class VideoCacheService {
   private readonly DEFAULT_MAX_AGE = 5 * 60 * 1000 // 5分钟
   private readonly DEFAULT_MAX_ITEMS = 100  // 🚀 从20增加到100，大幅提升缓存容量
   private readonly STORAGE_PREFIX = 'veo3_video_cache_'
+  private readonly STORAGE_CLEANUP_INTERVAL = 5 * 60 * 1000 // 5分钟节流
+  private readonly STORAGE_CLEANUP_THRESHOLD = 10 // 累计写入次数阈值
+  private lastStorageCleanup = 0
+  private storageWriteCounter = 0
   
   /**
    * 🚀 生成稳定的缓存键（解决JSON.stringify键顺序不稳定问题）
@@ -120,112 +125,65 @@ class VideoCacheService {
   }
 
   /**
-   * 🗄️ 从localStorage获取
+   * 🗄️ 从统一缓存系统获取
    */
-  private getFromStorage(cacheKey: string): CachedVideoData | null {
+  private async getFromStorage(cacheKey: string): Promise<CachedVideoData | null> {
     try {
       const storageKey = `${this.STORAGE_PREFIX}${cacheKey}`
-      const cached = localStorage.getItem(storageKey)
+      const cached = await unifiedCache.get<CachedVideoData>(storageKey, {
+        category: 'video'
+      })
       
       if (cached) {
-        const data: CachedVideoData = JSON.parse(cached)
-        
-        if (this.isCacheValid(data.timestamp, this.DEFAULT_MAX_AGE * 2)) { // localStorage缓存时间更长
-          // 🚀 增强日志：显示localStorage缓存详情
-          const videoInfo = data.videos[0]
+        if (this.isCacheValid(cached.timestamp, this.DEFAULT_MAX_AGE * 2)) { // 统一缓存时间更长
+          // 🚀 增强日志：显示统一缓存详情
+          const videoInfo = cached.videos[0]
           const videoTitle = videoInfo?.title || videoInfo?.template_name || '未知视频'
           const videoId = videoInfo?.id || 'unknown'
-          const ageMinutes = Math.round((Date.now() - data.timestamp) / 60000)
-          console.log(`[VideoCache] 📱 localStorage缓存命中: 视频ID[${videoId}] "${videoTitle}" (${data.videos.length}个视频, ${ageMinutes}分钟前缓存)`)
+          const ageMinutes = Math.round((Date.now() - cached.timestamp) / 60000)
+          console.log(`[VideoCache] 📱 统一缓存命中: 视频ID[${videoId}] "${videoTitle}" (${cached.videos.length}个视频, ${ageMinutes}分钟前缓存)`)
           
           // 同时加载到内存缓存（会自动更新LRU）
-          this.setToMemory(cacheKey, data)
+          this.setToMemory(cacheKey, cached)
           
-          return data
+          return cached
         } else {
-          // 清理过期的localStorage缓存
-          localStorage.removeItem(storageKey)
-          console.log(`[VideoCache] 🧹 清理过期localStorage缓存: ${cacheKey}`)
+          console.log(`[VideoCache] 🧹 清理过期统一缓存: ${cacheKey}`)
         }
       }
     } catch (error) {
-      console.warn('[VideoCache] localStorage读取失败:', error)
+      console.warn('[VideoCache] 统一缓存读取失败:', error)
     }
     
     return null
   }
 
   /**
-   * 🗄️ 存储到localStorage
+   * 🗄️ 存储到统一缓存系统
    */
-  private setToStorage(cacheKey: string, data: CachedVideoData): void {
+  private async setToStorage(cacheKey: string, data: CachedVideoData): Promise<void> {
     try {
       const storageKey = `${this.STORAGE_PREFIX}${cacheKey}`
-      localStorage.setItem(storageKey, JSON.stringify(data))
-      
-      // 清理旧的缓存项（保持localStorage整洁）
-      this.cleanupStorage()
-      
-    } catch (error) {
-      console.warn('[VideoCache] localStorage存储失败:', error)
-      
-      // 如果存储失败（可能是空间不足），尝试清理后重试
-      this.cleanupStorage()
-      try {
-        localStorage.setItem(`${this.STORAGE_PREFIX}${cacheKey}`, JSON.stringify(data))
-      } catch (retryError) {
-        console.error('[VideoCache] localStorage重试失败:', retryError)
-      }
-    }
-  }
-
-  /**
-   * 🧹 清理过期的localStorage缓存
-   */
-  private cleanupStorage(): void {
-    try {
-      const keysToRemove: string[] = []
-      
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i)
-        
-        if (key && key.startsWith(this.STORAGE_PREFIX)) {
-          const item = localStorage.getItem(key)
-          if (item) {
-            try {
-              const data: CachedVideoData = JSON.parse(item)
-              if (!this.isCacheValid(data.timestamp, this.DEFAULT_MAX_AGE * 3)) {
-                keysToRemove.push(key)
-              }
-            } catch {
-              // 格式错误的缓存也要清理
-              keysToRemove.push(key)
-            }
-          }
-        }
-      }
-      
-      keysToRemove.forEach(key => {
-        localStorage.removeItem(key)
+      await unifiedCache.set(storageKey, data, {
+        category: 'video',
+        ttl: this.DEFAULT_MAX_AGE * 2 / 1000 // 转换为秒
       })
-      
-      if (keysToRemove.length > 0) {
-        console.log(`[VideoCache] 🧹 清理了${keysToRemove.length}个过期缓存`)
-      }
-      
+      console.log(`[VideoCache] 📱 统一缓存存储成功: ${storageKey}`)
     } catch (error) {
-      console.warn('[VideoCache] 缓存清理失败:', error)
+      console.warn('[VideoCache] 统一缓存存储失败:', error)
     }
   }
 
+  // 统一缓存系统会自动处理清理，移除旧的localStorage清理逻辑
+
   /**
-   * 🚀 获取缓存数据（优先级：内存 > localStorage）
+   * 🚀 获取缓存数据（优先级：内存 > 统一缓存）
    */
-  getCachedVideos(
+  async getCachedVideos(
     userId: string, 
     filter?: any, 
     pagination?: any
-  ): CachedVideoData | null {
+  ): Promise<CachedVideoData | null> {
     const cacheKey = this.getCacheKey(userId, filter, pagination)
     
     // 1. 尝试从内存获取
@@ -234,8 +192,8 @@ class VideoCacheService {
       return memoryResult
     }
     
-    // 2. 尝试从localStorage获取
-    const storageResult = this.getFromStorage(cacheKey)
+    // 2. 尝试从统一缓存获取
+    const storageResult = await this.getFromStorage(cacheKey)
     if (storageResult) {
       return storageResult
     }
@@ -246,7 +204,7 @@ class VideoCacheService {
   /**
    * 💾 缓存视频数据
    */
-  cacheVideos(
+  async cacheVideos(
     userId: string,
     videos: Video[],
     total: number,
@@ -254,23 +212,25 @@ class VideoCacheService {
     pageSize: number,
     filter?: any,
     pagination?: any
-  ): void {
+  ): Promise<void> {
     const cacheKey = this.getCacheKey(userId, filter, pagination)
+    const sanitizedVideos = videos.map(video => this.sanitizeVideo(video))
+
     const data: CachedVideoData = {
-      videos,
+      videos: sanitizedVideos,
       total,
       page,
       pageSize,
       timestamp: Date.now(),
       userId
     }
-    
-    // 同时存储到内存和localStorage
+
+    // 同时存储到内存和统一缓存
     this.setToMemory(cacheKey, data)
-    this.setToStorage(cacheKey, data)
-    
+    await this.setToStorage(cacheKey, data)
+
     // 🚀 增强日志：显示缓存生成详情
-    const sampleVideo = videos[0]
+    const sampleVideo = sanitizedVideos[0]
     const videoTitle = sampleVideo?.title || sampleVideo?.template_name || '未知视频'
     const videoId = sampleVideo?.id || 'unknown'
     const estimatedSize = Math.round(JSON.stringify(data).length / 1024) // 估算KB
@@ -289,7 +249,7 @@ class VideoCacheService {
     cached: CachedVideoData | null, 
     fresh?: any 
   }> {
-    const cached = this.getCachedVideos(userId, filter, pagination)
+    const cached = await this.getCachedVideos(userId, filter, pagination)
     
     // 立即返回缓存数据
     let result: { cached: CachedVideoData | null, fresh?: any } = { cached }
@@ -302,7 +262,7 @@ class VideoCacheService {
         // 如果获得了新数据且与缓存不同，更新缓存
         if (result.fresh && result.fresh.videos) {
           const { videos, total, page, pageSize } = result.fresh
-          this.cacheVideos(userId, videos, total, page, pageSize, filter, pagination)
+          await this.cacheVideos(userId, videos, total, page, pageSize, filter, pagination)
         }
       } catch (error) {
         console.warn('[VideoCache] 后台更新失败:', error)
@@ -313,9 +273,34 @@ class VideoCacheService {
   }
 
   /**
+   * 🪥 移除缓存中不必要的大字段，降低localStorage占用
+   */
+  private sanitizeVideo(video: Video): Video {
+    const clone: Record<string, any> = { ...video }
+    const heavyKeys = [
+      'parameters',
+      'prompt_template',
+      'veo3_settings',
+      'render_config',
+      'transcript',
+      'audio_waveform',
+      'metadata',
+      'debug_info'
+    ]
+
+    heavyKeys.forEach(key => {
+      if (key in clone) {
+        delete clone[key]
+      }
+    })
+
+    return clone as Video
+  }
+
+  /**
    * 🗑️ 清空用户相关的所有缓存
    */
-  clearUserCache(userId: string): void {
+  async clearUserCache(userId: string): Promise<void> {
     // 清理内存缓存
     const keysToDelete: string[] = []
     this.memoryCache.forEach((data, key) => {
@@ -323,34 +308,16 @@ class VideoCacheService {
         keysToDelete.push(key)
       }
     })
-    keysToDelete.forEach(key => this.memoryCache.delete(key))
+    keysToDelete.forEach(key => {
+      this.memoryCache.delete(key)
+      this.accessOrder.delete(key)
+    })
     
-    // 清理localStorage缓存
+    // 使用统一缓存系统清理所有视频相关缓存
     try {
-      const storageKeysToRemove: string[] = []
+      await unifiedCache.clearAll()
       
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i)
-        if (key && key.startsWith(this.STORAGE_PREFIX)) {
-          const item = localStorage.getItem(key)
-          if (item) {
-            try {
-              const data: CachedVideoData = JSON.parse(item)
-              if (data.userId === userId) {
-                storageKeysToRemove.push(key)
-              }
-            } catch {
-              // 忽略格式错误的项目
-            }
-          }
-        }
-      }
-      
-      storageKeysToRemove.forEach(key => {
-        localStorage.removeItem(key)
-      })
-      
-      console.log(`[VideoCache] 🗑️ 清理了用户${userId}的${keysToDelete.length + storageKeysToRemove.length}个缓存项`)
+      console.log(`[VideoCache] 🗑️ 清理了用户${userId}的${keysToDelete.length}个内存缓存项，并清理了统一缓存`)
       
     } catch (error) {
       console.warn('[VideoCache] 清理用户缓存失败:', error)
@@ -364,27 +331,27 @@ class VideoCacheService {
     memorySize: number
     storageSize: number
     totalItems: number
+    unifiedCacheStats?: any
   } {
-    let storageSize = 0
+    // 从统一缓存系统获取视频相关统计
+    const unifiedStats = unifiedCache.getCategoryStats()
+    const videoStats = unifiedStats.find(stat => stat.name === 'video')
     
-    try {
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i)
-        if (key && key.startsWith(this.STORAGE_PREFIX)) {
-          const item = localStorage.getItem(key)
-          if (item) {
-            storageSize++
-          }
-        }
-      }
-    } catch (error) {
-      console.warn('[VideoCache] 获取缓存统计失败:', error)
-    }
+    const memorySize = this.memoryCache.size
+    const storageSize = videoStats?.count || 0
+    
+    console.log('[VideoCache] 📊 缓存统计 (统一缓存系统):', {
+      内存缓存项: memorySize,
+      持久化缓存项: storageSize,
+      缓存命中率: videoStats?.hitRate ? `${(videoStats.hitRate * 100).toFixed(1)}%` : '0%',
+      存储大小: videoStats?.size ? `${(videoStats.size / 1024 / 1024).toFixed(2)}MB` : '0MB'
+    })
     
     return {
-      memorySize: this.memoryCache.size,
+      memorySize,
       storageSize,
-      totalItems: this.memoryCache.size + storageSize
+      totalItems: memorySize + storageSize,
+      unifiedCacheStats: videoStats
     }
   }
 }

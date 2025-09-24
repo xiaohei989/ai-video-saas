@@ -411,6 +411,14 @@
     "myVideos": "My Videos",
     "loading": "Loading video...",
     "fetchingData": "Fetching video data...",
+    "backgroundLoading": {
+      "mobile": "Loading in background...",
+      "desktop": "Loading task status and more data in background...",
+      "description": {
+        "mobile": "Page ready, syncing data in background",
+        "desktop": "Basic content loaded, fetching task status and more videos in background"
+      }
+    },
     "downloadingProgress": "Downloading video {{progress}}%",
     "downloadingSize": "Downloading video {{size}}MB",
     "downloadComplete": "Video download complete!",
@@ -441,6 +449,70 @@
     "videoTitle": "Video Title",
     "cancel": "Cancel",
     "confirm": "Confirm Delete"
+  },
+  "pages": {
+    "videoEmbed": {
+      "loading": "Loading video...",
+      "notFound": "Video not found",
+      "loadFailed": "Failed to load video",
+      "unavailable": "Video unavailable",
+      "alt": "Video content"
+    },
+    "videoDetail": {
+      "loading": "Loading video...",
+      "notFound": "Video not found",
+      "loadFailed": "Failed to load video",
+      "downloadFailed": "Download failed, please try again later",
+      "backToHome": "Back to Home",
+      "unavailable": "Video unavailable"
+    },
+    "watermarkTest": {
+      "title": "Watermark Function Test",
+      "originalVideo": "Original Test Video",
+      "processing": "Processing...",
+      "addWatermark": "🎬 Add Watermark & Download",
+      "processLog": "Process Log:",
+      "clickToStart": "Click the button to start testing...",
+      "testDescription": "Test Instructions",
+      "steps": {
+        "step1": "Upload a test video file",
+        "step2": "System will automatically add watermark",
+        "step3": "Download the watermarked video file",
+        "step4": "Verify watermark effect and position"
+      }
+    },
+    "aiTest": {
+      "title": "AI Content Generation Simple Test",
+      "generating": "Generating...",
+      "generateButton": "Test AI Generation"
+    },
+    "testAIContent": {
+      "title": "AI Content Generation Test",
+      "parameters": "Test Parameters",
+      "templateName": "Template Name",
+      "prompt": "Video Prompt",
+      "jsonParameters": "Parameters (JSON Format)",
+      "language": "User Language",
+      "chinese": "Chinese",
+      "generating": "Generating...",
+      "generateTitle": "Generate Title and Description"
+    }
+  },
+  "components": {
+    "templateGrid": {
+      "loadFailed": "Load Failed",
+      "loadFailedDesc": "Template data failed to load, please try again later",
+      "noTemplates": "No Templates",
+      "noTemplatesDesc": "Please try adjusting the filter criteria"
+    },
+    "performance": {
+      "thumbnail": "Thumbnail Performance",
+      "hitRate": "Hit Rate: {{rate}}%",
+      "firstLoad": "First Load Time:",
+      "averageLoad": "Average Load:",
+      "template": "Template Page Performance",
+      "templateCount": "Templates: {{count}}"
+    }
   },
   "time": {
     "justNow": "Just now",
@@ -593,7 +665,7 @@
     "canChangePlan": "Can I change my subscription plan?",
     "changePlanDescription": "You can upgrade or downgrade your subscription plan at any time. Changes will take effect in the next billing cycle.",
     "doCreditsRollover": "Do unused credits roll over?",
-    "creditsRolloverDescription": "Subscription credits reset each billing cycle. We recommend choosing a plan that matches your usage.",
+    "creditsRolloverDescription": "Subscription credits are added to your account each billing cycle and unused credits carry over. Choose a plan that best fits your needs.",
     "paymentMethods": "What payment methods are supported?",
     "paymentMethodsDescription": "We support major credit and debit cards including Visa, Mastercard, and American Express."
   },
@@ -1178,7 +1250,34 @@
     "apiTest": "API Test",
     "authRefreshed": "Admin authentication refreshed",
     "noPermission": "Current user has no admin permissions",
-    "refreshFailed": "Refresh failed"
+    "refreshFailed": "Refresh failed",
+    "videoLoader": "Video Loader",
+    "loading": "Loading",
+    "inQueue": "In Queue",
+    "thumbnailCache": "Thumbnail Cache",
+    "memoryItems": "Memory Items",
+    "dbItems": "Database Items",
+    "dashboard": "Admin Dashboard",
+    "orders": {
+      "title": "Order Management",
+      "description": "View and manage all payment orders",
+      "loading": "Loading...",
+      "error": "Error",
+      "noData": "No data",
+      "exportData": "Export Data",
+      "resetStats": "Reset Statistics",
+      "status": {
+        "success": "Success",
+        "pending": "Pending",
+        "failed": "Failed",
+        "canceled": "Canceled"
+      },
+      "type": {
+        "subscription": "Subscription",
+        "credits": "Credits",
+        "other": "Other"
+      }
+    }
   },
   "seo": {
     "pages": {

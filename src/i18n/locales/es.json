@@ -582,7 +582,7 @@
     "canChangePlan": "¿Puedo cambiar mi plan de suscripción?",
     "changePlanDescription": "Puedes actualizar o degradar tu plan de suscripción en cualquier momento. Los cambios tomarán efecto en el siguiente ciclo de facturación.",
     "doCreditsRollover": "¿Los créditos no utilizados se transfieren?",
-    "creditsRolloverDescription": "Los créditos de suscripción se reinician cada ciclo de facturación. Recomendamos elegir un plan que coincida con tu uso.",
+    "creditsRolloverDescription": "Los créditos de suscripción se agregan a tu cuenta en cada ciclo de facturación y los créditos no utilizados se acumulan. Elige el plan que mejor se adapte a tus necesidades.",
     "paymentMethods": "¿Qué métodos de pago son compatibles?",
     "paymentMethodsDescription": "Soportamos las principales tarjetas de crédito y débito incluyendo Visa, Mastercard y American Express."
   },

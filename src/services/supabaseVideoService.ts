@@ -64,7 +64,6 @@ class SupabaseVideoService {
   private getCachedResult<T>(cacheKey: string): T | null {
     const cached = this.requestCache.get(cacheKey)
     if (cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
-      console.log(`[VideoService] 📦 使用缓存: ${cacheKey}`)
       return cached.data as T
     }
     return null
@@ -350,11 +349,10 @@ class SupabaseVideoService {
       // 🚀 缓存结果
       this.setCachedResult(cacheKey, result)
       
-      console.log(`[VideoService] ✅ 获取${result.videos.length}个视频 (${result.total}总数)`)
       
       return result
     } catch (error) {
-      console.error('[VideoService] 获取用户视频失败:', error)
+      console.error('获取用户视频失败:', error)
       
       // 返回空结果但不缓存错误
       return {
@@ -793,7 +791,6 @@ class SupabaseVideoService {
           
           // 检查是否有相同的请求正在进行
           if (this.pendingRequests.has(requestKey)) {
-            console.log(`[VideoService] 📞 等待进行中的${type}请求: ${id}`)
             const result = await this.pendingRequests.get(requestKey)
             resolve(result)
             return
@@ -811,7 +808,7 @@ class SupabaseVideoService {
             this.pendingRequests.delete(requestKey)
           }
         } catch (error) {
-          console.error(`[VideoService] ${type}计数更新失败:`, error)
+          console.error(`${type}计数更新失败:`, error)
           resolve(false)
         }
       }, debounceTime))
@@ -826,7 +823,6 @@ class SupabaseVideoService {
     type: 'view_count' | 'download_count' | 'share_count'
   ): Promise<boolean> {
     try {
-      console.log(`[VideoService] 📊 更新${type}: ${id}`)
       
       // 使用带超时的请求
       const fetchResult = await this.withTimeout(
@@ -839,7 +835,7 @@ class SupabaseVideoService {
       )
 
       if (fetchResult.error || !fetchResult.data) {
-        console.error(`[VideoService] 获取视频失败 ${id}:`, fetchResult.error)
+        console.error(`获取视频失败 ${id}:`, fetchResult.error)
         return false
       }
 
@@ -861,11 +857,10 @@ class SupabaseVideoService {
       )
 
       if (updateResult.error) {
-        console.error(`[VideoService] 更新${type}失败:`, updateResult.error)
+        console.error(`更新${type}失败:`, updateResult.error)
         return false
       }
 
-      console.log(`[VideoService] ✅ ${type}更新成功: ${id} (${currentCount} -> ${currentCount + 1})`)
       return true
     } catch (error) {
       // 检查是否是网络错误，可以重试
@@ -874,9 +869,9 @@ class SupabaseVideoService {
         error.message.includes('超时') ||
         error.message.includes('fetch')
       )) {
-        console.warn(`[VideoService] 网络错误，${type}更新失败: ${id}`, error.message)
+        console.warn(`网络错误，${type}更新失败: ${id}`, error.message)
       } else {
-        console.error(`[VideoService] ${type}更新异常: ${id}`, error)
+        console.error(`${type}更新异常: ${id}`, error)
       }
       return false
     }

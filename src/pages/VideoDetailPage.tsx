@@ -92,7 +92,7 @@ export default function VideoDetailPage() {
         const videoData = await supabaseVideoService.getVideo(id)
         
         if (!videoData) {
-          setError('视频不存在')
+          setError(t('pages.videoDetail.notFound'))
           return
         }
         
@@ -133,7 +133,7 @@ export default function VideoDetailPage() {
       await supabaseVideoService.incrementDownloadCount(video.id)
     } catch (error) {
       console.error('Download failed:', error)
-      toast.error('下载失败，请稍后重试')
+      toast.error(t('pages.videoDetail.downloadFailed'))
     }
   }
   
@@ -148,7 +148,7 @@ export default function VideoDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">加载视频中...</p>
+          <p className="text-muted-foreground">{t('pages.videoDetail.loading')}</p>
         </div>
       </div>
     )
@@ -159,10 +159,10 @@ export default function VideoDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-4" />
-          <p className="text-red-500 mb-4">{error || '视频不存在'}</p>
+          <p className="text-red-500 mb-4">{error || t('pages.videoDetail.notFound')}</p>
           <Button onClick={() => navigate('/')} variant="outline">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            返回首页
+            {t('pages.videoDetail.backToHome')}
           </Button>
         </div>
       </div>

@@ -6,8 +6,8 @@ set -e
 
 echo "🚀 部署Redis相关Edge Functions..."
 
-# 设置访问令牌
-export SUPABASE_ACCESS_TOKEN=sbp_bce3f20e1be1fe5cab227066d5b9567973cb46bb
+# 设置访问令牌 - 优先使用环境变量，否则使用默认值
+export SUPABASE_ACCESS_TOKEN=${SUPABASE_ACCESS_TOKEN:-"sbp_bce3f20e1be1fe5cab227066d5b9567973cb46bb"}
 
 echo "📤 部署get-cached-data函数..."
 supabase functions deploy get-cached-data --no-verify-jwt

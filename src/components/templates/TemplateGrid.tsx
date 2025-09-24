@@ -9,13 +9,13 @@ import { useNavigate } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Play, Hash, Video, ArrowUp } from 'lucide-react'
-import SimpleVideoPlayer from '@/components/video/SimpleVideoPlayer'
+import ReactVideoPlayer from '@/components/video/ReactVideoPlayer'
 import LikeCounterButton from './LikeCounterButton'
 import CachedImage from '@/components/ui/CachedImage'
 import TemplatesSkeleton from './TemplatesSkeleton'
-import VideoLoadingSpinner from '@/components/ui/VideoLoadingSpinner'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { simpleTemplatePreload } from '@/services/simpleTemplatePreload'
+import { likesCacheService } from '@/services/likesCacheService'
 
 // 模板类型定义（与数据库转换后的格式一致）
 interface Template {
@@ -43,6 +43,8 @@ interface TemplateGridProps {
   showBackToTop?: boolean
   onTemplateUse?: (template: Template) => void
   className?: string
+  // 🚀 新增：是否是初始加载且没有缓存数据
+  showSkeleton?: boolean
 }
 
 export default function TemplateGrid({
@@ -51,8 +53,10 @@ export default function TemplateGrid({
   error = null,
   showBackToTop = false,
   onTemplateUse,
-  className
+  className,
+  showSkeleton
 }: TemplateGridProps) {
+  const { t } = useTranslation()
   const containerRef = useRef<HTMLDivElement>(null)
 
   // 🚀 首屏模板预加载 - 当模板列表加载完成时触发
@@ -81,8 +85,8 @@ export default function TemplateGrid({
     return (
       <div className="flex flex-col items-center justify-center min-h-96 space-y-4">
         <div className="text-center">
-          <h3 className="text-lg font-semibold text-red-600 mb-2">加载失败</h3>
-          <p className="text-gray-600 mb-4">模板数据加载失败，请稍后重试</p>
+          <h3 className="text-lg font-semibold text-red-600 mb-2">{t('components.templateGrid.loadFailed')}</h3>
+          <p className="text-gray-600 mb-4">{t('components.templateGrid.loadFailedDesc')}</p>
           <Button onClick={() => window.location.reload()}>
             重新加载
           </Button>
@@ -91,8 +95,13 @@ export default function TemplateGrid({
     )
   }
 
-  // 加载状态
-  if (loading) {
+  // 🚀 智能骨架屏：只在真正需要时显示
+  // 条件：(loading 且 showSkeleton !== false) 或者 (loading 且 没有模板数据 且 showSkeleton 未明确设为 false)
+  const shouldShowSkeleton = showSkeleton !== undefined 
+    ? showSkeleton && loading  // 如果明确传入了 showSkeleton，以它为准
+    : loading && templates.length === 0  // 如果没有传入，只在 loading 且无数据时显示
+
+  if (shouldShowSkeleton) {
     return <TemplatesSkeleton count={12} className={className || "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"} />
   }
 
@@ -102,8 +111,8 @@ export default function TemplateGrid({
       <div className="flex flex-col items-center justify-center min-h-96 space-y-4">
         <div className="text-center">
           <Play className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-          <h3 className="text-lg font-semibold mb-2">暂无模板</h3>
-          <p className="text-muted-foreground">请尝试调整筛选条件</p>
+          <h3 className="text-lg font-semibold mb-2">{t('components.templateGrid.noTemplates')}</h3>
+          <p className="text-muted-foreground">{t('components.templateGrid.noTemplatesDesc')}</p>
         </div>
       </div>
     )
@@ -149,62 +158,32 @@ const TemplateCard = memo(({
   const { trackTemplateView, trackEvent } = useAnalytics()
   const navigate = useNavigate()
   
-  // 检测移动端 - 使用响应式检测并监听窗口变化
-  const [isMobile, setIsMobile] = useState(() => 
-    typeof window !== 'undefined' && window.innerWidth <= 768
-  )
+  // 简单的移动设备检测
+  const [isMobile, setIsMobile] = useState(false)
   
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768)
+      setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window)
     }
-    
-    checkMobile() // 立即检查一次
+    checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
   
-  // 视频加载状态管理
-  const [isVideoLoading, setIsVideoLoading] = useState(false)
-  const [isHovered, setIsHovered] = useState(false)
-  const [hasUserInteracted, setHasUserInteracted] = useState(false)
-
-  // 视频事件处理
-  const handleVideoLoadStart = () => {
-    setIsVideoLoading(true)
-  }
-  
+  // 简化的视频处理 - 只保留必要的事件处理
   const handleVideoCanPlay = () => {
-    setIsVideoLoading(false)
+    console.log('[TemplateCard] 视频已准备就绪:', template.id)
   }
   
-  const handleVideoError = () => {
-    setIsVideoLoading(false)
+  const handleVideoError = (error: any) => {
+    console.error('[TemplateCard] 视频加载错误:', template.id, error)
   }
   
-  // 鼠标事件处理
+  // 鼠标悬停预加载（保留缓存优化）
   const handleMouseEnter = () => {
-    if (!isMobile) {
-      setIsHovered(true)
-      setHasUserInteracted(true)
-      
-      // 🚀 鼠标悬停时触发预加载
-      if (template.previewUrl) {
-        simpleTemplatePreload.preloadOnHover(template.id, template.previewUrl)
-      }
-    }
-  }
-  
-  const handleMouseLeave = () => {
-    if (!isMobile) {
-      setIsHovered(false)
-    }
-  }
-  
-  // 移动端播放按钮点击
-  const handlePlayClick = () => {
-    if (isMobile) {
-      setHasUserInteracted(true)
+    // 🚀 鼠标悬停时触发预加载
+    if (template.previewUrl) {
+      simpleTemplatePreload.preloadOnHover(template.id, template.previewUrl)
     }
   }
 
@@ -230,50 +209,33 @@ const TemplateCard = memo(({
     }
   }
 
-  // 直接使用API数据中的点赞数
-  const likeCount = template.likeCount ?? 0
-  const isLiked = false // 暂时不支持用户点赞状态，只显示数量
+  // 🚀 优先使用点赞缓存中的数据，确保状态一致性
+  const cachedLikeStatus = likesCacheService.get(template.id)
+  const likeCount = cachedLikeStatus?.like_count ?? template.likeCount ?? 0
+  const isLiked = cachedLikeStatus?.is_liked ?? false
   
   // 判断数据是否加载完成：只要有template.likeCount就不是加载状态
   const hasLikeData = template.likeCount !== undefined
   
-  // 判断是否应该显示加载动画
-  const shouldShowLoadingSpinner = isVideoLoading && hasUserInteracted && (isHovered || isMobile)
 
   return (
     <Card className="overflow-hidden shadow-md flex flex-col">
       <div 
         className="aspect-video bg-muted relative group"
         onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
       >
         {template.previewUrl ? (
           <div className="relative w-full h-full">
-            {/* 模糊图背景层 - 支持两级加载：模糊图→清晰图 */}
-            {template.thumbnailUrl && (
-              <CachedImage 
-                key={`cached-bg-${template.id}`} // 🔧 添加稳定的key避免重渲染
-                src={template.thumbnailUrl}
-                alt={template.name}
-                className="absolute inset-0 w-full h-full object-cover"
-                fastPreview={true} // 启用模糊图→清晰图两级加载
-              />
-            )}
-            {/* 视频播放器在上层（透明背景） */}
-            <SimpleVideoPlayer
-              src={template.previewUrl}
-              // poster={template.thumbnailUrl} // 🔧 移除poster避免与CachedImage竞争
-              className="relative z-10 w-full h-full bg-transparent" // 🔧 设置透明背景
-              objectFit="cover"
-              showPlayButton={true}
-              autoPlayOnHover={!isMobile} // 移动端禁用自动播放
-              muted={false}
-              disablePreload={false} // ✅ 启用预加载，配合智能预加载服务
-              alt={template.name}
-              videoId={template.id}
-              videoTitle={template.name}
-              onLoadStart={handleVideoLoadStart}
-              onCanPlay={handleVideoCanPlay}
+            {/* 使用 ReactVideoPlayer 的内置缓存 poster，避免重复加载 */}
+            <ReactVideoPlayer
+              videoUrl={template.previewUrl}
+              thumbnailUrl={template.thumbnailUrl}
+              autoplay={false} // 手动控制播放
+              muted={true} // 默认静音
+              controls={false} // 使用自定义控制器
+              autoPlayOnHover={!isMobile} // 桌面端悬浮自动播放，移动端点击播放
+              className="relative z-10 w-full h-full"
+              onReady={handleVideoCanPlay}
               onError={handleVideoError}
               onPlay={() => {
                 // 跟踪视频播放事件
@@ -287,18 +249,8 @@ const TemplateCard = memo(({
                   }
                 })
               }}
-              onClick={handlePlayClick}
             />
             
-            {/* 视频加载动画 */}
-            {shouldShowLoadingSpinner && (
-              <div className="absolute inset-0 z-20 flex items-center justify-center">
-                <VideoLoadingSpinner 
-                  size="lg"
-                  showPlayIcon={false}
-                />
-              </div>
-            )}
           </div>
         ) : template.thumbnailUrl ? (
           <CachedImage 
@@ -347,10 +299,9 @@ const TemplateCard = memo(({
             animated={true}
             dataLoading={!hasLikeData}
             skeleton={false}
-            onLikeChange={(liked, count) => {
-              // 暂时禁用点赞功能，只显示数量
-              console.log('点赞功能暂时禁用', { templateId: template.id, liked, count })
-            }}
+            subscribeToCache={false}
+            optimistic={true}
+            disableBaselineLoad={!cachedLikeStatus} // 🚀 只有缓存存在时才禁用基线加载
           />
         </div>
       </div>

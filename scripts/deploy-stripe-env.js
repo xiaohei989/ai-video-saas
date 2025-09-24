@@ -13,7 +13,7 @@ const ENV_FILE = path.join(__dirname, '..', '.env');
 const ENV_TEST_FILE = path.join(__dirname, '..', '.env.test');
 const ENV_PROD_FILE = path.join(__dirname, '..', '.env.production');
 const SUPABASE_PROJECT_REF = 'hvkzwrnvxsleeonqqrzq';
-const SUPABASE_ACCESS_TOKEN = 'sbp_bce3f20e1be1fe5cab227066d5b9567973cb46bb';
+const SUPABASE_ACCESS_TOKEN = process.env.SUPABASE_ACCESS_TOKEN || 'sbp_bce3f20e1be1fe5cab227066d5b9567973cb46bb';
 
 /**
  * 执行命令

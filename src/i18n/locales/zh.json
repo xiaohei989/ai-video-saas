@@ -411,6 +411,14 @@
     "myVideos": "我的视频",
     "loading": "正在加载视频...",
     "fetchingData": "正在获取视频数据...",
+    "backgroundLoading": {
+      "mobile": "后台加载中...",
+      "desktop": "后台加载任务状态和更多数据...",
+      "description": {
+        "mobile": "页面已可用，后台数据同步中",
+        "desktop": "基础内容已加载，正在后台获取任务状态和更多视频"
+      }
+    },
     "downloadingProgress": "正在下载视频 {{progress}}%",
     "downloadingSize": "正在下载视频 {{size}}MB",
     "downloadComplete": "视频下载完成！",
@@ -441,6 +449,70 @@
     "videoTitle": "视频标题",
     "cancel": "取消",
     "confirm": "确认删除"
+  },
+  "pages": {
+    "videoEmbed": {
+      "loading": "加载视频中...",
+      "notFound": "视频不存在",
+      "loadFailed": "加载视频失败",
+      "unavailable": "视频不可用",
+      "alt": "视频内容"
+    },
+    "videoDetail": {
+      "loading": "加载视频中...",
+      "notFound": "视频不存在",
+      "loadFailed": "加载视频失败",
+      "downloadFailed": "下载失败，请稍后重试",
+      "backToHome": "返回首页",
+      "unavailable": "视频不可用"
+    },
+    "watermarkTest": {
+      "title": "水印功能测试",
+      "originalVideo": "原始测试视频",
+      "processing": "处理中...",
+      "addWatermark": "🎬 添加水印并下载",
+      "processLog": "处理日志:",
+      "clickToStart": "点击按钮开始测试...",
+      "testDescription": "测试说明",
+      "steps": {
+        "step1": "上传一个测试视频文件",
+        "step2": "系统将自动添加水印",
+        "step3": "下载带水印的视频文件",
+        "step4": "验证水印效果和位置"
+      }
+    },
+    "aiTest": {
+      "title": "AI内容生成简单测试",
+      "generating": "生成中...",
+      "generateButton": "测试AI生成"
+    },
+    "testAIContent": {
+      "title": "AI内容生成测试",
+      "parameters": "测试参数",
+      "templateName": "模板名称",
+      "prompt": "视频提示词",
+      "jsonParameters": "参数 (JSON格式)",
+      "language": "用户语言",
+      "chinese": "中文",
+      "generating": "生成中...",
+      "generateTitle": "生成标题和简介"
+    }
+  },
+  "components": {
+    "templateGrid": {
+      "loadFailed": "加载失败",
+      "loadFailedDesc": "模板数据加载失败，请稍后重试",
+      "noTemplates": "暂无模板",
+      "noTemplatesDesc": "请尝试调整筛选条件"
+    },
+    "performance": {
+      "thumbnail": "缩略图性能",
+      "hitRate": "命中率: {{rate}}%",
+      "firstLoad": "首图时间:",
+      "averageLoad": "平均加载:",
+      "template": "模板页面性能",
+      "templateCount": "模板: {{count}}"
+    }
   },
   "time": {
     "justNow": "刚刚",
@@ -587,7 +659,7 @@
     "canChangePlan": "可以更改订阅计划吗？",
     "changePlanDescription": "可以随时升级或降级您的订阅计划。变更将在下一个计费周期生效。",
     "doCreditsRollover": "未使用的积分会结转吗？",
-    "creditsRolloverDescription": "订阅积分会在每个计费周期重置。我们建议选择符合您使用量的计划。",
+    "creditsRolloverDescription": "订阅积分会在每个计费周期添加到您的账户中，未使用的积分会保留并累积。请选择最适合您需求的计划。",
     "paymentMethods": "支持哪些支付方式？",
     "paymentMethodsDescription": "我们支持Visa、Mastercard、American Express等主要信用卡和借记卡。"
   },
@@ -802,10 +874,19 @@
     "printPdf": "打印 / PDF",
     "backToTop": "返回顶部",
     "remaining": "剩余",
-    "confirm": "确认"
+    "confirm": "确认",
+    "refreshAndRetry": "请刷新页面重试"
   },
   "video": {
-    "madeWith": "使用 veo3video.me 制作"
+    "madeWith": "使用 veo3video.me 制作",
+    "loadFailed": "视频加载失败",
+    "usingFallback": "使用后备图片",
+    "ready": "视频就绪",
+    "initializing": "初始化"
+  },
+  "payment": {
+    "creditLoadFailed": "积分加载失败",
+    "creditHistory": "积分记录"
   },
   "shareModal": {
     "title": "分享视频获得积分",
@@ -1178,7 +1259,28 @@
     "inQueue": "队列中",
     "thumbnailCache": "缩略图缓存",
     "memoryItems": "内存项",
-    "dbItems": "数据库项"
+    "dbItems": "数据库项",
+    "dashboard": "管理员后台",
+    "orders": {
+      "title": "订单管理",
+      "description": "查看和管理所有支付订单",
+      "loading": "加载中...",
+      "error": "错误",
+      "noData": "暂无数据",
+      "exportData": "导出数据",
+      "resetStats": "重置统计",
+      "status": {
+        "success": "成功",
+        "pending": "待处理",
+        "failed": "失败",
+        "canceled": "取消"
+      },
+      "type": {
+        "subscription": "订阅",
+        "credits": "积分",
+        "other": "其他"
+      }
+    }
   },
   "seo": {
     "pages": {

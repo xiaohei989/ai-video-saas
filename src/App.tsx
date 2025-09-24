@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from './hooks/useTheme'
 import { AuthProvider } from './contexts/AuthContext'
-import { VideoPlaybackProvider } from './contexts/VideoPlaybackContext'
 import { Layout } from './components/layout/Layout'
 import FullScreenLayout from './components/layout/FullScreenLayout'
 import ProtectedRoute from './components/auth/ProtectedRoute'
@@ -79,6 +78,13 @@ import ThumbnailTestPage from './pages/ThumbnailTestPage'
 // Translation pages
 import TemplateTranslationPage from './features/translation/TemplateTranslationPage'
 
+// Device test page
+import DeviceTestPage from './pages/DeviceTestPage'
+import VideoPlayerTestPage from './pages/VideoPlayerTestPage'
+
+// Cache management page
+import CacheManagementPage from './pages/CacheManagementPage'
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -142,7 +148,6 @@ function App() {
       <ThemeProvider>
         <Router>
           <AuthProvider>
-            <VideoPlaybackProvider>
               <RoutePreloader />
               <TemplateSync />
               <Routes>
@@ -178,6 +183,11 @@ function App() {
               {/* Test pages (development only) */}
               <Route path="/test/apicore" element={<Layout><TestApicoreApi /></Layout>} />
               <Route path="/test/analytics" element={<Layout><TestAnalytics /></Layout>} />
+              <Route path="/test/device" element={<Layout><DeviceTestPage /></Layout>} />
+              <Route path="/test/video-player" element={<Layout><VideoPlayerTestPage /></Layout>} />
+              
+              {/* Cache management page (development only) */}
+              <Route path="/cache-management" element={<Layout><CacheManagementPage /></Layout>} />
               
               {/* Admin tools */}
               <Route path="/admin/thumbnails" element={<ThumbnailGeneratorPage />} />
@@ -215,7 +225,6 @@ function App() {
               <Toaster />
               <EnvironmentIndicator />
               <CookieConsentBanner />
-            </VideoPlaybackProvider>
           </AuthProvider>
         </Router>
       </ThemeProvider>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { AlertCircle, Loader2 } from 'lucide-react'
 import SimpleVideoPlayer from '@/components/video/SimpleVideoPlayer'
 import supabaseVideoService from '@/services/supabaseVideoService'
@@ -8,6 +9,7 @@ import type { Database } from '@/lib/supabase'
 type Video = Database['public']['Tables']['videos']['Row']
 
 export default function VideoEmbedPage() {
+  const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const [video, setVideo] = useState<Video | null>(null)
   const [loading, setLoading] = useState(true)
@@ -23,7 +25,7 @@ export default function VideoEmbedPage() {
         const videoData = await supabaseVideoService.getVideo(id)
         
         if (!videoData) {
-          setError('视频不存在')
+          setError(t('pages.videoEmbed.notFound'))
           return
         }
         
@@ -48,7 +50,7 @@ export default function VideoEmbedPage() {
         
       } catch (err) {
         console.error('Failed to fetch video:', err)
-        setError('加载视频失败')
+        setError(t('pages.videoEmbed.loadFailed'))
       } finally {
         setLoading(false)
       }
@@ -79,7 +81,7 @@ export default function VideoEmbedPage() {
       <div className="w-full h-screen flex items-center justify-center bg-black">
         <div className="text-center text-white">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p>加载视频中...</p>
+          <p>{t('pages.videoEmbed.loading')}</p>
         </div>
       </div>
     )
@@ -90,7 +92,7 @@ export default function VideoEmbedPage() {
       <div className="w-full h-screen flex items-center justify-center bg-black">
         <div className="text-center text-white">
           <AlertCircle className="h-8 w-8 mx-auto mb-4" />
-          <p>{error || '视频不可用'}</p>
+          <p>{error || t('pages.videoEmbed.unavailable')}</p>
         </div>
       </div>
     )

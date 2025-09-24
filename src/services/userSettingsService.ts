@@ -44,7 +44,6 @@ class UserSettingsService {
    */
   async getUserSettings(userId: string): Promise<SettingsOperationResult> {
     try {
-      console.log('[SETTINGS SERVICE] 获取用户设置:', userId)
       
       const { data, error } = await supabase
         .from('profiles')
@@ -53,7 +52,6 @@ class UserSettingsService {
         .single()
 
       if (error) {
-        console.error('[SETTINGS SERVICE] 获取设置失败:', error)
         return {
           success: false,
           message: '获取用户设置失败',
@@ -62,7 +60,6 @@ class UserSettingsService {
       }
 
       if (!data) {
-        console.warn('[SETTINGS SERVICE] 未找到用户设置，返回默认值')
         return {
           success: true,
           message: '使用默认设置',
@@ -78,7 +75,6 @@ class UserSettingsService {
         notification_preferences: data.notification_preferences || this.getDefaultNotificationPreferences()
       }
 
-      console.log('[SETTINGS SERVICE] ✅ 获取设置成功:', settings)
       return {
         success: true,
         message: '获取设置成功',
@@ -86,7 +82,6 @@ class UserSettingsService {
       }
 
     } catch (error) {
-      console.error('[SETTINGS SERVICE] 获取设置异常:', error)
       return {
         success: false,
         message: '获取设置时发生异常',
@@ -101,7 +96,6 @@ class UserSettingsService {
    */
   async updateUserSettings(userId: string, updates: UserSettingsUpdate): Promise<SettingsOperationResult> {
     try {
-      console.log('[SETTINGS SERVICE] 更新用户设置:', userId, updates)
 
       // 如果有通知偏好更新，需要合并现有设置
       let notificationPreferences = updates.notification_preferences
@@ -133,7 +127,6 @@ class UserSettingsService {
         .single()
 
       if (error) {
-        console.error('[SETTINGS SERVICE] 更新设置失败:', error)
         return {
           success: false,
           message: '更新用户设置失败',
@@ -149,7 +142,6 @@ class UserSettingsService {
         notification_preferences: data.notification_preferences || this.getDefaultNotificationPreferences()
       }
 
-      console.log('[SETTINGS SERVICE] ✅ 更新设置成功:', updatedSettings)
       return {
         success: true,
         message: '设置更新成功',
@@ -157,7 +149,6 @@ class UserSettingsService {
       }
 
     } catch (error) {
-      console.error('[SETTINGS SERVICE] 更新设置异常:', error)
       return {
         success: false,
         message: '更新设置时发生异常',
@@ -171,7 +162,6 @@ class UserSettingsService {
    */
   async migrateLocalSettings(userId: string): Promise<SettingsOperationResult> {
     try {
-      console.log('[SETTINGS SERVICE] 开始迁移本地设置到数据库:', userId)
 
       // 检查是否已经迁移过
       const existingSettings = await this.getUserSettings(userId)
@@ -179,7 +169,6 @@ class UserSettingsService {
         // 检查是否是默认设置，如果不是则说明已经有数据库设置
         const isDefaultSettings = this.isDefaultSettings(existingSettings.data)
         if (!isDefaultSettings) {
-          console.log('[SETTINGS SERVICE] 用户已有数据库设置，跳过迁移')
           return existingSettings
         }
       }
@@ -207,7 +196,6 @@ class UserSettingsService {
 
       // 如果没有任何本地设置需要迁移
       if (Object.keys(updates).length === 0) {
-        console.log('[SETTINGS SERVICE] 没有本地设置需要迁移')
         return {
           success: true,
           message: '没有本地设置需要迁移',
@@ -219,7 +207,6 @@ class UserSettingsService {
       const result = await this.updateUserSettings(userId, updates)
       
       if (result.success) {
-        console.log('[SETTINGS SERVICE] ✅ 本地设置迁移成功')
         // 可选：清理本地存储（但保留作为备份）
         // localStorage.removeItem('theme')
         // localStorage.removeItem('language')
@@ -230,7 +217,6 @@ class UserSettingsService {
       return result
 
     } catch (error) {
-      console.error('[SETTINGS SERVICE] 迁移本地设置异常:', error)
       return {
         success: false,
         message: '迁移本地设置时发生异常',
@@ -248,9 +234,7 @@ class UserSettingsService {
       localStorage.setItem('language', settings.language)
       localStorage.setItem('timezone', settings.timezone)
       localStorage.setItem('dateFormat', settings.date_format)
-      console.log('[SETTINGS SERVICE] 设置已同步到本地存储')
     } catch (error) {
-      console.warn('[SETTINGS SERVICE] 同步到本地存储失败:', error)
     }
   }
 
@@ -332,7 +316,6 @@ class UserSettingsService {
       return await this.updateUserSettings(userId, mergedUpdates)
 
     } catch (error) {
-      console.error('[SETTINGS SERVICE] 批量更新设置异常:', error)
       return {
         success: false,
         message: '批量更新设置时发生异常',

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -81,6 +82,7 @@ interface OrdersResponse {
 }
 
 export const OrdersPage: React.FC = () => {
+  const { t } = useTranslation()
   const [data, setData] = useState<OrdersResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -189,10 +191,10 @@ export const OrdersPage: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      succeeded: { variant: 'default' as const, label: '成功', className: 'bg-green-100 text-green-800 text-xs h-4' },
-      pending: { variant: 'secondary' as const, label: '待处理', className: 'bg-yellow-100 text-yellow-800 text-xs h-4' },
-      failed: { variant: 'destructive' as const, label: '失败', className: 'bg-red-100 text-red-800 text-xs h-4' },
-      canceled: { variant: 'outline' as const, label: '取消', className: 'bg-gray-100 text-gray-800 text-xs h-4' }
+      succeeded: { variant: 'default' as const, label: t('admin.orders.status.success'), className: 'bg-green-100 text-green-800 text-xs h-4' },
+      pending: { variant: 'secondary' as const, label: t('admin.orders.status.pending'), className: 'bg-yellow-100 text-yellow-800 text-xs h-4' },
+      failed: { variant: 'destructive' as const, label: t('admin.orders.status.failed'), className: 'bg-red-100 text-red-800 text-xs h-4' },
+      canceled: { variant: 'outline' as const, label: t('admin.orders.status.canceled'), className: 'bg-gray-100 text-gray-800 text-xs h-4' }
     }
     
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending

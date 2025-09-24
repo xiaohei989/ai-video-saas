@@ -120,9 +120,34 @@ const VideoCard: React.FC<{
     <div style={style} className="p-2">
       <Card className="h-full overflow-hidden hover:shadow-lg transition-all duration-300">
         <div className="aspect-video relative bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-800 dark:via-slate-700 dark:to-slate-600">
-          {/* 视频渲染逻辑 */}
-          {(video.video_url || video.r2_url) && video.id ? (
+          {/* 视频渲染逻辑 - 优化状态判断，数据库状态优先 */}
+          {video.status === 'completed' && (video.video_url || video.r2_url) ? (
             (() => {
+              // 优先显示已完成的视频 - 避免任务管理器滞后导致的显示问题
+              const urlResult = getBestVideoUrl(video)
+              const primaryUrl = getPlayerUrl(video) || getProxyVideoUrl(video.video_url || '')
+              const fallbackUrl = urlResult?.fallbackUrl ? getProxyVideoUrl(urlResult.fallbackUrl) : undefined
+              
+              return (
+                <SimpleVideoPlayer
+                  src={primaryUrl}
+                  fallbackSrc={fallbackUrl}
+                  poster={video.thumbnail_url || undefined}
+                  className="w-full h-full"
+                  autoPlayOnHover={!isMobile}
+                  showPlayButton={true}
+                  muted={false}
+                  objectFit="cover"
+                  videoId={video.id}
+                  videoTitle={video.title || 'video'}
+                  alt={video.title || 'Video preview'}
+                  onPlay={() => onPlay(video)}
+                />
+              )
+            })()
+          ) : (video.video_url || video.r2_url) && video.id ? (
+            (() => {
+              // 其他有视频URL的情况
               const urlResult = getBestVideoUrl(video)
               const primaryUrl = getPlayerUrl(video) || getProxyVideoUrl(video.video_url || '')
               const fallbackUrl = urlResult?.fallbackUrl ? getProxyVideoUrl(urlResult.fallbackUrl) : undefined
@@ -145,7 +170,7 @@ const VideoCard: React.FC<{
               )
             })()
           ) : task && (task.status === 'processing' || task.status === 'pending') ? (
-            // 处理中状态
+            // 任务管理器显示处理中状态
             <div className="w-full h-full flowing-background flex items-center justify-center">
               <div className="fluid-bubbles"></div>
               <div className="text-center px-4 z-10 relative">
@@ -180,8 +205,22 @@ const VideoCard: React.FC<{
                 </div>
               </div>
             </div>
+          ) : video.status === 'processing' || video.status === 'pending' ? (
+            // 数据库状态显示处理中，但没有活跃任务 - 显示简化的处理状态
+            <div className="w-full h-full flowing-background flex items-center justify-center">
+              <div className="fluid-bubbles"></div>
+              <div className="text-center px-4 z-10 relative">
+                <Loader2 className="h-8 w-8 animate-spin text-white/90 mx-auto mb-2" strokeWidth={1.5} />
+                <div className="text-lg font-bold text-white mb-1">
+                  {t('videos.processing')}
+                </div>
+                <div className="text-xs text-white/80">
+                  {video.status === 'pending' ? t('videos.queuedForProcessing') : t('videos.generating')}
+                </div>
+              </div>
+            </div>
           ) : (
-            // 默认占位符
+            // 真正需要等待的情况
             <div className="w-full h-full flex items-center justify-center">
               <div className="text-center text-gray-600 dark:text-gray-300">
                 <Eye className="h-10 w-10 mx-auto mb-2" strokeWidth={1.5} />

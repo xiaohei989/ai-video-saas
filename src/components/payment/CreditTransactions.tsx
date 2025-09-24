@@ -16,6 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { useAuthContext } from '@/contexts/AuthContext'
 import creditService, { CreditTransaction } from '@/services/creditService'
+import { useTranslation } from 'react-i18next'
 
 interface CreditTransactionsProps {
   limit?: number
@@ -59,6 +60,7 @@ export function CreditTransactions({
   className = ''
 }: CreditTransactionsProps) {
   const { user } = useAuthContext()
+  const { t } = useTranslation()
   const [expanded, setExpanded] = useState(showAll)
   const [page, setPage] = useState(0)
   const pageSize = limit
@@ -108,8 +110,8 @@ export function CreditTransactions({
     return (
       <Card className={className}>
         <CardHeader>
-          <CardTitle>积分记录</CardTitle>
-          <CardDescription>加载失败</CardDescription>
+          <CardTitle>{t('payment.creditHistory')}</CardTitle>
+          <CardDescription>{t('components.templateGrid.loadFailed')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">

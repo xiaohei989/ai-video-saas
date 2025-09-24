@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>缓存问题调试页面</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .debug-section {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .log-output {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: Monaco, 'Cascadia Code', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.warning { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <h1>🔍 视频缩略图缓存问题调试</h1>
+    
+    <div class="debug-section">
+        <h2>📋 环境检查</h2>
+        <div id="envCheck"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>🧪 缓存功能测试</h2>
+        <button onclick="testLocalStorageBasic()">测试 localStorage 基本功能</button>
+        <button onclick="testImageCache()">测试图片缓存</button>
+        <button onclick="testCanvasConversion()">测试 Canvas 转换</button>
+        <button onclick="clearAllCache()">清理所有缓存</button>
+        <button onclick="showCacheStats()">显示缓存统计</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>📊 测试结果</h2>
+        <div id="testResults"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>🖥️ 控制台日志</h2>
+        <div class="log-output" id="consoleLog"></div>
+    </div>
+
+    <script>
+        // 拦截console.log以显示在页面上
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addToLog(message, type = 'log') {
+            const logElement = document.getElementById('consoleLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ff4444' : type === 'warn' ? '#ffaa00' : '#0f0';
+            logElement.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        console.log = (...args) => {
+            originalLog(...args);
+            addToLog(args.join(' '), 'log');
+        };
+        
+        console.error = (...args) => {
+            originalError(...args);
+            addToLog('ERROR: ' + args.join(' '), 'error');
+        };
+        
+        console.warn = (...args) => {
+            originalWarn(...args);
+            addToLog('WARN: ' + args.join(' '), 'warn');
+        };
+
+        // 模拟项目中的环境变量
+        const mockEnv = {
+            VITE_DISABLE_TEMPLATE_THUMBNAIL_CACHE: 'false',
+            VITE_ENABLE_CACHE: 'true'
+        };
+
+        // 移动端检测
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        // 缓存配置
+        const config = {
+            imageQuality: isMobile ? 0.4 : 0.7,
+            maxFileSize: isMobile ? 250 : 500,
+            maxCacheItems: isMobile ? 50 : 100
+        };
+
+        function checkEnvironment() {
+            const envDiv = document.getElementById('envCheck');
+            let html = '<div class="status success">✅ 环境检查结果:</div>';
+            
+            html += `<p><strong>设备类型:</strong> ${isMobile ? '移动设备' : '桌面设备'}</p>`;
+            html += `<p><strong>浏览器:</strong> ${navigator.userAgent}</p>`;
+            html += `<p><strong>缓存配置:</strong> 质量=${config.imageQuality}, 最大文件=${config.maxFileSize}KB</p>`;
+            
+            // 检查 localStorage
+            try {
+                const testKey = '__test_storage__';
+                localStorage.setItem(testKey, 'test');
+                localStorage.removeItem(testKey);
+                html += '<p><strong>localStorage:</strong> ✅ 可用</p>';
+            } catch (e) {
+                html += `<p><strong>localStorage:</strong> ❌ 不可用 (${e.message})</p>`;
+            }
+            
+            // 检查 Canvas
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    html += '<p><strong>Canvas:</strong> ✅ 支持</p>';
+                } else {
+                    html += '<p><strong>Canvas:</strong> ❌ 不支持</p>';
+                }
+            } catch (e) {
+                html += `<p><strong>Canvas:</strong> ❌ 异常 (${e.message})</p>`;
+            }
+            
+            envDiv.innerHTML = html;
+        }
+
+        function testLocalStorageBasic() {
+            console.log('🧪 测试 localStorage 基本功能');
+            
+            try {
+                const testData = {
+                    timestamp: Date.now(),
+                    message: 'Hello Cache',
+                    size: 1024
+                };
+                
+                const key = 'test_cache_basic';
+                const jsonData = JSON.stringify(testData);
+                
+                console.log('📝 准备写入数据:', jsonData.length, '字节');
+                localStorage.setItem(key, jsonData);
+                
+                const retrieved = localStorage.getItem(key);
+                if (retrieved) {
+                    console.log('✅ 写入成功，读取长度:', retrieved.length);
+                    const parsed = JSON.parse(retrieved);
+                    console.log('✅ 解析成功:', parsed);
+                    localStorage.removeItem(key);
+                    console.log('✅ 清理完成');
+                } else {
+                    console.error('❌ 读取失败');
+                }
+            } catch (error) {
+                console.error('❌ localStorage 测试失败:', error);
+            }
+        }
+
+        function testCanvasConversion() {
+            console.log('🧪 测试 Canvas 转换功能');
+            
+            try {
+                // 创建一个测试图片
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                if (!ctx) {
+                    console.error('❌ 无法获取 Canvas 上下文');
+                    return;
+                }
+                
+                // 设置画布大小并绘制简单图形
+                canvas.width = 200;
+                canvas.height = 100;
+                
+                // 绘制背景
+                ctx.fillStyle = '#f0f8ff';
+                ctx.fillRect(0, 0, 200, 100);
+                
+                // 绘制文字
+                ctx.fillStyle = '#333';
+                ctx.font = '16px Arial';
+                ctx.fillText('Test Image', 50, 50);
+                
+                // 绘制矩形
+                ctx.strokeStyle = '#007bff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(10, 10, 180, 80);
+                
+                console.log('✅ Canvas 绘制完成');
+                
+                // 转换为 Base64
+                const base64 = canvas.toDataURL('image/jpeg', config.imageQuality);
+                console.log('✅ Base64 转换完成, 长度:', base64.length);
+                
+                const estimatedSize = (base64.length * 0.75) / 1024;
+                console.log('📊 预估大小:', estimatedSize.toFixed(2), 'KB');
+                console.log('📊 是否超限:', estimatedSize > config.maxFileSize ? '是' : '否');
+                
+                // 测试缓存存储
+                const cacheKey = 'test_canvas_cache';
+                const cacheData = {
+                    base64,
+                    timestamp: Date.now(),
+                    size: estimatedSize,
+                    deviceType: isMobile ? 'Mobile' : 'Desktop',
+                    quality: config.imageQuality,
+                    dimensions: '200x100'
+                };
+                
+                try {
+                    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+                    console.log('✅ 缓存存储成功');
+                    
+                    const verification = localStorage.getItem(cacheKey);
+                    if (verification) {
+                        console.log('✅ 缓存验证成功, 长度:', verification.length);
+                        
+                        // 显示图片预览
+                        showImagePreview(base64, 'Canvas 转换测试结果');
+                        
+                        localStorage.removeItem(cacheKey);
+                        console.log('✅ 测试缓存已清理');
+                    }
+                } catch (storageError) {
+                    console.error('❌ 缓存存储失败:', storageError);
+                }
+                
+            } catch (error) {
+                console.error('❌ Canvas 转换测试失败:', error);
+            }
+        }
+
+        function testImageCache() {
+            console.log('🧪 测试真实图片缓存功能');
+            
+            // 使用一个测试图片URL
+            const testImageUrl = 'https://via.placeholder.com/300x200/007bff/white?text=Cache+Test';
+            
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            
+            img.onload = () => {
+                console.log('✅ 测试图片加载成功, 尺寸:', img.naturalWidth, 'x', img.naturalHeight);
+                
+                try {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    if (!ctx) {
+                        console.error('❌ 无法获取Canvas上下文');
+                        return;
+                    }
+                    
+                    canvas.width = img.naturalWidth;
+                    canvas.height = img.naturalHeight;
+                    ctx.drawImage(img, 0, 0);
+                    
+                    console.log('✅ 图片绘制到Canvas成功');
+                    
+                    // Taint 检测
+                    try {
+                        ctx.getImageData(0, 0, 1, 1);
+                        console.log('✅ Canvas taint 检测通过');
+                    } catch (taintError) {
+                        console.error('❌ Canvas 被污染:', taintError);
+                        return;
+                    }
+                    
+                    const base64 = canvas.toDataURL('image/jpeg', config.imageQuality);
+                    console.log('✅ Base64转换成功, 长度:', base64.length);
+                    
+                    const estimatedSize = (base64.length * 0.75) / 1024;
+                    console.log('📊 预估大小:', estimatedSize.toFixed(2), 'KB');
+                    
+                    // 显示结果
+                    showImagePreview(base64, '真实图片缓存测试结果');
+                    
+                } catch (error) {
+                    console.error('❌ 图片处理异常:', error);
+                }
+            };
+            
+            img.onerror = (error) => {
+                console.error('❌ 测试图片加载失败:', error);
+                console.log('🔄 尝试使用本地生成的测试图片...');
+                testCanvasConversion();
+            };
+            
+            console.log('📡 开始加载测试图片:', testImageUrl);
+            img.src = testImageUrl;
+        }
+
+        function showImagePreview(base64, title) {
+            const resultDiv = document.getElementById('testResults');
+            const previewHtml = `
+                <div class="status success">
+                    <h4>${title}</h4>
+                    <img src="${base64}" style="max-width: 100%; border: 1px solid #ddd; border-radius: 4px;" />
+                    <p><strong>Base64长度:</strong> ${base64.length}</p>
+                    <p><strong>预估大小:</strong> ${((base64.length * 0.75) / 1024).toFixed(2)} KB</p>
+                </div>
+            `;
+            resultDiv.innerHTML += previewHtml;
+        }
+
+        function clearAllCache() {
+            console.log('🧹 清理所有缓存...');
+            
+            const keys = Object.keys(localStorage);
+            const cacheKeys = keys.filter(key => 
+                key.startsWith('cached_img_') || 
+                key.startsWith('test_') ||
+                key.includes('cache')
+            );
+            
+            console.log('📋 发现缓存键:', cacheKeys.length, '个');
+            cacheKeys.forEach(key => {
+                console.log('🗑️ 删除:', key);
+                localStorage.removeItem(key);
+            });
+            
+            console.log('✅ 缓存清理完成');
+            showCacheStats();
+        }
+
+        function showCacheStats() {
+            console.log('📊 显示缓存统计信息...');
+            
+            const allKeys = Object.keys(localStorage);
+            const cacheKeys = allKeys.filter(key => key.startsWith('cached_img_'));
+            
+            let totalSize = 0;
+            const stats = {
+                totalItems: cacheKeys.length,
+                totalSize: 0,
+                oldestCache: null,
+                newestCache: null
+            };
+            
+            cacheKeys.forEach(key => {
+                try {
+                    const data = localStorage.getItem(key);
+                    if (data) {
+                        totalSize += data.length;
+                        const parsed = JSON.parse(data);
+                        
+                        if (!stats.oldestCache || parsed.timestamp < stats.oldestCache) {
+                            stats.oldestCache = parsed.timestamp;
+                        }
+                        if (!stats.newestCache || parsed.timestamp > stats.newestCache) {
+                            stats.newestCache = parsed.timestamp;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('⚠️ 解析缓存键失败:', key);
+                }
+            });
+            
+            stats.totalSize = (totalSize / 1024).toFixed(2);
+            
+            console.log('📈 缓存统计:');
+            console.log('  总条目数:', stats.totalItems);
+            console.log('  总大小:', stats.totalSize, 'KB');
+            
+            if (stats.oldestCache) {
+                console.log('  最旧缓存:', new Date(stats.oldestCache).toLocaleString());
+            }
+            if (stats.newestCache) {
+                console.log('  最新缓存:', new Date(stats.newestCache).toLocaleString());
+            }
+            
+            // 显示localStorage总使用情况
+            let totalLocalStorageSize = 0;
+            allKeys.forEach(key => {
+                const data = localStorage.getItem(key);
+                if (data) {
+                    totalLocalStorageSize += data.length;
+                }
+            });
+            
+            console.log('💾 localStorage总使用:', (totalLocalStorageSize / 1024).toFixed(2), 'KB');
+            
+            // 显示到页面
+            const resultDiv = document.getElementById('testResults');
+            const statsHtml = `
+                <div class="status ${stats.totalItems > 0 ? 'success' : 'warning'}">
+                    <h4>📊 缓存统计信息</h4>
+                    <p><strong>缓存条目数:</strong> ${stats.totalItems}</p>
+                    <p><strong>缓存总大小:</strong> ${stats.totalSize} KB</p>
+                    <p><strong>localStorage总使用:</strong> ${(totalLocalStorageSize / 1024).toFixed(2)} KB</p>
+                    ${stats.oldestCache ? `<p><strong>最旧缓存:</strong> ${new Date(stats.oldestCache).toLocaleString()}</p>` : ''}
+                    ${stats.newestCache ? `<p><strong>最新缓存:</strong> ${new Date(stats.newestCache).toLocaleString()}</p>` : ''}
+                </div>
+            `;
+            resultDiv.innerHTML += statsHtml;
+        }
+
+        // 页面加载时执行环境检查
+        window.onload = () => {
+            console.log('🚀 缓存调试页面已加载');
+            checkEnvironment();
+            showCacheStats();
+        };
+    </script>
+</body>
+</html>

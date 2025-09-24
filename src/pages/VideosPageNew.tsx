@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect, useContext, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { parseTitle } from '@/utils/titleParser'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,9 +17,6 @@ import {
   Trash2, 
   Eye, 
   Search,
-  Grid,
-  List,
-  Plus,
   ArrowRight,
   Loader2,
   AlertCircle,
@@ -42,7 +40,7 @@ import VideoShareModal from '@/components/share/VideoShareModal'
 import { videoTaskManager, type VideoTask } from '@/services/VideoTaskManager'
 import { videoPollingService } from '@/services/VideoPollingService'
 import { progressManager, type VideoProgress } from '@/services/progressManager'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { AuthContext } from '@/contexts/AuthContext'
 import type { Database } from '@/lib/supabase'
 import { formatRelativeTime, formatDuration } from '@/utils/timeFormat'
@@ -55,11 +53,13 @@ import analyticsService from '@/services/analyticsService'
 import PerformanceStats from '@/components/debug/PerformanceStats'
 import VirtualizedVideoGrid from '@/components/video/VirtualizedVideoGrid'
 import { useThumbnailUpload } from '@/hooks/useThumbnailUpload'
+import { autoThumbnailService } from '@/services/AutoThumbnailService'
+import Pagination from '@/components/ui/pagination'
 
 type Video = Database['public']['Tables']['videos']['Row']
 
 export default function VideosPageNew() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const authContext = useContext(AuthContext)
   const user = authContext?.user
   const navigate = useNavigate()
@@ -81,10 +81,14 @@ export default function VideosPageNew() {
   // 兼容性：保留原有的loading和isInitialLoad状态
   const loading = loadingState.initial
   const isInitialLoad = loadingState.initial
-  const [filter, setFilter] = useState<'all' | 'completed' | 'processing' | 'failed'>('all')
   const [searchTerm, setSearchTerm] = useState('')
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const viewMode = 'grid' // 固定为网格视图
+  
+  // 分页常量
+  const ITEMS_PER_PAGE = 10
+  
   const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(ITEMS_PER_PAGE)
   
   // 订阅状态管理
   const [isPaidUser, setIsPaidUser] = useState<boolean>(false)
@@ -92,9 +96,6 @@ export default function VideosPageNew() {
   
   // 实时更新状态 - 用于触发耗时显示的重新渲染
   const [currentTime, setCurrentTime] = useState(Date.now())
-
-  // 分页常量
-  const ITEMS_PER_PAGE = 10
   
   // 移动端检测和动态分页配置
   const isMobile = typeof window !== 'undefined' && 
@@ -202,20 +203,52 @@ export default function VideosPageNew() {
   const quickLoad = async () => {
     const startTime = performance.now()
     const loadingPhase = isMobile ? 'mobile_quick_load' : 'desktop_quick_load'
-    
+    let initialResult: Awaited<ReturnType<typeof supabaseVideoService.getUserVideos>> | null = null
+    let initialFromCache = false
+    let usedFullCacheForDisplay = false
+
     try {
       console.log('[VideosPage] 🚀 开始快速加载流程...')
-      
+
       // 🚀 Step 1: 立即检查缓存
-      const cacheResult = videoCacheService.getCachedVideos(
+      const fullCacheResult = await videoCacheService.getCachedVideos(
+        user!.id,
+        undefined,
+        { page: 1, pageSize: 50 }
+      )
+
+      const quickCacheResult = await videoCacheService.getCachedVideos(
         user!.id,
         undefined,
         { page: 1, pageSize: QUICK_LOAD_PAGE_SIZE }
       )
-      
+
+      let cacheResult = quickCacheResult
+      if (!cacheResult && fullCacheResult) {
+        usedFullCacheForDisplay = true
+        // 🚀 防御性检查：确保videos数组存在
+        const videos = Array.isArray(fullCacheResult.videos) ? fullCacheResult.videos : []
+        cacheResult = {
+          ...fullCacheResult,
+          pageSize: QUICK_LOAD_PAGE_SIZE,
+          videos: videos.slice(0, QUICK_LOAD_PAGE_SIZE)
+        }
+      }
+
       if (cacheResult) {
+        initialFromCache = true
+        // 🚀 防御性检查：确保cacheResult.videos存在且是数组
+        const safeVideos = Array.isArray(cacheResult.videos) ? cacheResult.videos : []
+        
+        initialResult = fullCacheResult || {
+          videos: safeVideos,
+          total: cacheResult.total || 0,
+          page: cacheResult.page || 1,
+          pageSize: cacheResult.pageSize || QUICK_LOAD_PAGE_SIZE
+        }
+
         // 立即显示缓存数据，隐藏骨架UI
-        setVideos(cacheResult.videos)
+        setVideos(safeVideos)
         setLoadingState(prev => ({
           ...prev,
           initial: false,
@@ -232,86 +265,89 @@ export default function VideosPageNew() {
           totalLoadTime: cacheTime
         }))
         
-        console.log(`[VideosPage] 📦 缓存命中！立即显示${cacheResult.videos.length}个视频 (${cacheTime.toFixed(1)}ms)`)
+        console.log(`[VideosPage] 📦 缓存命中！立即显示${safeVideos.length}个视频 (${cacheTime.toFixed(1)}ms)`)
         
         // 📊 发送缓存命中分析
         if (analyticsService && typeof analyticsService.track === 'function') {
           analyticsService.track('cache_performance', {
             type: 'cache_hit',
             load_time: cacheTime,
-            video_count: cacheResult.videos.length,
+            video_count: safeVideos.length,
             device_type: isMobile ? 'mobile' : 'desktop',
             phase: loadingPhase
           })
         }
         
         // 后台更新数据
-        backgroundLoad(true) // 传入true表示是缓存命中后的更新
-        return
+        // 缓存命中后由外层继续执行后台加载
       }
-      
-      // 🚀 Step 2: 缓存未命中，加载新数据
-      console.log('[VideosPage] 🌐 缓存未命中，从网络加载数据...')
-      
-      const networkStartTime = performance.now()
-      
-      const result = await supabaseVideoService.getUserVideos(
-        user!.id, 
-        undefined,
-        { page: 1, pageSize: QUICK_LOAD_PAGE_SIZE }
-      )
-      
-      const networkEndTime = performance.now()
-      const networkTime = networkEndTime - networkStartTime
-      const totalTime = networkEndTime - startTime
-      
-      // 显示数据并缓存
-      setVideos(result.videos)
-      videoCacheService.cacheVideos(
-        user!.id,
-        result.videos,
-        result.total,
-        result.page,
-        result.pageSize,
-        undefined,
-        { page: 1, pageSize: QUICK_LOAD_PAGE_SIZE }
-      )
-      
-      // 隐藏骨架UI
-      setLoadingState(prev => ({
-        ...prev,
-        initial: false,
-        basicLoaded: true
-      }))
-      
-      // 📊 更新性能指标
-      setPerformanceMetrics(prev => ({
-        ...prev,
-        networkRequestCount: prev.networkRequestCount + 1,
-        timeToInteractive: totalTime,
-        totalLoadTime: totalTime
-      }))
-      
-      console.log(`[VideosPage] ✅ 网络加载完成，获取${result.videos.length}个视频 (网络:${networkTime.toFixed(1)}ms, 总计:${totalTime.toFixed(1)}ms)`)
-      
-      // 📊 发送网络加载分析
-      if (analyticsService && typeof analyticsService.track === 'function') {
-        analyticsService.track('network_performance', {
-          type: 'cache_miss',
-          network_time: networkTime,
-          total_time: totalTime,
-          video_count: result.videos.length,
-          device_type: isMobile ? 'mobile' : 'desktop',
-          phase: loadingPhase
-        })
+
+      if (!cacheResult) {
+        // 🚀 Step 2: 缓存未命中，加载新数据
+        console.log('[VideosPage] 🌐 缓存未命中，从网络加载数据...')
+
+        const networkStartTime = performance.now()
+        
+        const result = await supabaseVideoService.getUserVideos(
+          user!.id, 
+          undefined,
+          { page: 1, pageSize: QUICK_LOAD_PAGE_SIZE }
+        )
+
+        initialResult = result
+
+        const networkEndTime = performance.now()
+        const networkTime = networkEndTime - networkStartTime
+        const totalTime = networkEndTime - startTime
+        
+        // 🚀 防御性检查：确保网络返回的videos是数组
+        const safeVideos = Array.isArray(result.videos) ? result.videos : []
+        
+        // 显示数据并缓存
+        setVideos(safeVideos)
+        videoCacheService.cacheVideos(
+          user!.id,
+          safeVideos,
+          result.total || 0,
+          result.page || 1,
+          result.pageSize || QUICK_LOAD_PAGE_SIZE,
+          undefined,
+          { page: 1, pageSize: QUICK_LOAD_PAGE_SIZE }
+        )
+        
+        // 隐藏骨架UI
+        setLoadingState(prev => ({
+          ...prev,
+          initial: false,
+          basicLoaded: true
+        }))
+        
+        // 📊 更新性能指标
+        setPerformanceMetrics(prev => ({
+          ...prev,
+          networkRequestCount: prev.networkRequestCount + 1,
+          timeToInteractive: totalTime,
+          totalLoadTime: totalTime
+        }))
+        
+        console.log(`[VideosPage] ✅ 网络加载完成，获取${safeVideos.length}个视频 (网络:${networkTime.toFixed(1)}ms, 总计:${totalTime.toFixed(1)}ms)`)
+        
+        // 📊 发送网络加载分析
+        if (analyticsService && typeof analyticsService.track === 'function') {
+          analyticsService.track('network_performance', {
+            type: 'cache_miss',
+            network_time: networkTime,
+            total_time: totalTime,
+            video_count: safeVideos.length,
+            device_type: isMobile ? 'mobile' : 'desktop',
+            phase: loadingPhase
+          })
+        }
       }
-      
-      // 启动后台加载
-      backgroundLoad(false)
-      
+
     } catch (error) {
       const errorTime = performance.now() - startTime
-      
+
       console.error('[VideosPage] 快速加载失败:', error)
       
       // 📊 记录错误指标
@@ -325,7 +361,7 @@ export default function VideosPageNew() {
       }
       
       // 失败时尝试使用过期缓存
-      const fallbackCache = videoCacheService.getCachedVideos(
+      const fallbackCache = await videoCacheService.getCachedVideos(
         user!.id,
         undefined,
         { page: 1, pageSize: QUICK_LOAD_PAGE_SIZE }
@@ -333,7 +369,9 @@ export default function VideosPageNew() {
       
       if (fallbackCache) {
         console.log('[VideosPage] 🚑 使用备用缓存数据')
-        setVideos(fallbackCache.videos)
+        // 🚀 防御性检查：确保备用缓存的videos是数组
+        const fallbackVideos = Array.isArray(fallbackCache.videos) ? fallbackCache.videos : []
+        setVideos(fallbackVideos)
         toast.info('网络不稳定，显示缓存数据')
       }
       
@@ -344,15 +382,24 @@ export default function VideosPageNew() {
         basicLoaded: true
       }))
     }
+
+    return {
+      initialResult,
+      fromCache: initialFromCache,
+      usedFullCacheForDisplay
+    }
   }
-  
+
   /**
    * 📚 后台加载：加载任务状态、订阅信息等非关键数据
    */
-  const backgroundLoad = async (isCacheHit = false) => {
+  const backgroundLoad = async (
+    quickLoadResult: Awaited<ReturnType<typeof quickLoad>>,
+    opts: { skipInitialRefresh?: boolean } = {}
+  ) => {
     try {
       console.log('[VideosPage] 📚 开始后台加载非关键数据...')
-      
+
       // 并行加载任务状态和订阅信息
       const [tasks, subscription] = await Promise.all([
         videoTaskManager.initialize(user!.id),
@@ -399,7 +446,7 @@ export default function VideosPageNew() {
       }
       
       // 加载更多视频（如果用户有超过首屏数量的视频）
-      await loadMoreVideosIfNeeded(isCacheHit)
+      await loadMoreVideosIfNeeded(quickLoadResult, opts)
       
       // 标记全部加载完成
       setLoadingState(prev => ({
@@ -416,18 +463,23 @@ export default function VideosPageNew() {
       }))
       
       console.log(`[Performance] 🚀 页面可交互: ${timeToInteractive.toFixed(1)}ms`)
-      console.log(`[VideosPage] ✅ 后台加载完成 ${isCacheHit ? '(缓存命中)' : '(直接加载)'}`)
+      console.log(`[VideosPage] ✅ 后台加载完成 ${quickLoadResult.fromCache ? '(缓存命中)' : '(直接加载)'}`)
       
       // 📊 发送完整加载性能分析数据  
       if (analyticsService && typeof analyticsService.track === 'function') {
         analyticsService.track('videos_page_load_complete', {
           time_to_interactive: timeToInteractive,
-          cache_hit: isCacheHit,
+          cache_hit: quickLoadResult.fromCache,
           device_type: isMobile ? 'mobile' : 'desktop',
           videos_count: videos.length,
           loading_strategy: 'layered_loading'
         })
       }
+      
+      // 🎬 自动补充缺失的缩略图 - 在页面加载完成后立即静默执行
+      setTimeout(() => {
+        triggerAutoThumbnailFill(user!.id)
+      }, 0) // 使用setTimeout(0)确保不阻塞UI渲染
       
     } catch (error) {
       console.error('[VideosPage] 后台加载失败:', error)
@@ -438,42 +490,39 @@ export default function VideosPageNew() {
   /**
    * 加载更多视频（如果用户有更多视频）
    */
-  const loadMoreVideosIfNeeded = async (isCacheHit = false) => {
+  const loadMoreVideosIfNeeded = async (
+    quickLoadResult: Awaited<ReturnType<typeof quickLoad>>,
+    { skipInitialRefresh = false }: { skipInitialRefresh?: boolean } = {}
+  ) => {
     try {
-      let shouldUpdate = true
-      
-      if (isCacheHit) {
-        // 缓存命中时，静悄更新数据
-        const freshResult = await supabaseVideoService.getUserVideos(
-          user!.id, 
-          undefined,
-          { page: 1, pageSize: QUICK_LOAD_PAGE_SIZE }
-        )
-        
-        // 检查数据是否有变化
-        const currentVideoIds = videos.map(v => v.id).sort()
-        const freshVideoIds = freshResult.videos.map(v => v.id).sort()
-        const hasChanges = JSON.stringify(currentVideoIds) !== JSON.stringify(freshVideoIds)
-        
-        if (hasChanges) {
-          console.log('[VideosPage] 🔄 检测到数据变化，更新显示')
-          setVideos(freshResult.videos)
-          
-          // 更新缓存
+      if (!skipInitialRefresh && quickLoadResult.initialResult) {
+        const { videos: initialVideos, total, page, pageSize } = quickLoadResult.initialResult
+
+        // 如果 quickLoad 走的是网络请求，已经覆盖首屏，无需再次拉取
+        if (!quickLoadResult.fromCache) {
           videoCacheService.cacheVideos(
             user!.id,
-            freshResult.videos,
-            freshResult.total,
-            freshResult.page,
-            freshResult.pageSize,
+            initialVideos,
+            total,
+            page,
+            pageSize,
             undefined,
             { page: 1, pageSize: QUICK_LOAD_PAGE_SIZE }
           )
-        } else {
-          console.log('[VideosPage] ✅ 缓存数据仍然最新')
+        }
+
+        // 直接对比现有列表与初始数据，避免重复请求
+        // 🚀 防御性检查：确保videos数组安全
+        const safeInitialVideos = Array.isArray(initialVideos) ? initialVideos : []
+        const currentVideos = videos.length > 0 ? videos : safeInitialVideos
+        const currentIds = currentVideos.map(v => v?.id).filter(Boolean).sort()
+        const initialIds = safeInitialVideos.map(v => v?.id).filter(Boolean).sort()
+
+        if (JSON.stringify(currentIds) !== JSON.stringify(initialIds)) {
+          setVideos(safeInitialVideos)
         }
       }
-      
+
       // 加载更多视频
       const totalResult = await supabaseVideoService.getUserVideos(
         user!.id, 
@@ -481,21 +530,24 @@ export default function VideosPageNew() {
         { page: 1, pageSize: 50 }
       )
       
-      if (totalResult.videos.length > QUICK_LOAD_PAGE_SIZE) {
-        setVideos(totalResult.videos)
+      // 🚀 防御性检查：确保totalResult.videos是数组
+      const safeVideos = Array.isArray(totalResult.videos) ? totalResult.videos : []
+      
+      if (safeVideos.length > QUICK_LOAD_PAGE_SIZE) {
+        setVideos(safeVideos)
         
         // 缓存全量数据
         videoCacheService.cacheVideos(
           user!.id,
-          totalResult.videos,
-          totalResult.total,
-          totalResult.page,
-          totalResult.pageSize,
+          safeVideos,
+          totalResult.total || 0,
+          totalResult.page || 1,
+          totalResult.pageSize || 50,
           undefined,
           { page: 1, pageSize: 50 }
         )
         
-        console.log(`[VideosPage] 加载更多视频，总数: ${totalResult.videos.length}`)
+        console.log(`[VideosPage] 加载更多视频，总数: ${safeVideos.length}`)
       }
     } catch (error) {
       console.error('[VideosPage] 加载更多视频失败:', error)
@@ -511,7 +563,11 @@ export default function VideosPageNew() {
     console.log('[VideosPage] 🚀 初始化移动端优化加载流程')
     
     // 立即开始快速加载，不等待
-    quickLoad()
+    quickLoad().then(result => {
+      backgroundLoad(result, {
+        skipInitialRefresh: result.usedFullCacheForDisplay
+      })
+    })
 
     // 清理函数
     return () => {
@@ -752,10 +808,23 @@ export default function VideosPageNew() {
         console.log(`[VideosPageNew] 已从任务管理器移除任务: ${video.id}`)
       }
       
-      await loadVideos()
+      // 立即从本地状态移除视频，提供即时反馈
+      setVideos(prevVideos => prevVideos.filter(v => v.id !== video.id))
+      
+      // 清理视频缓存
+      videoCacheService.removeVideo(user.id, video.id)
+      
+      // 关闭对话框
       setDeleteDialog({ open: false, video: null })
       
-      console.log(`[VideosPageNew] 视频删除成功: ${video.id}`)
+      // 后台重新加载完整列表以保持数据一致性
+      try {
+        await loadVideos()
+        console.log(`[VideosPageNew] 视频删除成功，列表已刷新: ${video.id}`)
+      } catch (loadError) {
+        console.warn('[VideosPageNew] 重新加载视频列表失败，但删除操作已成功:', loadError)
+      }
+      
       toast.success(t('videos.videoDeleted'))
     } catch (error) {
       console.error('[VideosPageNew] 删除视频失败:', error)
@@ -820,6 +889,16 @@ export default function VideosPageNew() {
         videoId: video.id,
         videoUrl: videoUrl,
         frameTime: 0.1,
+        onPreview: (previewDataUrl) => {
+          // 上传前先用本地预览图刷新界面
+          setVideos(prevVideos =>
+            prevVideos.map(v =>
+              v.id === video.id
+                ? { ...v, thumbnail_url: previewDataUrl }
+                : v
+            )
+          )
+        },
         onSuccess: (thumbnailUrl) => {
           console.log(`[VideosPage] 缩略图生成成功: ${video.id} -> ${thumbnailUrl}`)
           
@@ -871,6 +950,42 @@ export default function VideosPageNew() {
       }, 1000)
     }
   }, [handleDynamicThumbnailGeneration])
+
+  /**
+   * 触发自动缩略图补充 - 静默后台处理
+   */
+  const triggerAutoThumbnailFill = useCallback(async (userId: string) => {
+    try {
+      console.log('[VideosPage] 🎬 开始自动缩略图补充...')
+      
+      // 传入当前视频列表避免重复查询
+      const stats = await autoThumbnailService.autoFillMissingThumbnails(userId, videos)
+      
+      if (stats.total > 0) {
+        console.log(`[VideosPage] 📝 缩略图补充完成: ${stats.succeeded}成功 / ${stats.failed}失败`)
+        
+        // 如果有成功生成的缩略图，刷新视频列表以显示更新
+        if (stats.succeeded > 0) {
+          // 延迟刷新，让缩略图上传完成
+          setTimeout(async () => {
+            try {
+              const result = await supabaseVideoService.getUserVideos(
+                userId, 
+                undefined,
+                { page: 1, pageSize: videos.length || 20 }
+              )
+              setVideos(result.videos)
+              console.log(`[VideosPage] ✅ 缩略图更新后刷新视频列表`)
+            } catch (error) {
+              console.error('[VideosPage] 刷新视频列表失败:', error)
+            }
+          }, 3000) // 3秒后刷新
+        }
+      }
+    } catch (error) {
+      console.error('[VideosPage] 自动缩略图补充失败:', error)
+    }
+  }, [videos])
 
   /**
    * 虚拟滚动回调函数
@@ -966,9 +1081,9 @@ export default function VideosPageNew() {
     }
   }
 
-  // 过滤视频
+  // 搜索过滤视频
   const filteredVideos = videos.filter(video => {
-    // 搜索过滤
+    // 只保留搜索过滤
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase()
       const matchesSearch = 
@@ -976,28 +1091,34 @@ export default function VideosPageNew() {
         video.description?.toLowerCase().includes(searchLower) ||
         video.prompt?.toLowerCase().includes(searchLower)
       
-      if (!matchesSearch) return false
+      return matchesSearch
     }
-
-    // 状态过滤
-    if (filter === 'all') return true
-    if (filter === 'processing') {
-      return video.status === 'processing' || video.status === 'pending' || isVideoProcessing(video)
-    }
-    return video.status === filter
+    return true // 没有搜索词时显示所有视频
   })
 
   // 分页逻辑
-  const totalPages = Math.ceil(filteredVideos.length / ITEMS_PER_PAGE)
+  const totalPages = Math.ceil(filteredVideos.length / pageSize)
   const paginatedVideos = filteredVideos.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
+    (page - 1) * pageSize,
+    page * pageSize
   )
 
-  // 当过滤条件改变时重置页码
+  // 当搜索条件改变时重置页码
   React.useEffect(() => {
     setPage(1)
-  }, [filter, searchTerm])
+  }, [searchTerm])
+
+  // 分页处理函数
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage)
+    // 滚动到页面顶部
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize)
+    setPage(1) // 重置到第一页
+  }
 
   // 虚拟滚动已禁用自动启用，默认使用传统分页模式
 
@@ -1083,23 +1204,9 @@ export default function VideosPageNew() {
 
   return (
     <div className="container mx-auto p-6">
-      {/* 页面头部 */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <div>
-          {/* 标题和描述已移除 */}
-        </div>
-        
-        <Link to="/create">
-          <Button className="w-full md:w-auto">
-            <Plus className="w-4 h-4 mr-2" />
-            {t('videos.createNewVideo')}
-          </Button>
-        </Link>
-      </div>
-
-      {/* 过滤器和搜索 */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="flex-1 relative">
+      {/* 简化的搜索栏 */}
+      <div className="mb-6">
+        <div className="relative">
           <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder={t('videos.searchPlaceholder')}
@@ -1107,34 +1214,6 @@ export default function VideosPageNew() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
           />
-        </div>
-        
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value as any)}
-          className="px-3 py-2 border rounded-md bg-background"
-        >
-          <option value="all">{t('videos.filterAll')}</option>
-          <option value="completed">{t('videos.filterCompleted')}</option>
-          <option value="processing">{t('videos.filterProcessing')}</option>
-          <option value="failed">{t('videos.filterFailed')}</option>
-        </select>
-
-        <div className="flex gap-2">
-          <Button
-            variant={viewMode === 'grid' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setViewMode('grid')}
-          >
-            <Grid className="w-4 h-4" />
-          </Button>
-          <Button
-            variant={viewMode === 'list' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setViewMode('list')}
-          >
-            <List className="w-4 h-4" />
-          </Button>
         </div>
       </div>
 
@@ -1205,15 +1284,39 @@ export default function VideosPageNew() {
                   className="overflow-hidden hover:shadow-lg transition-all duration-300"
                 >
                   <div className="aspect-video relative bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-800 dark:via-slate-700 dark:to-slate-600">
-                    {/* 视频渲染逻辑 - 添加额外的ID验证 */}
-                    {(video.video_url || video.r2_url) && video.id ? (
+                    {/* 视频渲染逻辑 - 优化状态判断，数据库状态优先 */}
+                    {video.status === 'completed' && (video.video_url || video.r2_url) ? (
                       (() => {
+                        // 优先显示已完成的视频 - 避免任务管理器滞后导致的显示问题
                         const urlResult = getBestVideoUrl(video)
                         const primaryUrl = getPlayerUrl(video) || getProxyVideoUrl(video.video_url || '')
                         const fallbackUrl = urlResult?.fallbackUrl ? getProxyVideoUrl(urlResult.fallbackUrl) : undefined
                         
                         return (
-                          // 有视频URL - 显示视频播放器，优先使用R2 URL
+                          <SimpleVideoPlayer
+                            src={primaryUrl}
+                            fallbackSrc={fallbackUrl}
+                            poster={video.thumbnail_url || undefined}
+                            className="w-full h-full"
+                            autoPlayOnHover={!isMobile}
+                            showPlayButton={true}
+                            muted={false}
+                            objectFit="cover"
+                            videoId={video.id}
+                            videoTitle={video.title || 'video'}
+                            alt={video.title || 'Video preview'}
+                            onPlay={() => handleVideoPlay(video)}
+                          />
+                        )
+                      })()
+                    ) : (video.video_url || video.r2_url) && video.id ? (
+                      (() => {
+                        // 其他有视频URL的情况
+                        const urlResult = getBestVideoUrl(video)
+                        const primaryUrl = getPlayerUrl(video) || getProxyVideoUrl(video.video_url || '')
+                        const fallbackUrl = urlResult?.fallbackUrl ? getProxyVideoUrl(urlResult.fallbackUrl) : undefined
+                        
+                        return (
                           <SimpleVideoPlayer
                             src={primaryUrl}
                             fallbackSrc={fallbackUrl}
@@ -1231,7 +1334,7 @@ export default function VideosPageNew() {
                         )
                       })()
                     ) : task && (task.status === 'processing' || task.status === 'pending') ? (
-                      // 正在处理 - 显示进度（流体背景）
+                      // 任务管理器显示处理中 - 显示进度（流体背景）
                       <div className="w-full h-full flowing-background flex items-center justify-center">
                         {/* 流体气泡效果层 */}
                         <div className="fluid-bubbles"></div>
@@ -1269,8 +1372,22 @@ export default function VideosPageNew() {
                           </div>
                         </div>
                       </div>
+                    ) : video.status === 'processing' || video.status === 'pending' ? (
+                      // 数据库状态显示处理中，但没有活跃任务 - 显示简化的处理状态
+                      <div className="w-full h-full flowing-background flex items-center justify-center">
+                        <div className="fluid-bubbles"></div>
+                        <div className="text-center px-4 z-10 relative">
+                          <Loader2 className="h-10 w-10 animate-spin text-white/90 mx-auto mb-2" strokeWidth={1.5} />
+                          <div className="text-lg font-bold text-white mb-1">
+                            {t('videos.processing')}
+                          </div>
+                          <div className="text-xs text-white/80">
+                            {video.status === 'pending' ? t('videos.queuedForProcessing') : t('videos.generating')}
+                          </div>
+                        </div>
+                      </div>
                     ) : (
-                      // 默认占位符 - 使用渐变背景
+                      // 真正需要等待的情况 - 比如刚创建但还没开始处理
                       <div className="w-full h-full flex items-center justify-center">
                         <div className="text-center text-gray-600 dark:text-gray-300">
                           <Eye className="h-12 w-12 mx-auto mb-2" strokeWidth={1.5} />
@@ -1286,7 +1403,7 @@ export default function VideosPageNew() {
                     <div className="space-y-2">
                       <div>
                         <h3 className="font-medium text-sm line-clamp-2 min-h-[2rem]">
-                          {video.title || t('videos.untitledVideo')}
+                          {parseTitle(video.title, i18n.language, t('videos.untitledVideo'))}
                         </h3>
                         {video.description && (
                           <p className="text-xs text-muted-foreground mt-0 line-clamp-4">
@@ -1397,38 +1514,27 @@ export default function VideosPageNew() {
           <div className="inline-flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300">
             <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
             <span className="text-sm font-medium">
-              {isMobile ? '后台加载中...' : '后台加载任务状态和更多数据...'}
+              {isMobile ? t('video.backgroundLoading.mobile') : t('video.backgroundLoading.desktop')}
             </span>
           </div>
-          <p className="text-xs text-muted-foreground mt-2 max-w-md mx-auto">
-            {isMobile ? '页面已可用，后台数据同步中' : '基础内容已加载，正在后台获取任务状态和更多视频'}
-          </p>
         </div>
       )}
       
 
       {/* 分页控件 */}
       {totalPages > 1 && (
-        <div className="flex justify-center gap-2 mt-8">
-          <Button 
-            variant="outline" 
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page === 1}
-            size="sm"
-          >
-            {t('videos.previousPage')}
-          </Button>
-          <div className="flex items-center px-4 text-sm text-muted-foreground">
-            {t('videos.pageInfo', { current: page, total: totalPages })}
-          </div>
-          <Button 
-            variant="outline"
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
-            size="sm"
-          >
-            {t('videos.nextPage')}
-          </Button>
+        <div className="flex justify-center mt-8">
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            totalItems={filteredVideos.length}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+            showPageSizeSelector={false}
+            pageSizeOptions={[6, 9, 12, 18, 24]}
+            showInfo={false}
+          />
         </div>
       )}
 

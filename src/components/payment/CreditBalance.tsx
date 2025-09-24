@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { useAuthContext } from '@/contexts/AuthContext'
 import creditService from '@/services/creditService'
+import { useTranslation } from 'react-i18next'
 
 interface CreditBalanceProps {
   showDetails?: boolean
@@ -17,6 +18,7 @@ export function CreditBalance({
   className = ''
 }: CreditBalanceProps) {
   const { user } = useAuthContext()
+  const { t } = useTranslation()
 
   const { data: credits, isLoading, error } = useQuery({
     queryKey: ['user-credits', user?.id],
@@ -56,8 +58,8 @@ export function CreditBalance({
               <Activity className="w-5 h-5 text-red-600" />
             </div>
             <div>
-              <p className="text-sm text-red-600">积分加载失败</p>
-              <p className="text-xs text-gray-500">请刷新页面重试</p>
+              <p className="text-sm text-red-600">{t('payment.creditLoadFailed')}</p>
+              <p className="text-xs text-gray-500">{t('common.refreshAndRetry')}</p>
             </div>
           </div>
         </CardContent>

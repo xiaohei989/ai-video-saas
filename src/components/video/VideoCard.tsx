@@ -1,5 +1,8 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useResponsiveDevice } from '@/utils/deviceDetection'
 import { Card, CardContent } from '@/components/ui/card'
+import { parseTitle } from '@/utils/titleParser'
 import { Button } from '@/components/ui/button'
 import { 
   Play, 
@@ -38,10 +41,8 @@ export default function VideoCard({
   onSelect,
   className
 }: VideoCardProps) {
-  const [isMobile] = useState(() => 
-    typeof window !== 'undefined' && 
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-  )
+  const { i18n } = useTranslation()
+  const { isMobile } = useResponsiveDevice()
   
   // 🚀 获取最佳视频URL - 优先使用R2存储
   const getBestVideoUrl = (): string | null => {
@@ -197,7 +198,7 @@ export default function VideoCard({
         {/* AI生成的标题和简介 */}
         <div>
           <h3 className="font-semibold text-sm line-clamp-1">
-            {video.title || video.templateName}
+            {parseTitle(video.title, i18n.language, video.templateName)}
           </h3>
           {video.description ? (
             <p className="text-xs text-muted-foreground line-clamp-4 mt-0.5">

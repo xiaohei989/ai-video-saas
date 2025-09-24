@@ -5,6 +5,7 @@
 
 import { supabase, ensureValidSession } from '@/lib/supabase'
 import { likesCacheService } from '@/services/likesCacheService'
+import edgeCacheClient from '@/services/EdgeFunctionCacheClient'
 
 export interface TemplateWithLike {
   id: string
@@ -31,6 +32,10 @@ class TemplateLikeService {
   private sessionValidated = false
   private sessionValidatedAt = 0
   private readonly SESSION_VALIDATION_TTL = 30 * 1000 // 30秒内不重复验证session
+  
+  // 🚀 竞态条件保护：防止同一用户对同一模板的并发操作
+  private readonly pendingOperations = new Map<string, Promise<ToggleLikeResult>>()
+  private readonly operationLocks = new Set<string>()
 
   /**
    * 优化的session验证（缓存验证结果）
@@ -59,20 +64,39 @@ class TemplateLikeService {
    * 切换模板点赞状态（点赞/取消点赞）
    */
   async toggleLike(templateId: string): Promise<ToggleLikeResult> {
-    try {
-      // 确保Token有效
-      const isValidSession = await this.ensureValidSessionCached()
-      if (!isValidSession) {
-        console.error('Token validation failed')
-        return {
-          success: false,
-          is_liked: false,
-          like_count: 0,
-          error: 'Token已过期，请重新登录'
-        }
-      }
+    // 🚀 竞态条件保护：生成操作键，防止同一用户对同一模板的并发操作
+    const { data: { user } } = await supabase.auth.getUser()
+    const operationKey = `${user?.id}-${templateId}`
+    
+    // 检查是否有正在进行的操作
+    const existingOperation = this.pendingOperations.get(operationKey)
+    if (existingOperation) {
+      console.log(`[TemplateLikeService] 检测到并发操作，等待现有操作完成: ${templateId}`)
+      return await existingOperation
+    }
 
-      // 检查用户是否已认证
+    // 创建新的操作Promise
+    const operationPromise = this.executeToggleLike(templateId)
+    this.pendingOperations.set(operationKey, operationPromise)
+
+    try {
+      const result = await operationPromise
+      return result
+    } finally {
+      // 清理操作记录
+      this.pendingOperations.delete(operationKey)
+    }
+  }
+
+  /**
+   * 🚀 Ultra重构：极简点赞切换操作
+   * 基于一致性优先架构，最小化查询次数，直接信任数据库结果
+   */
+  private async executeToggleLike(templateId: string): Promise<ToggleLikeResult> {
+    try {
+      console.log(`[TemplateLikeService] 🎯 Ultra重构点赞操作: ${templateId}`)
+
+      // 🚀 步骤1：快速认证检查
       const { data: { user }, error: userError } = await supabase.auth.getUser()
       if (userError || !user) {
         return {
@@ -83,227 +107,210 @@ class TemplateLikeService {
         }
       }
 
-      // 验证模板ID格式（现在直接使用UUID）
-      if (!templateId || typeof templateId !== 'string') {
-        return {
-          success: false,
-          is_liked: false,
-          like_count: 0,
-          error: '模板ID无效'
+      // 是否启用RPC（默认关闭以避免会话/策略导致的静默失败）
+      const useRpc = (import.meta as any).env?.VITE_USE_LIKE_RPC === 'true'
+
+      if (useRpc) {
+        // 🚀 路径A：调用数据库RPC，原子化切换并返回最终状态
+        console.log(`[TemplateLikeService] ⚡ 调用RPC: toggle_template_like`)
+        const { data: rpcResult, error: rpcError } = await supabase.rpc('toggle_template_like', {
+          p_template_id: templateId
+        })
+
+        if (rpcError) {
+          console.warn(`[TemplateLikeService] ⚠️ RPC 调用失败，回退到直接DB路径:`, rpcError)
+        } else {
+          const resultRow = Array.isArray(rpcResult) ? (rpcResult[0] || {}) : (rpcResult as any || {})
+          const finalIsLiked = Boolean(resultRow.is_liked)
+          const finalLikeCount = Number(resultRow.like_count || 0)
+
+          console.log(`[TemplateLikeService] ✅ RPC 完成: ${finalIsLiked ? '已点赞' : '未点赞'}, 点赞数: ${finalLikeCount}`)
+
+          // 🚀 缓存更新由useLike统一管理，避免双重更新冲突
+
+          // 🚀 失效Redis统计缓存键
+          try { await edgeCacheClient.delete(`template:${templateId}:stats`) } catch {}
+
+          return { success: true, is_liked: finalIsLiked, like_count: finalLikeCount }
         }
       }
 
-      // 检查当前点赞状态
-      const { data: existingLike } = await supabase
-        .from('template_likes')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('template_id', templateId)
-        .maybeSingle()
-
-      // 先获取当前的点赞数量，如果模板不存在则自动创建
-      const { data: currentTemplate, error: templateError } = await supabase
-        .from('templates')
-        .select('like_count')
-        .eq('id', templateId)
-        .single()
-
-      let currentLikeCount = 0
-
-      if (templateError && templateError.code === 'PGRST116') {
-        // 模板不存在，尝试自动创建
-        console.log(`[TemplateLikeService] 模板 ${templateId} 不存在，尝试自动同步...`)
-        
-        const { templateSyncService } = await import('./templateSyncService')
-        const syncSuccess = await templateSyncService.syncSingleTemplate(templateId)
-        
-        if (syncSuccess) {
-          // 重新获取模板
-          const { data: newTemplate } = await supabase
-            .from('templates')
-            .select('like_count')
-            .eq('id', templateId)
-            .single()
-          
-          currentLikeCount = newTemplate?.like_count || 0
-          console.log(`[TemplateLikeService] ✅ 模板 ${templateId} 自动同步成功`)
+      // 🚀 路径B：回退到直接数据库操作（默认）
+      {
+        if (useRpc) {
+          console.warn(`[TemplateLikeService] ⚠️ RPC 调用失败或未返回有效结果，回退到直接DB路径`)
         } else {
-          console.error(`[TemplateLikeService] ❌ 模板 ${templateId} 自动同步失败`)
+          console.log(`[TemplateLikeService] 使用直接DB路径进行点赞切换`)
+        }
+        // 🚀 改进的原子化操作：先查询当前状态，再进行相应的操作和更新
+        try {
+          // 步骤1：查询当前用户的点赞状态和模板点赞总数
+          const [userLikeResult, templateResult] = await Promise.all([
+            supabase
+              .from('template_likes')
+              .select('id')
+              .eq('user_id', user.id)
+              .eq('template_id', templateId)
+              .maybeSingle(),
+            supabase
+              .from('templates')
+              .select('like_count')
+              .eq('id', templateId)
+              .single()
+          ])
+
+          if (templateResult.error) throw templateResult.error
+          
+          const currentUserLiked = !!userLikeResult.data
+          const currentLikeCount = templateResult.data?.like_count || 0
+          
+          console.log(`[TemplateLikeService] 🔍 当前状态: 用户${currentUserLiked ? '已点赞' : '未点赞'}, 总点赞数: ${currentLikeCount}`)
+
+          let finalIsLiked: boolean
+          let finalLikeCount: number
+
+          if (currentUserLiked) {
+            // 用户当前已点赞 -> 取消点赞
+            const { error: deleteError } = await supabase
+              .from('template_likes')
+              .delete()
+              .eq('user_id', user.id)
+              .eq('template_id', templateId)
+
+            if (deleteError) throw deleteError
+
+            finalIsLiked = false
+            finalLikeCount = Math.max(0, currentLikeCount - 1)
+            
+            console.log(`[TemplateLikeService] ✅ 取消点赞成功: ${currentLikeCount} -> ${finalLikeCount}`)
+          } else {
+            // 用户当前未点赞 -> 添加点赞
+            const { error: insertError } = await supabase
+              .from('template_likes')
+              .insert({ user_id: user.id, template_id: templateId })
+            
+            if (insertError && insertError.code !== '23505') { // 忽略唯一冲突
+              throw insertError
+            }
+
+            finalIsLiked = true
+            finalLikeCount = currentLikeCount + 1
+            
+            console.log(`[TemplateLikeService] ✅ 添加点赞成功: ${currentLikeCount} -> ${finalLikeCount}`)
+          }
+
+          // 步骤2：更新模板的点赞总数（确保数据一致性）
+          const { error: updateError } = await supabase
+            .from('templates')
+            .update({ like_count: finalLikeCount })
+            .eq('id', templateId)
+
+          if (updateError) {
+            console.warn(`[TemplateLikeService] ⚠️ 更新模板点赞数失败:`, updateError)
+            // 不抛出错误，因为主要操作（点赞/取消点赞）已经成功
+          } else {
+            console.log(`[TemplateLikeService] ✅ 模板点赞数已更新: ${finalLikeCount}`)
+          }
+
+          // 🚀 缓存更新由useLike统一管理，避免双重更新冲突
+          try { await edgeCacheClient.delete(`template:${templateId}:stats`) } catch {}
+
+          return {
+            success: true,
+            is_liked: finalIsLiked,
+            like_count: finalLikeCount
+          }
+        } catch (fallbackErr) {
+          console.error('[TemplateLikeService] 回退路径失败:', fallbackErr)
           return {
             success: false,
             is_liked: false,
             like_count: 0,
-            error: '模板不存在且同步失败'
+            error: '操作失败'
           }
         }
-      } else if (templateError) {
-        console.error('Error fetching template:', templateError)
-        return {
-          success: false,
-          is_liked: false,
-          like_count: 0,
-          error: '获取模板信息失败'
-        }
-      } else {
-        currentLikeCount = currentTemplate?.like_count || 0
-      }
-      let isLiked: boolean
-      let newLikeCount: number
-
-      if (existingLike) {
-        // 取消点赞
-        const { error: deleteError } = await supabase
-          .from('template_likes')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('template_id', templateId)
-
-        if (deleteError) {
-          console.error('Error removing like:', deleteError)
-          return {
-            success: false,
-            is_liked: true,
-            like_count: currentLikeCount,
-            error: '取消点赞失败'
-          }
-        }
-
-        isLiked = false
-        newLikeCount = Math.max(0, currentLikeCount - 1)
-      } else {
-        // 添加点赞
-        const { error: insertError } = await supabase
-          .from('template_likes')
-          .insert({
-            user_id: user.id,
-            template_id: templateId
-          })
-
-        if (insertError) {
-          console.error('Error adding like:', insertError)
-          return {
-            success: false,
-            is_liked: false,
-            like_count: currentLikeCount,
-            error: '点赞失败'
-          }
-        }
-
-        isLiked = true
-        newLikeCount = currentLikeCount + 1
-      }
-
-      // 立即更新缓存
-      likesCacheService.updateLikeStatus(templateId, isLiked, newLikeCount)
-
-      return {
-        success: true,
-        is_liked: isLiked,
-        like_count: newLikeCount
       }
     } catch (error) {
-      console.error('Error toggling like:', error)
+      console.error(`[TemplateLikeService] 💥 操作异常:`, error)
       return {
         success: false,
         is_liked: false,
         like_count: 0,
-        error: '操作失败'
+        error: '网络错误，请重试'
       }
     }
   }
 
   /**
-   * 检查用户是否对特定模板点赞（优先使用缓存）
-   * 未登录用户也能获取点赞数量，但is_liked始终为false
+   * 🚀 Ultra重构：简化点赞状态检查
+   * 优先使用缓存，简化查询逻辑，移除复杂同步机制
    */
-  async checkLikeStatus(templateId: string): Promise<LikeStatus | null> {
+  async checkLikeStatus(templateId: string, options?: { forceRefresh?: boolean; silent?: boolean }): Promise<LikeStatus | null> {
     try {
-      // 先检查缓存
-      const cached = likesCacheService.get(templateId)
-      if (cached) {
-        console.log(`[TemplateLikeService] Using cached status for ${templateId}`)
-        return {
-          template_id: cached.template_id,
-          is_liked: cached.is_liked,
-          like_count: cached.like_count
-        }
-      }
-
-      // 验证模板ID（现在直接使用UUID，无需转换）
-      if (!templateId || typeof templateId !== 'string') {
-        console.warn(`[TemplateLikeService] Invalid template ID: ${templateId}`)
-        return null
-      }
-
-      // 获取当前用户信息（可能为null）
-      const { data: { user } } = await supabase.auth.getUser()
-
-      let isLiked = false
-      
-      // 只有登录用户才检查点赞状态
-      if (user) {
-        // 确保Token有效
-        const isValidSession = await this.ensureValidSessionCached()
-        if (isValidSession) {
-          try {
-            // 使用 maybeSingle() 替代 single() 避免严格模式问题
-            const { data: like, error: likeError } = await supabase
-              .from('template_likes')
-              .select('id')
-              .eq('user_id', user.id)
-              .eq('template_id', templateId)
-              .maybeSingle()
-            
-            if (likeError) {
-              console.warn(`[TemplateLikeService] Like check failed for ${templateId}:`, likeError)
-              // 406或其他权限错误时，默认为未点赞但不影响功能
-              isLiked = false
-            } else {
-              isLiked = !!like
-            }
-          } catch (error) {
-            console.warn(`[TemplateLikeService] Like check exception for ${templateId}:`, error)
-            // 出现异常时默认为未点赞，不阻塞整个流程
-            isLiked = false
+      // 🚀 步骤1：优先使用缓存（可通过 forceRefresh 强制绕过）
+      if (!options?.forceRefresh) {
+        const cached = likesCacheService.get(templateId)
+        if (cached) {
+          console.log(`[TemplateLikeService] 💾 使用缓存: ${templateId}`)
+          return {
+            template_id: cached.template_id,
+            is_liked: cached.is_liked,
+            like_count: cached.like_count
           }
         }
       }
 
-      // 获取模板点赞数（无论是否登录都获取），如果不存在则自动创建
-      const { data: template, error: templateError } = await supabase
-        .from('templates')
-        .select('like_count')
-        .eq('id', templateId)
-        .single()
+      // 🚀 步骤2：快速验证
+      if (!templateId || typeof templateId !== 'string') {
+        return null
+      }
 
+      // 🚀 步骤3：并行查询用户状态和模板信息（减少等待时间）
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      const queries = []
+      
+      // 查询模板信息（必需）
+      queries.push(
+        supabase
+          .from('templates')
+          .select('like_count')
+          .eq('id', templateId)
+          .single()
+      )
+      
+      // 如果用户已登录，查询点赞状态（可选）
+      if (user) {
+        queries.push(
+          supabase
+            .from('template_likes')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('template_id', templateId)
+            .maybeSingle()
+        )
+      }
+
+      // 🚀 步骤4：并行执行查询
+      const results = await Promise.all(queries)
+      const templateResult = results[0]
+      const likeResult = user ? results[1] : null
+
+      // 🚀 步骤5：简化结果处理
       let likeCount = 0
+      let isLiked = false
 
-      if (templateError && templateError.code === 'PGRST116') {
-        // 模板不存在，尝试自动创建
-        console.log(`[TemplateLikeService] 检查点赞状态时发现模板 ${templateId} 不存在，尝试自动同步...`)
-        
-        const { templateSyncService } = await import('./templateSyncService')
-        const syncSuccess = await templateSyncService.syncSingleTemplate(templateId)
-        
-        if (syncSuccess) {
-          // 重新获取模板
-          const { data: newTemplate } = await supabase
-            .from('templates')
-            .select('like_count')
-            .eq('id', templateId)
-            .single()
-          
-          likeCount = newTemplate?.like_count || 0
-          console.log(`[TemplateLikeService] ✅ 模板 ${templateId} 自动同步成功`)
-        } else {
-          console.warn(`[TemplateLikeService] ⚠️ 模板 ${templateId} 自动同步失败，使用默认值`)
-          likeCount = 0
-        }
-      } else if (templateError) {
-        console.warn(`[TemplateLikeService] 获取模板 ${templateId} 信息失败:`, templateError)
+      // 处理模板信息
+      if (templateResult.error) {
+        console.warn(`[TemplateLikeService] ⚠️ 模板 ${templateId} 不存在或查询失败`)
         likeCount = 0
       } else {
-        likeCount = template?.like_count || 0
+        likeCount = templateResult.data?.like_count || 0
+      }
+
+      // 处理点赞状态
+      if (user && likeResult && !likeResult.error) {
+        isLiked = !!likeResult.data
       }
 
       const status = {
@@ -312,12 +319,14 @@ class TemplateLikeService {
         like_count: likeCount
       }
 
-      // 缓存结果
-      likesCacheService.set(templateId, status)
+      // 🚀 步骤6：可选缓存结果（silent 时不写入缓存，避免覆盖乐观/最终状态）
+      if (!options?.silent) {
+        likesCacheService.set(templateId, status, 'api')
+      }
 
       return status
     } catch (error) {
-      console.error('Error checking like status:', error)
+      console.error(`[TemplateLikeService] ❌ 检查点赞状态失败:`, error)
       return null
     }
   }
@@ -461,7 +470,7 @@ class TemplateLikeService {
         }
         
         // 缓存新获取的结果
-        likesCacheService.set(templateId, result)
+        likesCacheService.set(templateId, result, 'api')
         
         return result
       })
@@ -484,11 +493,9 @@ class TemplateLikeService {
       const allCachedStatuses = allResults.map(status => ({
         template_id: status.template_id,
         is_liked: status.is_liked,
-        like_count: status.like_count,
-        cached_at: Date.now(),
-        ttl: 30 * 60 * 1000 // 30分钟缓存
+        like_count: status.like_count
       }))
-      likesCacheService.setBatch(templateIds, allCachedStatuses)
+      likesCacheService.setBatch(templateIds, allCachedStatuses, 'api')
 
       return allResults
     } catch (error) {

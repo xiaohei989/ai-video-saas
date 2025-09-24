@@ -10,8 +10,8 @@ const corsHeaders = {
 }
 
 interface CacheRequest {
-  action: 'get' | 'set' | 'delete' | 'exists'
-  key: string
+  action: 'get' | 'set' | 'delete' | 'exists' | 'health_check'
+  key?: string
   value?: any
   ttl?: number // TTL in seconds
 }
@@ -63,7 +63,7 @@ serve(async (req: Request) => {
     const body: CacheRequest = await req.json()
     const { action, key, value, ttl } = body
 
-    console.log(`[CACHE EDGE FUNCTION] ${action.toUpperCase()} operation for key: ${key}`)
+    console.log(`[CACHE EDGE FUNCTION] ${action.toUpperCase()} operation${key ? ` for key: ${key}` : ''}`)
 
     let result: CacheResponse = {
       success: false,
@@ -159,6 +159,46 @@ serve(async (req: Request) => {
           }
           break
 
+        case 'health_check':
+          try {
+            // 执行健康检查：测试 Redis 读写操作
+            const healthKey = `health_check_${Date.now()}`
+            const healthValue = { test: true, timestamp: Date.now() }
+            
+            // 测试写入
+            await redis.set(healthKey, JSON.stringify(healthValue), { ex: 10 })
+            
+            // 测试读取
+            const retrieved = await redis.get(healthKey)
+            const canRead = retrieved !== null
+            
+            // 清理测试数据
+            await redis.del(healthKey)
+            
+            result = {
+              success: true,
+              data: {
+                redis_connected: true,
+                read_test: canRead,
+                write_test: true,
+                timestamp: new Date().toISOString()
+              },
+              timestamp: new Date().toISOString()
+            }
+          } catch (error) {
+            console.error(`[CACHE EDGE FUNCTION] HEALTH_CHECK错误:`, error)
+            result = {
+              success: true,
+              data: {
+                redis_connected: false,
+                error: error.message,
+                timestamp: new Date().toISOString()
+              },
+              timestamp: new Date().toISOString()
+            }
+          }
+          break
+
         default:
           result = {
             success: false,
@@ -196,6 +236,17 @@ serve(async (req: Request) => {
           result = {
             success: true,
             data: { exists: false },
+            timestamp: new Date().toISOString()
+          }
+          break
+        case 'health_check':
+          result = {
+            success: true,
+            data: {
+              redis_connected: false,
+              error: 'Redis not available',
+              timestamp: new Date().toISOString()
+            },
             timestamp: new Date().toISOString()
           }
           break

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频播放器点击修复测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .video-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            position: relative;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .instructions {
+            background: #e8f4fd;
+            padding: 20px;
+            border-left: 4px solid #2196F3;
+            margin: 20px 0;
+        }
+        .test-steps {
+            counter-reset: step-counter;
+        }
+        .test-steps li {
+            counter-increment: step-counter;
+            margin: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        .test-steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #2196F3;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .expected-result {
+            background: #e8f5e8;
+            padding: 15px;
+            border-left: 4px solid #4CAF50;
+            margin: 15px 0;
+        }
+        .bug-description {
+            background: #fff3e0;
+            padding: 15px;
+            border-left: 4px solid #ff9800;
+            margin: 15px 0;
+        }
+        h1 { color: #333; text-align: center; }
+        h2 { color: #2196F3; }
+        .success { color: #4CAF50; font-weight: bold; }
+        .error { color: #f44336; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎬 视频播放器点击修复测试</h1>
+        
+        <div class="bug-description">
+            <h2>🐛 问题描述</h2>
+            <p><strong>原问题</strong>：播放的时候点击画面会暂停，再次点击不是恢复播放而是重新开始播放</p>
+            <p><strong>期望行为</strong>：点击暂停后，再次点击应该从当前位置继续播放，而不是重新开始</p>
+        </div>
+
+        <div class="video-container">
+            <video 
+                id="testVideo"
+                controls 
+                preload="metadata"
+                poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='281' viewBox='0 0 500 281'%3E%3Crect fill='%23f0f0f0' width='500' height='281'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-size='18' fill='%23666'%3E测试视频%3C/text%3E%3C/svg%3E"
+            >
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                您的浏览器不支持视频标签。
+            </video>
+        </div>
+
+        <div class="instructions">
+            <h2>📋 测试步骤</h2>
+            <ol class="test-steps">
+                <li>点击视频播放按钮开始播放</li>
+                <li>等待视频播放3-5秒</li>
+                <li>点击视频画面暂停播放</li>
+                <li>再次点击视频画面</li>
+                <li>观察视频是否从暂停位置继续播放</li>
+            </ol>
+        </div>
+
+        <div class="expected-result">
+            <h2>✅ 期望结果</h2>
+            <p>视频应该从暂停的位置继续播放，而不是重新从头开始播放。</p>
+        </div>
+
+        <div id="testResults" style="margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
+            <h2>🧪 测试结果记录</h2>
+            <div id="playEvents" style="font-family: monospace; font-size: 12px; background: #f9f9f9; padding: 10px; border-radius: 3px;">
+                等待测试开始...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('testVideo');
+        const playEvents = document.getElementById('playEvents');
+        
+        let events = [];
+        
+        function logEvent(event, time, message) {
+            const timestamp = new Date().toLocaleTimeString();
+            events.push(`[${timestamp}] ${event}: ${message} (当前时间: ${time.toFixed(2)}s)`);
+            playEvents.innerHTML = events.join('<br>');
+            playEvents.scrollTop = playEvents.scrollHeight;
+        }
+        
+        video.addEventListener('play', () => {
+            logEvent('PLAY', video.currentTime, '视频开始播放');
+        });
+        
+        video.addEventListener('pause', () => {
+            logEvent('PAUSE', video.currentTime, '视频暂停');
+        });
+        
+        video.addEventListener('timeupdate', () => {
+            // 仅在特定时间点记录，避免过多日志
+            if (Math.floor(video.currentTime) % 2 === 0 && video.currentTime % 1 < 0.1) {
+                logEvent('TIME_UPDATE', video.currentTime, '播放中...');
+            }
+        });
+        
+        video.addEventListener('ended', () => {
+            logEvent('ENDED', video.currentTime, '播放结束');
+        });
+        
+        video.addEventListener('seeking', () => {
+            logEvent('SEEKING', video.currentTime, '正在跳转位置');
+        });
+        
+        video.addEventListener('seeked', () => {
+            logEvent('SEEKED', video.currentTime, '跳转完成');
+        });
+        
+        // 点击事件监听
+        video.addEventListener('click', (e) => {
+            logEvent('CLICK', video.currentTime, `视频被点击 (paused: ${video.paused})`);
+        });
+
+        // 显示修复信息
+        logEvent('INFO', 0, '=== 修复内容 ===');
+        logEvent('INFO', 0, '1. 移除了用户点击暂停时的位置重置逻辑');
+        logEvent('INFO', 0, '2. 区分悬停离开和用户主动暂停的行为');
+        logEvent('INFO', 0, '3. 保持用户暂停时的播放进度');
+        logEvent('INFO', 0, '=== 开始测试 ===');
+    </script>
+</body>
+</html>

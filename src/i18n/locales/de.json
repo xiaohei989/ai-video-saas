@@ -607,7 +607,7 @@
     "canChangePlan": "Kann ich meinen Abonnementplan ändern?",
     "changePlanDescription": "Sie können Ihren Abonnementplan jederzeit upgraden oder downgraden. Änderungen werden im nächsten Abrechnungszyklus wirksam.",
     "doCreditsRollover": "Werden ungenutzte Credits übertragen?",
-    "creditsRolloverDescription": "Abonnement-Credits werden jeden Abrechnungszyklus zurückgesetzt. Wir empfehlen, einen Plan zu wählen, der zu Ihrer Nutzung passt.",
+    "creditsRolloverDescription": "Abonnement-Credits werden jeden Abrechnungszyklus zu Ihrem Konto hinzugefügt und nicht verwendete Credits bleiben erhalten. Wählen Sie den Plan, der am besten zu Ihren Bedürfnissen passt.",
     "paymentMethods": "Welche Zahlungsmethoden werden unterstützt?",
     "paymentMethodsDescription": "Wir unterstützen große Kredit- und Debitkarten einschließlich Visa, Mastercard und American Express."
   },

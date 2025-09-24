@@ -582,7 +582,7 @@
     "canChangePlan": "サブスクリプションプランを変更できますか？",
     "changePlanDescription": "いつでもサブスクリプションプランをアップグレードまたはダウングレードできます。変更は次の請求サイクルで有効になります。",
     "doCreditsRollover": "未使用のクレジットは繰り越されますか？",
-    "creditsRolloverDescription": "サブスクリプションクレジットは各請求サイクルでリセットされます。使用量に合ったプランを選択することをお勧めします。",
+    "creditsRolloverDescription": "サブスクリプションクレジットは各請求サイクルでアカウントに追加され、未使用のクレジットは累積されます。ニーズに最適なプランを選択してください。",
     "paymentMethods": "どの支払い方法がサポートされていますか？",
     "paymentMethodsDescription": "Visa、Mastercard、American Expressなどの主要なクレジットカードとデビットカードをサポートしています。"
   },

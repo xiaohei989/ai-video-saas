@@ -19,15 +19,21 @@ export default function VideoLoadingSpinner({
   progress
 }: VideoLoadingSpinnerProps) {
   const sizeClasses = {
-    sm: 'w-6 h-6',
-    md: 'w-8 h-8', 
-    lg: 'w-10 h-10'
+    sm: 'w-5 h-5',  // 与圆环同尺寸
+    md: 'w-7 h-7', 
+    lg: 'w-8 h-8'
   }
   
   const iconSizeClasses = {
-    sm: 'w-4 h-4',
-    md: 'w-5 h-5',
-    lg: 'w-6 h-6'
+    sm: 'w-5 h-5',  // 容器24px → 圆环约20px（~83%）
+    md: 'w-7 h-7',  // 容器32px → 圆环约28px（~87%）
+    lg: 'w-8 h-8'   // 容器40px → 圆环约32px（~80%）
+  }
+  
+  const textSizeClasses = {
+    sm: 'text-[8px]',
+    md: 'text-[10px]',
+    lg: 'text-[11px]'
   }
 
   return (
@@ -60,15 +66,17 @@ export default function VideoLoadingSpinner({
               drop-shadow-lg
             `} />
           )}
+          {/* 百分比文本：居中覆盖在圆形内部，无额外背景框 */}
+          {progress !== undefined && (
+            <span
+              className={`absolute inset-0 flex items-center justify-center text-white font-light ${textSizeClasses[size]}`}
+              style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
+            >
+              {Math.round(progress)}%
+            </span>
+          )}
         </div>
       </div>
-      
-      {/* 进度百分比 - 独立显示在圆环下方 */}
-      {progress !== undefined && (
-        <span className="text-white text-xs font-bold bg-black/80 px-2 py-1 rounded-md border border-white/30 shadow-lg backdrop-blur-sm">
-          {Math.round(progress)}%
-        </span>
-      )}
     </div>
   )
 }

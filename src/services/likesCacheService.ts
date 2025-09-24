@@ -9,6 +9,9 @@ export interface CachedLikeStatus {
   like_count: number
   cached_at: number
   ttl: number
+  // 🚀 版本化状态管理：确保时序正确性
+  version: number
+  source: 'api' | 'optimistic' | 'cache' | 'sync'
 }
 
 export interface BatchLikeData {
@@ -20,11 +23,13 @@ export interface BatchLikeData {
 class LikesCacheService {
   private cache: Map<string, CachedLikeStatus> = new Map()
   private batchCache: Map<string, BatchLikeData> = new Map()
-  // 🚀 优化：延长缓存TTL，提高缓存命中率
-  private readonly DEFAULT_TTL = 30 * 60 * 1000 // 30分钟缓存（从5分钟延长）
-  private readonly BATCH_TTL = 60 * 60 * 1000 // 批量数据1小时缓存（从3分钟延长）
+  // 🚀 优化：调整缓存TTL，提高用户操作数据的持久性
+  private readonly DEFAULT_TTL = 60 * 60 * 1000 // 1小时缓存（用户操作数据）
+  private readonly API_TTL = 30 * 60 * 1000 // 30分钟缓存（API数据）
+  private readonly BATCH_TTL = 60 * 60 * 1000 // 批量数据1小时缓存
   private readonly HIGH_PRIORITY_TTL = 2 * 60 * 60 * 1000 // 高优先级2小时缓存
   private readonly LOW_PRIORITY_TTL = 15 * 60 * 1000 // 低优先级15分钟缓存
+  private readonly USER_ACTION_TTL = 24 * 60 * 60 * 1000 // 用户操作24小时持久化
   private cleanupInterval: NodeJS.Timeout | null = null
   // 🚀 新增：预加载缓存管理
   private preloadQueue: Set<string> = new Set()
@@ -34,10 +39,85 @@ class LikesCacheService {
   // 🔧 防递归保护
   private notificationQueue: Set<string> = new Set()
   private isNotifying: boolean = false
+  // 🚀 去抖动机制：合并短时间内的多次通知
+  private debounceTimers: Map<string, NodeJS.Timeout> = new Map()
+  private pendingNotifications: Map<string, CachedLikeStatus> = new Map()
+  // 🚀 版本化状态管理：确保时序正确性
+  private globalVersionCounter: number = 0
+  private templateVersions: Map<string, number> = new Map()
 
   constructor() {
     // 启动定期清理过期缓存
     this.startCleanup()
+  }
+
+  /**
+   * 🚀 生成新的版本号（确保递增）
+   */
+  private generateVersion(): number {
+    return ++this.globalVersionCounter
+  }
+
+  /**
+   * 🚀 验证状态版本：只有更新的版本才能覆盖现有状态（增强数据源优先级保护）
+   */
+  private shouldAcceptVersion(templateId: string, newVersion: number, source: string): boolean {
+    const current = this.cache.get(templateId)
+    const currentVersion = this.templateVersions.get(templateId) || 0
+    
+    // 🚀 数据源优先级保护：用户操作数据具有最高优先级
+    if (current) {
+      const isCurrentUserAction = current.source === 'optimistic' || current.source === 'sync'
+      const isNewApiData = source === 'api'
+      const isNewSyncData = source === 'sync'
+      const isCurrentOptimistic = current.source === 'optimistic'
+      
+      // 🚀 特殊处理：sync数据源（服务器确认）可以覆盖optimistic数据源（乐观更新）
+      if (isCurrentOptimistic && isNewSyncData) {
+        console.debug(`[LikesCacheService] ✅ Sync数据覆盖乐观更新: ${templateId} (${current.source} -> ${source})`)
+        return true // sync数据源总是可以覆盖optimistic，不受版本和时间限制
+      }
+      
+      // 用户操作数据在5分钟内不能被API数据覆盖
+      if (isCurrentUserAction && isNewApiData) {
+        const userActionAge = Date.now() - current.cached_at
+        const protectionPeriod = 5 * 60 * 1000 // 5分钟保护期
+        
+        if (userActionAge < protectionPeriod) {
+          console.debug(`[LikesCacheService] 🛡️ 保护用户操作数据: ${templateId} (${current.source}, ${Math.round(userActionAge / 1000)}s前) vs ${source}`)
+          return false
+        }
+      }
+      
+      // 🚀 同类型数据源的时间优先级：较新的数据优先
+      if (current.source === source) {
+        const timeDiff = Date.now() - current.cached_at
+        const minUpdateInterval = source === 'api' ? 30 * 1000 : 5 * 1000 // API数据30s最小更新间隔，其他5s
+        
+        if (timeDiff < minUpdateInterval && newVersion <= currentVersion) {
+          console.debug(`[LikesCacheService] ⏱️ 跳过频繁更新: ${templateId} (${source}, ${Math.round(timeDiff / 1000)}s内)`)
+          return false
+        }
+      }
+    }
+    
+    // 版本验证
+    const shouldAccept = newVersion >= currentVersion
+    
+    if (!shouldAccept) {
+      console.debug(`[LikesCacheService] 拒绝旧版本状态: ${templateId} v${newVersion} < v${currentVersion} (${source})`)
+    } else if (newVersion > currentVersion) {
+      console.debug(`[LikesCacheService] ✅ 接受新版本状态: ${templateId} v${currentVersion} -> v${newVersion} (${source})`)
+    }
+    
+    return shouldAccept
+  }
+
+  /**
+   * 🚀 更新模板版本号
+   */
+  private updateVersion(templateId: string, version: number): void {
+    this.templateVersions.set(templateId, version)
   }
 
   /**
@@ -57,16 +137,40 @@ class LikesCacheService {
   }
 
   /**
-   * 设置单个模板的点赞状态
+   * 🚀 版本化设置单个模板的点赞状态
    */
-  set(templateId: string, status: Omit<CachedLikeStatus, 'cached_at' | 'ttl'>): void {
+  set(templateId: string, status: Omit<CachedLikeStatus, 'cached_at' | 'ttl' | 'version' | 'source'>, source: 'api' | 'optimistic' | 'cache' | 'sync' = 'cache'): void {
+    const version = this.generateVersion()
+    
+    // 版本验证：确保不会被旧版本覆盖
+    if (!this.shouldAcceptVersion(templateId, version, source)) {
+      return
+    }
+
+    // 🚀 根据数据源选择合适的TTL
+    let ttl: number
+    switch (source) {
+      case 'optimistic':
+      case 'sync':
+        ttl = this.USER_ACTION_TTL // 用户操作数据24小时持久化
+        break
+      case 'api':
+        ttl = this.API_TTL // API数据30分钟
+        break
+      default:
+        ttl = this.DEFAULT_TTL // 默认1小时
+    }
+
     const cached: CachedLikeStatus = {
       ...status,
       cached_at: Date.now(),
-      ttl: this.DEFAULT_TTL
+      ttl,
+      version,
+      source
     }
     
     this.cache.set(templateId, cached)
+    this.updateVersion(templateId, version)
     
     // 同时更新批量缓存中的数据
     this.updateBatchCaches(templateId, cached)
@@ -95,36 +199,55 @@ class LikesCacheService {
   }
 
   /**
-   * 批量设置多个模板的点赞状态
+   * 🚀 版本化批量设置多个模板的点赞状态
    */
-  setBatch(templateIds: string[], statuses: CachedLikeStatus[]): void {
+  setBatch(templateIds: string[], statuses: Omit<CachedLikeStatus, 'cached_at' | 'ttl' | 'version' | 'source'>[], source: 'api' | 'cache' | 'sync' = 'api'): void {
     const now = Date.now()
     const statusMap = new Map<string, CachedLikeStatus>()
 
-    // 更新单个缓存
+    // 更新单个缓存（带版本验证）
     statuses.forEach(status => {
+      const version = this.generateVersion()
+      
+      // 版本验证
+      if (!this.shouldAcceptVersion(status.template_id, version, source)) {
+        return
+      }
+
       const cached: CachedLikeStatus = {
         ...status,
         cached_at: now,
-        ttl: this.DEFAULT_TTL
+        ttl: this.DEFAULT_TTL,
+        version,
+        source
       }
       
       this.cache.set(status.template_id, cached)
+      this.updateVersion(status.template_id, version)
       statusMap.set(status.template_id, cached)
     })
 
     // 为缺失的模板创建默认状态
     templateIds.forEach(templateId => {
       if (!statusMap.has(templateId)) {
+        const version = this.generateVersion()
+        
+        if (!this.shouldAcceptVersion(templateId, version, source)) {
+          return
+        }
+
         const defaultStatus: CachedLikeStatus = {
           template_id: templateId,
           is_liked: false,
           like_count: 0,
           cached_at: now,
-          ttl: this.DEFAULT_TTL
+          ttl: this.DEFAULT_TTL,
+          version,
+          source
         }
         
         this.cache.set(templateId, defaultStatus)
+        this.updateVersion(templateId, version)
         statusMap.set(templateId, defaultStatus)
       }
     })
@@ -141,26 +264,86 @@ class LikesCacheService {
   }
 
   /**
-   * 更新模板点赞状态（用于点赞/取消点赞操作后）
+   * 🚀 版本化更新模板点赞状态（用于点赞/取消点赞操作后）增强版
    */
-  updateLikeStatus(templateId: string, isLiked: boolean, newLikeCount: number): void {
-    // const existing = this.cache.get(templateId) // unused
+  updateLikeStatus(templateId: string, isLiked: boolean, newLikeCount: number, source: 'api' | 'optimistic' | 'sync' = 'api'): void {
+    const existing = this.cache.get(templateId)
+    const version = this.generateVersion()
+    
+    // 🚀 用户操作优先级特殊处理
+    const isUserAction = source === 'optimistic' || source === 'sync'
+    const isApiUpdate = source === 'api'
+    const isSyncUpdate = source === 'sync'
+    
+    // 🚀 特殊处理：sync数据源（服务器确认）可以覆盖optimistic数据源（乐观更新）
+    if (existing && existing.source === 'optimistic' && isSyncUpdate) {
+      console.debug(`[LikesCacheService] ✅ Sync更新覆盖乐观更新: ${templateId} (${existing.source} -> ${source})`)
+      // 继续执行，允许sync覆盖optimistic
+    }
+    // 如果是API更新但存在最近的用户操作，直接拒绝
+    else if (isApiUpdate && existing) {
+      const isExistingUserAction = existing.source === 'optimistic' || existing.source === 'sync'
+      const userActionAge = Date.now() - existing.cached_at
+      const protectionPeriod = 5 * 60 * 1000 // 5分钟保护期
+      
+      if (isExistingUserAction && userActionAge < protectionPeriod) {
+        console.debug(`[LikesCacheService] 🛡️ API更新被拒绝，保护用户操作: ${templateId} (${existing.source}, ${Math.round(userActionAge / 1000)}s前)`)
+        return
+      }
+    }
+    
+    // 🚀 版本验证：确保只有更新的状态才能覆盖现有状态
+    if (!this.shouldAcceptVersion(templateId, version, source)) {
+      console.debug(`[LikesCacheService] 跳过版本验证失败的更新: ${templateId} ${source}`)
+      return
+    }
+    
+    // 🚀 检查是否真的发生了变化，避免无效通知
+    const hasChanged = !existing || 
+      existing.is_liked !== isLiked || 
+      existing.like_count !== newLikeCount
+    
+    // 🚀 根据数据源选择合适的TTL
+    let ttl: number
+    switch (source) {
+      case 'optimistic':
+      case 'sync':
+        ttl = this.USER_ACTION_TTL // 用户操作数据24小时持久化
+        break
+      case 'api':
+        ttl = this.API_TTL // API数据30分钟
+        break
+      default:
+        ttl = this.DEFAULT_TTL // 默认1小时
+    }
     
     const updated: CachedLikeStatus = {
       template_id: templateId,
       is_liked: isLiked,
       like_count: newLikeCount,
       cached_at: Date.now(),
-      ttl: this.DEFAULT_TTL
+      ttl,
+      version,
+      source
     }
 
     this.cache.set(templateId, updated)
+    this.updateVersion(templateId, version)
     
     // 更新批量缓存
     this.updateBatchCaches(templateId, updated)
     
-    // 🚀 通知监听器缓存已更新
-    this.notifyListeners(templateId, updated)
+    // 🚀 只有在真正发生变化时才通知监听器
+    if (hasChanged) {
+      const changeType = isUserAction ? '👤 用户操作' : '📡 API更新'
+      console.debug(`[LikesCacheService] v${version} ${changeType} ${templateId} (${source}):`, {
+        from: existing ? { liked: existing.is_liked, count: existing.like_count, v: existing.version, source: existing.source } : null,
+        to: { liked: isLiked, count: newLikeCount, v: version, source }
+      })
+      this.notifyListeners(templateId, updated)
+    } else {
+      console.debug(`[LikesCacheService] v${version} 无变化 ${templateId} (${source}), 跳过通知`)
+    }
   }
 
   /**
@@ -188,6 +371,39 @@ class LikesCacheService {
    */
   has(templateId: string): boolean {
     return this.get(templateId) !== null
+  }
+
+  /**
+   * 🚀 检查缓存数据是否新鲜（未过期）
+   */
+  isCacheFresh(templateId: string, maxAge: number = 60 * 1000): boolean {
+    const cached = this.cache.get(templateId)
+    if (!cached) return false
+    
+    const age = Date.now() - cached.cached_at
+    const isExpired = age > cached.ttl
+    const isStale = age > maxAge
+    
+    if (isExpired) {
+      console.debug(`[LikesCacheService] 缓存已过期: ${templateId} (${Math.round(age/1000)}s > ${cached.ttl/1000}s)`)
+      return false
+    }
+    
+    if (isStale) {
+      console.debug(`[LikesCacheService] 缓存过旧: ${templateId} (${Math.round(age/1000)}s > ${maxAge/1000}s)`)
+      return false
+    }
+    
+    return true
+  }
+
+  /**
+   * 🚀 获取缓存年龄（毫秒）
+   */
+  getCacheAge(templateId: string): number {
+    const cached = this.cache.get(templateId)
+    if (!cached) return Infinity
+    return Date.now() - cached.cached_at
   }
 
   /**
@@ -443,7 +659,7 @@ class LikesCacheService {
   }
 
   /**
-   * 🚀 通知监听器缓存已更新（防递归版本）
+   * 🚀 通知监听器缓存已更新（防递归+去抖动版本）
    */
   private notifyListeners(templateId: string, status: CachedLikeStatus): void {
     // 防递归：如果已在通知队列中，跳过
@@ -452,27 +668,44 @@ class LikesCacheService {
       return
     }
 
-    // 加入通知队列
-    this.notificationQueue.add(templateId)
+    // 🚀 去抖动：清除之前的定时器，合并短时间内的多次通知
+    const existingTimer = this.debounceTimers.get(templateId)
+    if (existingTimer) {
+      clearTimeout(existingTimer)
+    }
 
-    // 异步处理通知，避免阻塞主线程和递归调用
-    setTimeout(() => {
+    // 保存最新的状态
+    this.pendingNotifications.set(templateId, status)
+
+    // 设置新的去抖动定时器
+    const timer = setTimeout(() => {
+      const latestStatus = this.pendingNotifications.get(templateId)
+      if (!latestStatus) return
+
+      // 加入通知队列
+      this.notificationQueue.add(templateId)
+
       try {
         const listeners = this.listeners.get(templateId)
         if (listeners) {
+          console.debug(`[LikesCacheService] 发送去抖动后的通知: ${templateId}`, latestStatus)
           listeners.forEach(callback => {
             try {
-              callback(status)
+              callback(latestStatus)
             } catch (error) {
               console.error('[LikesCacheService] Listener callback error:', error)
             }
           })
         }
       } finally {
-        // 从通知队列中移除
+        // 清理状态
         this.notificationQueue.delete(templateId)
+        this.debounceTimers.delete(templateId)
+        this.pendingNotifications.delete(templateId)
       }
-    }, 0) // 使用 setTimeout(0) 让通知异步执行
+    }, 50) // 50ms去抖动延迟，合并快速连续的更新
+
+    this.debounceTimers.set(templateId, timer)
   }
 
   /**
@@ -483,6 +716,12 @@ class LikesCacheService {
       clearInterval(this.cleanupInterval)
       this.cleanupInterval = null
     }
+    
+    // 🚀 清理去抖动定时器
+    this.debounceTimers.forEach(timer => clearTimeout(timer))
+    this.debounceTimers.clear()
+    this.pendingNotifications.clear()
+    
     this.clear()
     this.listeners.clear()
     // 清理防递归状态

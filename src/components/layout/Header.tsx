@@ -571,7 +571,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
                           onClick={() => setUserMenuOpen(false)}
                         >
                           <Settings className="h-4 w-4 text-red-600" />
-                          <span className="text-red-600 font-medium">管理员后台</span>
+                          <span className="text-red-600 font-medium">{t('admin.dashboard')}</span>
                         </Link>
                       )}
                     </div>
@@ -718,7 +718,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         <Settings className="h-4 w-4 text-red-600" />
-                        <span className="text-red-600 font-medium">管理员后台</span>
+                        <span className="text-red-600 font-medium">{t('admin.dashboard')}</span>
                       </Link>
                     )}
                     

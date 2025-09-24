@@ -12,6 +12,7 @@ interface ThumbnailUploadOptions {
   frameTime?: number
   onSuccess?: (thumbnailUrl: string) => void
   onError?: (error: Error) => void
+  onPreview?: (previewDataUrl: string) => void
 }
 
 export function useThumbnailUpload() {
@@ -178,7 +179,14 @@ export function useThumbnailUpload() {
    * 主要的缩略图生成和上传函数
    */
   const generateAndUploadThumbnail = useCallback(async (options: ThumbnailUploadOptions): Promise<string | null> => {
-    const { videoId, videoUrl, frameTime = 0.1, onSuccess, onError } = options
+    const {
+      videoId,
+      videoUrl,
+      frameTime = 0.1,
+      onSuccess,
+      onError,
+      onPreview
+    } = options
 
     // 避免重复处理同一个视频
     if (processingRef.current.has(videoId)) {
@@ -201,6 +209,15 @@ export function useThumbnailUpload() {
       // Step 1: 提取缩略图
       const thumbnailDataUrl = await extractThumbnail(videoUrl, frameTime)
       console.log(`[ThumbnailUpload] 缩略图提取成功: ${videoId}`)
+
+      // 在上传前提前返回缩略图数据，优化前端展示速度
+      if (onPreview) {
+        try {
+          onPreview(thumbnailDataUrl)
+        } catch (previewError) {
+          console.warn('[ThumbnailUpload] 预览回调执行失败:', previewError)
+        }
+      }
 
       // Step 2: 上传到R2
       const r2Url = await uploadToR2(thumbnailDataUrl, videoId)
