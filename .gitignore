@@ -55,4 +55,4 @@ wrangler.toml.bak
 .env.cloudflare
 
 # Supabase
-.supabase/
+.supabase/.env.local.backup

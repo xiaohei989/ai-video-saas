@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { Play, Hash, TrendingUp, Sparkles, ArrowUp, Video } from 'lucide-react'
 import { templateList as initialTemplates, getPopularTags, getTemplatesByTags, localizeTemplate } from '@/features/video-creator/data/templates/index'
-import SimpleVideoPlayer from '@/components/video/SimpleVideoPlayer'
+import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
 import LikeCounterButton from '@/components/templates/LikeCounterButton'
 import Pagination from '@/components/ui/pagination'
 import CachedImage from '@/components/ui/CachedImage'
@@ -1164,7 +1164,7 @@ const TemplateCard = memo(({
               />
             )}
             {/* 视频播放器在上层 */}
-            <SimpleVideoPlayer
+            <ReactVideoPlayer
               src={template.previewUrl}
               poster={template.thumbnailUrl}
               className="relative z-10 w-full h-full"

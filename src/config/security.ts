@@ -3,6 +3,8 @@
  * 集中管理所有安全相关的配置和常量
  */
 
+import { getR2PublicDomain } from './cdnConfig'
+
 export const SECURITY_CONFIG = {
   // CSRF 保护配置
   CSRF: {

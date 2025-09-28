@@ -79,7 +79,8 @@ function generateCanvasFingerprint(): string {
     ctx.arc(50, 50, 20, 0, Math.PI * 2)
     ctx.fill()
     
-    return canvas.toDataURL()
+    // 🔧 修复：明确指定JPEG格式，避免默认PNG输出
+    return canvas.toDataURL('image/jpeg', 0.8)
   } catch (error) {
     console.warn('Canvas fingerprint generation failed:', error)
     return 'canvas-error'

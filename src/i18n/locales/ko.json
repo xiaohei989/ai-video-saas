@@ -382,6 +382,14 @@
     "myVideos": "내 비디오",
     "loading": "비디오 로딩 중...",
     "fetchingData": "비디오 데이터 가져오기 중...",
+    "backgroundLoading": {
+      "mobile": "백그라운드에서 로딩 중...",
+      "desktop": "백그라운드에서 작업 상태 및 추가 데이터 로딩 중...",
+      "description": {
+        "mobile": "페이지 사용 가능, 백그라운드에서 데이터 동기화 중",
+        "desktop": "기본 콘텐츠 로드됨, 백그라운드에서 작업 상태 및 추가 비디오 가져오는 중"
+      }
+    },
     "downloadingProgress": "비디오 다운로드 중 {{progress}}%",
     "downloadingSize": "비디오 다운로드 중 {{size}}MB",
     "downloadComplete": "비디오 다운로드 완료!",
@@ -523,6 +531,7 @@
     "waitingForProcessing": "처리 대기 중",
     "untitledVideo": "제목 없는 비디오",
     "regenerateTitle": "동일한 설정으로 재생성",
+    "regenerate": "재생성",
     "download": "비디오 다운로드",
     "share": "비디오 공유",
     "previousPage": "이전",

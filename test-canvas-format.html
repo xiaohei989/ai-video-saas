@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas格式兼容性测试</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .success { background: #e6ffed; border: 1px solid #28a745; }
+        .warning { background: #fff3cd; border: 1px solid #ffc107; }
+        .error { background: #ffe6e6; border: 1px solid #dc3545; }
+        .info { background: #e6f3ff; border: 1px solid #007bff; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Canvas格式兼容性测试</h1>
+    <p>测试不同浏览器和设备对Canvas输出格式的支持情况，找出PNG缩略图产生的原因</p>
+
+    <div class="test-container">
+        <h2>📊 浏览器信息</h2>
+        <div id="browser-info"></div>
+    </div>
+
+    <div class="test-container">
+        <h2>🎨 Canvas格式支持测试</h2>
+        <div id="format-support"></div>
+    </div>
+
+    <div class="test-container">
+        <h2>⚡ Canvas默认输出格式测试</h2>
+        <div id="default-format"></div>
+    </div>
+
+    <div class="test-container">
+        <h2>📸 模拟缩略图生成测试</h2>
+        <div id="thumbnail-test"></div>
+    </div>
+
+    <div class="test-container">
+        <h2>🔬 WebP支持深度测试</h2>
+        <div id="webp-deep-test"></div>
+    </div>
+
+    <script>
+        // 显示浏览器信息
+        function showBrowserInfo() {
+            const info = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                cookieEnabled: navigator.cookieEnabled,
+                onLine: navigator.onLine,
+                vendor: navigator.vendor || 'Unknown',
+                product: navigator.product || 'Unknown'
+            }
+            
+            document.getElementById('browser-info').innerHTML = 
+                `<pre>${JSON.stringify(info, null, 2)}</pre>`
+        }
+
+        // 测试Canvas格式支持
+        async function testFormatSupport() {
+            const results = []
+            const canvas = document.createElement('canvas')
+            canvas.width = 100
+            canvas.height = 100
+            const ctx = canvas.getContext('2d')
+            
+            // 绘制测试内容
+            ctx.fillStyle = '#667eea'
+            ctx.fillRect(0, 0, 100, 100)
+            ctx.fillStyle = '#ffffff'
+            ctx.fillText('TEST', 30, 50)
+
+            const formats = [
+                { type: 'image/webp', name: 'WebP' },
+                { type: 'image/jpeg', name: 'JPEG' },
+                { type: 'image/png', name: 'PNG' },
+                { type: 'image/bmp', name: 'BMP' },
+                { type: 'image/gif', name: 'GIF' }
+            ]
+
+            for (const format of formats) {
+                try {
+                    // 测试toDataURL支持
+                    const dataUrl = canvas.toDataURL(format.type, 0.8)
+                    const actualFormat = dataUrl.split(';')[0].split(':')[1]
+                    
+                    results.push({
+                        requested: format.name,
+                        requestedType: format.type,
+                        actualType: actualFormat,
+                        supported: actualFormat === format.type,
+                        size: Math.round(dataUrl.length / 1024) + ' KB',
+                        preview: dataUrl.substring(0, 60) + '...'
+                    })
+                } catch (error) {
+                    results.push({
+                        requested: format.name,
+                        requestedType: format.type,
+                        error: error.message,
+                        supported: false
+                    })
+                }
+            }
+
+            // 测试toBlob支持
+            for (const format of formats) {
+                try {
+                    await new Promise((resolve, reject) => {
+                        canvas.toBlob((blob) => {
+                            if (blob) {
+                                const result = results.find(r => r.requestedType === format.type)
+                                if (result) {
+                                    result.blobSupported = true
+                                    result.blobType = blob.type
+                                    result.blobSize = Math.round(blob.size / 1024) + ' KB'
+                                }
+                            } else {
+                                const result = results.find(r => r.requestedType === format.type)
+                                if (result) {
+                                    result.blobSupported = false
+                                    result.blobError = 'Blob creation failed'
+                                }
+                            }
+                            resolve()
+                        }, format.type, 0.8)
+                    })
+                } catch (error) {
+                    const result = results.find(r => r.requestedType === format.type)
+                    if (result) {
+                        result.blobSupported = false
+                        result.blobError = error.message
+                    }
+                }
+            }
+
+            // 显示结果
+            let html = '<table border="1" style="border-collapse: collapse; width: 100%;">'
+            html += '<tr><th>格式</th><th>toDataURL</th><th>实际类型</th><th>toBlob</th><th>大小</th><th>支持状态</th></tr>'
+            
+            results.forEach(result => {
+                const status = result.supported ? 
+                    '<span style="color: green;">✅ 支持</span>' : 
+                    '<span style="color: red;">❌ 不支持</span>'
+                
+                const blobStatus = result.blobSupported === true ? 
+                    '<span style="color: green;">✅</span>' : 
+                    result.blobSupported === false ? 
+                    '<span style="color: red;">❌</span>' : 
+                    '<span style="color: gray;">?</span>'
+
+                html += `<tr>
+                    <td>${result.requested}</td>
+                    <td>${result.actualType || result.error || 'Unknown'}</td>
+                    <td>${result.actualType === result.requestedType ? '✅' : '❌'}</td>
+                    <td>${blobStatus}</td>
+                    <td>${result.size || result.blobSize || 'N/A'}</td>
+                    <td>${status}</td>
+                </tr>`
+            })
+            html += '</table>'
+
+            document.getElementById('format-support').innerHTML = html
+            return results
+        }
+
+        // 测试Canvas默认输出
+        function testDefaultFormat() {
+            const canvas = document.createElement('canvas')
+            canvas.width = 50
+            canvas.height = 50
+            const ctx = canvas.getContext('2d')
+            
+            // 绘制简单内容
+            ctx.fillStyle = '#ff0000'
+            ctx.fillRect(0, 0, 50, 50)
+
+            // 测试无参数调用
+            const defaultOutput = canvas.toDataURL()
+            const defaultType = defaultOutput.split(';')[0].split(':')[1]
+
+            // 测试质量参数
+            const qualityOutput = canvas.toDataURL(undefined, 0.8)
+            const qualityType = qualityOutput.split(';')[0].split(':')[1]
+
+            const result = `
+                <div class="result info">
+                    <strong>默认格式测试结果:</strong><br>
+                    • toDataURL(): ${defaultType}<br>
+                    • toDataURL(undefined, 0.8): ${qualityType}<br>
+                    • 默认格式大小: ${Math.round(defaultOutput.length / 1024)} KB<br>
+                    • 质量参数大小: ${Math.round(qualityOutput.length / 1024)} KB<br>
+                    <br>
+                    <strong>关键发现:</strong> 
+                    ${defaultType === 'image/png' ? 
+                        '<span style="color: red;">⚠️ 默认输出PNG格式 - 这可能是PNG缩略图的源头！</span>' : 
+                        '<span style="color: green;">✅ 默认输出非PNG格式</span>'
+                    }
+                </div>
+            `
+
+            document.getElementById('default-format').innerHTML = result
+        }
+
+        // 模拟缩略图生成
+        async function testThumbnailGeneration() {
+            const results = []
+            
+            // 创建模拟视频Canvas
+            const videoCanvas = document.createElement('canvas')
+            videoCanvas.width = 960
+            videoCanvas.height = 540
+            const videoCtx = videoCanvas.getContext('2d')
+            
+            // 绘制模拟视频帧
+            const gradient = videoCtx.createLinearGradient(0, 0, 960, 540)
+            gradient.addColorStop(0, '#667eea')
+            gradient.addColorStop(1, '#764ba2')
+            videoCtx.fillStyle = gradient
+            videoCtx.fillRect(0, 0, 960, 540)
+            
+            // 添加文字
+            videoCtx.fillStyle = 'white'
+            videoCtx.font = '48px Arial'
+            videoCtx.textAlign = 'center'
+            videoCtx.fillText('模拟视频帧', 480, 270)
+
+            // 测试不同生成方式
+            const tests = [
+                {
+                    name: '无参数 toDataURL()',
+                    test: () => videoCanvas.toDataURL()
+                },
+                {
+                    name: 'WebP格式',
+                    test: () => videoCanvas.toDataURL('image/webp', 0.95)
+                },
+                {
+                    name: 'JPEG格式',
+                    test: () => videoCanvas.toDataURL('image/jpeg', 0.95)
+                },
+                {
+                    name: 'PNG格式',
+                    test: () => videoCanvas.toDataURL('image/png')
+                }
+            ]
+
+            for (const test of tests) {
+                try {
+                    const result = test.test()
+                    const actualType = result.split(';')[0].split(':')[1]
+                    const size = Math.round(result.length * 0.75 / 1024) // 估算实际大小
+                    
+                    results.push({
+                        name: test.name,
+                        actualType: actualType,
+                        size: size + ' KB',
+                        success: true,
+                        preview: result.substring(0, 60) + '...'
+                    })
+                } catch (error) {
+                    results.push({
+                        name: test.name,
+                        error: error.message,
+                        success: false
+                    })
+                }
+            }
+
+            // 测试WebP支持检测
+            const webpSupported = await new Promise((resolve) => {
+                const canvas = document.createElement('canvas')
+                canvas.width = 1
+                canvas.height = 1
+                
+                canvas.toBlob((blob) => {
+                    resolve(blob !== null)
+                }, 'image/webp')
+            })
+
+            let html = `
+                <div class="result ${webpSupported ? 'success' : 'warning'}">
+                    <strong>WebP支持检测:</strong> ${webpSupported ? '✅ 支持' : '❌ 不支持'}
+                </div>
+            `
+
+            html += '<table border="1" style="border-collapse: collapse; width: 100%; margin-top: 10px;">'
+            html += '<tr><th>测试类型</th><th>实际格式</th><th>大小</th><th>状态</th></tr>'
+            
+            results.forEach(result => {
+                const statusClass = result.success ? 'success' : 'error'
+                html += `<tr class="${statusClass}">
+                    <td>${result.name}</td>
+                    <td>${result.actualType || 'N/A'}</td>
+                    <td>${result.size || 'N/A'}</td>
+                    <td>${result.success ? '✅' : '❌ ' + result.error}</td>
+                </tr>`
+            })
+            html += '</table>'
+
+            // 分析结果
+            const pngResults = results.filter(r => r.actualType === 'image/png')
+            if (pngResults.length > 0) {
+                html += `
+                    <div class="result warning" style="margin-top: 15px;">
+                        <strong>🚨 PNG生成分析:</strong><br>
+                        发现 ${pngResults.length} 种情况会产生PNG格式:<br>
+                        ${pngResults.map(r => `• ${r.name} → ${r.actualType}`).join('<br>')}
+                    </div>
+                `
+            }
+
+            document.getElementById('thumbnail-test').innerHTML = html
+        }
+
+        // WebP支持深度测试
+        async function testWebPDeepSupport() {
+            const tests = []
+            
+            // 测试1: 基础toBlob WebP支持
+            const test1 = await new Promise((resolve) => {
+                const canvas = document.createElement('canvas')
+                canvas.width = 100
+                canvas.height = 100
+                const ctx = canvas.getContext('2d')
+                ctx.fillStyle = '#ff0000'
+                ctx.fillRect(0, 0, 100, 100)
+                
+                canvas.toBlob((blob) => {
+                    resolve({
+                        name: 'toBlob WebP基础支持',
+                        result: blob !== null,
+                        details: blob ? `成功生成，类型: ${blob.type}, 大小: ${blob.size}字节` : '生成失败'
+                    })
+                }, 'image/webp', 0.8)
+            })
+            tests.push(test1)
+
+            // 测试2: toDataURL WebP支持
+            try {
+                const canvas = document.createElement('canvas')
+                canvas.width = 100
+                canvas.height = 100
+                const ctx = canvas.getContext('2d')
+                ctx.fillStyle = '#00ff00'
+                ctx.fillRect(0, 0, 100, 100)
+                
+                const dataUrl = canvas.toDataURL('image/webp', 0.8)
+                const actualType = dataUrl.split(';')[0].split(':')[1]
+                
+                tests.push({
+                    name: 'toDataURL WebP支持',
+                    result: actualType === 'image/webp',
+                    details: `请求WebP，实际得到: ${actualType}`
+                })
+            } catch (error) {
+                tests.push({
+                    name: 'toDataURL WebP支持',
+                    result: false,
+                    details: `错误: ${error.message}`
+                })
+            }
+
+            // 测试3: 不同质量参数的WebP
+            const qualityTests = [0.1, 0.5, 0.8, 0.95]
+            for (const quality of qualityTests) {
+                try {
+                    const canvas = document.createElement('canvas')
+                    canvas.width = 100
+                    canvas.height = 100
+                    const ctx = canvas.getContext('2d')
+                    ctx.fillStyle = `hsl(${Math.random() * 360}, 50%, 50%)`
+                    ctx.fillRect(0, 0, 100, 100)
+                    
+                    const dataUrl = canvas.toDataURL('image/webp', quality)
+                    const actualType = dataUrl.split(';')[0].split(':')[1]
+                    const size = Math.round(dataUrl.length * 0.75 / 1024)
+                    
+                    tests.push({
+                        name: `WebP质量${quality}`,
+                        result: actualType === 'image/webp',
+                        details: `实际: ${actualType}, 大小: ${size}KB`
+                    })
+                } catch (error) {
+                    tests.push({
+                        name: `WebP质量${quality}`,
+                        result: false,
+                        details: `错误: ${error.message}`
+                    })
+                }
+            }
+
+            // 显示结果
+            let html = '<table border="1" style="border-collapse: collapse; width: 100%;">'
+            html += '<tr><th>测试项目</th><th>结果</th><th>详细信息</th></tr>'
+            
+            tests.forEach(test => {
+                const statusClass = test.result ? 'success' : 'error'
+                html += `<tr class="${statusClass}">
+                    <td>${test.name}</td>
+                    <td>${test.result ? '✅ 成功' : '❌ 失败'}</td>
+                    <td>${test.details}</td>
+                </tr>`
+            })
+            html += '</table>'
+
+            // 总结分析
+            const webpSupported = tests.some(t => t.result && t.name.includes('WebP'))
+            html += `
+                <div class="result ${webpSupported ? 'success' : 'error'}" style="margin-top: 15px;">
+                    <strong>🔍 WebP支持总结:</strong><br>
+                    ${webpSupported ? 
+                        '✅ 浏览器支持WebP格式，PNG缩略图可能由其他原因产生' : 
+                        '❌ 浏览器不支持WebP，可能回退到PNG格式'
+                    }
+                </div>
+            `
+
+            document.getElementById('webp-deep-test').innerHTML = html
+        }
+
+        // 运行所有测试
+        async function runAllTests() {
+            console.log('🚀 开始Canvas格式兼容性测试...')
+            
+            showBrowserInfo()
+            await testFormatSupport()
+            testDefaultFormat()
+            await testThumbnailGeneration()
+            await testWebPDeepSupport()
+            
+            console.log('✅ 所有测试完成')
+        }
+
+        // 页面加载后运行测试
+        document.addEventListener('DOMContentLoaded', runAllTests)
+    </script>
+</body>
+</html>

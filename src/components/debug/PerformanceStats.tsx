@@ -36,16 +36,17 @@ export default function PerformanceStats({
   
   // 性能等级计算
   const getPerformanceGrade = (timeToInteractive: number) => {
+    if (timeToInteractive === 0) return { grade: 'Init', color: 'text-gray-500', bgColor: 'bg-gray-50' }
     if (timeToInteractive <= 500) return { grade: 'A+', color: 'text-green-600', bgColor: 'bg-green-50' }
     if (timeToInteractive <= 1000) return { grade: 'A', color: 'text-green-500', bgColor: 'bg-green-50' }
     if (timeToInteractive <= 2000) return { grade: 'B', color: 'text-yellow-500', bgColor: 'bg-yellow-50' }
     if (timeToInteractive <= 3000) return { grade: 'C', color: 'text-orange-500', bgColor: 'bg-orange-50' }
     return { grade: 'D', color: 'text-red-500', bgColor: 'bg-red-50' }
   }
-  
-  const performance = getPerformanceGrade(metrics.timeToInteractive)
-  const cacheHitRate = metrics.cacheHitCount + metrics.networkRequestCount > 0 
-    ? (metrics.cacheHitCount / (metrics.cacheHitCount + metrics.networkRequestCount) * 100).toFixed(1)
+
+  const performance = getPerformanceGrade(metrics?.timeToInteractive || 0)
+  const cacheHitRate = (metrics?.cacheHitCount || 0) + (metrics?.networkRequestCount || 0) > 0
+    ? ((metrics?.cacheHitCount || 0) / ((metrics?.cacheHitCount || 0) + (metrics?.networkRequestCount || 0)) * 100).toFixed(1)
     : '0'
 
   if (!isExpanded) {
@@ -61,7 +62,7 @@ export default function PerformanceStats({
           variant="outline"
         >
           <Activity className="w-4 h-4 mr-1" />
-          {performance.grade} | {metrics.timeToInteractive.toFixed(0)}ms
+          {performance.grade} | {(metrics?.timeToInteractive || 0).toFixed(0)}ms
         </Button>
       </div>
     )
@@ -102,7 +103,7 @@ export default function PerformanceStats({
               可交互时间:
             </span>
             <span className={performance.color}>
-              {metrics.timeToInteractive.toFixed(1)}ms
+              {(metrics?.timeToInteractive || 0).toFixed(1)}ms
             </span>
           </div>
           
@@ -111,7 +112,7 @@ export default function PerformanceStats({
               <Clock className="w-3 h-3 text-blue-400" />
               总加载时间:
             </span>
-            <span>{metrics.totalLoadTime.toFixed(1)}ms</span>
+            <span>{(metrics?.totalLoadTime || 0).toFixed(1)}ms</span>
           </div>
           
           <div className="flex justify-between items-center">
@@ -119,7 +120,7 @@ export default function PerformanceStats({
               <Database className="w-3 h-3 text-green-400" />
               缓存命中率:
             </span>
-            <span className={metrics.cacheHitCount > 0 ? 'text-green-400' : 'text-orange-400'}>
+            <span className={(metrics?.cacheHitCount || 0) > 0 ? 'text-green-400' : 'text-orange-400'}>
               {cacheHitRate}%
             </span>
           </div>
@@ -132,8 +133,8 @@ export default function PerformanceStats({
             
             <div className="flex justify-between text-[10px] text-gray-400 mt-1">
               <span>
-                缓存: {metrics.cacheHitCount} | 
-                网络: {metrics.networkRequestCount}
+                缓存: {metrics?.cacheHitCount || 0} |
+                网络: {metrics?.networkRequestCount || 0}
               </span>
             </div>
           </div>
@@ -153,13 +154,13 @@ export default function PerformanceStats({
         </div>
         
         {/* 性能建议 */}
-        {metrics.timeToInteractive > 2000 && (
+        {(metrics?.timeToInteractive || 0) > 2000 && (
           <div className="mt-3 p-2 bg-yellow-900/50 rounded text-[10px] text-yellow-300">
             💡 建议: 加载时间过长，检查网络或缓存配置
           </div>
         )}
         
-        {cacheHitRate === '0' && metrics.networkRequestCount > 0 && (
+        {cacheHitRate === '0' && (metrics?.networkRequestCount || 0) > 0 && (
           <div className="mt-2 p-2 bg-blue-900/50 rounded text-[10px] text-blue-300">
             💾 提示: 首次访问，缓存正在构建
           </div>

@@ -254,9 +254,9 @@ class EnhancedIDBService {
   }
 
   /**
-   * 获取缓存数据
+   * 获取缓存数据 - 统一接口
    */
-  async getCache<T = any>(key: string): Promise<CacheEntry<T> | null> {
+  async get<T = any>(key: string): Promise<CacheEntry<T> | null> {
     if (!this.isInitialized) await this.initialize()
     if (!this.db) return null
 
@@ -277,7 +277,7 @@ class EnhancedIDBService {
 
       // 检查是否过期
       if (this.isExpired(entry)) {
-        await this.deleteCache(key)
+        await this.delete(key)
         this.stats.misses++
         return null
       }
@@ -292,9 +292,10 @@ class EnhancedIDBService {
   }
 
   /**
-   * 设置缓存数据
+   * 设置缓存数据 - 统一接口
    */
-  async setCache<T = any>(key: string, data: T, ttl: number = 3600): Promise<boolean> {
+  async set<T = any>(key: string, data: T, options: { ttl?: number } = {}): Promise<boolean> {
+    const ttl = options.ttl || 3600
     if (!this.isInitialized) await this.initialize()
     if (!this.db) return false
 
@@ -448,9 +449,9 @@ class EnhancedIDBService {
   }
 
   /**
-   * 删除缓存
+   * 删除缓存 - 统一接口
    */
-  async deleteCache(key: string): Promise<boolean> {
+  async delete(key: string): Promise<boolean> {
     if (!this.isInitialized || !this.db) return false
 
     this.stats.deletes++

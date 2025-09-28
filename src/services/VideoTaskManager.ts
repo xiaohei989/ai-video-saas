@@ -327,11 +327,31 @@ class VideoTaskManager {
       ? new Date(video.processing_started_at)
       : new Date(video.created_at)
 
+    // 🚀 增强逻辑：如果有视频URL，优先判定为完成状态
+    const hasVideoUrl = !!(video.video_url || video.r2_url)
+    
+    if (hasVideoUrl) {
+      // 有视频URL就认为已完成，不管数据库状态如何
+      console.log(`[TASK MANAGER] 检测到视频URL，强制设置为完成状态: ${video.id}`)
+      return {
+        id: video.id,
+        status: 'completed' as const,
+        progress: 100,
+        statusText: i18n.t('videoCreator.completed'),
+        videoUrl: video.video_url || video.r2_url || undefined,
+        errorMessage: video.error_message || undefined,
+        veo3JobId: video.veo3_job_id || undefined,
+        startedAt,
+        estimatedCompletion: undefined // 已完成无需估计时间
+      }
+    }
+
+    // 没有URL时才按原逻辑处理
     let progress = 0
     let statusText = i18n.t('videoCreator.preparing')
 
-    // 🔧 优先检查视频是否实际已完成
-    if (video.status === 'completed' && (video.video_url || video.r2_url)) {
+    // 🔧 检查数据库状态（仅当没有URL时）
+    if (video.status === 'completed') {
       progress = 100
       statusText = i18n.t('videoCreator.completed')
     } else if (video.metadata?.progressData) {

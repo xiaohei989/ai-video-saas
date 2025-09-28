@@ -7,8 +7,8 @@ console.log('🧹 开始强制清除IndexedDB缓存...')
 
 async function clearIndexedDBCache() {
   try {
-    // 1. 清除所有可能的IndexedDB数据库
-    const databases = ['UnifiedCache', 'ImageCache', 'TemplateCache', 'VideoCache', 'ai-video-cache', 'template-cache']
+    // 1. 清除所有可能的IndexedDB数据库（包括旧的和新的统一数据库）
+    const databases = ['ai-video-unified-cache', 'ai-video-saas-cache', 'UnifiedCache', 'ImageCache', 'TemplateCache', 'VideoCache', 'ai-video-cache', 'template-cache']
     
     for (const dbName of databases) {
       try {

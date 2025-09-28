@@ -3,6 +3,8 @@
  * 测试CDN是否可访问，为视频播放提供回退策略
  */
 
+import { getR2PublicDomain, generateR2Url } from '@/config/cdnConfig'
+
 interface ConnectivityTestResult {
   success: boolean
   responseTime: number
@@ -16,7 +18,7 @@ interface ConnectivityTestResult {
  * @param timeout 超时时间（毫秒）
  */
 export async function testCdnConnectivity(
-  testUrl: string = 'https://cdn.veo3video.me/templates/videos/animal-skateboarding-street.mp4',
+  testUrl: string = generateR2Url('templates/videos/animal-skateboarding-street.mp4'),
   timeout: number = 10000
 ): Promise<ConnectivityTestResult> {
   const startTime = Date.now()
@@ -75,11 +77,12 @@ export async function testCdnConnectivity(
 export function generateFallbackUrl(originalUrl: string): string {
   // 如果是代理URL，转换为直接CDN访问
   if (originalUrl.startsWith('/api/r2/')) {
-    return `https://cdn.veo3video.me${originalUrl.replace('/api/r2', '')}`
+    return generateR2Url(originalUrl.replace('/api/r2', ''))
   }
   
   // 如果已经是CDN URL，尝试添加缓存破坏参数
-  if (originalUrl.includes('cdn.veo3video.me')) {
+  const r2Domain = getR2PublicDomain()
+  if (originalUrl.includes(r2Domain)) {
     const separator = originalUrl.includes('?') ? '&' : '?'
     return `${originalUrl}${separator}_t=${Date.now()}`
   }
@@ -99,8 +102,9 @@ export async function getOptimalVideoUrl(
 ): Promise<string> {
   // 开发环境默认使用代理
   if (import.meta.env.DEV) {
-    if (originalUrl.includes('cdn.veo3video.me')) {
-      const proxyUrl = originalUrl.replace('https://cdn.veo3video.me', '/api/r2')
+    const r2Domain = getR2PublicDomain()
+    if (originalUrl.includes(r2Domain)) {
+      const proxyUrl = originalUrl.replace(`https://${r2Domain}`, '/api/r2')
       
       // 如果启用回退，先测试代理连通性
       if (enableFallback) {

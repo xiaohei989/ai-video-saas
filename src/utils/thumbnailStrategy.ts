@@ -5,6 +5,7 @@
 
 import { VideoRecord } from '@/services/videoHistoryService'
 import { needsCorsProxy } from '@/utils/videoUrlProxy'
+import { getR2PublicDomain } from '@/config/cdnConfig'
 
 /**
  * 检测是否为移动端设备（需要Media Fragments支持）
@@ -122,7 +123,8 @@ export function createIOSVideoPreview(videoUrl: string): HTMLVideoElement | null
   video.setAttribute('poster', '')  // 清空poster避免默认图片
   
   // 对需要CORS处理的URL设置crossOrigin
-  if (videoUrl.includes('cdn.veo3video.me') || 
+  const r2Domain = getR2PublicDomain()
+  if (videoUrl.includes(r2Domain) || 
       (videoUrl.startsWith('http://') || videoUrl.startsWith('https://'))) {
     video.crossOrigin = 'anonymous'
     video.setAttribute('crossorigin', 'anonymous')

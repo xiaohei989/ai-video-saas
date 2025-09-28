@@ -116,36 +116,23 @@ export function Pagination({
 
   return (
     <div className={cn('flex flex-col sm:flex-row items-center justify-between gap-4', className)}>
-      {/* 页面信息 */}
-      {showInfo && (
-        <div className="flex items-center gap-4 text-sm text-muted-foreground order-2 sm:order-1">
-          <span>
-            {t('pagination.showing', {
-              start: Math.min((currentPage - 1) * pageSize + 1, totalItems),
-              end: Math.min(currentPage * pageSize, totalItems),
-              total: totalItems
-            })}
-          </span>
-          
-          {/* 每页显示数量选择器 */}
-          {showPageSizeSelector && (
-            <div className="flex items-center gap-2">
-              <span>{t('pagination.itemsPerPage')}</span>
-              <Select value={pageSize.toString()} onValueChange={(value) => onPageSizeChange(Number(value))}>
-                <SelectTrigger className="w-[70px] h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {pageSizeOptions.map((size) => (
-                    <SelectItem key={size} value={size.toString()}>
-                      {size}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <span>{t('pagination.items')}</span>
-            </div>
-          )}
+      {/* 每页显示数量选择器 */}
+      {showPageSizeSelector && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground order-2 sm:order-1">
+          <span>{t('pagination.itemsPerPage')}</span>
+          <Select value={pageSize.toString()} onValueChange={(value) => onPageSizeChange(Number(value))}>
+            <SelectTrigger className="w-[70px] h-8">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {pageSizeOptions.map((size) => (
+                <SelectItem key={size} value={size.toString()}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <span>{t('pagination.items')}</span>
         </div>
       )}
 

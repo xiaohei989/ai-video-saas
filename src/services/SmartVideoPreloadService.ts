@@ -11,9 +11,21 @@
  * - 渐进式加载：先加载低质量，后台加载高质量
  */
 
-import { multiLevelCache, CACHE_PREFIX, TTL_STRATEGY } from './MultiLevelCacheService'
+import { unifiedCache } from './UnifiedCacheService'
 import videoLoaderService, { NetworkQuality } from './VideoLoaderService'
 // thumbnailGenerator 服务已简化，现在使用浏览器原生 Media Fragments
+
+// 缓存前缀常量
+const CACHE_PREFIX = {
+  THUMBNAIL: 'thumb:',
+  VIDEO: 'video:'
+}
+
+// TTL策略常量（秒）
+const TTL_STRATEGY = {
+  STATIC: 24 * 60 * 60, // 24小时
+  USER: 2 * 60 * 60     // 2小时
+}
 
 export interface PreloadStrategy {
   viewport: {
@@ -485,7 +497,7 @@ class SmartVideoPreloadService {
     const cacheKey = `${CACHE_PREFIX.THUMBNAIL}${videoId}`
     
     // 先检查缓存
-    const cached = await multiLevelCache.get(cacheKey)
+    const cached = await unifiedCache.get(cacheKey, { category: 'image' })
     if (cached) return
     
     // 缩略图现在使用浏览器原生 Media Fragments，无需额外生成
@@ -494,7 +506,8 @@ class SmartVideoPreloadService {
     
     // 缓存缩略图 (现在跳过，因为不再生成)
     if (thumbnail) {
-      await multiLevelCache.set(cacheKey, thumbnail, {
+      await unifiedCache.set(cacheKey, thumbnail, {
+        category: 'image',
         ttl: TTL_STRATEGY.STATIC
       })
     }
@@ -507,7 +520,7 @@ class SmartVideoPreloadService {
     const cacheKey = `${CACHE_PREFIX.VIDEO}meta:${videoId}`
     
     // 先检查缓存
-    const cached = await multiLevelCache.get(cacheKey)
+    const cached = await unifiedCache.get(cacheKey, { category: 'video' })
     if (cached) return
     
     // 获取视频元数据（仅加载头部信息）
@@ -522,7 +535,8 @@ class SmartVideoPreloadService {
     }
     
     // 缓存元数据
-    await multiLevelCache.set(cacheKey, metadata, {
+    await unifiedCache.set(cacheKey, metadata, {
+      category: 'video',
       ttl: TTL_STRATEGY.USER
     })
   }
@@ -534,7 +548,7 @@ class SmartVideoPreloadService {
     const cacheKey = `${CACHE_PREFIX.VIDEO}preview:${videoId}`
     
     // 先检查缓存
-    const cached = await multiLevelCache.get(cacheKey)
+    const cached = await unifiedCache.get(cacheKey, { category: 'video' })
     if (cached) return
     
     // 使用Range请求加载前N秒
@@ -552,9 +566,9 @@ class SmartVideoPreloadService {
     })
     
     // 标记为已缓存
-    await multiLevelCache.set(cacheKey, true, {
-      ttl: TTL_STRATEGY.USER,
-      level: 'L1' // 仅在内存缓存
+    await unifiedCache.set(cacheKey, true, {
+      category: 'video',
+      ttl: TTL_STRATEGY.USER
     })
   }
 

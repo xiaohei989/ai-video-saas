@@ -4,6 +4,7 @@
  */
 
 import { getProxyVideoUrl } from './videoUrlProxy'
+import { getR2PublicDomain } from '@/config/cdnConfig'
 
 export interface VideoUrlData {
   video_url?: string | null
@@ -53,7 +54,8 @@ export function getBestVideoUrl(videoData: VideoUrlData): VideoUrlResult | null 
     const fallback = getBestFallbackUrl(original_video_url)
     
     // 检查是否是R2 URL（有时候video_url就是R2 URL）
-    if (video_url.includes('cdn.veo3video.me')) {
+    const r2Domain = getR2PublicDomain()
+    if (video_url.includes(r2Domain)) {
       return {
         url: video_url,
         source: 'r2',
@@ -149,7 +151,8 @@ function isValidUrl(url: string | null | undefined): url is string {
 function shouldUseProxy(url: string): boolean {
   // 开发环境下，R2 URL需要代理
   if (import.meta.env.DEV) {
-    return url.includes('cdn.veo3video.me') || url.includes('.r2.dev')
+    const r2Domain = getR2PublicDomain()
+    return url.includes(r2Domain) || url.includes('.r2.dev')
   }
   
   // 生产环境通常不需要代理（通过Cloudflare处理CORS）

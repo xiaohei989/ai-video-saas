@@ -9,13 +9,14 @@ import { useNavigate } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Play, Hash, Video, ArrowUp } from 'lucide-react'
-import ReactVideoPlayer from '@/components/video/ReactVideoPlayer'
+import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
 import LikeCounterButton from './LikeCounterButton'
 import CachedImage from '@/components/ui/CachedImage'
 import TemplatesSkeleton from './TemplatesSkeleton'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { simpleTemplatePreload } from '@/services/simpleTemplatePreload'
 import { likesCacheService } from '@/services/likesCacheService'
+import { transformCDNUrl } from '@/config/cdnConfig'
 
 // 模板类型定义（与数据库转换后的格式一致）
 interface Template {
@@ -25,6 +26,7 @@ interface Template {
   description: string
   thumbnailUrl?: string
   previewUrl?: string
+  blurThumbnailUrl?: string // 添加模糊缩略图字段
   category?: string
   credits?: number
   tags?: string[]
@@ -183,7 +185,7 @@ const TemplateCard = memo(({
   const handleMouseEnter = () => {
     // 🚀 鼠标悬停时触发预加载
     if (template.previewUrl) {
-      simpleTemplatePreload.preloadOnHover(template.id, template.previewUrl)
+      simpleTemplatePreload.preloadOnHover(template.id, transformCDNUrl(template.previewUrl))
     }
   }
 
@@ -226,13 +228,15 @@ const TemplateCard = memo(({
       >
         {template.previewUrl ? (
           <div className="relative w-full h-full">
-            {/* 使用 ReactVideoPlayer 的内置缓存 poster，避免重复加载 */}
+            {/* 使用 ReactVideoPlayer 的内置缓存 poster，优先使用模糊占位 + 高清 */}
             <ReactVideoPlayer
-              videoUrl={template.previewUrl}
-              thumbnailUrl={template.thumbnailUrl}
+              videoUrl={template.previewUrl ? transformCDNUrl(template.previewUrl) : ''}
+              thumbnailUrl={template.thumbnailUrl ? transformCDNUrl(template.thumbnailUrl) : ''}
+              lowResPosterUrl={template.blurThumbnailUrl ? transformCDNUrl(template.blurThumbnailUrl) : ''}
               autoplay={false} // 手动控制播放
               muted={true} // 默认静音
-              controls={false} // 使用自定义控制器
+              // 🚀 修复：移动端和桌面端都让ReactVideoPlayer内部智能控制
+              // controls={false} // 移除硬编码，让ReactVideoPlayer根据hasEverPlayed智能控制
               autoPlayOnHover={!isMobile} // 桌面端悬浮自动播放，移动端点击播放
               className="relative z-10 w-full h-full"
               onReady={handleVideoCanPlay}
@@ -255,10 +259,11 @@ const TemplateCard = memo(({
         ) : template.thumbnailUrl ? (
           <CachedImage 
             key={`cached-main-${template.id}`} // 🔧 添加稳定的key避免重渲染
-            src={template.thumbnailUrl}
+            src={transformCDNUrl(template.thumbnailUrl)}
             alt={template.name}
             className="w-full h-full object-cover"
             fastPreview={true}
+            placeholderSrc={template.blurThumbnailUrl ? transformCDNUrl(template.blurThumbnailUrl) : undefined}
           />
         ) : (
           <div className="w-full h-full bg-muted flex items-center justify-center">

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修复后的图片缓存测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        .warning { background-color: #fff3cd; border-color: #ffeaa7; }
+        .result-image {
+            max-width: 300px;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+            max-height: 200px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .console-output {
+            background-color: #000;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 修复后的图片缓存测试</h1>
+    <p><strong>测试目标</strong>: 验证移除错误的视频截图回退逻辑后，R2缩略图能否正常加载和缓存</p>
+    
+    <div class="test-section info">
+        <h3>📝 测试说明</h3>
+        <ul>
+            <li><strong>问题</strong>: 之前的getImageAsBase64函数会将图片URL错误地当作视频URL处理</li>
+            <li><strong>修复</strong>: 移除了视频截图回退逻辑，改为适当的错误处理</li>
+            <li><strong>预期</strong>: R2图片应该能正常加载为Base64缓存，而不是降级为SVG占位符</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h3>🎯 测试控制台</h3>
+        <div>
+            <button onclick="testNormalImage()">测试正常R2图片</button>
+            <button onclick="test404Image()">测试404图片</button>
+            <button onclick="clearConsole()">清空控制台</button>
+        </div>
+        <div id="consoleOutput" class="console-output">点击测试按钮开始...</div>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script>
+        // 模拟修复后的getImageAsBase64函数
+        async function getImageAsBase64Fixed(url) {
+            const log = (message) => {
+                const consoleDiv = document.getElementById('consoleOutput');
+                consoleDiv.textContent += message + '\n';
+                consoleDiv.scrollTop = consoleDiv.scrollHeight;
+                console.log(message);
+            };
+            
+            try {
+                log(`[NewImageCache] 📡 获取图片数据: ${url.substring(0, 60)}...`);
+                
+                // 检查网络状态
+                if (typeof navigator !== 'undefined' && 'onLine' in navigator && !navigator.onLine) {
+                    throw new Error('网络离线状态');
+                }
+                
+                // 创建带超时的fetch请求
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒超时
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'image/*,*/*;q=0.8',
+                        'Cache-Control': 'no-cache'
+                    },
+                    signal: controller.signal,
+                    mode: 'cors',
+                    credentials: 'omit'
+                });
+                
+                clearTimeout(timeoutId);
+                
+                // 响应状态检查
+                const responseInfo = {
+                    status: response.status,
+                    statusText: response.statusText,
+                    contentType: response.headers.get('content-type'),
+                    contentLength: response.headers.get('content-length')
+                };
+                log(`[NewImageCache] 📊 响应状态: ${JSON.stringify(responseInfo)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP错误 ${response.status}: ${response.statusText}`);
+                }
+                
+                const blob = await response.blob();
+                
+                // 验证blob数据
+                if (!blob || blob.size === 0) {
+                    throw new Error('获取到空的图片数据');
+                }
+                
+                const base64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = () => reject(reader.error);
+                    reader.readAsDataURL(blob);
+                });
+                
+                // 验证Base64数据
+                if (!base64 || !base64.startsWith('data:')) {
+                    throw new Error('Base64转换失败或格式错误');
+                }
+                
+                const sizeKB = blob.size / 1024;
+                const resultInfo = {
+                    originalSize: `${sizeKB.toFixed(2)}KB`,
+                    mimeType: blob.type,
+                    base64Size: `${(base64.length / 1024).toFixed(2)}KB`,
+                    quality: sizeKB > 50 ? '✅ 高质量' : sizeKB > 20 ? '🟡 中等质量' : '⚠️ 低质量'
+                };
+                log(`[NewImageCache] ✅ 图片数据获取成功: ${JSON.stringify(resultInfo)}`);
+                
+                return base64;
+                
+            } catch (error) {
+                const errorType = error instanceof Error ? error.name : 'UnknownError';
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                
+                log(`[NewImageCache] ❌ 获取图片失败: ${errorType} - ${errorMessage}`);
+                
+                // 🚨 修复：移除错误的视频截图回退逻辑
+                log('[NewImageCache] ⚠️ 图片获取失败，跳过错误的视频截图回退');
+                
+                // 🎯 针对不同错误类型的处理策略
+                if (errorType === 'AbortError') {
+                    log('[NewImageCache] ⏰ 请求超时，可能需要重试或使用原URL');
+                    throw new Error(`图片加载超时: ${url}`);
+                } else if (errorMessage.includes('CORS')) {
+                    log('[NewImageCache] 🚫 CORS错误，可能需要代理或直接使用原URL');
+                    throw new Error(`CORS限制: ${url}`);
+                } else if (errorMessage.includes('404') || errorMessage.includes('403')) {
+                    log('[NewImageCache] 🔍 资源不存在，使用SVG占位符');
+                    return generateSVGPlaceholder(url);
+                }
+                
+                // 🎨 其他未知错误：直接抛出，让上层决定处理策略
+                log('[NewImageCache] ❓ 未知错误，抛出让上层处理');
+                throw error;
+            }
+        }
+        
+        // 生成SVG占位符
+        function generateSVGPlaceholder(url) {
+            const svg = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
+                    <rect width="960" height="540" fill="#f0f0f0"/>
+                    <text x="480" y="280" text-anchor="middle" fill="#666" font-size="16">
+                        缩略图加载失败
+                    </text>
+                </svg>
+            `;
+            const base64Svg = `data:image/svg+xml;base64,${btoa(svg)}`;
+            console.log(`[NewImageCache] 🎨 生成SVG占位符: ${base64Svg.substring(0, 100)}...`);
+            return base64Svg;
+        }
+        
+        // 模拟processAndCacheImage函数
+        async function processAndCacheImageFixed(imageUrl) {
+            const log = (message) => {
+                const consoleDiv = document.getElementById('consoleOutput');
+                consoleDiv.textContent += message + '\n';
+                consoleDiv.scrollTop = consoleDiv.scrollHeight;
+                console.log(message);
+            };
+            
+            try {
+                log('[NewImageCache] 🚀 简化处理模式：直接缓存高清图片');
+                
+                // 直接获取图片的完整Base64数据（无压缩）
+                const base64Data = await getImageAsBase64Fixed(imageUrl);
+                
+                if (base64Data && base64Data.startsWith('data:')) {
+                    // 检查是否为SVG占位符
+                    if (base64Data.startsWith('data:image/svg+xml')) {
+                        log('[NewImageCache] 🚫 检测到SVG占位符，不缓存，直接返回');
+                        return base64Data; // 返回但不缓存
+                    }
+                    
+                    log('[NewImageCache] ✅ 高清图片获取成功，正常情况下会进行缓存');
+                    return base64Data;
+                } else {
+                    log('[NewImageCache] ⚠️ 获取图片数据失败，返回原URL');
+                    return imageUrl;
+                }
+            } catch (error) {
+                log(`[NewImageCache] ❌ 处理异常: ${error.message}`);
+                
+                // 🎯 针对不同类型的错误提供不同的处理策略
+                if (error instanceof Error) {
+                    if (error.message.includes('图片加载超时') || error.message.includes('CORS限制')) {
+                        log('[NewImageCache] 🔄 网络问题，直接返回原URL让浏览器处理');
+                        return imageUrl;
+                    }
+                }
+                
+                // 🎨 其他错误情况也返回原URL，确保图片始终能显示
+                log('[NewImageCache] 🔄 降级到原URL，确保图片可显示');
+                return imageUrl;
+            }
+        }
+        
+        // 测试函数
+        async function testNormalImage() {
+            const resultsDiv = document.getElementById('results');
+            const testUrl = 'https://cdn.veo3video.me/thumbnails/56717878-bb2e-4d67-a3d3-e9a5bf00f79a-v2.png';
+            
+            clearConsole();
+            const consoleDiv = document.getElementById('consoleOutput');
+            consoleDiv.textContent = '🧪 开始测试正常R2图片加载...\n';
+            
+            try {
+                const result = await processAndCacheImageFixed(testUrl);
+                const isBase64 = result && result.startsWith('data:image/');
+                const isSVG = result && result.startsWith('data:image/svg+xml');
+                const isURL = result && result.startsWith('http');
+                
+                let resultType, resultClass;
+                if (isBase64 && !isSVG) {
+                    resultType = '✅ 成功获取Base64图片数据';
+                    resultClass = 'success';
+                } else if (isSVG) {
+                    resultType = '❌ 降级为SVG占位符（修复失败）';
+                    resultClass = 'error';
+                } else if (isURL) {
+                    resultType = '🟡 返回原URL（网络问题）';
+                    resultClass = 'warning';
+                } else {
+                    resultType = '❓ 未知结果类型';
+                    resultClass = 'error';
+                }
+                
+                const section = document.createElement('div');
+                section.className = `test-section ${resultClass}`;
+                section.innerHTML = `
+                    <h3>🧪 正常R2图片测试结果</h3>
+                    <div><strong>结果类型</strong>: ${resultType}</div>
+                    <div><strong>数据长度</strong>: ${result ? result.length : 0} 字符</div>
+                    <div><strong>数据预览</strong>: <code>${result ? result.substring(0, 100) + '...' : 'null'}</code></div>
+                    ${isBase64 && !isSVG ? `<div><strong>显示图片</strong>:</div><img src="${result}" class="result-image">` : ''}
+                `;
+                
+                // 清空之前的结果并添加新结果
+                resultsDiv.innerHTML = '';
+                resultsDiv.appendChild(section);
+                
+            } catch (error) {
+                const section = document.createElement('div');
+                section.className = 'test-section error';
+                section.innerHTML = `
+                    <h3>❌ 正常R2图片测试失败</h3>
+                    <div><strong>错误</strong>: ${error.message}</div>
+                `;
+                resultsDiv.innerHTML = '';
+                resultsDiv.appendChild(section);
+            }
+        }
+        
+        async function test404Image() {
+            const resultsDiv = document.getElementById('results');
+            const testUrl = 'https://cdn.veo3video.me/thumbnails/nonexistent-image.png';
+            
+            clearConsole();
+            const consoleDiv = document.getElementById('consoleOutput');
+            consoleDiv.textContent = '🧪 开始测试404图片处理...\n';
+            
+            try {
+                const result = await processAndCacheImageFixed(testUrl);
+                const isSVG = result && result.startsWith('data:image/svg+xml');
+                const isURL = result && result.startsWith('http');
+                
+                let resultType, resultClass;
+                if (isSVG) {
+                    resultType = '✅ 正确返回SVG占位符（404处理正常）';
+                    resultClass = 'success';
+                } else if (isURL) {
+                    resultType = '🟡 返回原URL（让浏览器处理404）';
+                    resultClass = 'warning';
+                } else {
+                    resultType = '❓ 意外的处理结果';
+                    resultClass = 'error';
+                }
+                
+                const section = document.createElement('div');
+                section.className = `test-section ${resultClass}`;
+                section.innerHTML = `
+                    <h3>🧪 404图片测试结果</h3>
+                    <div><strong>结果类型</strong>: ${resultType}</div>
+                    <div><strong>数据预览</strong>: <code>${result ? result.substring(0, 100) + '...' : 'null'}</code></div>
+                    ${isSVG ? `<div><strong>显示SVG占位符</strong>:</div><img src="${result}" class="result-image">` : ''}
+                `;
+                
+                resultsDiv.innerHTML = '';
+                resultsDiv.appendChild(section);
+                
+            } catch (error) {
+                const section = document.createElement('div');
+                section.className = 'test-section error';
+                section.innerHTML = `
+                    <h3>❌ 404图片测试失败</h3>
+                    <div><strong>错误</strong>: ${error.message}</div>
+                `;
+                resultsDiv.innerHTML = '';
+                resultsDiv.appendChild(section);
+            }
+        }
+        
+        function clearConsole() {
+            document.getElementById('consoleOutput').textContent = '';
+        }
+    </script>
+</body>
+</html>

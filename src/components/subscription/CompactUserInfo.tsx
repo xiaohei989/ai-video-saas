@@ -67,28 +67,28 @@ export default function CompactUserInfo({
     switch (basePlanId) {
       case 'enterprise':
         return (
-          <Badge className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0">
-            <div className="flex items-center gap-1">
-              <CreditCard className="h-3 w-3" />
-              <span>{getPlanName(subscription.planId)} {intervalText}</span>
+          <Badge className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0 max-w-[140px] sm:max-w-none">
+            <div className="flex items-center gap-1 min-w-0">
+              <CreditCard className="h-3 w-3 flex-shrink-0" />
+              <span className="truncate">{getPlanName(subscription.planId)} {intervalText}</span>
             </div>
           </Badge>
         )
       case 'pro':
         return (
-          <Badge className="text-xs bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0">
-            <div className="flex items-center gap-1">
-              <CreditCard className="h-3 w-3" />
-              <span>{getPlanName(subscription.planId)} {intervalText}</span>
+          <Badge className="text-xs bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0 max-w-[140px] sm:max-w-none">
+            <div className="flex items-center gap-1 min-w-0">
+              <CreditCard className="h-3 w-3 flex-shrink-0" />
+              <span className="truncate">{getPlanName(subscription.planId)} {intervalText}</span>
             </div>
           </Badge>
         )
       case 'basic':
         return (
-          <Badge className="text-xs bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0">
-            <div className="flex items-center gap-1">
-              <CreditCard className="h-3 w-3" />
-              <span>{getPlanName(subscription.planId)} {intervalText}</span>
+          <Badge className="text-xs bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 max-w-[140px] sm:max-w-none">
+            <div className="flex items-center gap-1 min-w-0">
+              <CreditCard className="h-3 w-3 flex-shrink-0" />
+              <span className="truncate">{getPlanName(subscription.planId)} {intervalText}</span>
             </div>
           </Badge>
         )
@@ -161,17 +161,19 @@ export default function CompactUserInfo({
           {/* 移动端垂直布局，桌面端水平布局 */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
             {/* 订阅等级和徽章 */}
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg flex-shrink-0">
                 <Gem className="h-5 w-5 text-white" />
               </div>
               
-              <div className="space-y-1 flex-1">
+              <div className="space-y-1 flex-1 min-w-0">
                 {subscription && subscription.status === 'active' && planDetails ? (
                   <>
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                      <span className="text-sm font-medium text-foreground">{t('subscription.currentPlan')}</span>
-                      {getPlanBadge()}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0">
+                      <span className="text-sm font-medium text-foreground whitespace-nowrap flex-shrink-0">{t('subscription.currentPlan')}</span>
+                      <div className="min-w-0 flex-shrink">
+                        {getPlanBadge()}
+                      </div>
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {subscription.planId.includes('-annual')

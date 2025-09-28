@@ -13,7 +13,7 @@ import {
   Loader2,
   AlertCircle
 } from 'lucide-react'
-import SimpleVideoPlayer from '@/components/video/SimpleVideoPlayer'
+import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
 import VideoShareModal from '@/components/share/VideoShareModal'
 import supabaseVideoService from '@/services/supabaseVideoService'
 import videoShareService from '@/services/videoShareService'
@@ -176,7 +176,7 @@ export default function VideoDetailPage() {
         <div className="w-full max-w-5xl mx-auto px-4">
           <div className="aspect-video bg-black rounded-lg overflow-hidden">
             {video.video_url ? (
-              <SimpleVideoPlayer
+              <ReactVideoPlayer
                 src={video.video_url}
                 poster={video.thumbnail_url || undefined}
                 className="w-full h-full"

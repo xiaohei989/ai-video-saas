@@ -1,6 +1,7 @@
 /**
  * 清理图片缓存脚本
  * 用于在图片压缩优化后清理旧缓存，让系统重新缓存优化后的图片
+ * 注意：此脚本只清理localStorage，IndexedDB的清理请使用force-clear-cache.js
  */
 
 console.log('🧹 开始清理图片缓存...')

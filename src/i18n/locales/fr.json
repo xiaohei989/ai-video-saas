@@ -393,6 +393,14 @@
     "myVideos": "Mes vidéos",
     "loading": "Chargement de la vidéo...",
     "fetchingData": "Récupération des données vidéo...",
+    "backgroundLoading": {
+      "mobile": "Chargement en arrière-plan...",
+      "desktop": "Chargement du statut des tâches et de données supplémentaires en arrière-plan...",
+      "description": {
+        "mobile": "Page disponible, synchronisation des données en arrière-plan",
+        "desktop": "Contenu de base chargé, récupération du statut des tâches et de vidéos supplémentaires en arrière-plan"
+      }
+    },
     "downloadingProgress": "Téléchargement de la vidéo {{progress}}%",
     "downloadingSize": "Téléchargement de la vidéo {{size}}Mo",
     "downloadComplete": "Téléchargement de la vidéo terminé !",
@@ -575,6 +583,7 @@
     "waitingForProcessing": "En attente de traitement",
     "untitledVideo": "Vidéo sans titre",
     "regenerateTitle": "Régénérer avec les mêmes paramètres",
+    "regenerate": "Régénérer",
     "download": "Télécharger la vidéo",
     "downloading": "Téléchargement...",
     "downloadHD": "Télécharger en HD",

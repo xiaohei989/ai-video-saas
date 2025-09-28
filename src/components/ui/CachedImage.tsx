@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react'
 import { cn } from '@/utils/cn'
 import { getProxyVideoUrl, needsCorsProxy } from '@/utils/videoUrlProxy'
-import { smartLoadImage, getCachedImage, generateImageUrls } from '@/utils/newImageCache'
+import { smartLoadImage, getCachedImage } from '@/utils/newImageCache'
 import { useTranslation } from 'react-i18next'
 
 interface CachedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
@@ -13,6 +13,7 @@ interface CachedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   
   // 两级加载功能
   fastPreview?: boolean // 启用两级加载模式（模糊图→最终图）
+  placeholderSrc?: string // 可选：外部提供的低清占位图（如 blurThumbnailUrl）
 }
 
 export default function CachedImage({ 
@@ -24,6 +25,7 @@ export default function CachedImage({
   
   // 两级加载参数
   fastPreview = false,
+  placeholderSrc,
   
   ...props 
 }: CachedImageProps) {
@@ -50,6 +52,31 @@ export default function CachedImage({
 
     const loadImage = async () => {
       setHasError(false)
+
+      // 如果提供了外部占位图（如 blurThumbnailUrl），并且启用两级加载，则先显示占位，再加载高清
+      if (fastPreview && placeholderSrc) {
+        console.log('[CachedImage] 🖼️ 使用外部占位图作为模糊图')
+        setImageSrcToShow(placeholderSrc)
+        setIsShowingBlur(true)
+        setIsLoading(false)
+
+        try {
+          const finalImageUrl = await smartLoadImage(src, {
+            enableFastPreview: false,
+            onFinalLoad: (finalUrl) => {
+              setImageSrcToShow(finalUrl)
+              setIsShowingBlur(false)
+              setIsLoading(false)
+            }
+          })
+          console.log('[CachedImage] ✅ 外部占位→高清完成:', typeof finalImageUrl)
+          return
+        } catch (e) {
+          console.warn('[CachedImage] 外部占位→高清失败:', e)
+          // 失败保持占位图
+          return
+        }
+      }
 
       if (isCacheDisabled) {
         // 缓存禁用：直接使用代理URL
@@ -117,7 +144,7 @@ export default function CachedImage({
     }
 
     loadImage()
-  }, [src, fastPreview, isCacheDisabled, componentId])
+  }, [src, fastPreview, isCacheDisabled, componentId, placeholderSrc])
 
   const handleLoad = () => {
     setIsLoading(false)

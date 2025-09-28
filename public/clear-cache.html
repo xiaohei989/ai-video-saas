@@ -17,7 +17,11 @@
     <h1>🧹 强制清除本地缓存</h1>
     <p>点击按钮清除所有IndexedDB、LocalStorage和其他缓存数据</p>
     
-    <button onclick="clearAllCache()">立即清除缓存</button>
+    <div style="margin: 20px 0;">
+        <button onclick="clearAllCache()">🗑️ 立即清除所有缓存</button>
+        <button onclick="clearNewImageCache()" style="margin-left: 10px; background: #dc3545;">🔥 强力清理图片缓存</button>
+        <button onclick="clearSpecificCache()" style="margin-left: 10px; background: #28a745;">🎯 精准清理应用缓存</button>
+    </div>
     
     <div id="log"></div>
 
@@ -36,7 +40,17 @@
             
             try {
                 // 1. 清除IndexedDB
-                const databases = ['UnifiedCache', 'ImageCache', 'TemplateCache', 'VideoCache', 'ai-video-cache', 'template-cache', 'idb-cache']
+                const databases = [
+                    'ai-video-unified-cache', // 🎯 新的统一缓存数据库！
+                    'ai-video-saas-cache',    // 🗑️ 旧数据库（如果存在）
+                    'UnifiedCache', 
+                    'ImageCache', 
+                    'TemplateCache', 
+                    'VideoCache', 
+                    'ai-video-cache', 
+                    'template-cache', 
+                    'idb-cache'
+                ]
                 
                 for (const dbName of databases) {
                     try {
@@ -140,6 +154,163 @@
 
             } catch (error) {
                 log(`❌ 缓存清除过程中出错: ${error.message}`, 'error')
+            }
+        }
+
+        async function clearNewImageCache() {
+            log('🔥 开始强力清理NewImageCache缓存...', 'info')
+            
+            try {
+                let clearedCount = 0
+                
+                // 清理所有可能的IndexedDB数据库（包含真正的缓存数据库）
+                const targetDatabases = [
+                    'ai-video-unified-cache',  // 🎯 新的统一缓存数据库！
+                    'ai-video-saas-cache',     // 🗑️ 旧数据库（如果存在）
+                    'unified-cache-v1',
+                    'unified-cache', 
+                    'image-cache',
+                    'template-cache',
+                    'thumbnail-cache',
+                    'newImageCache',
+                    'keyval-store'
+                ]
+                
+                log('🎯 专门清理NewImageCache相关数据库...', 'info')
+                
+                for (const dbName of targetDatabases) {
+                    try {
+                        await new Promise((resolve, reject) => {
+                            const deleteReq = indexedDB.deleteDatabase(dbName)
+                            deleteReq.onerror = () => reject(deleteReq.error)
+                            deleteReq.onsuccess = () => resolve()
+                            deleteReq.onblocked = () => setTimeout(resolve, 1000)
+                            setTimeout(() => reject(new Error('timeout')), 5000)
+                        })
+                        
+                        log(`✅ 已删除: ${dbName}`, 'success')
+                        clearedCount++
+                    } catch (error) {
+                        log(`⚠️ 清理: ${dbName} (${error.message})`, 'warning')
+                    }
+                }
+                
+                // 清理localStorage中的图片缓存相关项
+                log('🧹 清理localStorage中的图片缓存...', 'info')
+                const keys = Object.keys(localStorage)
+                let localStorageCleared = 0
+                
+                keys.forEach(key => {
+                    if (key.includes('img_') || 
+                        key.includes('image') || 
+                        key.includes('thumbnail') || 
+                        key.includes('template') ||
+                        key.includes('cache')) {
+                        localStorage.removeItem(key)
+                        localStorageCleared++
+                    }
+                })
+                
+                log(`✅ 清理localStorage项: ${localStorageCleared}个`, 'success')
+                
+                // 清理sessionStorage
+                sessionStorage.clear()
+                log('✅ 清理sessionStorage', 'success')
+                
+                // 强制垃圾回收（如果支持）
+                if (window.gc) {
+                    window.gc()
+                    log('✅ 执行垃圾回收', 'success')
+                }
+                
+                log('🎉 NewImageCache强力清理完成！', 'success')
+                log(`📊 清理统计：IndexedDB数据库 ${clearedCount}个，localStorage项 ${localStorageCleared}个`, 'info')
+                log('💡 建议刷新页面或重启浏览器以确保完全清理', 'info')
+                
+                // 延迟提示刷新
+                setTimeout(() => {
+                    if (confirm('NewImageCache清理完成！建议刷新页面确保完全清理，是否立即刷新？')) {
+                        location.reload()
+                    }
+                }, 1500)
+                
+            } catch (error) {
+                log(`❌ NewImageCache清理过程出错: ${error.message}`, 'error')
+            }
+        }
+
+        async function clearSpecificCache() {
+            log('🎯 开始精准清理应用缓存...', 'info')
+            
+            try {
+                // 目标应用缓存数据库
+                const appDatabases = [
+                    'ai-video-unified-cache', // 🎯 新的统一缓存数据库！
+                    'ai-video-saas-cache',    // 🗑️ 旧数据库（如果存在）
+                    'template-cache',
+                    'thumbnail-cache', 
+                    'video-cache',
+                    'image-cache',
+                    'ai-video-saas',
+                    'supabase-cache',
+                    'webp-cache'
+                ]
+
+                let clearedCount = 0
+                let errors = []
+
+                for (const dbName of appDatabases) {
+                    try {
+                        await new Promise((resolve, reject) => {
+                            const deleteReq = indexedDB.deleteDatabase(dbName)
+                            deleteReq.onerror = () => reject(deleteReq.error)
+                            deleteReq.onsuccess = () => resolve()
+                            deleteReq.onblocked = () => setTimeout(resolve, 1000)
+                            setTimeout(() => reject(new Error('timeout')), 3000)
+                        })
+                        
+                        clearedCount++
+                        log(`✅ 已清理: ${dbName}`, 'success')
+                    } catch (error) {
+                        if (!error.message.includes('not found') && !error.message.includes('timeout')) {
+                            errors.push(`${dbName}: ${error.message}`)
+                            log(`⚠️ 清理失败: ${dbName} - ${error.message}`, 'warning')
+                        }
+                    }
+                }
+
+                // 清理特定的localStorage项
+                log('🔍 清理应用相关localStorage项...', 'info')
+                const storageKeys = Object.keys(localStorage)
+                const targetKeys = storageKeys.filter(key => 
+                    key.includes('template') || 
+                    key.includes('thumbnail') || 
+                    key.includes('cache') || 
+                    key.includes('supabase')
+                )
+
+                for (const key of targetKeys) {
+                    try {
+                        localStorage.removeItem(key)
+                        log(`✅ 已清理localStorage: ${key}`, 'success')
+                    } catch (error) {
+                        errors.push(`localStorage.${key}: ${error.message}`)
+                        log(`⚠️ localStorage清理失败: ${key}`, 'warning')
+                    }
+                }
+
+                log('🎉 精准应用缓存清理完成！', 'success')
+                log(`📊 清理统计：数据库 ${clearedCount}个，localStorage项 ${targetKeys.length}个`, 'info')
+                
+                if (errors.length > 0) {
+                    log(`⚠️ 部分清理失败：${errors.length}个项目`, 'warning')
+                    errors.forEach(err => log(`  - ${err}`, 'warning'))
+                }
+                
+                log('💡 精准清理完成，应用缓存已更新', 'info')
+
+            } catch (error) {
+                log(`❌ 精准清理过程出错: ${error.message}`, 'error')
             }
         }
     </script>

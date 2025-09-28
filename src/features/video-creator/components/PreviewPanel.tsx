@@ -16,8 +16,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import SimpleVideoPlayer from '@/components/video/SimpleVideoPlayer'
+import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
 import LikeCounterButton from '@/components/templates/LikeCounterButton'
+import { transformCDNUrl } from '@/config/cdnConfig'
 import CachedImage from '@/components/ui/CachedImage'
 import { useTemplateLikes } from '@/hooks/useTemplateLikes'
 import { useAuthContext } from '@/contexts/AuthContext'
@@ -253,7 +254,7 @@ export default function PreviewPanel({
                   {/* 缓存的缩略图作为背景层 */}
                   {template.thumbnailUrl && (
                     <CachedImage 
-                      src={template.thumbnailUrl}
+                      src={transformCDNUrl(template.thumbnailUrl)}
                       alt={localizedTemplate.name}
                       className="absolute inset-0 w-full h-full object-cover"
                       cacheKey={`template_${template.id}`}
@@ -261,10 +262,10 @@ export default function PreviewPanel({
                     />
                   )}
                   {/* 视频播放器在前景层 */}
-                  <SimpleVideoPlayer
-                    key={`${template.id}-${videoUrl || template.previewUrl || ''}`}
-                    src={videoUrl || template.previewUrl || ''}
-                    poster={template.thumbnailUrl}
+                  <ReactVideoPlayer
+                    key={`${template.id}-${videoUrl || transformCDNUrl(template.previewUrl) || ''}`}
+                    src={videoUrl || transformCDNUrl(template.previewUrl) || ''}
+                    poster={transformCDNUrl(template.thumbnailUrl)}
                     className="relative z-10 w-full h-full"
                     objectFit="cover"
                     showPlayButton={true}

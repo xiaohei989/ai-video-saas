@@ -11,6 +11,7 @@ import { SystemSettingsList, SystemSettingsEdit, SystemSettingsCreate } from './
 import { OrderList, OrderShow } from './Orders'
 import AdminDebug from './AdminDebug'
 import ErrorBoundary from './ErrorBoundary'
+import AdminThumbnailManager from './AdminThumbnailManager'
 
 // 图标
 import {
@@ -86,6 +87,14 @@ const AdminApp: React.FC = () => {
         options={{ 
           label: '模板管理'
         }}
+        icon={FileImage}
+      />
+
+      {/* 缩略图管理（自定义页，集成工具入口） */}
+      <Resource
+        name="thumbnails"
+        list={AdminThumbnailManager}
+        options={{ label: '缩略图管理' }}
         icon={FileImage}
       />
 

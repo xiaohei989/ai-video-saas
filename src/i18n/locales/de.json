@@ -393,6 +393,14 @@
     "myVideos": "Meine Videos",
     "loading": "Video wird geladen...",
     "fetchingData": "Videodaten werden abgerufen...",
+    "backgroundLoading": {
+      "mobile": "Lädt im Hintergrund...",
+      "desktop": "Lädt Aufgabenstatus und weitere Daten im Hintergrund...",
+      "description": {
+        "mobile": "Seite verfügbar, Daten werden im Hintergrund synchronisiert",
+        "desktop": "Grundinhalt geladen, Aufgabenstatus und weitere Videos werden im Hintergrund abgerufen"
+      }
+    },
     "downloadingProgress": "Video wird heruntergeladen {{progress}}%",
     "downloadingSize": "Video wird heruntergeladen {{size}}MB",
     "downloadComplete": "Video-Download abgeschlossen!",
@@ -554,6 +562,7 @@
     "waitingForProcessing": "Warten auf Verarbeitung",
     "untitledVideo": "Unbenanntes Video",
     "regenerateTitle": "Mit denselben Einstellungen regenerieren",
+    "regenerate": "Regenerieren",
     "download": "Video herunterladen",
     "downloading": "Wird heruntergeladen...",
     "downloadHD": "HD herunterladen",

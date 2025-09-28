@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>清理IndexedDB缓存</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover { background: #0056b3; }
+        button.danger { background: #dc3545; }
+        button.danger:hover { background: #c82333; }
+        .db-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .db-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .db-item:last-child { border-bottom: none; }
+        .size-info {
+            color: #666;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ IndexedDB 缓存清理工具</h1>
+        
+        <div class="info">
+            <h3>📋 功能说明</h3>
+            <p>本工具可以帮您清理浏览器中的IndexedDB缓存数据，包括：</p>
+            <ul>
+                <li>🖼️ 缓存的图片和缩略图</li>
+                <li>📊 模板数据缓存</li>
+                <li>🔄 过期的临时数据</li>
+                <li>⚡ 应用状态缓存</li>
+            </ul>
+        </div>
+
+        <div class="db-list" id="dbList">
+            <h3>📂 检测到的数据库</h3>
+            <div id="dbItems">正在扫描IndexedDB数据库...</div>
+        </div>
+
+        <div class="controls">
+            <button onclick="scanDatabases()">🔍 重新扫描数据库</button>
+            <button onclick="clearAllCache()" class="danger">🗑️ 清理所有缓存</button>
+            <button onclick="clearSpecificCache()" class="danger">🎯 清理应用相关缓存</button>
+            <button onclick="estimateStorage()">📊 查看存储使用情况</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        let foundDatabases = [];
+
+        // 页面加载时自动扫描
+        window.addEventListener('load', () => {
+            scanDatabases();
+            estimateStorage();
+        });
+
+        async function scanDatabases() {
+            const dbItems = document.getElementById('dbItems');
+            dbItems.innerHTML = '<p>🔄 正在扫描IndexedDB数据库...</p>';
+            
+            try {
+                // 获取所有数据库
+                const databases = await indexedDB.databases();
+                foundDatabases = databases;
+                
+                if (databases.length === 0) {
+                    dbItems.innerHTML = '<p>✅ 未发现IndexedDB数据库</p>';
+                    return;
+                }
+
+                let html = '';
+                for (const db of databases) {
+                    const name = db.name || '未命名数据库';
+                    const version = db.version || '未知版本';
+                    
+                    // 尝试估算数据库大小
+                    const size = await estimateDatabaseSize(name);
+                    const sizeText = size > 0 ? `(~${(size/1024).toFixed(2)}KB)` : '';
+                    
+                    html += `
+                        <div class="db-item">
+                            <strong>📁 ${name}</strong>
+                            <span class="size-info">版本 ${version} ${sizeText}</span>
+                        </div>
+                    `;
+                }
+                
+                dbItems.innerHTML = html;
+                
+            } catch (error) {
+                console.error('扫描数据库失败:', error);
+                dbItems.innerHTML = '<p class="error">❌ 扫描失败: ' + error.message + '</p>';
+            }
+        }
+
+        async function estimateDatabaseSize(dbName) {
+            try {
+                return new Promise((resolve) => {
+                    const request = indexedDB.open(dbName);
+                    request.onsuccess = () => {
+                        const db = request.result;
+                        // 简单估算：假设每个对象存储有一定大小
+                        const estimatedSize = db.objectStoreNames.length * 1024; // 粗略估算
+                        db.close();
+                        resolve(estimatedSize);
+                    };
+                    request.onerror = () => resolve(0);
+                });
+            } catch (error) {
+                return 0;
+            }
+        }
+
+        async function estimateStorage() {
+            try {
+                if ('storage' in navigator && 'estimate' in navigator.storage) {
+                    const estimate = await navigator.storage.estimate();
+                    const used = (estimate.usage / 1024 / 1024).toFixed(2);
+                    const quota = (estimate.quota / 1024 / 1024).toFixed(2);
+                    
+                    showResult(`
+                        <div class="info">
+                            <h3>💾 存储使用情况</h3>
+                            <p><strong>已使用:</strong> ${used} MB</p>
+                            <p><strong>总配额:</strong> ${quota} MB</p>
+                            <p><strong>使用率:</strong> ${((estimate.usage / estimate.quota) * 100).toFixed(2)}%</p>
+                        </div>
+                    `);
+                } else {
+                    showResult('<div class="warning">⚠️ 浏览器不支持存储估算API</div>');
+                }
+            } catch (error) {
+                showResult('<div class="error">❌ 获取存储信息失败: ' + error.message + '</div>');
+            }
+        }
+
+        async function clearAllCache() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div class="info">🔄 正在清理所有IndexedDB缓存...</div>';
+            
+            let clearedCount = 0;
+            let errors = [];
+
+            try {
+                // 清理所有发现的数据库
+                for (const db of foundDatabases) {
+                    try {
+                        await deleteDatabase(db.name);
+                        clearedCount++;
+                        console.log(`✅ 已删除数据库: ${db.name}`);
+                    } catch (error) {
+                        errors.push(`${db.name}: ${error.message}`);
+                        console.error(`❌ 删除数据库失败: ${db.name}`, error);
+                    }
+                }
+
+                // 额外清理常见的应用相关数据库
+                const commonDbNames = [
+                    'keyval-store',
+                    'workbox-expiration',
+                    'workbox-runtime',
+                    'template-cache',
+                    'thumbnail-cache',
+                    'video-cache',
+                    'image-cache'
+                ];
+
+                for (const dbName of commonDbNames) {
+                    try {
+                        await deleteDatabase(dbName);
+                        console.log(`✅ 已清理: ${dbName}`);
+                    } catch (error) {
+                        // 忽略不存在的数据库错误
+                        if (!error.message.includes('not found')) {
+                            errors.push(`${dbName}: ${error.message}`);
+                        }
+                    }
+                }
+
+                // 清理localStorage和sessionStorage
+                try {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    console.log('✅ 已清理 localStorage 和 sessionStorage');
+                } catch (error) {
+                    errors.push('Storage清理失败: ' + error.message);
+                }
+
+                // 显示结果
+                let resultHtml = `
+                    <div class="success">
+                        <h3>🎉 缓存清理完成</h3>
+                        <p><strong>清理的数据库:</strong> ${clearedCount} 个</p>
+                        <p><strong>清理的存储:</strong> localStorage, sessionStorage</p>
+                    </div>
+                `;
+
+                if (errors.length > 0) {
+                    resultHtml += `
+                        <div class="warning">
+                            <h4>⚠️ 部分清理失败</h4>
+                            <ul>
+                                ${errors.map(err => `<li>${err}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                resultHtml += `
+                    <div class="info">
+                        <h4>💡 建议</h4>
+                        <p>为确保完全清理，建议：</p>
+                        <ul>
+                            <li>🔄 刷新页面</li>
+                            <li>🌐 重启浏览器</li>
+                            <li>🧹 清理浏览器缓存 (Ctrl+Shift+Delete)</li>
+                        </ul>
+                    </div>
+                `;
+
+                results.innerHTML = resultHtml;
+
+                // 重新扫描数据库
+                setTimeout(scanDatabases, 1000);
+
+            } catch (error) {
+                results.innerHTML = `<div class="error">❌ 清理失败: ${error.message}</div>`;
+            }
+        }
+
+        async function clearSpecificCache() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div class="info">🔄 正在清理应用相关缓存...</div>';
+
+            const targetDbs = [
+                'template-cache',
+                'thumbnail-cache', 
+                'video-cache',
+                'image-cache',
+                'ai-video-saas',
+                'supabase-cache',
+                'webp-cache'
+            ];
+
+            let clearedCount = 0;
+            let errors = [];
+
+            for (const dbName of targetDbs) {
+                try {
+                    await deleteDatabase(dbName);
+                    clearedCount++;
+                    console.log(`✅ 已清理: ${dbName}`);
+                } catch (error) {
+                    if (!error.message.includes('not found')) {
+                        errors.push(`${dbName}: ${error.message}`);
+                    }
+                }
+            }
+
+            // 清理特定的localStorage项
+            const storageKeys = Object.keys(localStorage);
+            const targetKeys = storageKeys.filter(key => 
+                key.includes('template') || 
+                key.includes('thumbnail') || 
+                key.includes('cache') || 
+                key.includes('supabase')
+            );
+
+            for (const key of targetKeys) {
+                try {
+                    localStorage.removeItem(key);
+                    console.log(`✅ 已清理localStorage项: ${key}`);
+                } catch (error) {
+                    errors.push(`localStorage.${key}: ${error.message}`);
+                }
+            }
+
+            showResult(`
+                <div class="success">
+                    <h3>🎯 应用缓存清理完成</h3>
+                    <p><strong>清理的数据库:</strong> ${clearedCount} 个</p>
+                    <p><strong>清理的存储项:</strong> ${targetKeys.length} 个</p>
+                    ${errors.length > 0 ? `
+                        <div class="warning">
+                            <h4>⚠️ 部分清理失败</h4>
+                            <ul>${errors.map(err => `<li>${err}</li>`).join('')}</ul>
+                        </div>
+                    ` : ''}
+                </div>
+            `);
+
+            setTimeout(scanDatabases, 500);
+        }
+
+        function deleteDatabase(name) {
+            return new Promise((resolve, reject) => {
+                const deleteReq = indexedDB.deleteDatabase(name);
+                
+                deleteReq.onerror = () => reject(deleteReq.error);
+                deleteReq.onsuccess = () => resolve();
+                deleteReq.onblocked = () => {
+                    console.warn(`数据库 ${name} 删除被阻塞，可能有其他连接正在使用`);
+                    // 给一点时间让其他连接关闭
+                    setTimeout(() => resolve(), 1000);
+                };
+                
+                // 设置超时
+                setTimeout(() => {
+                    reject(new Error(`删除数据库 ${name} 超时`));
+                }, 5000);
+            });
+        }
+
+        function showResult(html) {
+            document.getElementById('results').innerHTML = html;
+        }
+    </script>
+</body>
+</html>

@@ -33,7 +33,7 @@ interface VideoShareModalProps {
     template_id?: string
     metadata?: any
     thumbnail_url?: string
-  }
+  } | null
 }
 
 export default function VideoShareModal({ open, onOpenChange, video }: VideoShareModalProps) {
@@ -61,20 +61,20 @@ export default function VideoShareModal({ open, onOpenChange, video }: VideoShar
 
   // 生成邀请链接
   const inviteUrl = referralCode ? referralService.generateInviteLink(referralCode) : ''
-  
+
   // 生成视频详情页链接
-  const videoDetailUrl = `${window.location.origin}/video/${video.id}`
-  
+  const videoDetailUrl = video ? `${window.location.origin}/video/${video.id}` : ''
+
   // 生成融合内容（通用版本）
-  const fusionContent = referralCode ? 
-    t('shareModal.shareContentText', { 
+  const fusionContent = referralCode && video ?
+    t('shareModal.shareContentText', {
       videoUrl: video.video_url,
       inviteUrl: inviteUrl
     }) : ''
-  
+
   // 生成Twitter专用简短内容
-  const twitterContent = referralCode ? 
-    t('shareModal.twitterShareText', { 
+  const twitterContent = referralCode && video ?
+    t('shareModal.twitterShareText', {
       videoUrl: videoDetailUrl,
       inviteUrl: inviteUrl
     }) : ''
@@ -126,10 +126,11 @@ export default function VideoShareModal({ open, onOpenChange, video }: VideoShar
     }
   }
 
-  if (!user) return null
+  // 确定是否应该显示对话框
+  const shouldShow = open && video && user
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog open={shouldShow} onOpenChange={onOpenChange}>
       <AlertDialogContent className="max-w-2xl w-[95vw] sm:w-full max-h-fit">
         <AlertDialogHeader>
           <div className="flex items-center justify-between">

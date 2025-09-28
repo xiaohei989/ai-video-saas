@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebP 960x540 质量0.95专业级测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .test-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+        .test-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .test-info {
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        .size-highlight {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 8px;
+        }
+        .quality-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .excellent { background: #d4edda; color: #155724; }
+        .good { background: #cce5ff; color: #004085; }
+        .average { background: #fff3cd; color: #856404; }
+        
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .summary h3 {
+            margin-top: 0;
+            font-size: 1.3em;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        #loadingIndicator {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 WebP专业级测试：960×540 质量0.95</h1>
+        
+        <div class="summary">
+            <h3>📊 测试目标</h3>
+            <p>测试升级后的专业级系统配置 (960×540, WebP质量0.95) 的实际效果和文件大小</p>
+            <ul>
+                <li>分辨率：960×540像素 (16:9比例，1.5倍提升)</li>
+                <li>格式：WebP (现代压缩算法)</li>
+                <li>质量：0.95 (专业级质量设置)</li>
+                <li>场景：复杂图像和简单图像对比</li>
+            </ul>
+        </div>
+
+        <button onclick="runQualityTest()">🚀 开始测试</button>
+        <button onclick="generateComplexImage()">🎨 生成复杂图像测试</button>
+        <button onclick="generateSimpleImage()">⚪ 生成简单图像测试</button>
+
+        <div id="loadingIndicator" style="display: none;">
+            <p>🔄 正在生成测试图像...</p>
+        </div>
+
+        <div class="stats" id="statsContainer" style="display: none;">
+            <div class="stat-item">
+                <div class="stat-value" id="webpSize">-</div>
+                <div class="stat-label">WebP文件大小 (KB)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="jpegSize">-</div>
+                <div class="stat-label">JPEG文件大小 (KB)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="savings">-</div>
+                <div class="stat-label">WebP节省空间</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="loadTime">-</div>
+                <div class="stat-label">预估加载时间</div>
+            </div>
+        </div>
+
+        <div class="test-grid" id="testResults">
+            <!-- 测试结果将在这里显示 -->
+        </div>
+
+        <div id="conclusion" style="display: none;">
+            <div class="summary">
+                <h3>🎯 测试结论</h3>
+                <div id="conclusionContent">
+                    <!-- 动态生成结论 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = {};
+
+        function generateComplexImage() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 960;  // 🚀 升级到专业级分辨率
+            canvas.height = 540; // 🚀 升级到专业级分辨率
+            const ctx = canvas.getContext('2d');
+
+            // 创建复杂的渐变背景
+            const gradient = ctx.createRadialGradient(480, 270, 0, 480, 270, 400);
+            gradient.addColorStop(0, '#ff6b6b');
+            gradient.addColorStop(0.3, '#4ecdc4');
+            gradient.addColorStop(0.7, '#45b7d1');
+            gradient.addColorStop(1, '#96ceb4');
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 960, 540);
+
+            // 添加更多复杂图形和纹理（适配更高分辨率）
+            for (let i = 0; i < 80; i++) {
+                ctx.fillStyle = `hsla(${Math.random() * 360}, 70%, 60%, 0.3)`;
+                ctx.beginPath();
+                ctx.arc(Math.random() * 960, Math.random() * 540, Math.random() * 35 + 15, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // 添加文字和细节
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.font = 'bold 32px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('专业级复杂图像测试 - 960×540', 480, 270);
+            
+            ctx.font = '20px Arial';
+            ctx.fillText('高细节、多颜色、复杂纹理、专业级质量', 480, 310);
+
+            return canvas;
+        }
+
+        function generateSimpleImage() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 960;  // 🚀 升级到专业级分辨率
+            canvas.height = 540; // 🚀 升级到专业级分辨率
+            const ctx = canvas.getContext('2d');
+
+            // 简单的双色渐变
+            const gradient = ctx.createLinearGradient(0, 0, 960, 540);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 960, 540);
+
+            // 简单的几何图形
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.beginPath();
+            ctx.arc(480, 270, 120, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 播放按钮
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.beginPath();
+            ctx.moveTo(450, 240);
+            ctx.lineTo(450, 300);
+            ctx.lineTo(510, 270);
+            ctx.closePath();
+            ctx.fill();
+
+            // 简单文字
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.font = 'bold 28px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('专业级简单图像测试 - 960×540', 480, 420);
+
+            return canvas;
+        }
+
+        async function testImageQuality(canvas, type) {
+            const results = {};
+            
+            // 测试专业级WebP质量0.95
+            const webpDataUrl = await new Promise((resolve) => {
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.readAsDataURL(blob);
+                    } else {
+                        // WebP不支持时的回退
+                        resolve(canvas.toDataURL('image/jpeg', 0.95));
+                    }
+                }, 'image/webp', 0.95);
+            });
+
+            // 测试JPEG质量0.95对比
+            const jpegDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+
+            // 计算文件大小
+            const webpBase64 = webpDataUrl.split(',')[1];
+            const jpegBase64 = jpegDataUrl.split(',')[1];
+            
+            const webpSizeKB = (webpBase64.length * 0.75 / 1024).toFixed(2);
+            const jpegSizeKB = (jpegBase64.length * 0.75 / 1024).toFixed(2);
+            
+            const savings = (((jpegSizeKB - webpSizeKB) / jpegSizeKB) * 100).toFixed(1);
+
+            results.webp = {
+                dataUrl: webpDataUrl,
+                sizeKB: parseFloat(webpSizeKB),
+                format: 'WebP',
+                quality: 0.95
+            };
+
+            results.jpeg = {
+                dataUrl: jpegDataUrl,
+                sizeKB: parseFloat(jpegSizeKB),
+                format: 'JPEG',
+                quality: 0.95
+            };
+
+            results.savings = parseFloat(savings);
+            results.type = type;
+
+            return results;
+        }
+
+        function displayResults(results) {
+            const container = document.getElementById('testResults');
+            const statsContainer = document.getElementById('statsContainer');
+            
+            // 清空之前的结果
+            container.innerHTML = '';
+
+            // 显示WebP结果
+            const webpItem = createTestItem(results.webp, '系统当前配置', 'excellent');
+            container.appendChild(webpItem);
+
+            // 显示JPEG对比
+            const jpegItem = createTestItem(results.jpeg, '传统JPEG对比', 'good');
+            container.appendChild(jpegItem);
+
+            // 更新统计信息
+            document.getElementById('webpSize').textContent = results.webp.sizeKB;
+            document.getElementById('jpegSize').textContent = results.jpeg.sizeKB;
+            document.getElementById('savings').textContent = results.savings + '%';
+            
+            // 计算预估加载时间 (假设1Mbps网速)
+            const loadTimeMs = (results.webp.sizeKB * 8 / 1000 * 1000).toFixed(0);
+            document.getElementById('loadTime').textContent = loadTimeMs + 'ms';
+
+            statsContainer.style.display = 'grid';
+
+            // 保存结果用于总结
+            testResults[results.type] = results;
+
+            showConclusion();
+        }
+
+        function createTestItem(result, title, badgeClass) {
+            const item = document.createElement('div');
+            item.className = 'test-item';
+
+            const img = document.createElement('img');
+            img.src = result.dataUrl;
+            img.alt = title;
+
+            const info = document.createElement('div');
+            info.className = 'test-info';
+
+            const qualityText = result.format === 'WebP' ? '🌟 优秀' : '👍 良好';
+
+            info.innerHTML = `
+                <div class="quality-badge ${badgeClass}">${qualityText}</div>
+                <div class="size-highlight">${result.sizeKB} KB</div>
+                <div><strong>${title}</strong></div>
+                <div style="color: #666; font-size: 0.9em; margin-top: 8px;">
+                    格式: ${result.format}<br>
+                    质量: ${result.quality}<br>
+                    分辨率: 960×540
+                </div>
+            `;
+
+            item.appendChild(img);
+            item.appendChild(info);
+            return item;
+        }
+
+        function showConclusion() {
+            const conclusion = document.getElementById('conclusion');
+            const content = document.getElementById('conclusionContent');
+            
+            const hasResults = Object.keys(testResults).length > 0;
+            if (!hasResults) return;
+
+            // 取最新的测试结果
+            const latest = Object.values(testResults)[Object.values(testResults).length - 1];
+            
+            let qualityAssessment = '';
+            let recommendation = '';
+            
+            if (latest.webp.sizeKB < 40) {
+                qualityAssessment = '🌟 专业级优秀：超高质量，合理大小';
+                recommendation = '专业级配置完美平衡了极致质量和可接受的文件大小。';
+            } else if (latest.webp.sizeKB < 60) {
+                qualityAssessment = '✅ 优秀：专业级质量，性能良好';
+                recommendation = '960×540专业级配置提供卓越的视觉体验。';
+            } else if (latest.webp.sizeKB < 80) {
+                qualityAssessment = '👍 良好：高质量，文件稍大';
+                recommendation = '专业级质量带来的大文件是可接受的权衡。';
+            } else {
+                qualityAssessment = '⚠️ 注意：文件较大，但质量极佳';
+                recommendation = '超高质量配置，适合对视觉效果要求极高的场景。';
+            }
+
+            content.innerHTML = `
+                <h4>📊 960×540 WebP质量0.95 专业级分析</h4>
+                <ul>
+                    <li><strong>文件大小</strong>: ${latest.webp.sizeKB} KB</li>
+                    <li><strong>相比JPEG节省</strong>: ${latest.savings}% 空间</li>
+                    <li><strong>质量评估</strong>: ${qualityAssessment}</li>
+                    <li><strong>加载性能</strong>: 预计${(latest.webp.sizeKB * 8 / 1000 * 1000).toFixed(0)}ms (1Mbps网络)</li>
+                </ul>
+                
+                <h4>💡 专业建议</h4>
+                <p>${recommendation}</p>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-top: 15px;">
+                    <strong>✨ 总结:</strong> 960×540分辨率的WebP格式在质量0.95专业级设置下，
+                    能够提供极致的视觉效果和出色的压缩效率，完美适合高端视频缩略图应用。
+                    相比传统JPEG格式，平均可节省${latest.savings}%的存储空间和带宽。
+                </div>
+            `;
+
+            conclusion.style.display = 'block';
+        }
+
+        async function runQualityTest() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+            
+            try {
+                // 测试复杂图像
+                const complexCanvas = generateComplexImage();
+                const complexResults = await testImageQuality(complexCanvas, 'complex');
+                displayResults(complexResults);
+                
+            } catch (error) {
+                console.error('测试失败:', error);
+                alert('测试失败: ' + error.message);
+            } finally {
+                document.getElementById('loadingIndicator').style.display = 'none';
+            }
+        }
+
+        // 页面加载完成后自动运行测试
+        window.addEventListener('load', () => {
+            setTimeout(runQualityTest, 500);
+        });
+    </script>
+</body>
+</html>

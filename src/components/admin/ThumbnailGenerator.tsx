@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import supabaseVideoService from '@/services/supabaseVideoService'
 import { Play, Pause, Download, RefreshCw, AlertCircle, CheckCircle } from 'lucide-react'
 
 interface Video {
@@ -7,20 +8,30 @@ interface Video {
   title: string
   video_url: string
   thumbnail_url?: string
+  thumbnail_blur_url?: string | null
+  created_at?: string
   status: 'pending' | 'processing' | 'completed'
   originalStatus: string
 }
 
 interface ThumbnailGeneratorProps {
   className?: string
+  hideHeader?: boolean // 在RA嵌入时隐藏顶部大标题
 }
 
-export default function ThumbnailGenerator({ className }: ThumbnailGeneratorProps) {
+export default function ThumbnailGenerator({ className, hideHeader = false }: ThumbnailGeneratorProps) {
   const [videos, setVideos] = useState<Video[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [logs, setLogs] = useState<string[]>([])
+  // 过滤与选项
+  const [filterType, setFilterType] = useState<'missing_high' | 'missing_blur' | 'all'>('missing_high')
+  const [limit, setLimit] = useState<number>(20)
+  const [frameTime, setFrameTime] = useState<string>('1.5')
+  const [mode, setMode] = useState<'auto' | 'force'>('auto')
+  const [dateFrom, setDateFrom] = useState<string>('')
+  const [dateTo, setDateTo] = useState<string>('')
   
   // 使用ref来跟踪处理状态，避免React状态更新延迟问题
   const processingRef = React.useRef(false)
@@ -39,22 +50,54 @@ export default function ThumbnailGenerator({ className }: ThumbnailGeneratorProp
       setIsLoading(true)
       addLog('🔍 正在加载视频列表...', 'info')
 
-      const { data, error } = await supabase
+      let query = supabase
         .from('videos')
-        .select('id, title, thumbnail_url, video_url, status')
-        .eq('status', 'completed') // 只处理已完成的视频
+        .select('id, title, thumbnail_url, thumbnail_blur_url, video_url, status, created_at')
+        .eq('status', 'completed')
         .order('created_at', { ascending: false })
-        .limit(20) // 限制数量
+        .limit(limit)
+
+      if (filterType === 'missing_high') {
+        query = query.or('thumbnail_url.is.null,thumbnail_url.like.data:image/svg+xml%')
+      } else if (filterType === 'missing_blur') {
+        query = query.or('thumbnail_blur_url.is.null,thumbnail_blur_url.like.data:image/svg+xml%')
+      }
+
+      if (dateFrom) {
+        query = query.gte('created_at', new Date(dateFrom).toISOString())
+      }
+      if (dateTo) {
+        const end = new Date(dateTo)
+        end.setHours(23,59,59,999)
+        query = query.lte('created_at', end.toISOString())
+      }
+
+      const { data, error } = await query
 
       if (error) {
         throw error
       }
 
-      const processedVideos = data.map(video => ({
-        ...video,
-        status: video.thumbnail_url ? 'completed' : 'pending',
-        originalStatus: video.thumbnail_url ? 'completed' : 'pending'
-      }))
+      const processedVideos = (data || []).map(v => {
+        let pending = false
+        if (filterType === 'missing_high') {
+          pending = !(v.thumbnail_url && !String(v.thumbnail_url).startsWith('data:image/svg+xml'))
+        } else if (filterType === 'missing_blur') {
+          pending = !(v.thumbnail_blur_url && !String(v.thumbnail_blur_url).startsWith('data:image/svg+xml'))
+        } else {
+          pending = !(v.thumbnail_url && !String(v.thumbnail_url).startsWith('data:image/svg+xml'))
+        }
+        return {
+          id: v.id,
+          title: v.title,
+          video_url: v.video_url,
+          thumbnail_url: v.thumbnail_url,
+          thumbnail_blur_url: v.thumbnail_blur_url,
+          created_at: v.created_at,
+          status: pending ? 'pending' : 'completed',
+          originalStatus: pending ? 'pending' : 'completed'
+        } as Video
+      })
 
       setVideos(processedVideos)
       addLog(`✅ 成功加载 ${processedVideos.length} 个视频`, 'success')
@@ -73,145 +116,9 @@ export default function ThumbnailGenerator({ className }: ThumbnailGeneratorProp
     }
   }
 
-  // 本地Canvas提取视频缩略图
-  const extractVideoThumbnail = async (videoUrl: string, frameTime = 0.1): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const video = document.createElement('video')
-      const canvas = document.createElement('canvas')
-      const context = canvas.getContext('2d')
-      
-      if (!context) {
-        reject(new Error('Failed to get canvas context'))
-        return
-      }
-      
-      // CORS设置
-      video.crossOrigin = 'anonymous'
-      video.muted = true
-      video.playsInline = true
-      
-      // 监听视频加载元数据
-      video.addEventListener('loadedmetadata', () => {
-        // 设置画布尺寸（优化为16:9比例，320x180）
-        canvas.width = 320
-        canvas.height = 180
-        
-        // 跳转到指定时间点
-        video.currentTime = Math.min(frameTime, video.duration)
-      })
-      
-      // 监听跳转完成
-      video.addEventListener('seeked', async () => {
-        try {
-          // 计算视频在画布中的位置（保持宽高比）
-          const videoAspect = video.videoWidth / video.videoHeight
-          const canvasAspect = canvas.width / canvas.height
-          
-          let drawWidth, drawHeight, drawX, drawY
-          
-          if (videoAspect > canvasAspect) {
-            // 视频更宽，以高度为准
-            drawHeight = canvas.height
-            drawWidth = drawHeight * videoAspect
-            drawX = (canvas.width - drawWidth) / 2
-            drawY = 0
-          } else {
-            // 视频更高，以宽度为准
-            drawWidth = canvas.width
-            drawHeight = drawWidth / videoAspect
-            drawX = 0
-            drawY = (canvas.height - drawHeight) / 2
-          }
-          
-          // 填充背景色
-          context.fillStyle = '#000000'
-          context.fillRect(0, 0, canvas.width, canvas.height)
-          
-          // 绘制视频帧
-          context.drawImage(video, drawX, drawY, drawWidth, drawHeight)
-          
-          // 转换为WebP格式（如果支持）或JPEG
-          let dataUrl
-          try {
-            dataUrl = canvas.toDataURL('image/webp', 0.75)
-            // 检查是否真的生成了WebP
-            if (!dataUrl.startsWith('data:image/webp')) {
-              throw new Error('WebP not supported')
-            }
-          } catch (webpError) {
-            // 回退到JPEG
-            dataUrl = canvas.toDataURL('image/jpeg', 0.8)
-          }
-          
-          // 清理资源
-          video.remove()
-          canvas.remove()
-          
-          resolve(dataUrl)
-          
-        } catch (error) {
-          video.remove()
-          canvas.remove()
-          reject(error)
-        }
-      })
-      
-      // 错误处理
-      video.addEventListener('error', (e) => {
-        video.remove()
-        canvas.remove()
-        reject(new Error(`Failed to load video: ${e.type}`))
-      })
-      
-      // 设置视频源并开始加载
-      video.src = videoUrl
-      video.load()
-    })
-  }
+  // 删除本地低质量缩略图生成与直传逻辑；统一走高质量服务
 
-  // 上传缩略图到R2存储（通过Edge Function代理）
-  const uploadThumbnailToR2 = async (thumbnailDataUrl: string, videoId: string): Promise<string> => {
-    try {
-      // 将Base64转换为Blob
-      const response = await fetch(thumbnailDataUrl)
-      const blob = await response.blob()
-      
-      // 将Blob转换为Base64
-      const reader = new FileReader()
-      const base64Data = await new Promise<string>((resolve, reject) => {
-        reader.onload = () => {
-          const result = reader.result as string
-          resolve(result.split(',')[1]) // 移除data:image/webp;base64,前缀
-        }
-        reader.onerror = reject
-        reader.readAsDataURL(blob)
-      })
-      
-      // 通过统一的supabase客户端调用Edge Function
-      const { data: uploadData, error: uploadError } = await supabase.functions.invoke('upload-thumbnail', {
-        body: {
-          videoId,
-          base64Data,
-          contentType: blob.type,
-          fileSize: blob.size,
-          directUpload: true // 标记为直接上传模式
-        }
-      })
-      
-      if (uploadError) {
-        console.error(`[ThumbnailGenerator] 上传失败: ${uploadError.message}`)
-        throw new Error(`上传失败: ${uploadError.message}`)
-      }
-      
-      return uploadData.data.publicUrl
-      
-    } catch (error: any) {
-      console.error(`[ThumbnailGenerator] R2上传失败: ${error.message}`)
-      throw new Error(`R2上传失败: ${error.message}`)
-    }
-  }
-
-  // 生成单个缩略图
+  // 生成单个缩略图（依据模式与过滤器）
   const generateThumbnailForVideo = async (video: Video) => {
     try {
       // 更新状态为处理中
@@ -221,22 +128,37 @@ export default function ThumbnailGenerator({ className }: ThumbnailGeneratorProp
 
       addLog(`🎬 开始处理: ${video.title}`, 'info')
 
-      // 使用本地Canvas生成缩略图
-      const thumbnailDataUrl = await extractVideoThumbnail(video.video_url, 0.1)
-      
-      // 上传到R2存储
-      const r2Url = await uploadThumbnailToR2(thumbnailDataUrl, video.id)
-      
-      // 更新数据库
-      const { error: updateError } = await supabase
-        .from('videos')
-        .update({ 
-          thumbnail_url: r2Url
-        })
-        .eq('id', video.id)
+      let success = false
+      if (mode === 'force') {
+        const t = Number(frameTime) || 1.5
+        const res = await supabaseVideoService.regenerateThumbnail(video.id, { frameTime: t })
+        success = !!res.success
+      } else {
+        if (filterType === 'missing_blur') {
+          success = await generateBlurOnly(video)
+        } else {
+          success = await supabaseVideoService.autoGenerateThumbnailOnComplete({
+            id: video.id,
+            status: 'completed',
+            video_url: video.video_url,
+            thumbnail_url: video.thumbnail_url || null
+          } as any)
+        }
+      }
 
-      if (updateError) {
-        throw updateError
+      if (!success) {
+        throw new Error('高质量缩略图生成失败')
+      }
+
+      // 刷新单条记录获取最新缩略图
+      const { data: refreshed, error: refErr } = await supabase
+        .from('videos')
+        .select('id, title, thumbnail_url, thumbnail_blur_url, video_url, status')
+        .eq('id', video.id)
+        .single()
+
+      if (refErr) {
+        throw refErr
       }
 
       // 更新状态
@@ -244,11 +166,12 @@ export default function ThumbnailGenerator({ className }: ThumbnailGeneratorProp
         v.id === video.id ? { 
           ...v, 
           status: 'completed', 
-          thumbnail_url: r2Url 
+          thumbnail_url: refreshed?.thumbnail_url || v.thumbnail_url,
+          thumbnail_blur_url: refreshed?.thumbnail_blur_url ?? v.thumbnail_blur_url
         } : v
       ))
 
-      addLog(`✅ 完成: ${video.title}`, 'success')
+      addLog(`✅ 完成（高质量）: ${video.title}`, 'success')
 
     } catch (error: any) {
       // 失败时恢复为pending状态
@@ -257,6 +180,26 @@ export default function ThumbnailGenerator({ className }: ThumbnailGeneratorProp
       ))
       
       addLog(`❌ 失败: ${video.title} - ${error.message}`, 'error')
+    }
+  }
+
+  // 仅补齐模糊图（服务端生成避免CORS）
+  const generateBlurOnly = async (video: Video): Promise<boolean> => {
+    try {
+      // 已有模糊图则跳过
+      if (video.thumbnail_blur_url && !String(video.thumbnail_blur_url).startsWith('data:image/svg+xml')) return true
+      if (!video.video_url) return false
+      const { extractAndUploadBlurOnly } = await import('@/utils/videoThumbnail')
+      const blurUrl = await extractAndUploadBlurOnly(video.video_url, video.id)
+      const { error: upErr } = await supabase
+        .from('videos')
+        .update({ thumbnail_blur_url: blurUrl, thumbnail_generated_at: new Date().toISOString() })
+        .eq('id', video.id)
+      if (upErr) return false
+      return true
+    } catch (e) {
+      addLog(`模糊图生成失败：${(e as Error).message || e}`, 'error')
+      return false
     }
   }
 
@@ -315,11 +258,13 @@ export default function ThumbnailGenerator({ className }: ThumbnailGeneratorProp
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {/* 标题 */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-lg">
-        <h1 className="text-2xl font-bold mb-2">🎬 批量生成视频缩略图</h1>
-        <p className="text-blue-100">为所有没有缩略图的视频生成静态缩略图</p>
-      </div>
+      {/* 标题（可隐藏） */}
+      {!hideHeader && (
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-lg">
+          <h1 className="text-2xl font-bold mb-2">🎬 批量生成视频缩略图</h1>
+          <p className="text-blue-100">为所有没有缩略图的视频生成静态缩略图</p>
+        </div>
+      )}
 
       {/* 统计卡片 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -342,8 +287,45 @@ export default function ThumbnailGenerator({ className }: ThumbnailGeneratorProp
       </div>
 
       {/* 控制面板 */}
-      <div className="bg-white border rounded-lg p-6">
-        <div className="flex flex-wrap gap-3 mb-4">
+      <div className="bg-white border rounded-lg p-6 space-y-3">
+        {/* 过滤选项 */}
+        <div className="flex flex-wrap gap-3 items-end">
+          <div>
+            <div className="text-xs text-gray-500 mb-1">目标类型</div>
+            <select className="border rounded px-2 py-1" value={filterType} onChange={e => setFilterType(e.target.value as any)}>
+              <option value="missing_high">缺少高清缩略图</option>
+              <option value="missing_blur">缺少模糊缩略图</option>
+              <option value="all">全部（用于强制重生）</option>
+            </select>
+          </div>
+          <div>
+            <div className="text-xs text-gray-500 mb-1">数量上限</div>
+            <input type="number" min={1} className="border rounded px-2 py-1 w-28" value={limit} onChange={e => setLimit(parseInt(e.target.value || '20', 10))} />
+          </div>
+          <div>
+            <div className="text-xs text-gray-500 mb-1">模式</div>
+            <select className="border rounded px-2 py-1" value={mode} onChange={e => setMode(e.target.value as any)}>
+              <option value="auto">自动补齐（高清+模糊）</option>
+              <option value="force">强制重生（自定义截帧）</option>
+            </select>
+          </div>
+          {mode === 'force' && (
+            <div>
+              <div className="text-xs text-gray-500 mb-1">截帧秒数</div>
+              <input className="border rounded px-2 py-1 w-24" value={frameTime} onChange={e => setFrameTime(e.target.value)} />
+            </div>
+          )}
+          <div>
+            <div className="text-xs text-gray-500 mb-1">起始日期</div>
+            <input type="date" className="border rounded px-2 py-1" value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
+          </div>
+          <div>
+            <div className="text-xs text-gray-500 mb-1">结束日期</div>
+            <input type="date" className="border rounded px-2 py-1" value={dateTo} onChange={e => setDateTo(e.target.value)} />
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
           <button
             onClick={loadVideos}
             disabled={isLoading || isProcessing}

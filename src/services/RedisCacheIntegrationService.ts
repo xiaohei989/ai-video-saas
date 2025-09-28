@@ -9,9 +9,27 @@
  * - L4: Supabase数据库
  */
 
-import { multiLevelCache, CACHE_PREFIX, TTL_STRATEGY } from './MultiLevelCacheService'
+import { unifiedCache } from './UnifiedCacheService'
 import edgeCacheClient, { SubscriptionTier } from './EdgeFunctionCacheClient'
 import { supabase } from '@/lib/supabase'
+
+// 缓存前缀常量
+const CACHE_PREFIX = {
+  TEMPLATE: 'template:',
+  USER: 'user:',
+  VIDEO: 'video:',
+  STATS: 'stats:',
+  THUMB: 'thumb:',
+  SUB: 'sub:',
+  CREDITS: 'credits:'
+}
+
+// TTL策略常量（秒）
+const TTL_STRATEGY = {
+  STATIC: 24 * 60 * 60, // 24小时
+  USER: 2 * 60 * 60,    // 2小时  
+  DYNAMIC: 5 * 60       // 5分钟
+}
 
 /**
  * Redis缓存集成服务类 - 使用多级缓存优化
@@ -73,7 +91,7 @@ class RedisCacheIntegrationService {
       if (templates) {
         for (const template of templates) {
           const key = `${CACHE_PREFIX.TEMPLATE}${template.id}`
-          await multiLevelCache.set(key, template, { 
+          await unifiedCache.set(key, template, { 
             ttl: TTL_STRATEGY.STATIC 
           })
         }
@@ -109,7 +127,7 @@ class RedisCacheIntegrationService {
     
     try {
       // 尝试从多级缓存获取
-      const cached = await multiLevelCache.get<SubscriptionTier>(cacheKey)
+      const cached = await unifiedCache.get<SubscriptionTier>(cacheKey)
       
       if (cached) {
         console.log(`[REDIS CACHE] 🎯 缓存命中: ${cacheKey}`)
@@ -120,7 +138,7 @@ class RedisCacheIntegrationService {
       const subscription = await this.getUserSubscriptionFromDB(userId)
       
       // 写入多级缓存
-      await multiLevelCache.set(cacheKey, subscription, {
+      await unifiedCache.set(cacheKey, subscription, {
         ttl: TTL_STRATEGY.USER
       })
       
@@ -143,7 +161,7 @@ class RedisCacheIntegrationService {
       const cacheKey = `${CACHE_PREFIX.SUBSCRIPTION}${userId}`
       
       // 清理所有级别的缓存
-      const deleted = await multiLevelCache.delete(cacheKey, 'all')
+      const deleted = await unifiedCache.delete(cacheKey)
       
       if (deleted) {
         console.log(`[REDIS CACHE] ✅ 已清理用户订阅缓存: ${userId}`)
@@ -257,7 +275,7 @@ class RedisCacheIntegrationService {
     
     try {
       // 尝试从多级缓存获取
-      const cached = await multiLevelCache.get<number>(cacheKey)
+      const cached = await unifiedCache.get<number>(cacheKey)
       
       if (cached !== null) {
         console.log(`[REDIS CACHE] 🎯 积分缓存命中: ${cacheKey}`)
@@ -268,7 +286,7 @@ class RedisCacheIntegrationService {
       const credits = await this.getUserCreditsFromDB(userId)
       
       // 写入多级缓存（积分使用较短TTL）
-      await multiLevelCache.set(cacheKey, credits, {
+      await unifiedCache.set(cacheKey, credits, {
         ttl: TTL_STRATEGY.DYNAMIC
       })
       
@@ -318,7 +336,7 @@ class RedisCacheIntegrationService {
       ]
       
       await Promise.all(
-        prefixes.map(prefix => multiLevelCache.delete(prefix, 'all'))
+        prefixes.map(prefix => unifiedCache.delete(prefix))
       )
       
       console.log(`[REDIS CACHE] 用户缓存失效: ${userId}`)
@@ -336,15 +354,22 @@ class RedisCacheIntegrationService {
     }
 
     const keys = userIds.map(id => `${CACHE_PREFIX.USER}${id}`)
-    const result = await multiLevelCache.getBatch(keys)
+    // 由于 unifiedCache 没有 getBatch 方法，我们逐个获取
+    const result: Record<string, any> = {}
+    for (const key of keys) {
+      const value = await unifiedCache.get(key)
+      if (value !== null) {
+        result[key] = value
+      }
+    }
     
     // 转换键名
     const userDataMap = new Map()
-    result.hits.forEach((data, key) => {
+    Object.entries(result).forEach(([key, data]) => {
       const userId = key.replace(CACHE_PREFIX.USER, '')
       userDataMap.set(userId, data)
     })
-    
+
     return userDataMap
   }
 
@@ -370,7 +395,7 @@ class RedisCacheIntegrationService {
     
     try {
       // 尝试从多级缓存获取
-      const cached = await multiLevelCache.get<any>(cacheKey)
+      const cached = await unifiedCache.get<any>(cacheKey)
       
       if (cached) {
         console.log(`[REDIS CACHE] 🎯 模板统计缓存命中: ${cacheKey}`)
@@ -382,7 +407,7 @@ class RedisCacheIntegrationService {
       
       if (stats) {
         // 写入多级缓存（统计数据使用较短TTL）
-        await multiLevelCache.set(cacheKey, stats, {
+        await unifiedCache.set(cacheKey, stats, {
           ttl: TTL_STRATEGY.DYNAMIC
         })
       }

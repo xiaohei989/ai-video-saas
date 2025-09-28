@@ -13,9 +13,14 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { BatteryLow } from 'lucide-react'
 import { cn } from '@/utils/cn'
-import { multiLevelCache, CACHE_PREFIX } from '@/services/MultiLevelCacheService'
+import { unifiedCache } from '@/services/UnifiedCacheService'
 // thumbnailGenerator 服务已简化，现在使用浏览器原生 Media Fragments
 // import { smartPreloadService } from '@/services/SmartVideoPreloadService' // 暂时未使用
+
+// 缓存前缀常量
+const CACHE_PREFIX = {
+  VIDEO: 'video:'
+}
 
 export interface VideoSource {
   src: string
@@ -295,7 +300,7 @@ export default function OptimizedBackgroundVideo({
     
     try {
       // 检查缓存
-      const cached = await multiLevelCache.get<string>(cacheKey)
+      const cached = await unifiedCache.get<string>(cacheKey, { category: 'video' })
       if (cached) {
         if (import.meta.env.DEV) {
           console.log('[OptimizedBG] 🎯 缓存命中')
@@ -360,10 +365,10 @@ export default function OptimizedBackgroundVideo({
         video.src = source.src
       }
       
-      // 缓存URL（仅在L1级别）
-      await multiLevelCache.set(cacheKey, source.src, {
-        ttl: 3600,
-        level: 'L1'
+      // 缓存URL
+      await unifiedCache.set(cacheKey, source.src, {
+        category: 'video',
+        ttl: 3600
       })
     } catch (error) {
       console.error('[OptimizedBG] 加载失败:', error)

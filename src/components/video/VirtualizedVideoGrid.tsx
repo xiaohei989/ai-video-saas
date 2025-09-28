@@ -16,15 +16,17 @@ import {
   ArrowRight,
   Loader2,
   AlertCircle,
-  Lock
+  Lock,
+  Info
 } from 'lucide-react'
-import SimpleVideoPlayer from '@/components/video/SimpleVideoPlayer'
+import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
 import { getPlayerUrl, getBestVideoUrl } from '@/utils/videoUrlPriority'
 import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 import { formatRelativeTime, formatDuration } from '@/utils/timeFormat'
 import { useTranslation } from 'react-i18next'
 import type { Database } from '@/lib/supabase'
 import type { VideoTask } from '@/services/VideoTaskManager'
+import { getCachedImage } from '@/utils/newImageCache'
 
 type Video = Database['public']['Tables']['videos']['Row']
 
@@ -116,6 +118,77 @@ const VideoCard: React.FC<{
   const { t } = useTranslation()
   const task = getVideoTask(video.id)
 
+  // 缩略图调试信息状态
+  const [thumbnailDebugInfo, setThumbnailDebugInfo] = useState<{
+    hasCachedThumbnail: boolean
+    cacheSize?: string
+    cacheType?: 'base64' | 'url'
+    thumbnailUrl?: string
+    isLoading?: boolean
+  }>({
+    hasCachedThumbnail: false,
+    isLoading: true
+  })
+
+  // 调试信息显示状态
+  const [showDebugInfo, setShowDebugInfo] = useState(false)
+
+  // 检查缩略图缓存状态
+  useEffect(() => {
+    const checkThumbnailCache = async () => {
+      if (!video.thumbnail_url) {
+        setThumbnailDebugInfo({
+          hasCachedThumbnail: false,
+          isLoading: false,
+          thumbnailUrl: 'No thumbnail URL'
+        })
+        return
+      }
+
+      try {
+        // 检查是否有缓存的缩略图
+        const cachedThumbnail = await getCachedImage(video.thumbnail_url)
+        
+        if (cachedThumbnail && cachedThumbnail.startsWith('data:')) {
+          // Base64缓存
+          const sizeKB = (cachedThumbnail.length / 1024).toFixed(2)
+          setThumbnailDebugInfo({
+            hasCachedThumbnail: true,
+            cacheSize: `${sizeKB}KB`,
+            cacheType: 'base64',
+            thumbnailUrl: video.thumbnail_url.substring(0, 50) + '...',
+            isLoading: false
+          })
+        } else if (cachedThumbnail) {
+          // URL缓存
+          setThumbnailDebugInfo({
+            hasCachedThumbnail: true,
+            cacheSize: 'URL cached',
+            cacheType: 'url',
+            thumbnailUrl: video.thumbnail_url.substring(0, 50) + '...',
+            isLoading: false
+          })
+        } else {
+          // 无缓存
+          setThumbnailDebugInfo({
+            hasCachedThumbnail: false,
+            thumbnailUrl: video.thumbnail_url.substring(0, 50) + '...',
+            isLoading: false
+          })
+        }
+      } catch (error) {
+        console.error('[VideoCard] 检查缩略图缓存失败:', error)
+        setThumbnailDebugInfo({
+          hasCachedThumbnail: false,
+          thumbnailUrl: 'Cache check failed',
+          isLoading: false
+        })
+      }
+    }
+
+    checkThumbnailCache()
+  }, [video.thumbnail_url, video.id])
+
   return (
     <div style={style} className="p-2">
       <Card className="h-full overflow-hidden hover:shadow-lg transition-all duration-300">
@@ -129,7 +202,7 @@ const VideoCard: React.FC<{
               const fallbackUrl = urlResult?.fallbackUrl ? getProxyVideoUrl(urlResult.fallbackUrl) : undefined
               
               return (
-                <SimpleVideoPlayer
+                <ReactVideoPlayer
                   src={primaryUrl}
                   fallbackSrc={fallbackUrl}
                   poster={video.thumbnail_url || undefined}
@@ -153,7 +226,7 @@ const VideoCard: React.FC<{
               const fallbackUrl = urlResult?.fallbackUrl ? getProxyVideoUrl(urlResult.fallbackUrl) : undefined
               
               return (
-                <SimpleVideoPlayer
+                <ReactVideoPlayer
                   src={primaryUrl}
                   fallbackSrc={fallbackUrl}
                   poster={video.thumbnail_url || undefined}
@@ -323,6 +396,22 @@ const VideoCard: React.FC<{
                       <p>{t('videos.delete')}</p>
                     </TooltipContent>
                   </Tooltip>
+                  
+                  {/* 调试按钮 - 始终显示，不受任何条件限制 */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowDebugInfo(!showDebugInfo)}
+                      >
+                        <Info className="w-4 h-4" strokeWidth={1.5} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>查看缩略图调试信息</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
               </TooltipProvider>
               
@@ -331,6 +420,58 @@ const VideoCard: React.FC<{
               </div>
             </div>
           </div>
+          
+          {/* 缩略图调试信息 - 点击按钮显示 */}
+          {showDebugInfo && (
+            <div className="pt-2 mt-2 border-t border-muted-foreground/20">
+              <div className="flex items-start gap-2 text-xs text-muted-foreground/70">
+                <Info className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                <div className="flex flex-col gap-1 w-full">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-muted-foreground">缩略图调试信息</span>
+                    <button
+                      onClick={() => setShowDebugInfo(false)}
+                      className="text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  
+                  {thumbnailDebugInfo.isLoading ? (
+                    <div className="flex items-center gap-1">
+                      <Loader2 className="h-2 w-2 animate-spin" />
+                      <span>检查缩略图缓存...</span>
+                    </div>
+                  ) : thumbnailDebugInfo.hasCachedThumbnail ? (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <span className="text-green-600 font-medium">✓ 缓存命中</span>
+                        <span className="bg-green-100 text-green-800 px-1 py-0.5 rounded text-[10px]">
+                          {thumbnailDebugInfo.cacheType === 'base64' ? 'Base64' : 'URL'} 
+                          {thumbnailDebugInfo.cacheSize && ` - ${thumbnailDebugInfo.cacheSize}`}
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-muted-foreground/60 break-all">
+                        <strong>URL:</strong> {thumbnailDebugInfo.thumbnailUrl}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <span className="text-orange-600 font-medium">✗ 无缓存</span>
+                        <span className="bg-orange-100 text-orange-800 px-1 py-0.5 rounded text-[10px]">
+                          使用原始URL
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-muted-foreground/60 break-all">
+                        <strong>URL:</strong> {thumbnailDebugInfo.thumbnailUrl}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

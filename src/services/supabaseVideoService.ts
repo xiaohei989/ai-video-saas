@@ -1094,13 +1094,28 @@ class SupabaseVideoService {
       // 动态导入避免循环依赖
       const { extractAndUploadThumbnail } = await import('../utils/videoThumbnail')
       
-      // 生成并上传缩略图
-      const thumbnailUrl = await extractAndUploadThumbnail(video.video_url, video.id)
-      
-      // 更新视频记录的缩略图URL
+      // 先生成并上传高清缩略图（R2）
+      const fullUrl = await extractAndUploadThumbnail(video.video_url, video.id)
+
+      // 再由服务端生成模糊图（Edge Function，避免CORS）
+      let blurUrl: string | null = null
+      try {
+        const { data, error } = await supabase.functions.invoke('generate-blur-thumbnail', {
+          body: { videoId: video.id, thumbnailUrl: fullUrl, width: 48, quality: 30 }
+        })
+        if (!error && data?.success) {
+          blurUrl = data.data.publicUrl as string
+        }
+      } catch (e) {
+        console.warn('[AutoThumbnail] 生成模糊图（Edge）失败，先只写入高清:', e)
+      }
+
+      // 更新视频记录的缩略图URL（含模糊图，失败时只写高清）
       const updateResult = await this.updateVideoAsSystem(video.id, {
-        thumbnail_url: thumbnailUrl
-      })
+        thumbnail_url: fullUrl,
+        ...(blurUrl ? { thumbnail_blur_url: blurUrl } : {}),
+        thumbnail_generated_at: new Date().toISOString()
+      } as any)
 
       if (updateResult) {
         console.log(`[AutoThumbnail] ✅ 缩略图生成成功: ${video.id} -> ${thumbnailUrl}`)
@@ -1116,6 +1131,72 @@ class SupabaseVideoService {
       // 生成失败时不更新数据库状态，仅记录日志
       
       return false
+    }
+  }
+
+  /**
+   * 强制重生成指定视频的缩略图（覆盖同名文件）
+   * - 忽略已存在的 thumbnail_url，直接重新截帧并上传
+   * - 默认将帧位从 0.1s 提前到 1.5s，规避黑/暗场
+   */
+  async regenerateThumbnail(
+    videoId: string,
+    options: { frameTime?: number } = {}
+  ): Promise<{ success: boolean; url?: string; message?: string }> {
+    try {
+      const { data: v, error } = await supabase
+        .from('videos')
+        .select('id, video_url, title, status, thumbnail_url')
+        .eq('id', videoId)
+        .single()
+
+      if (error) {
+        throw new Error(`查询视频失败: ${error.message}`)
+      }
+
+      if (!v) {
+        throw new Error('未找到视频记录')
+      }
+
+      if (!v.video_url) {
+        throw new Error('该视频无可用视频URL，无法生成缩略图')
+      }
+
+      // 动态导入以避免循环依赖
+      const { extractAndUploadThumbnail } = await import('../utils/videoThumbnail')
+
+      const frameTime = typeof options.frameTime === 'number' ? options.frameTime : 1.5
+
+      // 仅生成高清（R2）
+      const fullUrl = await extractAndUploadThumbnail(v.video_url, v.id, { frameTime })
+
+      // Edge Function 生成模糊图
+      let blurUrl: string | null = null
+      try {
+        const { data, error } = await supabase.functions.invoke('generate-blur-thumbnail', {
+          body: { videoId: v.id, thumbnailUrl: fullUrl, width: 48, quality: 30 }
+        })
+        if (!error && data?.success) {
+          blurUrl = data.data.publicUrl as string
+        }
+      } catch (e) {
+        console.warn('[RegenerateThumbnail] 生成模糊图（Edge）失败:', e)
+      }
+
+      // 写回数据库
+      const updated = await this.updateVideoAsSystem(v.id, { 
+        thumbnail_url: fullUrl,
+        ...(blurUrl ? { thumbnail_blur_url: blurUrl } : {}),
+        thumbnail_generated_at: new Date().toISOString()
+      } as any)
+      if (!updated) {
+        throw new Error('数据库更新缩略图URL失败')
+      }
+
+      return { success: true, url: fullUrl }
+    } catch (e: any) {
+      console.error('[SupabaseVideoService] 强制重生成缩略图失败:', e)
+      return { success: false, message: e?.message || String(e) }
     }
   }
 

@@ -162,6 +162,34 @@ class VideoPollingService {
         return  // 静默处理，不显示错误提示
       }
 
+      // 🚀 快速路径：如果有视频URL，立即标记完成并返回
+      const hasVideoUrl = !!(video.video_url || video.r2_url)
+      if (hasVideoUrl) {
+        const videoUrl = video.video_url || video.r2_url || ''
+        console.log(`[POLLING] 🎯 检测到视频URL存在，立即标记完成: ${taskId}`)
+        
+        const currentTask = videoTaskManager.getTask(taskId)
+        if (currentTask && currentTask.status !== 'completed') {
+          // 使用统一的完成处理方法
+          const latestTask = this.videoToTask(video)
+          await this.handleTaskCompletion(taskId, videoUrl, latestTask, 'URL可用性检测')
+          
+          // 如果数据库状态还不是completed，同步更新
+          if (video.status !== 'completed') {
+            try {
+              await supabaseVideoService.updateVideoAsSystem(taskId, {
+                status: 'completed',
+                processing_completed_at: new Date().toISOString()
+              })
+              console.log(`[POLLING] ✅ 已同步数据库状态为completed: ${taskId}`)
+            } catch (updateError) {
+              console.error(`[POLLING] 同步数据库状态失败: ${taskId}`, updateError)
+            }
+          }
+        }
+        return // 直接返回，不再进行后续状态检查
+      }
+
       const currentTask = videoTaskManager.getTask(taskId)
       const latestTask = this.videoToTask(video)
 
@@ -170,12 +198,12 @@ class VideoPollingService {
         await this.checkAndRestoreAPI(video, taskId)
       }
 
-      // 🚀 增强完成检测逻辑
-      const hasVideoUrl = !!(video.video_url && video.video_url.length > 0)
+      // 🚀 增强完成检测逻辑（注：上面已经检查过URL存在性，这里是备用检查）
+      const dbHasVideoUrl = !!(video.video_url && video.video_url.length > 0)
       const isProcessingInDB = video.status === 'processing' || video.status === 'pending'
       
       // 如果数据库有视频URL但状态还是processing，强制标记为完成
-      if (hasVideoUrl && isProcessingInDB) {
+      if (dbHasVideoUrl && isProcessingInDB) {
         console.log(`[POLLING] 🎯 检测到数据库已有视频URL但状态仍为 ${video.status}，尝试标记完成: ${taskId}`)
         console.log(`[POLLING] Video URL: ${video.video_url}`)
         

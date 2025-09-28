@@ -4,6 +4,49 @@
  */
 
 import { getOptimalVideoUrl, generateFallbackUrl } from './cdnConnectivityTest'
+import { getR2PublicDomain } from '@/config/cdnConfig'
+
+/**
+ * 检测移动设备
+ */
+function isMobileDevice(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  
+  const userAgent = navigator.userAgent;
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+  const isTablet = /iPad|Android(?!.*Mobile)/i.test(userAgent);
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  
+  return isMobile || isTablet || isTouchDevice;
+}
+
+/**
+ * 检测是否为特殊移动浏览器（需要代理处理）
+ */
+function needsMobileProxy(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  
+  const userAgent = navigator.userAgent;
+  const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+  const isIOSChrome = isIOS && /CriOS/.test(userAgent);
+  const isAndroid = /Android/.test(userAgent);
+  const isWechat = /MicroMessenger/.test(userAgent);
+  const isQQ = /QQ\//.test(userAgent);
+  
+  // iOS Chrome、微信、QQ浏览器等特殊环境需要代理
+  return isIOSChrome || isWechat || isQQ || (isAndroid && userAgent.includes('Chrome'));
+}
+
+/**
+ * 检测URL是否为模板视频
+ */
+function isTemplateVideo(url: string): boolean {
+  if (!url || typeof url !== 'string') return false;
+  
+  // 检测模板视频的路径特征
+  return url.includes('/templates/videos/') || 
+         url.includes('/api/r2/templates/videos/');
+}
 
 /**
  * 将R2视频URL转换为代理URL，解决CORS问题
@@ -16,24 +59,80 @@ export function getProxyVideoUrl(originalUrl: string, enableSmartFallback: boole
     return originalUrl;
   }
 
+  const isTemplate = isTemplateVideo(originalUrl);
+  const r2Domain = getR2PublicDomain()
+
+  // 🎯 优先策略：模板视频直接使用CDN，除非确实需要代理
+  if (isTemplate) {
+    // 模板视频优先使用直接CDN访问
+    
+    // 只有在特殊移动环境下才使用代理
+    const shouldForceProxy = isMobileDevice() && needsMobileProxy();
+    
+    if (shouldForceProxy) {
+      console.log('[VideoProxy] 📱 模板视频：移动端特殊浏览器，使用代理:', navigator.userAgent);
+      
+      if (originalUrl.includes(r2Domain)) {
+        const path = originalUrl.replace(`https://${r2Domain}`, '');
+        return `/api/r2${path}`;
+      }
+      
+      if (originalUrl.includes('.r2.dev')) {
+        const urlObj = new URL(originalUrl);
+        const path = urlObj.pathname;
+        return `/api/r2${path}`;
+      }
+    }
+    
+    // 模板视频默认使用直接CDN访问
+    if (originalUrl.includes(r2Domain)) {
+      return originalUrl; // 已经是CDN地址，直接返回
+    }
+    
+    // 如果是旧的代理URL，转换为CDN地址
+    if (originalUrl.startsWith('/api/r2/')) {
+      const path = originalUrl.replace('/api/r2', '');
+      return `https://${r2Domain}${path}`;
+    }
+    
+    return originalUrl;
+  }
+
+  // 🚀 用户视频：保持原有逻辑
   // 开发环境使用代理
   if (import.meta.env.DEV) {
-    // 代理R2存储域名，解决CORS问题
-    if (originalUrl.includes('cdn.veo3video.me')) {
-      const path = originalUrl.replace('https://cdn.veo3video.me', '');
+    if (originalUrl.includes(r2Domain)) {
+      const path = originalUrl.replace(`https://${r2Domain}`, '');
       return `/api/r2${path}`;
     }
     
-    // 🚀 代理原始R2域名（pub-*.r2.dev），确保所有R2视频都通过本地代理
+    // 🚀 代理原始R2域名（pub-*.r2.dev）
     if (originalUrl.includes('.r2.dev')) {
-      // 提取视频文件路径（通常是 /videos/xxx.mp4）
       const urlObj = new URL(originalUrl);
       const path = urlObj.pathname;
       return `/api/r2${path}`;
     }
   }
   
-  // 生产环境直接返回原始URL，CORS问题已通过Cloudflare Transform Rules解决
+  // 🚀 生产环境：移动端特殊处理
+  const shouldUseProxy = isMobileDevice() && needsMobileProxy();
+  
+  if (shouldUseProxy) {
+    console.log('[VideoProxy] 📱 用户视频：移动端检测到特殊浏览器，启用CORS代理:', navigator.userAgent);
+    
+    if (originalUrl.includes(r2Domain)) {
+      const path = originalUrl.replace(`https://${r2Domain}`, '');
+      return `/api/r2${path}`;
+    }
+    
+    if (originalUrl.includes('.r2.dev')) {
+      const urlObj = new URL(originalUrl);
+      const path = urlObj.pathname;
+      return `/api/r2${path}`;
+    }
+  }
+  
+  // 默认返回原始URL
   return originalUrl;
 }
 
@@ -64,13 +163,15 @@ export function getVideoFallbackUrl(failedUrl: string, originalUrl: string): str
   
   // 如果失败的是代理URL，尝试直接CDN访问
   if (failedUrl.startsWith('/api/r2/')) {
-    const directUrl = `https://cdn.veo3video.me${failedUrl.replace('/api/r2', '')}`
+    const r2Domain = getR2PublicDomain()
+    const directUrl = `https://${r2Domain}${failedUrl.replace('/api/r2', '')}`
     console.log(`🔄 [Video Fallback] 代理失败，尝试直接CDN: ${directUrl}`)
     return directUrl
   }
   
   // 如果失败的是直接CDN访问，尝试生成缓存破坏URL
-  if (failedUrl.includes('cdn.veo3video.me')) {
+  const r2Domain = getR2PublicDomain()
+  if (failedUrl.includes(r2Domain)) {
     const fallbackUrl = generateFallbackUrl(failedUrl)
     console.log(`🔄 [Video Fallback] CDN失败，尝试缓存破坏: ${fallbackUrl}`)
     return fallbackUrl
@@ -90,9 +191,49 @@ export function needsCorsProxy(url: string): boolean {
     return false;
   }
   
+  const isTemplate = isTemplateVideo(url);
+  const r2Domain = getR2PublicDomain()
+  
+  // 🎯 模板视频CORS策略：更严格的安全设置
+  if (isTemplate) {
+    // 开发环境：模板视频使用代理，不需要CORS
+    if (import.meta.env.DEV) {
+      // 如果是代理URL，不需要CORS设置
+      if (url.startsWith('/api/r2/')) {
+        return false;
+      }
+      // 直接CDN访问需要CORS设置
+      return url.includes(r2Domain) || url.includes('.r2.dev');
+    }
+    
+    // 生产环境：模板视频直接CDN访问，根据浏览器类型决定CORS策略
+    if (typeof navigator !== 'undefined') {
+      const userAgent = navigator.userAgent;
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+      const isIOSChrome = isIOS && /CriOS/.test(userAgent);
+      const isWechat = /MicroMessenger/.test(userAgent);
+      const isQQ = /QQ\//.test(userAgent);
+      
+      // 特殊移动环境下，如果使用代理则不需要CORS
+      if ((isIOSChrome || isWechat || isQQ) && url.startsWith('/api/r2/')) {
+        return false;
+      }
+      
+      // 直接CDN访问：桌面端浏览器启用CORS，移动端保守策略
+      const isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+      if (!isMobile && (url.includes(r2Domain) || url.includes('.r2.dev'))) {
+        console.log('[CORS] 🎨 模板视频桌面端启用CORS:', url.substring(0, 50) + '...');
+        return true;
+      }
+    }
+    
+    return false;
+  }
+  
+  // 🚀 用户视频CORS策略：保持原有逻辑
   // 开发环境：R2域名需要代理
   if (import.meta.env.DEV) {
-    return url.includes('cdn.veo3video.me') || url.includes('.r2.dev');
+    return url.includes(r2Domain) || url.includes('.r2.dev');
   }
   
   // 生产环境：暂时禁用CORS设置，避免浏览器CORS错误日志
@@ -118,12 +259,27 @@ export function applyVideoCorsFix(video: HTMLVideoElement, url: string): void {
 
 /**
  * 创建CORS安全的视频元素
+ * @param url 视频URL
+ * @param forThumbnail 是否用于缩略图生成（需要更严格的CORS设置）
  */
-export function createCorsVideo(url: string): HTMLVideoElement {
+export function createCorsVideo(url: string, forThumbnail: boolean = false): HTMLVideoElement {
   const video = document.createElement('video');
   const proxyUrl = getProxyVideoUrl(url);
   
-  applyVideoCorsFix(video, proxyUrl);
+  // 缩略图生成场景需要强制设置CORS，避免Canvas污染
+  if (forThumbnail) {
+    console.log('[CORS Video] 缩略图生成模式：强制启用CORS设置');
+    video.crossOrigin = 'anonymous';
+    video.setAttribute('crossorigin', 'anonymous');
+    // 缩略图生成的其他必要设置
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = 'metadata';
+  } else {
+    // 普通播放场景使用标准CORS处理
+    applyVideoCorsFix(video, proxyUrl);
+  }
+  
   video.src = proxyUrl;
   
   return video;

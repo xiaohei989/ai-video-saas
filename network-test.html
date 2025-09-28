@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络问题诊断测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .error { border-color: #ff6b6b; background-color: #fff5f5; }
+        .warning { border-color: #ffa500; background-color: #fff8e1; }
+        .success { border-color: #51cf66; background-color: #f8fff8; }
+        .info { border-color: #339af0; background-color: #e7f5ff; }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px;
+            font-size: 16px;
+            min-height: 48px;
+            min-width: 120px;
+        }
+        button:hover { background: #0056b3; }
+        button:active { background: #004085; }
+        
+        .test-button { background: #28a745; }
+        .test-button:hover { background: #1e7e34; }
+        
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 14px;
+        }
+        .result.success { background: #d4edda; border: 1px solid #c3e6cb; }
+        .result.error { background: #f8d7da; border: 1px solid #f5c6cb; }
+        .result.info { background: #d1ecf1; border: 1px solid #b8daff; }
+        
+        .protocol-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        video {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 6px;
+            border: 2px solid #ddd;
+        }
+        
+        .progress {
+            width: 100%;
+            height: 4px;
+            background: #f0f0f0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #007bff;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .network-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .network-info div {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 网络问题诊断测试工具</h1>
+        
+        <div class="protocol-warning">
+            <h3>⚠️ 检测到的问题：NETWORK_NO_SOURCE</h3>
+            <p><strong>问题原因：</strong></p>
+            <ul>
+                <li><strong>混合内容安全策略：</strong>HTTP页面无法加载HTTPS视频资源</li>
+                <li><strong>网络连接问题：</strong>CDN服务器可能无法访问</li>  
+                <li><strong>DNS解析问题：</strong>域名解析可能失败</li>
+                <li><strong>移动网络限制：</strong>运营商可能限制某些域名访问</li>
+            </ul>
+        </div>
+
+        <!-- 网络环境检测 -->
+        <div class="section info">
+            <h3>🌐 网络环境检测</h3>
+            <div class="network-info" id="networkInfo">
+                <div><strong>正在检测网络环境...</strong></div>
+            </div>
+            <button class="test-button" onclick="detectNetworkEnvironment()">🔍 检测网络环境</button>
+            <div id="networkResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- CDN连通性测试 -->
+        <div class="section warning">
+            <h3>📡 CDN连通性测试</h3>
+            <p>测试各个CDN域名的可访问性</p>
+            <button class="test-button" onclick="testCDNConnectivity()">🚀 测试CDN连通性</button>
+            <div class="progress" id="cdnProgress" style="display: none;">
+                <div class="progress-bar" id="cdnProgressBar"></div>
+            </div>
+            <div id="cdnResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- 问题视频直接访问测试 -->
+        <div class="section error">
+            <h3>🚨 问题视频直接访问测试</h3>
+            <p><strong>问题视频：</strong>fireplace-seduction-selfie.mp4</p>
+            <p><strong>URL：</strong><span id="problemVideoUrl">https://cdn.veo3video.me/templates/videos/fireplace-seduction-selfie.mp4?v=1758008502567</span></p>
+            
+            <button class="test-button" onclick="testDirectVideoAccess('problem')">🎯 直接访问测试</button>
+            <button onclick="downloadVideoHead('problem')">📊 获取Header信息</button>
+            <button onclick="tryAlternativeUrls('problem')">🔄 尝试替代URL</button>
+            
+            <div id="problemResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- 对比视频测试 -->
+        <div class="section success">
+            <h3>✅ 对比视频直接访问测试</h3>
+            <p><strong>对比视频：</strong>asmr-surreal-toast-spread.mp4</p>
+            <p><strong>URL：</strong><span id="normalVideoUrl">https://cdn.veo3video.me/templates/videos/asmr-surreal-toast-spread.mp4</span></p>
+            
+            <button class="test-button" onclick="testDirectVideoAccess('normal')">🎯 直接访问测试</button>
+            <button onclick="downloadVideoHead('normal')">📊 获取Header信息</button>
+            
+            <div id="normalResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- 实际视频播放测试 -->
+        <div class="section">
+            <h3>🎬 实际视频播放测试</h3>
+            <p>在确认网络连通性后进行实际播放测试</p>
+            
+            <div style="margin: 20px 0;">
+                <h4>问题视频播放测试</h4>
+                <video id="testProblemVideo" controls preload="none" webkit-playsinline playsinline>
+                    <source src="https://cdn.veo3video.me/templates/videos/fireplace-seduction-selfie.mp4?v=1758008502567" type="video/mp4">
+                </video>
+                <div>
+                    <button onclick="testVideoPlayback('testProblemVideo', 'problem')">▶️ 测试播放</button>
+                    <button onclick="loadVideoMetadata('testProblemVideo', 'problem')">📋 加载元数据</button>
+                </div>
+                <div id="testProblemResult" class="result" style="display: none;"></div>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <h4>对比视频播放测试</h4>
+                <video id="testNormalVideo" controls preload="none" webkit-playsinline playsinline>
+                    <source src="https://cdn.veo3video.me/templates/videos/asmr-surreal-toast-spread.mp4" type="video/mp4">
+                </video>
+                <div>
+                    <button onclick="testVideoPlayback('testNormalVideo', 'normal')">▶️ 测试播放</button>
+                    <button onclick="loadVideoMetadata('testNormalVideo', 'normal')">📋 加载元数据</button>
+                </div>
+                <div id="testNormalResult" class="result" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- 解决方案建议 -->
+        <div class="section info">
+            <h3>💡 解决方案建议</h3>
+            <div id="solutionSuggestions">
+                <p>请先进行上述测试，系统将根据测试结果提供针对性的解决方案。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = {};
+
+        // 网络环境检测
+        function detectNetworkEnvironment() {
+            const result = document.getElementById('networkResult');
+            result.style.display = 'block';
+            result.className = 'result info';
+            
+            const env = {
+                userAgent: navigator.userAgent,
+                protocol: location.protocol,
+                hostname: location.hostname,
+                port: location.port,
+                isHTTPS: location.protocol === 'https:',
+                connectionType: navigator.connection ? navigator.connection.effectiveType : '未知',
+                onLine: navigator.onLine,
+                language: navigator.language,
+                platform: navigator.platform,
+                cookieEnabled: navigator.cookieEnabled,
+                doNotTrack: navigator.doNotTrack,
+                hardwareConcurrency: navigator.hardwareConcurrency,
+                maxTouchPoints: navigator.maxTouchPoints,
+                screenWidth: screen.width,
+                screenHeight: screen.height,
+                devicePixelRatio: window.devicePixelRatio,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            };
+
+            const networkInfo = document.getElementById('networkInfo');
+            networkInfo.innerHTML = `
+                <div><strong>协议:</strong> ${env.protocol} ${env.isHTTPS ? '🔒' : '⚠️'}</div>
+                <div><strong>主机:</strong> ${env.hostname}:${env.port || '默认'}</div>
+                <div><strong>连接类型:</strong> ${env.connectionType}</div>
+                <div><strong>在线状态:</strong> ${env.onLine ? '✅ 在线' : '❌ 离线'}</div>
+                <div><strong>设备:</strong> ${env.platform}</div>
+                <div><strong>语言:</strong> ${env.language}</div>
+                <div><strong>时区:</strong> ${env.timezone}</div>
+                <div><strong>像素比:</strong> ${env.devicePixelRatio}</div>
+            `;
+
+            let analysis = `🌐 网络环境分析报告\n\n`;
+            analysis += `基本信息:\n`;
+            analysis += `- 协议: ${env.protocol} ${env.isHTTPS ? '(安全)' : '(不安全)'}\n`;
+            analysis += `- 连接: ${env.connectionType} ${env.onLine ? '(在线)' : '(离线)'}\n`;
+            analysis += `- 设备: ${env.platform}\n`;
+            analysis += `- 浏览器: ${getBrowserInfo()}\n\n`;
+
+            if (!env.isHTTPS) {
+                analysis += `⚠️ 重要发现: 当前使用HTTP协议\n`;
+                analysis += `影响: 现代浏览器限制HTTP页面加载HTTPS资源\n`;
+                analysis += `建议: 使用HTTPS协议访问本页面\n\n`;
+            }
+
+            if (!env.onLine) {
+                analysis += `❌ 严重问题: 设备显示为离线状态\n`;
+                analysis += `建议: 检查网络连接\n\n`;
+            }
+
+            testResults.network = env;
+            result.textContent = analysis;
+            
+            alert(`网络环境检测完成!\n\n协议: ${env.protocol}\n在线: ${env.onLine ? '是' : '否'}\n连接: ${env.connectionType}`);
+        }
+
+        function getBrowserInfo() {
+            const ua = navigator.userAgent;
+            if (ua.includes('CriOS')) return 'Chrome (iOS)';
+            if (ua.includes('Chrome') && !ua.includes('Edge')) return 'Chrome';
+            if (ua.includes('Firefox')) return 'Firefox';
+            if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari';
+            if (ua.includes('Edge')) return 'Edge';
+            return '未知浏览器';
+        }
+
+        // CDN连通性测试
+        function testCDNConnectivity() {
+            const result = document.getElementById('cdnResult');
+            const progress = document.getElementById('cdnProgress');
+            const progressBar = document.getElementById('cdnProgressBar');
+            
+            result.style.display = 'block';
+            progress.style.display = 'block';
+            result.className = 'result info';
+            result.textContent = '正在测试CDN连通性...';
+
+            const testUrls = [
+                'https://cdn.veo3video.me/',
+                'https://cdn.veo3video.me/templates/',
+                'https://cdn.veo3video.me/templates/videos/',
+                'https://cdn.veo3video.me/templates/videos/asmr-surreal-toast-spread.mp4',
+                'https://cdn.veo3video.me/templates/videos/fireplace-seduction-selfie.mp4'
+            ];
+
+            let completed = 0;
+            let results = [];
+
+            testUrls.forEach((url, index) => {
+                const startTime = Date.now();
+                
+                fetch(url, { 
+                    method: 'HEAD',
+                    cache: 'no-cache',
+                    mode: 'cors'
+                })
+                .then(response => {
+                    const elapsed = Date.now() - startTime;
+                    results.push({
+                        url,
+                        status: response.status,
+                        success: response.ok,
+                        time: elapsed,
+                        headers: {
+                            contentType: response.headers.get('content-type'),
+                            contentLength: response.headers.get('content-length'),
+                            server: response.headers.get('server'),
+                            cacheControl: response.headers.get('cache-control')
+                        }
+                    });
+                })
+                .catch(error => {
+                    const elapsed = Date.now() - startTime;
+                    results.push({
+                        url,
+                        success: false,
+                        error: error.message,
+                        time: elapsed
+                    });
+                })
+                .finally(() => {
+                    completed++;
+                    const progressPercent = (completed / testUrls.length) * 100;
+                    progressBar.style.width = progressPercent + '%';
+                    
+                    if (completed === testUrls.length) {
+                        displayCDNResults(results);
+                        progress.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function displayCDNResults(results) {
+            const resultDiv = document.getElementById('cdnResult');
+            let analysis = `📡 CDN连通性测试结果\n\n`;
+            
+            const successful = results.filter(r => r.success).length;
+            const total = results.length;
+            
+            analysis += `总体结果: ${successful}/${total} 成功 (${(successful/total*100).toFixed(1)}%)\n\n`;
+            
+            results.forEach((result, index) => {
+                analysis += `${index + 1}. ${result.success ? '✅' : '❌'} ${result.url}\n`;
+                if (result.success) {
+                    analysis += `   状态: ${result.status} | 耗时: ${result.time}ms\n`;
+                    if (result.headers.contentLength) {
+                        const sizeMB = (parseInt(result.headers.contentLength) / 1024 / 1024).toFixed(2);
+                        analysis += `   大小: ${sizeMB}MB | 类型: ${result.headers.contentType}\n`;
+                    }
+                } else {
+                    analysis += `   错误: ${result.error} | 耗时: ${result.time}ms\n`;
+                }
+                analysis += `\n`;
+            });
+
+            if (successful === 0) {
+                analysis += `🚨 严重问题: 无法访问任何CDN资源\n`;
+                analysis += `可能原因:\n`;
+                analysis += `1. 网络连接问题\n`;
+                analysis += `2. DNS解析失败\n`;
+                analysis += `3. 防火墙或代理阻止\n`;
+                analysis += `4. CDN服务商区域限制\n`;
+            } else if (successful < total) {
+                analysis += `⚠️ 部分问题: 某些资源无法访问\n`;
+                analysis += `建议检查具体失败的资源\n`;
+            } else {
+                analysis += `✅ 连通性良好: 所有CDN资源均可访问\n`;
+            }
+
+            testResults.cdn = results;
+            resultDiv.className = successful > 0 ? 'result success' : 'result error';
+            resultDiv.textContent = analysis;
+            
+            const summary = `CDN测试完成!\n成功: ${successful}/${total}\n${successful === 0 ? '所有资源都无法访问' : successful === total ? '所有资源都可以访问' : '部分资源无法访问'}`;
+            alert(summary);
+        }
+
+        // 直接视频访问测试
+        function testDirectVideoAccess(type) {
+            const url = type === 'problem' 
+                ? 'https://cdn.veo3video.me/templates/videos/fireplace-seduction-selfie.mp4?v=1758008502567'
+                : 'https://cdn.veo3video.me/templates/videos/asmr-surreal-toast-spread.mp4';
+            
+            const resultDiv = document.getElementById(type + 'Result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = '正在测试直接访问...';
+
+            const startTime = Date.now();
+
+            fetch(url, { 
+                method: 'HEAD',
+                cache: 'no-cache' 
+            })
+            .then(response => {
+                const elapsed = Date.now() - startTime;
+                let analysis = `🎯 直接访问测试结果 (${type})\n\n`;
+                analysis += `URL: ${url}\n`;
+                analysis += `状态: ${response.status} ${response.statusText}\n`;
+                analysis += `耗时: ${elapsed}ms\n`;
+                analysis += `成功: ${response.ok ? '✅ 是' : '❌ 否'}\n\n`;
+
+                if (response.ok) {
+                    analysis += `响应头信息:\n`;
+                    analysis += `- Content-Type: ${response.headers.get('content-type')}\n`;
+                    analysis += `- Content-Length: ${response.headers.get('content-length')}\n`;
+                    analysis += `- Server: ${response.headers.get('server')}\n`;
+                    analysis += `- Cache-Control: ${response.headers.get('cache-control')}\n`;
+                    analysis += `- Access-Control-Allow-Origin: ${response.headers.get('access-control-allow-origin')}\n`;
+                    
+                    const contentLength = response.headers.get('content-length');
+                    if (contentLength) {
+                        const sizeMB = (parseInt(contentLength) / 1024 / 1024).toFixed(2);
+                        analysis += `\n文件大小: ${sizeMB}MB\n`;
+                        analysis += `预估下载时间 (3G): ${(sizeMB * 8).toFixed(1)}秒\n`;
+                    }
+                    
+                    resultDiv.className = 'result success';
+                    analysis += `\n✅ 结论: 视频文件可以直接访问\n`;
+                } else {
+                    resultDiv.className = 'result error';
+                    analysis += `\n❌ 结论: 视频文件无法访问\n`;
+                    analysis += `错误代码: ${response.status}\n`;
+                }
+
+                resultDiv.textContent = analysis;
+                alert(`直接访问测试完成!\n状态: ${response.status}\n成功: ${response.ok ? '是' : '否'}`);
+            })
+            .catch(error => {
+                const elapsed = Date.now() - startTime;
+                const analysis = `❌ 直接访问失败\n\n错误: ${error.message}\n耗时: ${elapsed}ms\n\n可能原因:\n1. 网络连接问题\n2. DNS解析失败\n3. 服务器不可访问\n4. CORS策略阻止`;
+                
+                resultDiv.className = 'result error';
+                resultDiv.textContent = analysis;
+                alert(`直接访问失败!\n错误: ${error.message}`);
+            });
+        }
+
+        // 视频播放测试
+        function testVideoPlayback(videoId, type) {
+            const video = document.getElementById(videoId);
+            const resultDiv = document.getElementById('test' + type.charAt(0).toUpperCase() + type.slice(1) + 'Result');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = '正在测试视频播放...';
+
+            const startTime = Date.now();
+            const events = [];
+
+            // 监听所有相关事件
+            const eventTypes = ['loadstart', 'loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough', 'play', 'playing', 'error', 'abort', 'stalled', 'waiting'];
+            
+            eventTypes.forEach(eventType => {
+                video.addEventListener(eventType, function(e) {
+                    const elapsed = Date.now() - startTime;
+                    events.push(`[${elapsed}ms] ${eventType}`);
+                    
+                    if (eventType === 'error' || eventType === 'abort') {
+                        const error = e.target.error;
+                        displayPlaybackResult(resultDiv, false, events, error, elapsed);
+                    } else if (eventType === 'playing') {
+                        displayPlaybackResult(resultDiv, true, events, null, elapsed);
+                    }
+                }, { once: true });
+            });
+
+            // 开始播放测试
+            video.load();
+            setTimeout(() => {
+                video.play().catch(error => {
+                    const elapsed = Date.now() - startTime;
+                    displayPlaybackResult(resultDiv, false, events, error, elapsed);
+                });
+            }, 500);
+        }
+
+        function displayPlaybackResult(resultDiv, success, events, error, elapsed) {
+            let analysis = `🎬 视频播放测试结果\n\n`;
+            analysis += `结果: ${success ? '✅ 播放成功' : '❌ 播放失败'}\n`;
+            analysis += `总耗时: ${elapsed}ms\n\n`;
+            
+            analysis += `事件日志:\n`;
+            events.forEach(event => {
+                analysis += `${event}\n`;
+            });
+            
+            if (error) {
+                analysis += `\n错误信息:\n`;
+                analysis += `- 错误类型: ${error.name}\n`;
+                analysis += `- 错误消息: ${error.message}\n`;
+                analysis += `- 错误代码: ${error.code || '未提供'}\n`;
+            }
+
+            resultDiv.className = success ? 'result success' : 'result error';
+            resultDiv.textContent = analysis;
+        }
+
+        // 加载视频元数据
+        function loadVideoMetadata(videoId, type) {
+            const video = document.getElementById(videoId);
+            const resultDiv = document.getElementById('test' + type.charAt(0).toUpperCase() + type.slice(1) + 'Result');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = '正在加载视频元数据...';
+
+            video.addEventListener('loadedmetadata', function() {
+                const analysis = `📋 视频元数据\n\n尺寸: ${video.videoWidth}x${video.videoHeight}\n时长: ${video.duration.toFixed(2)}秒\n网络状态: ${getNetworkState(video.networkState)}\n就绪状态: ${getReadyState(video.readyState)}`;
+                resultDiv.className = 'result success';
+                resultDiv.textContent = analysis;
+            }, { once: true });
+
+            video.addEventListener('error', function(e) {
+                const error = e.target.error;
+                const analysis = `❌ 元数据加载失败\n\n错误代码: ${error ? error.code : '未知'}\n错误信息: ${error ? getMediaErrorMessage(error.code) : '无详细信息'}`;
+                resultDiv.className = 'result error';
+                resultDiv.textContent = analysis;
+            }, { once: true });
+
+            video.load();
+        }
+
+        function getNetworkState(state) {
+            const states = ['NETWORK_EMPTY', 'NETWORK_IDLE', 'NETWORK_LOADING', 'NETWORK_NO_SOURCE'];
+            return states[state] || `未知状态: ${state}`;
+        }
+
+        function getReadyState(state) {
+            const states = ['HAVE_NOTHING', 'HAVE_METADATA', 'HAVE_CURRENT_DATA', 'HAVE_FUTURE_DATA', 'HAVE_ENOUGH_DATA'];
+            return states[state] || `未知状态: ${state}`;
+        }
+
+        function getMediaErrorMessage(code) {
+            const messages = {
+                1: 'MEDIA_ERR_ABORTED - 用户取消了视频加载',
+                2: 'MEDIA_ERR_NETWORK - 网络错误导致视频下载失败',
+                3: 'MEDIA_ERR_DECODE - 视频解码错误',
+                4: 'MEDIA_ERR_SRC_NOT_SUPPORTED - 视频格式不支持或源无效'
+            };
+            return messages[code] || `未知错误代码: ${code}`;
+        }
+
+        // 页面加载时自动检测网络环境
+        window.addEventListener('load', function() {
+            console.log('网络问题诊断页面加载完成');
+            setTimeout(detectNetworkEnvironment, 1000);
+        });
+    </script>
+</body>
+</html>

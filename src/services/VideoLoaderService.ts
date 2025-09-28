@@ -9,6 +9,8 @@
  * 5. 带宽优化
  */
 
+import { isHighQualityCDN } from '../config/cdnConfig'
+
 export interface NetworkQuality {
   type: 'slow-2g' | '2g' | '3g' | '4g' | 'unknown'
   downlink: number // Mbps
@@ -300,7 +302,7 @@ class VideoLoaderService {
         applyVideoCorsFix(video, videoUrl)
       }).catch(() => {
         // 如果导入失败，手动设置CORS属性
-        if (videoUrl.includes('cdn.veo3video.me')) {
+        if (isHighQualityCDN(videoUrl)) {
           video.crossOrigin = 'anonymous'
           video.setAttribute('crossorigin', 'anonymous')
         }

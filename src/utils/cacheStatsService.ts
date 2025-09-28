@@ -4,8 +4,8 @@
  */
 
 import { videoCacheService } from '@/services/videoCacheService'
-import { multiLevelCache } from '@/services/MultiLevelCacheService'
-import { idb } from '@/services/idbService'
+import { unifiedCache } from '@/services/UnifiedCacheService'
+import { enhancedIDB } from '@/services/EnhancedIDBService'
 import { cacheHitTracker, type DetailedCacheStats } from './cacheHitTracker'
 
 export interface MultiLayerCacheStats {
@@ -206,34 +206,29 @@ class CacheStatsService {
   }> {
     try {
       // 检查IndexedDB是否可用
-      if (!window.indexedDB || !idb) {
+      if (!window.indexedDB || !enhancedIDB) {
         return { size: 0, items: 0, isAvailable: false }
       }
 
       // 尝试获取IndexedDB统计
-      await idb.initialize()
+      await enhancedIDB.initialize()
       
-      // 获取所有缓存条目
-      const allCacheKeys = await idb.getAllCacheKeys()
+      // 使用新的EnhancedIDB API获取分类统计
+      const categoryStats = await enhancedIDB.getCategoryStats()
       let totalSize = 0
+      let totalItems = 0
       
-      // 批量获取所有缓存项大小
-      for (const key of allCacheKeys) {
-        try {
-          const entry = await idb.getCache(key)
-          if (entry && entry.data) {
-            // 估算数据大小
-            const dataStr = JSON.stringify(entry.data)
-            totalSize += dataStr.length * 2 // UTF-16估算
-          }
-        } catch (error) {
-          // 忽略单个项目的错误
+      // 统计所有分类的大小和项目数
+      Object.values(categoryStats).forEach(stats => {
+        if (stats && typeof stats === 'object' && !stats.error) {
+          totalSize += stats.size || 0
+          totalItems += stats.items || 0
         }
-      }
+      })
 
       return {
         size: totalSize,
-        items: allCacheKeys.length,
+        items: totalItems,
         isAvailable: true
       }
     } catch (error) {
@@ -308,16 +303,16 @@ class CacheStatsService {
       // 从videoCacheService获取统计
       const videoStats = videoCacheService.getCacheStats()
       
-      // 从multiLevelCache获取统计
-      const multiStats = multiLevelCache.getStats()
+      // 从unifiedCache获取统计
+      const unifiedStats = unifiedCache.getGlobalStats()
       
       return {
-        size: parseInt(multiStats.memoryCacheSize.replace(/[^\d.]/g, '')) * 1024 * 1024 || 0, // 转换MB到字节
-        items: videoStats.memorySize + multiStats.memoryCacheCount,
-        hitRate: multiStats.l1HitRate,
+        size: unifiedStats.categories.reduce((sum, cat) => sum + cat.size, 0),
+        items: videoStats.memorySize + unifiedStats.categories.reduce((sum, cat) => sum + cat.count, 0),
+        hitRate: unifiedStats.summary.averageHitRate,
         details: {
           videoCache: videoStats,
-          multiLevelCache: multiStats
+          unifiedCache: unifiedStats
         }
       }
     } catch (error) {
@@ -345,10 +340,10 @@ class CacheStatsService {
     const totalSize = localStorageStats.size + indexedDBStats.size + memoryCacheStats.size
     const totalItems = localStorageStats.items + indexedDBStats.items + memoryCacheStats.items
 
-    // 从多级缓存服务获取命中统计
-    const multiStats = multiLevelCache.getStats()
-    const hitCount = multiStats.l1Hits + multiStats.l2Hits + multiStats.l3Hits
-    const missCount = multiStats.misses
+    // 从统一缓存服务获取命中统计
+    const unifiedStats = unifiedCache.getGlobalStats()
+    const hitCount = unifiedStats.categories.reduce((sum, cat) => sum + cat.hitRate * cat.count, 0)
+    const missCount = unifiedStats.categories.reduce((sum, cat) => sum + cat.count * (1 - cat.hitRate), 0)
 
     const endTime = performance.now()
     console.log(`[CacheStats] 📊 缓存统计完成: ${(endTime - startTime).toFixed(1)}ms`)
@@ -452,15 +447,27 @@ class CacheStatsService {
       }
       keysToRemove.forEach(key => localStorage.removeItem(key))
       
-      // 清理多级缓存
-      for (const prefix of this.CACHE_PREFIXES) {
-        await multiLevelCache.clearByPrefix(prefix)
+      // 清理统一缓存系统
+      await unifiedCache.clearAll()
+      
+      // 清理视频缓存服务
+      if (videoCacheService && typeof videoCacheService.clearAll === 'function') {
+        videoCacheService.clearAll()
       }
       
-      // 重置缓存服务统计
-      multiLevelCache.resetStats()
+      // 清理IndexedDB缓存
+      if (enhancedIDB) {
+        try {
+          await enhancedIDB.clear()
+        } catch (error) {
+          console.warn('[CacheStats] IndexedDB清理失败:', error)
+        }
+      }
       
-      console.log(`[CacheStats] 🧹 已清理${keysToRemove.length}个缓存项`)
+      // 重置缓存命中统计
+      cacheHitTracker.reset()
+      
+      console.log(`[CacheStats] 🧹 已清理${keysToRemove.length}个localStorage项和所有缓存系统`)
     } catch (error) {
       console.error('[CacheStats] 清理缓存失败:', error)
     }

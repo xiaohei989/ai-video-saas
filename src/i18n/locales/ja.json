@@ -388,6 +388,14 @@
     "myVideos": "マイビデオ",
     "loading": "動画を読み込み中...",
     "fetchingData": "動画データを取得中...",
+    "backgroundLoading": {
+      "mobile": "バックグラウンドで読み込み中...",
+      "desktop": "バックグラウンドでタスクステータスとその他のデータを読み込み中...",
+      "description": {
+        "mobile": "ページは利用可能です。バックグラウンドでデータを同期中",
+        "desktop": "基本コンテンツは読み込み済み。バックグラウンドでタスクステータスとその他の動画を取得中"
+      }
+    },
     "downloadingProgress": "動画をダウンロード中 {{progress}}%",
     "downloadingSize": "動画をダウンロード中 {{size}}MB",
     "downloadComplete": "動画ダウンロード完了！",
@@ -529,6 +537,7 @@
     "waitingForProcessing": "処理待ち",
     "untitledVideo": "無題の動画",
     "regenerateTitle": "同じ設定で再生成",
+    "regenerate": "再生成",
     "download": "動画をダウンロード",
     "share": "動画を共有",
     "previousPage": "前へ",

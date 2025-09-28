@@ -382,6 +382,14 @@
     "myVideos": "Mis Videos",
     "loading": "Cargando video...",
     "fetchingData": "Obteniendo datos del video...",
+    "backgroundLoading": {
+      "mobile": "Cargando en segundo plano...",
+      "desktop": "Cargando estado de tareas y más datos en segundo plano...",
+      "description": {
+        "mobile": "Página disponible, sincronizando datos en segundo plano",
+        "desktop": "Contenido básico cargado, obteniendo estado de tareas y más videos en segundo plano"
+      }
+    },
     "downloadingProgress": "Descargando video {{progress}}%",
     "downloadingSize": "Descargando video {{size}}MB",
     "downloadComplete": "¡Descarga de video completada!",
@@ -529,6 +537,7 @@
     "waitingForProcessing": "Esperando procesamiento",
     "untitledVideo": "Video Sin Título",
     "regenerateTitle": "Regenerar con la misma configuración",
+    "regenerate": "Regenerar",
     "download": "Descargar video",
     "share": "Compartir video",
     "previousPage": "Anterior",

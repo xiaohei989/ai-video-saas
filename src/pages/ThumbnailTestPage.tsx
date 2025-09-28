@@ -6,8 +6,8 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Layout } from '@/components/layout/Layout'
-import SimpleVideoPlayer from '@/components/video/SimpleVideoPlayer'
-import { useThumbnailUpload } from '@/hooks/useThumbnailUpload'
+import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
+import supabaseVideoService from '@/services/supabaseVideoService'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -26,7 +26,7 @@ export default function ThumbnailTestPage() {
   const [processingVideos, setProcessingVideos] = useState<Set<string>>(new Set())
   const [uploadResults, setUploadResults] = useState<Record<string, { success: boolean; url?: string; error?: string }>>({})
 
-  const { generateAndUploadThumbnail, isProcessing, getCachedThumbnail } = useThumbnailUpload()
+  // 统一走高质量缩略图生成入口（960x540, q=0.95）
 
   // 加载测试视频数据
   useEffect(() => {
@@ -62,33 +62,30 @@ export default function ThumbnailTestPage() {
     setProcessingVideos(prev => new Set(prev).add(video.id))
 
     try {
-      const result = await generateAndUploadThumbnail({
-        videoId: video.id,
-        videoUrl: video.video_url,
-        frameTime: 0.1,
-        onSuccess: (thumbnailUrl) => {
-          console.log(`缩略图上传成功: ${video.id} -> ${thumbnailUrl}`)
-          setUploadResults(prev => ({
-            ...prev,
-            [video.id]: { success: true, url: thumbnailUrl }
-          }))
-          
-          // 更新视频列表中的缩略图URL
-          setVideos(prev => prev.map(v => 
-            v.id === video.id ? { ...v, thumbnail_url: thumbnailUrl } : v
-          ))
-        },
-        onError: (error) => {
-          console.error(`缩略图生成失败: ${video.id}`, error)
-          setUploadResults(prev => ({
-            ...prev,
-            [video.id]: { success: false, error: error.message }
-          }))
-        }
-      })
+      const success = await supabaseVideoService.autoGenerateThumbnailOnComplete({
+        id: video.id,
+        status: 'completed',
+        video_url: video.video_url,
+        thumbnail_url: null
+      } as any)
 
-      if (result) {
-        console.log(`缩略图生成完成: ${video.id} -> ${result}`)
+      if (success) {
+        // 刷新视频记录获取新缩略图
+        const refreshed = await supabase
+          .from('videos')
+          .select('id, title, video_url, thumbnail_url')
+          .eq('id', video.id)
+          .single()
+        if (!refreshed.error && refreshed.data?.thumbnail_url) {
+          setUploadResults(prev => ({ ...prev, [video.id]: { success: true, url: refreshed.data.thumbnail_url } }))
+          setVideos(prev => prev.map(v => v.id === video.id ? { ...v, thumbnail_url: refreshed.data.thumbnail_url } : v))
+        } else {
+          setUploadResults(prev => ({ ...prev, [video.id]: { success: true } }))
+        }
+        console.log(`高质量缩略图生成完成: ${video.id}`)
+      } else {
+        setUploadResults(prev => ({ ...prev, [video.id]: { success: false, error: '生成失败' } }))
+        console.error(`高质量缩略图生成失败: ${video.id}`)
       }
     } catch (error) {
       console.error(`缩略图生成异常: ${video.id}`, error)
@@ -110,22 +107,21 @@ export default function ThumbnailTestPage() {
     const videosWithoutThumbnails = videos.filter(v => !v.thumbnail_url)
     
     for (const video of videosWithoutThumbnails) {
-      if (!processingVideos.has(video.id) && !isProcessing(video.id)) {
+      if (!processingVideos.has(video.id)) {
         await handleGenerateThumbnail(video)
       }
     }
   }
 
   const getVideoStatus = (video: TestVideo) => {
-    const cached = getCachedThumbnail(video.id)
     const uploadResult = uploadResults[video.id]
-    const isCurrentlyProcessing = processingVideos.has(video.id) || isProcessing(video.id)
+    const isCurrentlyProcessing = processingVideos.has(video.id)
 
     if (isCurrentlyProcessing) {
       return { type: 'processing', label: '生成中...', icon: Loader2 }
     }
     
-    if (uploadResult?.success || cached) {
+    if (uploadResult?.success) {
       return { type: 'success', label: '已生成', icon: CheckCircle }
     }
     
@@ -262,7 +258,7 @@ export default function ThumbnailTestPage() {
                 <CardContent className="space-y-3">
                   {/* 视频播放器 */}
                   <div className="aspect-video bg-muted rounded-lg overflow-hidden">
-                    <SimpleVideoPlayer
+                    <ReactVideoPlayer
                       src={video.video_url}
                       poster={video.thumbnail_url || undefined}
                       className="w-full h-full"

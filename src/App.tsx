@@ -74,6 +74,8 @@ import AdminRoute from './components/admin/AdminRoute'
 import AdminApp from './components/admin/AdminApp'
 import ThumbnailGeneratorPage from './pages/ThumbnailGeneratorPage'
 import ThumbnailTestPage from './pages/ThumbnailTestPage'
+import ForceThumbnailPage from './pages/admin/ForceThumbnailPage'
+import BatchBlurThumbnailsPage from './pages/admin/BatchBlurThumbnailsPage'
 
 // Translation pages
 import TemplateTranslationPage from './features/translation/TemplateTranslationPage'
@@ -81,6 +83,8 @@ import TemplateTranslationPage from './features/translation/TemplateTranslationP
 // Device test page
 import DeviceTestPage from './pages/DeviceTestPage'
 import VideoPlayerTestPage from './pages/VideoPlayerTestPage'
+import VideoPlayerLoadingTestPage from './pages/VideoPlayerLoadingTestPage'
+import VideoPlayerControlsTestPage from './pages/VideoPlayerControlsTestPage'
 
 // Cache management page
 import CacheManagementPage from './pages/CacheManagementPage'
@@ -185,12 +189,15 @@ function App() {
               <Route path="/test/analytics" element={<Layout><TestAnalytics /></Layout>} />
               <Route path="/test/device" element={<Layout><DeviceTestPage /></Layout>} />
               <Route path="/test/video-player" element={<Layout><VideoPlayerTestPage /></Layout>} />
+              <Route path="/test/video-loading" element={<Layout><VideoPlayerLoadingTestPage /></Layout>} />
+              <Route path="/video-player-test" element={<Layout><VideoPlayerControlsTestPage /></Layout>} />
               
               {/* Cache management page (development only) */}
               <Route path="/cache-management" element={<Layout><CacheManagementPage /></Layout>} />
               
-              {/* Admin tools */}
-              <Route path="/admin/thumbnails" element={<ThumbnailGeneratorPage />} />
+              {/* 兼容：不要在这里接管 thumbnails，交给 React-Admin 内部路由处理 */}
+
+              {/* Tools */}
               <Route path="/test/thumbnails" element={<Layout><ThumbnailTestPage /></Layout>} />
               
               {/* Translation tool (temporarily unprotected for testing) */}
@@ -204,6 +211,9 @@ function App() {
                 <Route path="/profile/edit" element={<Layout><ProfileEditPage /></Layout>} />
                 <Route path="/profile/templates" element={<Layout><MyTemplatesPage /></Layout>} />
                 <Route path="/profile/settings" element={<Layout><AccountSettingsPage /></Layout>} />
+                {/* 仅登录用户可用的管理工具（保护路由） */}
+                <Route path="/admin/force-thumbnail" element={<Layout><ForceThumbnailPage /></Layout>} />
+                <Route path="/admin/batch-blur-thumbnails" element={<Layout><BatchBlurThumbnailsPage /></Layout>} />
               </Route>
               
               {/* Admin routes - Let React-Admin handle all admin routing */}

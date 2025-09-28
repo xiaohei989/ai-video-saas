@@ -15,6 +15,7 @@ interface ThumbnailUploadRequest {
   expiresIn?: number
   base64Data?: string
   directUpload?: boolean
+  version?: string
 }
 
 serve(async (req) => {
@@ -40,7 +41,8 @@ serve(async (req) => {
       fileSize = 0,
       expiresIn = 3600,
       base64Data,
-      directUpload = false
+      directUpload = false,
+      version = 'v1'
     }: ThumbnailUploadRequest = await req.json()
 
     if (!videoId) {
@@ -81,7 +83,10 @@ serve(async (req) => {
     }
 
     const extension = getFileExtension(contentType)
-    const key = `thumbnails/${videoId}.${extension}`
+    // 🔥 使用版本化文件名避免CDN缓存冲突
+    const key = version && version !== 'v1' 
+      ? `thumbnails/${videoId}-${version}.${extension}`
+      : `thumbnails/${videoId}.${extension}`
 
     // 生成最终的公开访问URL
     const publicDomain = Deno.env.get('VITE_CLOUDFLARE_R2_PUBLIC_DOMAIN')

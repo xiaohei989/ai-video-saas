@@ -7,7 +7,7 @@ import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useResponsiveDevice } from '@/utils/deviceDetection'
-import SimpleVideoPlayer from '@/components/video/SimpleVideoPlayer'
+import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
 
 export default function VideoPlayerTestPage() {
   const { isMobile, deviceType, width } = useResponsiveDevice()
@@ -130,7 +130,7 @@ export default function VideoPlayerTestPage() {
             </CardHeader>
             <CardContent className="p-0">
               <div className="aspect-video bg-muted relative">
-                <SimpleVideoPlayer
+                <ReactVideoPlayer
                   src={video.src}
                   poster={video.poster}
                   className="w-full h-full"

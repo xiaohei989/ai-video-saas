@@ -13,7 +13,7 @@
  * - 详细性能监控
  */
 
-import { idb } from '@/services/idbService'
+import { enhancedIDB } from '@/services/EnhancedIDBService'
 
 // 移动端检测
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
@@ -139,7 +139,7 @@ class UnifiedCacheService {
     
     this.idbInitPromise = (async () => {
       try {
-        await idb.initialize()
+        await enhancedIDB.initialize()
         this.idbReady = true
         console.log('[UnifiedCache] ✅ IndexedDB初始化成功')
         
@@ -174,7 +174,7 @@ class UnifiedCacheService {
     // L2: IndexedDB检查
     if (this.idbReady) {
       try {
-        const idbData = await idb.getCache(key)
+        const idbData = await enhancedIDB.get(key)
         if (idbData && !this.isExpired(idbData)) {
           console.log(`[UnifiedCache] ✅ L2 IndexedDB命中 [${category}]`)
           
@@ -226,7 +226,7 @@ class UnifiedCacheService {
       // L2: 设置IndexedDB缓存
       if (this.idbReady && memorySuccess) {
         try {
-          await idb.setCache(key, processedData, ttl)
+          await enhancedIDB.set(key, processedData, { ttl })
           console.log(`[UnifiedCache] ✅ L2 IndexedDB写入成功 [${category}]`)
         } catch (error) {
           console.error(`[UnifiedCache] ❌ L2写入失败 [${category}]:`, error)
@@ -236,6 +236,36 @@ class UnifiedCacheService {
       return memorySuccess
     } catch (error) {
       console.error(`[UnifiedCache] ❌ 设置缓存失败 [${category}]:`, error)
+      return false
+    }
+  }
+
+  /**
+   * 删除缓存数据
+   */
+  async delete(key: string, options: { category?: string } = {}): Promise<boolean> {
+    const category = options.category || this.getCategoryFromKey(key)
+
+    console.log(`[UnifiedCache] 🗑️ 删除缓存 [${category}]:`, key.substring(0, 50) + '...')
+
+    try {
+      // L1: 从内存中删除
+      this.removeFromMemory(key, category)
+
+      // L2: 从IndexedDB中删除
+      if (this.idbReady) {
+        try {
+          await enhancedIDB.delete(key)
+          console.log(`[UnifiedCache] ✅ L2 IndexedDB删除成功 [${category}]`)
+        } catch (error) {
+          console.error(`[UnifiedCache] ❌ L2删除失败 [${category}]:`, error)
+        }
+      }
+
+      console.log(`[UnifiedCache] ✅ 缓存删除完成 [${category}]`)
+      return true
+    } catch (error) {
+      console.error(`[UnifiedCache] ❌ 删除缓存失败 [${category}]:`, error)
       return false
     }
   }
@@ -651,7 +681,7 @@ class UnifiedCacheService {
     
     // 清理IndexedDB
     if (this.idbReady) {
-      await idb.clearAll()
+      await enhancedIDB.clear()
     }
     
     console.log('[UnifiedCache] 🧹 所有缓存已清理')
