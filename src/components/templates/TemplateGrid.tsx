@@ -3,7 +3,7 @@
  * 模板网格显示组件 - 负责渲染模板卡片列表
  */
 
-import { memo, useState, useEffect, useRef } from 'react'
+import { memo, useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
@@ -149,7 +149,7 @@ export default function TemplateGrid({
 }
 
 // 优化的模版卡片组件
-const TemplateCard = memo(({ 
+const TemplateCard = memo(({
   template,
   onUseTemplate
 }: {
@@ -159,7 +159,12 @@ const TemplateCard = memo(({
   const { t } = useTranslation()
   const { trackTemplateView, trackEvent } = useAnalytics()
   const navigate = useNavigate()
-  
+
+  // 🚀 管理实际视频URL（可能是缓存URL）
+  const [actualVideoUrl, setActualVideoUrl] = useState(
+    template.previewUrl ? transformCDNUrl(template.previewUrl) : ''
+  )
+
   // 简单的移动设备检测
   const [isMobile, setIsMobile] = useState(false)
   
@@ -179,22 +184,29 @@ const TemplateCard = memo(({
   const handleVideoError = (error: any) => {
   }
   
-  // 鼠标悬停预加载（保留缓存优化）
-  const handleMouseEnter = () => {
-    // 🚀 鼠标悬停时触发预加载
+  // 🚀 鼠标悬停预加载 - 获取并使用缓存URL
+  const handleMouseEnter = useCallback(async () => {
     if (template.previewUrl) {
-      simpleTemplatePreload.preloadOnHover(template.id, transformCDNUrl(template.previewUrl))
+      console.log(`[TemplateGrid] 🎯 悬浮触发模板缓存: ${template.id}`)
+      const urlToUse = await simpleTemplatePreload.preloadOnHover(
+        template.id,
+        transformCDNUrl(template.previewUrl)
+      )
+      setActualVideoUrl(urlToUse)
     }
-  }
+  }, [template.id, template.previewUrl])
 
-  // 移动端触摸缓存
-  const handleTouchStart = () => {
-    // 📱 移动端首次触摸时触发缓存
+  // 🚀 移动端触摸缓存 - 获取并使用缓存URL
+  const handleTouchStart = useCallback(async () => {
     if (template.previewUrl) {
       console.log(`[TemplateGrid] 📱 移动端触摸触发模板缓存: ${template.id}`)
-      simpleTemplatePreload.preloadOnHover(template.id, transformCDNUrl(template.previewUrl))
+      const urlToUse = await simpleTemplatePreload.preloadOnHover(
+        template.id,
+        transformCDNUrl(template.previewUrl)
+      )
+      setActualVideoUrl(urlToUse)
     }
-  }
+  }, [template.id, template.previewUrl])
 
   const handleUseTemplate = () => {
     // 跟踪模板使用事件
@@ -236,9 +248,9 @@ const TemplateCard = memo(({
       >
         {template.previewUrl ? (
           <div className="relative w-full h-full">
-            {/* 使用 ReactVideoPlayer 的内置缓存 poster，优先使用模糊占位 + 高清 */}
+            {/* 🚀 使用actualVideoUrl，可能是缓存URL */}
             <ReactVideoPlayer
-              videoUrl={template.previewUrl ? transformCDNUrl(template.previewUrl) : ''}
+              videoUrl={actualVideoUrl}
               thumbnailUrl={template.thumbnailUrl ? transformCDNUrl(template.thumbnailUrl) : ''}
               lowResPosterUrl={template.blurThumbnailUrl ? transformCDNUrl(template.blurThumbnailUrl) : ''}
               videoId={template.id}

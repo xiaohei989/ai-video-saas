@@ -30,16 +30,19 @@ interface UseVideoCacheReturn {
   // 状态
   videoDebugInfo: Map<string, boolean>
   thumbnailDebugInfo: Map<string, ThumbnailDebugInfo>
+  videoDebugInfoData: Map<string, ThumbnailDebugInfo> // 视频文件缓存调试信息
   thumbnailGeneratingVideos: Set<string>
   videoCacheStatus: VideoCacheStatus
 
   // 操作
   setVideoDebugInfo: React.Dispatch<React.SetStateAction<Map<string, boolean>>>
   setThumbnailDebugInfo: React.Dispatch<React.SetStateAction<Map<string, ThumbnailDebugInfo>>>
+  setVideoDebugInfoData: React.Dispatch<React.SetStateAction<Map<string, ThumbnailDebugInfo>>>
   setThumbnailGeneratingVideos: React.Dispatch<React.SetStateAction<Set<string>>>
 
   // 缓存操作函数
   checkThumbnailCache: (video: Video) => Promise<void>
+  checkVideoCache: (video: Video) => Promise<void>
   queryIndexedDBCache: (videoId: string) => Promise<IndexedDBCacheInfo[]>
   toggleDebugInfo: (videoId: string) => Promise<void>
   clearVideoCache: (videoId: string) => Promise<void>
@@ -71,6 +74,7 @@ export function useVideoCache(
   // 状态管理
   const [videoDebugInfo, setVideoDebugInfo] = useState<Map<string, boolean>>(new Map())
   const [thumbnailDebugInfo, setThumbnailDebugInfo] = useState<Map<string, ThumbnailDebugInfo>>(new Map())
+  const [videoDebugInfoData, setVideoDebugInfoData] = useState<Map<string, ThumbnailDebugInfo>>(new Map())
   const [thumbnailGeneratingVideos, setThumbnailGeneratingVideos] = useState<Set<string>>(new Set())
 
   // 新增：视频文件缓存状态
@@ -284,24 +288,51 @@ export function useVideoCache(
               })
             }
           } else if (category === 'video') {
-            // 查找视频缓存
-            const videoKey = `video_${videoId}`
+            // 查找视频缓存 - 检查完整视频文件
+            const videoKey = `video_full_${videoId}`
             const cacheData = await enhancedIDB.get(videoKey)
 
             if (cacheData) {
+              const sizeBytes = cacheData.data instanceof Blob ? cacheData.data.size : (cacheData.size || 0)
               matchingEntries.push({
                 key: videoKey,
                 size: {
-                  bytes: cacheData.size || 0,
-                  kb: ((cacheData.size || 0) / 1024).toFixed(2) + 'KB',
-                  mb: ((cacheData.size || 0) / (1024 * 1024)).toFixed(2) + 'MB'
+                  bytes: sizeBytes,
+                  kb: (sizeBytes / 1024).toFixed(2) + 'KB',
+                  mb: (sizeBytes / (1024 * 1024)).toFixed(2) + 'MB'
                 },
                 category: 'video',
                 timestamp: new Date(cacheData.timestamp || Date.now()).toLocaleString(),
                 expiry: cacheData.ttl ? new Date(cacheData.timestamp + cacheData.ttl).toLocaleString() : undefined,
+                dataType: cacheData.data instanceof Blob ? 'Video File (Blob)' : 'Video Metadata',
+                dataLength: cacheData.data instanceof Blob ? cacheData.data.size : JSON.stringify(cacheData.data).length,
+                dataPreview: cacheData.data instanceof Blob ?
+                  `Blob (${cacheData.data.type || 'video/*'})` :
+                  JSON.stringify(cacheData.data).substring(0, 50) + '...'
+              })
+            }
+
+            // 也检查视频元数据
+            const metadataKey = `video_meta_${videoId}`
+            const metadataCache = await enhancedIDB.get(metadataKey)
+
+            if (metadataCache) {
+              const metadata = metadataCache.data
+              // 元数据的实际大小应该是JSON字符串的大小，不是视频文件的大小
+              const metadataJsonSize = JSON.stringify(metadata).length
+              matchingEntries.push({
+                key: metadataKey,
+                size: {
+                  bytes: metadataJsonSize,
+                  kb: (metadataJsonSize / 1024).toFixed(2) + 'KB',
+                  mb: (metadataJsonSize / (1024 * 1024)).toFixed(4) + 'MB'
+                },
+                category: 'video',
+                timestamp: new Date(metadata.timestamp || Date.now()).toLocaleString(),
+                expiry: metadataCache.ttl ? new Date(metadataCache.timestamp + metadataCache.ttl).toLocaleString() : undefined,
                 dataType: 'Video Metadata',
-                dataLength: JSON.stringify(cacheData.data).length,
-                dataPreview: JSON.stringify(cacheData.data).substring(0, 50) + '...'
+                dataLength: metadataJsonSize,
+                dataPreview: JSON.stringify(metadata).substring(0, 50) + '...'
               })
             }
           }
@@ -445,6 +476,137 @@ export function useVideoCache(
   }, [queryIndexedDBCache])
 
   /**
+   * 检查视频文件缓存状态
+   */
+  const checkVideoCache = useCallback(async (video: Video) => {
+    const videoId = video.id
+
+    try {
+      // 设置加载状态
+      setVideoDebugInfoData(prev => {
+        const newMap = new Map(prev)
+        newMap.set(videoId, {
+          hasCachedThumbnail: false,
+          isLoading: true
+        })
+        return newMap
+      })
+
+      let hasCachedVideo = false
+      let cacheSize = '0KB'
+      let cacheType: 'base64' | 'url' | 'r2' | 'external' = 'external'
+      let videoUrl = ''
+      let remoteUrl = ''
+      let cacheLocation = ''
+      let remoteFileSize = ''
+      let cacheKey = ''
+
+      // 检查各种可能的视频URL
+      const possibleUrls = [
+        video.video_url,
+        video.r2_video_url,
+        video.backup_video_url
+      ].filter(Boolean)
+
+      for (const url of possibleUrls) {
+        if (url) {
+          try {
+            // 检查智能预加载服务中的缓存
+            const isCached = await smartPreloadService.isVideoCached(videoId)
+
+            if (isCached) {
+              hasCachedVideo = true
+              const localUrl = await smartPreloadService.getLocalVideoUrl(videoId)
+              videoUrl = localUrl || url
+              remoteUrl = url
+              // 使用 SimpleVideoCacheService 的实际缓存键格式
+              cacheKey = `video_full_${videoId}`
+              cacheType = 'url'
+              cacheLocation = '本地IndexedDB缓存 (video)'
+
+              // 尝试获取缓存大小
+              try {
+                const videoData = await enhancedIDB.get(cacheKey)
+                if (videoData && videoData.data instanceof Blob) {
+                  const sizeBytes = videoData.data.size
+                  cacheSize = `${(sizeBytes / (1024 * 1024)).toFixed(2)}MB`
+                  cacheLocation = `${cacheLocation} + Cached (${cacheSize})`
+                } else {
+                  // 尝试从元数据获取大小
+                  const metadataKey = `video_meta_${videoId}`
+                  const metadata = await enhancedIDB.get(metadataKey)
+                  if (metadata && metadata.data && metadata.data.size) {
+                    const sizeBytes = metadata.data.size
+                    cacheSize = `${(sizeBytes / (1024 * 1024)).toFixed(2)}MB`
+                    cacheLocation = `${cacheLocation} + Cached (${cacheSize})`
+                  }
+                }
+              } catch (error) {
+                // 如果无法获取准确大小，使用默认值
+                cacheSize = '已缓存'
+              }
+
+              break
+            }
+          } catch (error) {
+            // 继续尝试下一个URL
+          }
+        }
+      }
+
+      // 如果没有找到缓存，尝试获取远程文件大小
+      if (!hasCachedVideo && possibleUrls.length > 0) {
+        const firstUrl = possibleUrls[0]
+        try {
+          const response = await fetch(firstUrl, { method: 'HEAD' })
+          const contentLength = response.headers.get('content-length')
+          if (contentLength) {
+            const sizeBytes = parseInt(contentLength)
+            remoteFileSize = `${(sizeBytes / (1024 * 1024)).toFixed(2)}MB`
+          }
+          remoteUrl = firstUrl
+          videoUrl = firstUrl
+        } catch (error) {
+          // 获取远程文件大小失败
+        }
+      }
+
+      // 查询IndexedDB中的视频缓存信息
+      const indexedDBCacheInfo = await queryIndexedDBCache(videoId)
+      const videoCacheEntries = indexedDBCacheInfo.filter(entry => entry.category === 'video')
+
+      setVideoDebugInfoData(prev => {
+        const newMap = new Map(prev)
+        newMap.set(videoId, {
+          hasCachedThumbnail: hasCachedVideo, // 复用字段名，实际存储的是视频缓存状态
+          cacheSize: hasCachedVideo ? cacheSize : remoteFileSize || '未知',
+          cacheType,
+          thumbnailUrl: videoUrl, // 复用字段名，实际存储的是视频URL
+          remoteUrl,
+          cacheLocation: hasCachedVideo ? cacheLocation : '远程服务器',
+          isBlurImage: false, // 视频不需要模糊状态
+          isLoading: false,
+          remoteFileSize,
+          cacheKey,
+          blurImageUrl: null, // 视频不需要模糊图
+          indexedDBCacheInfo: videoCacheEntries
+        })
+        return newMap
+      })
+
+    } catch (error) {
+      setVideoDebugInfoData(prev => {
+        const newMap = new Map(prev)
+        newMap.set(videoId, {
+          hasCachedThumbnail: false,
+          isLoading: false
+        })
+        return newMap
+      })
+    }
+  }, [queryIndexedDBCache])
+
+  /**
    * 切换调试信息显示状态
    */
   const toggleDebugInfo = useCallback(async (videoId: string) => {
@@ -495,16 +657,19 @@ export function useVideoCache(
     // 状态
     videoDebugInfo,
     thumbnailDebugInfo,
+    videoDebugInfoData,
     thumbnailGeneratingVideos,
     videoCacheStatus,
 
     // 操作
     setVideoDebugInfo,
     setThumbnailDebugInfo,
+    setVideoDebugInfoData,
     setThumbnailGeneratingVideos,
 
     // 缓存操作函数
     checkThumbnailCache,
+    checkVideoCache,
     queryIndexedDBCache,
     toggleDebugInfo,
     clearVideoCache,

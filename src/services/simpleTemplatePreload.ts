@@ -67,21 +67,35 @@ class SimpleTemplatePreloadService {
 
   /**
    * 🎯 鼠标悬停时预加载
+   * @returns 返回应该使用的视频URL（可能是缓存URL）
    */
-  preloadOnHover(templateId: string, videoUrl: string): void {
+  async preloadOnHover(templateId: string, videoUrl: string): Promise<string> {
     // 检查元数据预加载
     if (!this.preloadedVideos.has(videoUrl)) {
       console.log('[SimplePreload] 🎯 悬停预加载:', templateId)
       this.preloadVideo(templateId, videoUrl, 0) // 高优先级
     }
 
-    // 检查完整视频缓存（防止重复缓存）
-    if (!this.cachedVideos.has(videoUrl)) {
+    // 检查真实的视频缓存状态
+    const { smartPreloadService } = await import('./SmartVideoPreloadService')
+    const isActuallyCached = await smartPreloadService.isVideoCached(templateId)
+
+    if (!isActuallyCached) {
       console.log('[SimplePreload] 🚀 开始完整视频缓存:', templateId)
-      this.cachedVideos.add(videoUrl) // 立即标记为正在缓存，防止重复
+      this.cachedVideos.add(videoUrl) // 标记为正在缓存，防止重复
       this.cacheVideoOnHover(templateId, videoUrl)
+      return videoUrl // 返回原始URL
     } else {
-      console.log('[SimplePreload] ⚡ 视频已缓存，跳过:', templateId)
+      console.log('[SimplePreload] ⚡ 视频已缓存，获取本地URL:', templateId)
+      this.cachedVideos.add(videoUrl) // 同步内存状态
+
+      // 获取本地缓存URL
+      const localUrl = await smartPreloadService.getLocalVideoUrl(templateId)
+      if (localUrl) {
+        console.log('[SimplePreload] 🚀 返回缓存URL，无需网络下载!')
+        return localUrl // 返回缓存URL
+      }
+      return videoUrl // 降级到原始URL
     }
   }
 

@@ -98,10 +98,14 @@ export default function VideosPageNew() {
 
     // 如果是首次显示调试信息，检查缓存
     const isShowing = !videoCache.videoDebugInfo.get(videoId)
-    if (isShowing && !videoCache.thumbnailDebugInfo.has(videoId)) {
+    if (isShowing) {
       const video = videosData.videos.find(v => v.id === videoId)
       if (video) {
-        await videoCache.checkThumbnailCache(video)
+        // 并行检查缩略图和视频缓存
+        await Promise.all([
+          !videoCache.thumbnailDebugInfo.has(videoId) ? videoCache.checkThumbnailCache(video) : Promise.resolve(),
+          !videoCache.videoDebugInfoData.has(videoId) ? videoCache.checkVideoCache(video) : Promise.resolve()
+        ])
       }
     }
   }, [videoCache, videosData.videos])
@@ -127,6 +131,7 @@ export default function VideosPageNew() {
           // 调试信息
           videoDebugInfo={videoCache.videoDebugInfo}
           thumbnailDebugInfo={videoCache.thumbnailDebugInfo}
+          videoDebugInfoData={videoCache.videoDebugInfoData}
           thumbnailGeneratingVideos={videoCache.thumbnailGeneratingVideos}
 
           // 订阅状态

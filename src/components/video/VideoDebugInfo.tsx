@@ -384,13 +384,24 @@ function CacheItemInfo({ cache }: CacheItemInfoProps) {
     }
   }
 
+  // 智能大小显示函数
+  const getSmartSize = (sizeInfo: { bytes: number, kb: string, mb: string }) => {
+    if (sizeInfo.bytes < 1024) {
+      return `${sizeInfo.bytes}B`
+    } else if (sizeInfo.bytes < 1024 * 1024) {
+      return sizeInfo.kb
+    } else {
+      return sizeInfo.mb
+    }
+  }
+
   return (
     <div className="space-y-0.5 p-1.5 bg-white dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700">
       {/* 基本信息网格 */}
       <div className="grid grid-cols-2 gap-0.5 text-xs">
         <div className="flex flex-col">
           <span className="text-gray-500 dark:text-gray-400 text-xs">大小:</span>
-          <span className="text-blue-600 text-xs">{cache.size.mb}</span>
+          <span className="text-blue-600 text-xs">{getSmartSize(cache.size)}</span>
         </div>
 
         <div className="flex flex-col">

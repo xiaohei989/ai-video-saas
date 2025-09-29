@@ -48,6 +48,8 @@ interface ReactVideoPlayerProps {
 
 
 export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
+  // 缓存检查逻辑已移至VideoCard层面，ReactVideoPlayer只负责播放
+
   // 处理属性别名，支持SimpleVideoPlayer的API
   const {
     // 主要属性
@@ -464,9 +466,18 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
 
         // 检查是否已缓存
         console.log(`[VideoCache Debug] 调用 isVideoCached...`)
+        console.log(`[VideoCache Debug] 使用的ID进行缓存检查: ${currentVideoId}`)
+        console.log(`[VideoCache Debug] 原始videoId: ${videoId}`)
         const isCached = await smartPreloadService.isVideoCached(currentVideoId)
         console.log(`[VideoCache Debug] 缓存检查结果: ${isCached}`)
         setIsVideoCached(isCached)
+
+        // 如果没有缓存，额外检查是否使用了错误的ID
+        if (!isCached && videoId && videoId !== currentVideoId) {
+          console.log(`[VideoCache Debug] 🔍 ID不匹配，用原始videoId再次检查: ${videoId}`)
+          const isCachedWithOriginalId = await smartPreloadService.isVideoCached(videoId)
+          console.log(`[VideoCache Debug] 原始videoId缓存检查结果: ${isCachedWithOriginalId}`)
+        }
 
         if (isCached) {
           addCacheLog(`✅ 视频已缓存，获取本地URL`)

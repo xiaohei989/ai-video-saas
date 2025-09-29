@@ -29,6 +29,7 @@ interface VideoGridProps {
   // 调试信息
   videoDebugInfo: Map<string, boolean>
   thumbnailDebugInfo: Map<string, ThumbnailDebugInfo>
+  videoDebugInfoData?: Map<string, ThumbnailDebugInfo> // 视频缓存调试信息
   thumbnailGeneratingVideos: Set<string>
 
   // 订阅状态
@@ -62,6 +63,7 @@ export function VideoGrid({
   currentTime,
   videoDebugInfo,
   thumbnailDebugInfo,
+  videoDebugInfoData,
   thumbnailGeneratingVideos,
   isPaidUser,
   subscriptionLoading,
@@ -140,7 +142,8 @@ export function VideoGrid({
           {currentPageVideos.map((video) => {
             const activeTask = activeTasks.get(video.id)
             const progress = videoProgress.get(video.id)
-            const debugInfo = thumbnailDebugInfo.get(video.id)
+            const thumbnailDebugInfoData = thumbnailDebugInfo.get(video.id)
+            const videoDebugInfoForVideo = videoDebugInfoData?.get(video.id)
             const showDebugInfo = videoDebugInfo.get(video.id) || false
             const isGeneratingThumbnail = thumbnailGeneratingVideos.has(video.id)
 
@@ -151,7 +154,8 @@ export function VideoGrid({
                 activeTask={activeTask}
                 videoProgress={progress}
                 currentTime={currentTime}
-                debugInfo={debugInfo}
+                thumbnailDebugInfo={thumbnailDebugInfoData}
+                videoDebugInfo={videoDebugInfoForVideo}
                 showDebugInfo={showDebugInfo}
                 isGeneratingThumbnail={isGeneratingThumbnail}
                 isPaidUser={isPaidUser}

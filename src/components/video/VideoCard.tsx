@@ -38,7 +38,8 @@ interface VideoCardProps {
   videoProgress?: VideoProgress
   currentTime: number
   // 调试信息
-  debugInfo?: ThumbnailDebugInfo
+  thumbnailDebugInfo?: ThumbnailDebugInfo
+  videoDebugInfo?: ThumbnailDebugInfo
   showDebugInfo: boolean
   // 缩略图生成
   isGeneratingThumbnail: boolean
@@ -61,7 +62,8 @@ export function VideoCard({
   activeTask,
   videoProgress,
   currentTime,
-  debugInfo,
+  thumbnailDebugInfo,
+  videoDebugInfo,
   showDebugInfo,
   isGeneratingThumbnail,
   isPaidUser,
@@ -141,21 +143,26 @@ export function VideoCard({
     setShowVideoPlayer(false)
   }, [])
 
+  // 缓存URL状态
+  const [actualVideoUrl, setActualVideoUrl] = useState(video.video_url)
+
   // 鼠标悬停预加载（类似模板页面的实现）
-  const handleMouseEnter = useCallback(() => {
-    // 🚀 鼠标悬停时触发预加载
+  const handleMouseEnter = useCallback(async () => {
+    // 🚀 鼠标悬停时触发预加载，获取正确的URL
     if (video.video_url) {
       console.log(`[VideoCard] 🎯 悬浮触发视频缓存: ${video.id}`)
-      simpleTemplatePreload.preloadOnHover(video.id, video.video_url)
+      const urlToUse = await simpleTemplatePreload.preloadOnHover(video.id, video.video_url)
+      setActualVideoUrl(urlToUse) // 使用返回的URL（可能是缓存URL）
     }
   }, [video.id, video.video_url])
 
   // 移动端触摸/点击缓存（为移动端提供缓存机会）
-  const handleTouchStart = useCallback(() => {
+  const handleTouchStart = useCallback(async () => {
     // 📱 移动端首次触摸时触发缓存
     if (video.video_url) {
       console.log(`[VideoCard] 📱 移动端触摸触发视频缓存: ${video.id}`)
-      simpleTemplatePreload.preloadOnHover(video.id, video.video_url)
+      const urlToUse = await simpleTemplatePreload.preloadOnHover(video.id, video.video_url)
+      setActualVideoUrl(urlToUse) // 使用返回的URL（可能是缓存URL）
     }
   }, [video.id, video.video_url])
 
@@ -205,7 +212,7 @@ export function VideoCard({
           {/* 视频播放器（仅在视频完成状态显示，支持悬浮播放） */}
           {video.status === 'completed' && video.video_url ? (
             <ReactVideoPlayer
-              videoUrl={video.video_url}
+              videoUrl={actualVideoUrl}
               thumbnailUrl={video.thumbnail_url || video.blur_thumbnail_url || ''}
               lowResPosterUrl={video.blur_thumbnail_url}
               videoId={video.id}
@@ -446,8 +453,8 @@ export function VideoCard({
         {/* 调试信息展示 */}
         <VideoDebugInfo
           videoId={video.id}
-          thumbnailDebugInfo={debugInfo}
-          videoDebugInfo={undefined} // TODO: 需要添加视频缓存调试信息
+          thumbnailDebugInfo={thumbnailDebugInfo}
+          videoDebugInfo={videoDebugInfo}
           isVisible={showDebugInfo}
           onToggle={onToggleDebugInfo}
           onCacheCleared={() => onCheckCache(video)}
