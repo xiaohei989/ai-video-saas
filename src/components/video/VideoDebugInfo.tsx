@@ -1,6 +1,6 @@
 /**
  * 视频调试信息组件
- * 显示缩略图缓存信息和IndexedDB缓存详情
+ * 分别显示缩略图和视频文件的缓存信息和IndexedDB缓存详情
  */
 
 import React, { useState } from 'react'
@@ -12,14 +12,15 @@ import type { ThumbnailDebugInfo } from '@/types/video.types'
 
 interface VideoDebugInfoProps {
   videoId: string
-  debugInfo?: ThumbnailDebugInfo
+  thumbnailDebugInfo?: ThumbnailDebugInfo
+  videoDebugInfo?: ThumbnailDebugInfo // 复用同一个类型，因为结构相似
   isVisible: boolean
   onToggle: (videoId: string) => void
   onCacheCleared?: (videoId: string) => void
   onThumbnailRepaired?: (videoId: string) => void
 }
 
-export function VideoDebugInfo({ videoId, debugInfo, isVisible, onToggle, onCacheCleared, onThumbnailRepaired }: VideoDebugInfoProps) {
+export function VideoDebugInfo({ videoId, thumbnailDebugInfo, videoDebugInfo, isVisible, onToggle, onCacheCleared, onThumbnailRepaired }: VideoDebugInfoProps) {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({})
   const [isDeleting, setIsDeleting] = useState(false)
   const [isRepairing, setIsRepairing] = useState(false)
@@ -41,7 +42,7 @@ export function VideoDebugInfo({ videoId, debugInfo, isVisible, onToggle, onCach
     }
   }
 
-  const handleClearCache = async () => {
+  const handleClearCache = async (debugInfo: ThumbnailDebugInfo, cacheType: 'thumbnail' | 'video') => {
     if (!debugInfo?.remoteUrl) {
       toast.error('无法清除缓存：缺少远程URL')
       return
@@ -50,7 +51,7 @@ export function VideoDebugInfo({ videoId, debugInfo, isVisible, onToggle, onCach
     setIsDeleting(true)
     try {
       await clearSingleImageCache(debugInfo.remoteUrl)
-      toast.success('缓存已清除成功')
+      toast.success(`${cacheType === 'thumbnail' ? '缩略图' : '视频'}缓存已清除成功`)
       onCacheCleared?.(videoId)
     } catch (error) {
       console.error('清除缓存失败:', error)
@@ -64,9 +65,9 @@ export function VideoDebugInfo({ videoId, debugInfo, isVisible, onToggle, onCach
     setIsRepairing(true)
 
     try {
-      toast.loading('正在修复缩略图...', { id: 'repair-thumbnail' })
+      toast.loading('正在修复缩略图缓存...', { id: 'repair-thumbnail' })
 
-      // 修复缩略图
+      // 修复缩略图缓存
       const result = await repairThumbnail(videoId, {
         frameTime: 1.5,
         forceRegenerate: true
@@ -76,9 +77,9 @@ export function VideoDebugInfo({ videoId, debugInfo, isVisible, onToggle, onCach
         toast.success(result.message, { id: 'repair-thumbnail' })
 
         // 清理本地缓存（包括旧的和新的URL）
-        if (debugInfo?.remoteUrl) {
+        if (thumbnailDebugInfo?.remoteUrl) {
           try {
-            await clearSingleImageCache(debugInfo.remoteUrl)
+            await clearSingleImageCache(thumbnailDebugInfo.remoteUrl)
             console.log('[VideoDebugInfo] ✅ 旧URL缓存清理成功')
           } catch (error) {
             console.warn('[VideoDebugInfo] 旧URL缓存清理失败:', error)
@@ -86,7 +87,7 @@ export function VideoDebugInfo({ videoId, debugInfo, isVisible, onToggle, onCach
         }
 
         // 如果新URL与旧URL不同，也清理新URL的缓存
-        if (result.newUrl && result.newUrl !== debugInfo?.remoteUrl) {
+        if (result.newUrl && result.newUrl !== thumbnailDebugInfo?.remoteUrl) {
           try {
             await clearSingleImageCache(result.newUrl)
             console.log('[VideoDebugInfo] ✅ 新URL缓存清理成功')
@@ -116,7 +117,7 @@ export function VideoDebugInfo({ videoId, debugInfo, isVisible, onToggle, onCach
 
         // 显示成功消息
         const actualSize = result.fileSize ? `${(result.fileSize/1024).toFixed(1)}KB` : '未知大小'
-        toast.success(`缩略图修复完成！新文件大小: ${actualSize}`, {
+        toast.success(`缩略图缓存修复完成！新文件大小: ${actualSize}`, {
           id: 'repair-complete',
           duration: 5000
         })
@@ -125,243 +126,237 @@ export function VideoDebugInfo({ videoId, debugInfo, isVisible, onToggle, onCach
       }
 
     } catch (error) {
-      console.error('修复缩略图失败:', error)
-      toast.error('修复缩略图时发生错误', { id: 'repair-thumbnail' })
+      console.error('修复缩略图缓存失败:', error)
+      toast.error('修复缩略图缓存时发生错误', { id: 'repair-thumbnail' })
     } finally {
       setIsRepairing(false)
     }
   }
 
-  return (
-    <div className="pt-3 mt-3 border-t border-muted-foreground/20">
-      <div className="flex items-start gap-2 text-xs text-muted-foreground/70">
-        <Info className="h-3 w-3 mt-0.5 flex-shrink-0" />
-        <div className="flex flex-col gap-2 w-full min-w-0">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2 flex-wrap">
-              {debugInfo?.hasCachedThumbnail && (
-                <button
-                  onClick={handleClearCache}
-                  disabled={isDeleting || isRepairing}
-                  className="flex items-center gap-1 px-2 py-1 text-xs bg-red-100 hover:bg-red-200 dark:bg-red-900 dark:hover:bg-red-800 text-red-700 dark:text-red-300 rounded transition-colors disabled:opacity-50"
-                  title="清除缓存"
-                >
-                  {isDeleting ? (
-                    <>
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      <span>清除中...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 className="h-3 w-3" />
-                      <span>清除缓存</span>
-                    </>
-                  )}
-                </button>
+  // 渲染单个缓存信息部分
+  const renderCacheInfo = (debugInfo: ThumbnailDebugInfo | undefined, title: string, cacheType: 'thumbnail' | 'video') => {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center gap-1">
+          <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{title}</h4>
+          {debugInfo?.isLoading && (
+            <Loader2 className="h-2 w-2 animate-spin" />
+          )}
+        </div>
+
+        {/* 操作按钮 */}
+        <div className="flex items-center gap-1 flex-wrap">
+          {debugInfo?.hasCachedThumbnail && (
+            <button
+              onClick={() => handleClearCache(debugInfo, cacheType)}
+              disabled={isDeleting || isRepairing}
+              className="flex items-center gap-0.5 px-1 py-0.5 text-xs bg-red-100 hover:bg-red-200 dark:bg-red-900 dark:hover:bg-red-800 text-red-700 dark:text-red-300 rounded transition-colors disabled:opacity-50"
+              title={`清除${cacheType === 'thumbnail' ? '缩略图' : '视频'}缓存`}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                  <span>清除中...</span>
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-2.5 w-2.5" />
+                  <span>清除缓存</span>
+                </>
+              )}
+            </button>
+          )}
+
+          {cacheType === 'thumbnail' && (
+            <button
+              onClick={handleRepairThumbnail}
+              disabled={isRepairing || isDeleting}
+              className="flex items-center gap-0.5 px-1 py-0.5 text-xs bg-orange-100 hover:bg-orange-200 dark:bg-orange-900 dark:hover:bg-orange-800 text-orange-700 dark:text-orange-300 rounded transition-colors disabled:opacity-50"
+              title="修复缩略图缓存 - 重新生成并更新缩略图缓存文件"
+            >
+              {isRepairing ? (
+                <>
+                  <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                  <span>修复中...</span>
+                </>
+              ) : (
+                <>
+                  <Wrench className="h-2.5 w-2.5" />
+                  <span>修复缓存</span>
+                </>
+              )}
+            </button>
+          )}
+        </div>
+
+        {/* 加载状态 */}
+        {debugInfo?.isLoading && (
+          <div className="flex items-center gap-0.5">
+            <span>检查{cacheType === 'thumbnail' ? '缩略图' : '视频'}缓存...</span>
+          </div>
+        )}
+
+        {/* 无调试信息 */}
+        {!debugInfo && (
+          <div className="text-orange-600 text-xs">
+            点击重新分析{cacheType === 'thumbnail' ? '缩略图' : '视频'}缓存状态
+          </div>
+        )}
+
+        {/* 缓存信息展示 */}
+        {debugInfo && !debugInfo.isLoading && (
+          <div className="space-y-2">
+            {/* 基本信息 */}
+            <div className="space-y-0.5 p-1 bg-gray-50 dark:bg-gray-800 rounded text-xs">
+              {/* 缓存状态 */}
+              <div className="flex items-center gap-0.5">
+                <span className="text-gray-600 dark:text-gray-400">缓存状态:</span>
+                <span className={`${debugInfo.hasCachedThumbnail ? "text-green-600" : "text-red-600"} text-xs`}>
+                  {debugInfo.hasCachedThumbnail ? "✅ 已缓存" : "❌ 未缓存"}
+                </span>
+              </div>
+
+              {/* 缓存类型 */}
+              {debugInfo.cacheType && (
+                <div className="flex items-center gap-0.5">
+                  <span className="text-gray-600 dark:text-gray-400">缓存类型:</span>
+                  <span className="text-blue-600 text-xs">{debugInfo.cacheType}</span>
+                </div>
               )}
 
-              <button
-                onClick={handleRepairThumbnail}
-                disabled={isRepairing || isDeleting}
-                className="flex items-center gap-1 px-2 py-1 text-xs bg-orange-100 hover:bg-orange-200 dark:bg-orange-900 dark:hover:bg-orange-800 text-orange-700 dark:text-orange-300 rounded transition-colors disabled:opacity-50"
-                title="修复缩略图 - 重新生成并上传新的缩略图文件"
-              >
-                {isRepairing ? (
-                  <>
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                    <span>修复中...</span>
-                  </>
-                ) : (
-                  <>
-                    <Wrench className="h-3 w-3" />
-                    <span>修复缩略图</span>
-                  </>
-                )}
-              </button>
+              {/* 缓存大小 */}
+              {debugInfo.cacheSize && (
+                <div className="flex items-center gap-0.5">
+                  <span className="text-gray-600 dark:text-gray-400">缓存大小:</span>
+                  <span className="text-purple-600 text-xs">{debugInfo.cacheSize}</span>
+                </div>
+              )}
+
+              {/* 缓存位置 */}
+              {debugInfo.cacheLocation && (
+                <div className="flex items-center gap-0.5">
+                  <span className="text-gray-600 dark:text-gray-400">缓存位置:</span>
+                  <span className="text-indigo-600 text-xs break-all">{debugInfo.cacheLocation}</span>
+                </div>
+              )}
+
+              {/* 远程文件大小 */}
+              {debugInfo.remoteFileSize && (
+                <div className="flex items-center gap-0.5">
+                  <span className="text-gray-600 dark:text-gray-400">远程文件大小:</span>
+                  <span className="text-gray-500 text-xs">{debugInfo.remoteFileSize}</span>
+                </div>
+              )}
+              {/* 模糊图标记 */}
+              {debugInfo.isBlurImage && (
+                <div className="flex justify-center">
+                  <span className="px-1.5 py-0.5 bg-yellow-100 text-yellow-800 rounded text-xs">
+                    ⚠️ 模糊图
+                  </span>
+                </div>
+              )}
             </div>
+
+            {/* IndexedDB真实缓存信息 */}
+            {debugInfo.indexedDBCacheInfo && debugInfo.indexedDBCacheInfo.length > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-400 text-xs">
+                    本地{cacheType === 'thumbnail' ? '缩略图' : '视频'}缓存信息 ({debugInfo.indexedDBCacheInfo.length}项):
+                  </span>
+                  <button
+                    onClick={() => toggleSection(`${cacheType}-indexedDB`)}
+                    className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+                    title={expandedSections[`${cacheType}-indexedDB`] ? `收起${cacheType === 'thumbnail' ? '缩略图' : '视频'}缓存详情` : `展开${cacheType === 'thumbnail' ? '缩略图' : '视频'}缓存详情`}
+                  >
+                    {expandedSections[`${cacheType}-indexedDB`] ? <ChevronUp className="h-2.5 w-2.5" /> : <ChevronDown className="h-2.5 w-2.5" />}
+                  </button>
+                </div>
+
+                {expandedSections[`${cacheType}-indexedDB`] && (
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                    {debugInfo.indexedDBCacheInfo.map((cache, index) => (
+                      <CacheItemInfo key={index} cache={cache} />
+                    ))}
+                  </div>
+                )}
+
+                {!expandedSections[`${cacheType}-indexedDB`] && (
+                  <div className="p-1.5 bg-gray-50 dark:bg-gray-800 rounded border text-xs text-gray-600 dark:text-gray-300">
+                    点击展开按钮查看详细{cacheType === 'thumbnail' ? '缩略图' : '视频'}缓存信息
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 远程URL信息 */}
+            {debugInfo.remoteUrl && (
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-400 text-xs">远程URL:</span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => copyToClipboard(debugInfo.remoteUrl!, '远程URL')}
+                      className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+                      title="复制远程URL"
+                    >
+                      <Copy className="h-2.5 w-2.5" />
+                    </button>
+                    <button
+                      onClick={() => toggleSection(`${cacheType}-remoteUrl`)}
+                      className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+                      title={expandedSections[`${cacheType}-remoteUrl`] ? "收起" : "展开"}
+                    >
+                      {expandedSections[`${cacheType}-remoteUrl`] ? <ChevronUp className="h-2.5 w-2.5" /> : <ChevronDown className="h-2.5 w-2.5" />}
+                    </button>
+                  </div>
+                </div>
+                <div className="p-1.5 bg-blue-50 dark:bg-blue-900/20 border rounded">
+                  <div className="text-xs text-gray-600 dark:text-gray-300 break-all font-mono">
+                    {expandedSections[`${cacheType}-remoteUrl`] ? debugInfo.remoteUrl : `${debugInfo.remoteUrl.substring(0, 60)}...`}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="pt-2 mt-2 border-t border-muted-foreground/20">
+      <div className="flex items-start gap-1 text-xs text-muted-foreground/70">
+        <Info className="h-2.5 w-2.5 mt-0.5 flex-shrink-0" />
+        <div className="flex flex-col gap-2 w-full min-w-0">
+          {/* 关闭按钮 */}
+          <div className="flex justify-end">
             <button
               onClick={() => onToggle(videoId)}
-              className="text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors text-sm"
+              className="text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors text-xs"
             >
               ×
             </button>
           </div>
 
-          {/* 加载状态 */}
-          {debugInfo?.isLoading && (
-            <div className="flex items-center gap-1">
-              <Loader2 className="h-2 w-2 animate-spin" />
-              <span>检查缩略图缓存...</span>
+          {/* 缩略图缓存信息 */}
+          {thumbnailDebugInfo && (
+            <div className="border-l-2 border-blue-200 pl-2">
+              {renderCacheInfo(thumbnailDebugInfo, '🖼️ 缩略图缓存', 'thumbnail')}
             </div>
           )}
 
-          {/* 无调试信息 */}
-          {!debugInfo && !debugInfo?.isLoading && (
-            <div className="text-orange-600">
-              点击重新分析缩略图状态
+          {/* 视频缓存信息 */}
+          {videoDebugInfo && (
+            <div className="border-l-2 border-green-200 pl-2">
+              {renderCacheInfo(videoDebugInfo, '🎬 视频缓存', 'video')}
             </div>
           )}
 
-          {/* 缓存信息展示 */}
-          {debugInfo && !debugInfo.isLoading && (
-            <div className="space-y-3">
-              {/* 基本信息 */}
-              <div className="space-y-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="flex flex-col">
-                    <span className="text-gray-600 dark:text-gray-400 text-xs font-medium">缓存状态:</span>
-                    <span className={`${debugInfo.hasCachedThumbnail ? "text-green-600" : "text-red-600"} font-medium`}>
-                      {debugInfo.hasCachedThumbnail ? "✅ 已缓存" : "❌ 未缓存"}
-                    </span>
-                  </div>
-
-                  {debugInfo.cacheType && (
-                    <div className="flex flex-col">
-                      <span className="text-gray-600 dark:text-gray-400 text-xs font-medium">缓存类型:</span>
-                      <span className="text-blue-600 font-medium">{debugInfo.cacheType}</span>
-                    </div>
-                  )}
-
-                  {debugInfo.cacheSize && (
-                    <div className="flex flex-col">
-                      <span className="text-gray-600 dark:text-gray-400 text-xs font-medium">缓存大小:</span>
-                      <span className="text-purple-600 font-medium">{debugInfo.cacheSize}</span>
-                    </div>
-                  )}
-
-                  {debugInfo.cacheLocation && (
-                    <div className="flex flex-col">
-                      <span className="text-gray-600 dark:text-gray-400 text-xs font-medium">缓存位置:</span>
-                      <span className="text-indigo-600 text-xs break-all">{debugInfo.cacheLocation}</span>
-                    </div>
-                  )}
-
-                  {debugInfo.remoteFileSize && (
-                    <div className="flex flex-col">
-                      <span className="text-gray-600 dark:text-gray-400 text-xs font-medium">远程文件大小:</span>
-                      <span className="text-gray-500 font-medium">{debugInfo.remoteFileSize}</span>
-                    </div>
-                  )}
-                </div>
-
-                {debugInfo.isBlurImage && (
-                  <div className="flex justify-center mt-2">
-                    <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
-                      ⚠️ 模糊图
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* 缓存Key信息 */}
-              {debugInfo.cacheKey && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-400 text-xs font-medium">缓存Key:</span>
-                    <button
-                      onClick={() => copyToClipboard(debugInfo.cacheKey!, '缓存Key')}
-                      className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-                      title="复制缓存Key"
-                    >
-                      <Copy className="h-3 w-3" />
-                    </button>
-                  </div>
-                  <div className="p-2 bg-white dark:bg-gray-900 border rounded text-xs font-mono break-all">
-                    {debugInfo.cacheKey}
-                  </div>
-                </div>
-              )}
-              {/* IndexedDB真实缓存信息 */}
-              {debugInfo.indexedDBCacheInfo && debugInfo.indexedDBCacheInfo.length > 0 && (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-400 text-sm font-medium">
-                      本地缓存信息 ({debugInfo.indexedDBCacheInfo.length}项):
-                    </span>
-                    <button
-                      onClick={() => toggleSection('indexedDB')}
-                      className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-                      title={expandedSections.indexedDB ? "收起缓存详情" : "展开缓存详情"}
-                    >
-                      {expandedSections.indexedDB ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                    </button>
-                  </div>
-
-                  {expandedSections.indexedDB && (
-                    <div className="space-y-3 max-h-96 overflow-y-auto">
-                      {debugInfo.indexedDBCacheInfo.map((cache, index) => (
-                        <CacheItemInfo key={index} cache={cache} />
-                      ))}
-                    </div>
-                  )}
-
-                  {!expandedSections.indexedDB && (
-                    <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded border text-xs text-gray-600 dark:text-gray-300">
-                      点击展开按钮查看详细缓存信息
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* 远程URL信息 */}
-              {debugInfo.remoteUrl && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-400 text-xs font-medium">远程URL:</span>
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => copyToClipboard(debugInfo.remoteUrl!, '远程URL')}
-                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-                        title="复制远程URL"
-                      >
-                        <Copy className="h-3 w-3" />
-                      </button>
-                      <button
-                        onClick={() => toggleSection('remoteUrl')}
-                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-                        title={expandedSections.remoteUrl ? "收起" : "展开"}
-                      >
-                        {expandedSections.remoteUrl ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                      </button>
-                    </div>
-                  </div>
-                  <div className="p-2 bg-blue-50 dark:bg-blue-900/20 border rounded">
-                    <div className="text-xs text-gray-600 dark:text-gray-300 break-all font-mono">
-                      {expandedSections.remoteUrl ? debugInfo.remoteUrl : `${debugInfo.remoteUrl.substring(0, 60)}...`}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* 缓存URL信息 */}
-              {debugInfo.thumbnailUrl && debugInfo.thumbnailUrl !== debugInfo.remoteUrl && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-400 text-xs font-medium">缓存URL:</span>
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => copyToClipboard(debugInfo.thumbnailUrl!, '缓存URL')}
-                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-                        title="复制缓存URL"
-                      >
-                        <Copy className="h-3 w-3" />
-                      </button>
-                      <button
-                        onClick={() => toggleSection('thumbnailUrl')}
-                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-                        title={expandedSections.thumbnailUrl ? "收起" : "展开"}
-                      >
-                        {expandedSections.thumbnailUrl ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                      </button>
-                    </div>
-                  </div>
-                  <div className="p-2 bg-green-50 dark:bg-green-900/20 border rounded">
-                    <div className="text-xs text-gray-600 dark:text-gray-300 break-all font-mono">
-                      {expandedSections.thumbnailUrl ? debugInfo.thumbnailUrl : `${debugInfo.thumbnailUrl.substring(0, 60)}...`}
-                    </div>
-                  </div>
-                </div>
-              )}
+          {/* 当没有任何调试信息时 */}
+          {!thumbnailDebugInfo && !videoDebugInfo && (
+            <div className="text-orange-600 text-xs text-center py-4">
+              暂无缓存调试信息
             </div>
           )}
         </div>
@@ -390,86 +385,39 @@ function CacheItemInfo({ cache }: CacheItemInfoProps) {
   }
 
   return (
-    <div className="space-y-2 p-3 bg-white dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700">
+    <div className="space-y-0.5 p-1.5 bg-white dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700">
       {/* 基本信息网格 */}
-      <div className="grid grid-cols-2 gap-2 text-xs">
+      <div className="grid grid-cols-2 gap-0.5 text-xs">
         <div className="flex flex-col">
-          <span className="text-gray-500 dark:text-gray-400 font-medium">大小:</span>
-          <span className="text-blue-600 font-medium">{cache.size.mb}</span>
-          <span className="text-gray-400 text-xs">({cache.size.bytes.toLocaleString()} bytes)</span>
+          <span className="text-gray-500 dark:text-gray-400 text-xs">大小:</span>
+          <span className="text-blue-600 text-xs">{cache.size.mb}</span>
         </div>
 
         <div className="flex flex-col">
-          <span className="text-gray-500 dark:text-gray-400 font-medium">类型:</span>
-          <span className="text-green-600 font-medium">{cache.dataType}</span>
+          <span className="text-gray-500 dark:text-gray-400 text-xs">类型:</span>
+          <span className="text-green-600 text-xs">{cache.dataType}</span>
         </div>
 
         <div className="flex flex-col">
-          <span className="text-gray-500 dark:text-gray-400 font-medium">时间:</span>
-          <span className="text-purple-600 font-medium text-xs">{cache.timestamp}</span>
+          <span className="text-gray-500 dark:text-gray-400 text-xs">时间:</span>
+          <span className="text-purple-600 text-xs">{cache.timestamp}</span>
         </div>
 
         {cache.category && (
           <div className="flex flex-col">
-            <span className="text-gray-500 dark:text-gray-400 font-medium">分类:</span>
-            <span className="text-indigo-600 font-medium">{cache.category}</span>
+            <span className="text-gray-500 dark:text-gray-400 text-xs">分类:</span>
+            <span className="text-indigo-600 text-xs">{cache.category}</span>
           </div>
         )}
       </div>
 
       {cache.expiry && (
         <div className="flex flex-col">
-          <span className="text-gray-500 dark:text-gray-400 font-medium text-xs">过期时间:</span>
-          <span className="text-orange-600 font-medium text-xs">{cache.expiry}</span>
+          <span className="text-gray-500 dark:text-gray-400 text-xs">过期时间:</span>
+          <span className="text-orange-600 text-xs">{cache.expiry}</span>
         </div>
       )}
 
-      {/* 缓存Key */}
-      <div className="space-y-1">
-        <div className="flex items-center justify-between">
-          <span className="text-gray-500 dark:text-gray-400 font-medium text-xs">缓存Key:</span>
-          <button
-            onClick={() => copyToClipboard(cache.key, '缓存Key')}
-            className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-            title="复制Key"
-          >
-            <Copy className="h-3 w-3" />
-          </button>
-        </div>
-        <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs font-mono break-all">
-          {cache.key}
-        </div>
-      </div>
-
-      {/* 数据预览 */}
-      <div className="space-y-1">
-        <div className="flex items-center justify-between">
-          <span className="text-gray-500 dark:text-gray-400 font-medium text-xs">
-            数据预览 ({cache.dataLength.toLocaleString()} 字符):
-          </span>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => copyToClipboard(cache.dataPreview, '数据预览')}
-              className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-              title="复制预览数据"
-            >
-              <Copy className="h-3 w-3" />
-            </button>
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-              title={isExpanded ? "收起" : "展开"}
-            >
-              {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-            </button>
-          </div>
-        </div>
-        <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded">
-          <div className="text-xs text-gray-600 dark:text-gray-300 break-all font-mono">
-            {isExpanded ? cache.dataPreview : `${cache.dataPreview.substring(0, 100)}...`}
-          </div>
-        </div>
-      </div>
     </div>
   )
 }

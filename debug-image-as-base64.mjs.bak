@@ -6,6 +6,7 @@ const testUrl = 'https://cdn.veo3video.me/thumbnails/56717878-bb2e-4d67-a3d3-e9a
 // 模拟getImageAsBase64函数的主要逻辑
 async function simulateGetImageAsBase64(url) {
     try {
+        console.log(`[NewImageCache] 📡 获取图片数据:`, url.substring(0, 60) + '...')
         
         // 检查网络状态
         if (typeof navigator !== 'undefined' && 'onLine' in navigator && !navigator.onLine) {
@@ -30,6 +31,7 @@ async function simulateGetImageAsBase64(url) {
         clearTimeout(timeoutId)
         
         // 响应状态检查
+        console.log(`[NewImageCache] 📊 响应状态:`, {
             status: response.status,
             statusText: response.statusText,
             contentType: response.headers.get('content-type'),
@@ -48,8 +50,12 @@ async function simulateGetImageAsBase64(url) {
         }
         
         // 在Node.js中模拟FileReader
+        console.log('[NewImageCache] 🔄 模拟Base64转换...')
+        console.log('[NewImageCache] ⚠️ Node.js环境无法进行真实的FileReader转换')
+        console.log('[NewImageCache] ✅ 假设Base64转换成功，返回模拟数据')
         
         const sizeKB = blob.size / 1024
+        console.log('[NewImageCache] ✅ 图片数据获取成功:', {
             originalSize: `${sizeKB.toFixed(2)}KB`,
             mimeType: blob.type,
             quality: sizeKB > 50 ? '✅ 高质量' : sizeKB > 20 ? '🟡 中等质量' : '⚠️ 低质量'
@@ -62,16 +68,22 @@ async function simulateGetImageAsBase64(url) {
         const errorType = error instanceof Error ? error.name : 'UnknownError'
         const errorMessage = error instanceof Error ? error.message : String(error)
         
+        console.error(`[NewImageCache] ❌ 获取图片失败:`, {
             url: url.substring(0, 60) + '...',
             errorType,
             errorMessage
         })
         
         // 🚨 这里是问题所在：尝试视频截图回退
+        console.log('[NewImageCache] 🔄 尝试视频截图回退机制...')
+        console.log('[NewImageCache] ❌ 关键问题：将图片URL当作视频URL处理！')
+        console.log('[NewImageCache] 💡 图片URL不是视频，不应该进入视频截图逻辑')
         
         // 之前的tryVideoScreenshot函数已被删除
+        console.log('[NewImageCache] ❌ 视频截图回退已移除（图片URL不应被当作视频处理）')
         
         // 🎨 最终回退：SVG占位符
+        console.log('[NewImageCache] 🎨 使用SVG占位符作为最终回退')
         return generateSVGPlaceholder(url)
     }
 }
@@ -87,6 +99,7 @@ function generateSVGPlaceholder(url) {
         </svg>
     `)}`
     
+    console.log('[NewImageCache] 🎨 生成SVG占位符:', svg.substring(0, 100) + '...')
     return svg
 }
 
@@ -105,6 +118,12 @@ async function simulateErrorCase() {
     try {
         throw new Error('模拟网络错误')
     } catch (error) {
+        console.log('[NewImageCache] ❌ 模拟错误触发')
+        console.log('[NewImageCache] 🔄 尝试视频截图回退机制...')
+        console.log('[NewImageCache] 💥 问题根源：图片URL被误认为视频URL！')
+        console.log(`[NewImageCache] 🎯 真正的问题：${testUrl} 是PNG图片，不是视频文件`)
+        console.log('[NewImageCache] ❌ 视频截图必然失败，因为URL指向的是图片文件')
+        console.log('[NewImageCache] 🎨 最终降级到SVG占位符')
         
         return generateSVGPlaceholder(testUrl)
     }

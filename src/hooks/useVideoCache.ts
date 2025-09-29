@@ -1,15 +1,29 @@
 /**
  * 视频缓存相关的自定义Hook
  * 包含缩略图缓存检查、IndexedDB缓存查询等逻辑
+ * 新增：完整视频文件缓存和自动预加载功能
  */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { getCachedImage, clearSingleImageCache, getCacheKey } from '@/utils/newImageCache'
 import { enhancedIDB } from '@/services/EnhancedIDBService'
+import { smartPreloadService, type VideoItem } from '@/services/SmartVideoPreloadService'
 import type { Video, ThumbnailDebugInfo, IndexedDBCacheInfo } from '@/types/video.types'
 
 interface UseVideoCacheOptions {
   enableDebugInfo?: boolean
+  autoPreload?: boolean
+  priority?: number
+  enableHoverPreload?: boolean
+  enableViewportPreload?: boolean
+}
+
+interface VideoCacheStatus {
+  isCached: boolean
+  isLoading: boolean
+  progress: number
+  error: string | null
+  localUrl: string | null
 }
 
 interface UseVideoCacheReturn {
@@ -17,6 +31,7 @@ interface UseVideoCacheReturn {
   videoDebugInfo: Map<string, boolean>
   thumbnailDebugInfo: Map<string, ThumbnailDebugInfo>
   thumbnailGeneratingVideos: Set<string>
+  videoCacheStatus: VideoCacheStatus
 
   // 操作
   setVideoDebugInfo: React.Dispatch<React.SetStateAction<Map<string, boolean>>>
@@ -28,15 +43,201 @@ interface UseVideoCacheReturn {
   queryIndexedDBCache: (videoId: string) => Promise<IndexedDBCacheInfo[]>
   toggleDebugInfo: (videoId: string) => Promise<void>
   clearVideoCache: (videoId: string) => Promise<void>
+
+  // 新增：视频文件缓存功能
+  cacheVideo: () => Promise<void>
+  checkVideoCacheStatus: () => Promise<void>
+  registerElement: (element: HTMLElement) => void
+
+  // 便捷的状态判断
+  isCached: boolean
+  isLoading: boolean
+  hasError: boolean
+  localUrl: string | null
 }
 
-export function useVideoCache(options: UseVideoCacheOptions = {}): UseVideoCacheReturn {
-  const { enableDebugInfo = true } = options
+export function useVideoCache(
+  video?: Video | VideoItem,
+  options: UseVideoCacheOptions = {}
+): UseVideoCacheReturn {
+  const {
+    enableDebugInfo = true,
+    autoPreload = true,
+    priority = 0,
+    enableHoverPreload = true,
+    enableViewportPreload = true
+  } = options
 
   // 状态管理
   const [videoDebugInfo, setVideoDebugInfo] = useState<Map<string, boolean>>(new Map())
   const [thumbnailDebugInfo, setThumbnailDebugInfo] = useState<Map<string, ThumbnailDebugInfo>>(new Map())
   const [thumbnailGeneratingVideos, setThumbnailGeneratingVideos] = useState<Set<string>>(new Set())
+
+  // 新增：视频文件缓存状态
+  const [videoCacheStatus, setVideoCacheStatus] = useState<VideoCacheStatus>({
+    isCached: false,
+    isLoading: false,
+    progress: 0,
+    error: null,
+    localUrl: null
+  })
+
+  const elementRef = useRef<HTMLElement | null>(null)
+  const cleanupRef = useRef<(() => void) | null>(null)
+
+  // 获取视频ID和URL的辅助函数
+  const getVideoId = useCallback(() => {
+    if (!video) return null
+    return 'id' in video ? video.id : video.id
+  }, [video])
+
+  const getVideoUrl = useCallback(() => {
+    if (!video) return null
+    if ('url' in video && video.url) return video.url
+    if ('video_url' in video && video.video_url) return video.video_url
+    return `/videos/${getVideoId()}`
+  }, [video, getVideoId])
+
+  /**
+   * 检查视频缓存状态
+   */
+  const checkVideoCacheStatus = useCallback(async () => {
+    const videoId = getVideoId()
+    if (!videoId) return
+
+    try {
+      const isCached = await smartPreloadService.isVideoCached(videoId)
+      const localUrl = isCached ? await smartPreloadService.getLocalVideoUrl(videoId) : null
+
+      setVideoCacheStatus(prev => ({
+        ...prev,
+        isCached,
+        localUrl,
+        error: null
+      }))
+
+      return isCached
+    } catch (error) {
+      setVideoCacheStatus(prev => ({
+        ...prev,
+        error: error instanceof Error ? error.message : '检查缓存失败'
+      }))
+      return false
+    }
+  }, [getVideoId])
+
+  /**
+   * 手动缓存视频
+   */
+  const cacheVideo = useCallback(async () => {
+    const videoId = getVideoId()
+    const videoUrl = getVideoUrl()
+
+    if (!videoId || !videoUrl) {
+      setVideoCacheStatus(prev => ({
+        ...prev,
+        error: '视频信息不完整'
+      }))
+      return
+    }
+
+    if (videoCacheStatus.isCached || videoCacheStatus.isLoading) return
+
+    setVideoCacheStatus(prev => ({
+      ...prev,
+      isLoading: true,
+      error: null,
+      progress: 0
+    }))
+
+    try {
+      const success = await smartPreloadService.cacheVideoManually(videoId, videoUrl)
+
+      if (success) {
+        const localUrl = await smartPreloadService.getLocalVideoUrl(videoId)
+        setVideoCacheStatus(prev => ({
+          ...prev,
+          isCached: true,
+          isLoading: false,
+          progress: 100,
+          localUrl
+        }))
+      } else {
+        throw new Error('缓存失败')
+      }
+    } catch (error) {
+      setVideoCacheStatus(prev => ({
+        ...prev,
+        isLoading: false,
+        error: error instanceof Error ? error.message : '缓存失败'
+      }))
+    }
+  }, [getVideoId, getVideoUrl, videoCacheStatus.isCached, videoCacheStatus.isLoading])
+
+  /**
+   * 注册元素到预加载服务
+   */
+  const registerElement = useCallback((element: HTMLElement) => {
+    const videoId = getVideoId()
+    const videoUrl = getVideoUrl()
+
+    if (!element || !videoId || !videoUrl || elementRef.current === element) return
+
+    // 清理之前的注册
+    if (cleanupRef.current) {
+      cleanupRef.current()
+    }
+
+    elementRef.current = element
+
+    // 构造VideoItem对象
+    const videoItem: VideoItem = {
+      id: videoId,
+      url: videoUrl,
+      ...(video && 'duration' in video && { duration: video.duration }),
+      ...(video && 'size' in video && { size: video.size })
+    }
+
+    // 注册到智能预加载服务
+    const cleanup = smartPreloadService.registerVideo(element, videoItem, {
+      autoPreload: autoPreload && enableViewportPreload,
+      priority,
+      onProgress: (progress) => {
+        setVideoCacheStatus(prev => ({
+          ...prev,
+          progress
+        }))
+      },
+      onComplete: () => {
+        checkVideoCacheStatus()
+      },
+      onError: (error) => {
+        setVideoCacheStatus(prev => ({
+          ...prev,
+          error: error.message,
+          isLoading: false
+        }))
+      }
+    })
+
+    cleanupRef.current = cleanup
+  }, [video, autoPreload, enableViewportPreload, priority, checkVideoCacheStatus, getVideoId, getVideoUrl])
+
+  // 组件挂载时检查缓存状态
+  useEffect(() => {
+    if (video) {
+      checkVideoCacheStatus()
+    }
+  }, [video, checkVideoCacheStatus])
+
+  // 组件卸载时清理
+  useEffect(() => {
+    return () => {
+      if (cleanupRef.current) {
+        cleanupRef.current()
+      }
+    }
+  }, [])
 
   /**
    * 查询IndexedDB中与视频相关的缓存信息（包括缩略图和视频）
@@ -105,13 +306,11 @@ export function useVideoCache(options: UseVideoCacheOptions = {}): UseVideoCache
             }
           }
         } catch (categoryError) {
-          console.warn(`[useVideoCache] 查询分类${category}失败:`, categoryError)
         }
       }
 
       return matchingEntries
     } catch (error) {
-      console.error('[useVideoCache] 查询IndexedDB缓存失败:', error)
       return []
     }
   }, [])
@@ -123,7 +322,6 @@ export function useVideoCache(options: UseVideoCacheOptions = {}): UseVideoCache
     const videoId = video.id
 
     try {
-      console.log(`[useVideoCache] 检查视频缩略图缓存: ${videoId}`)
 
       // 设置加载状态
       setThumbnailDebugInfo(prev => {
@@ -186,7 +384,6 @@ export function useVideoCache(options: UseVideoCacheOptions = {}): UseVideoCache
               break
             }
           } catch (error) {
-            console.warn(`[useVideoCache] 检查缓存失败 ${url}:`, error)
           }
         }
       }
@@ -201,7 +398,6 @@ export function useVideoCache(options: UseVideoCacheOptions = {}): UseVideoCache
             remoteFileSize = `${(sizeBytes / 1024).toFixed(2)}KB`
           }
         } catch (error) {
-          console.warn('[useVideoCache] 获取远程文件大小失败:', error)
         }
       }
 
@@ -234,15 +430,8 @@ export function useVideoCache(options: UseVideoCacheOptions = {}): UseVideoCache
         return newMap
       })
 
-      console.log(`[useVideoCache] 缓存检查完成: ${videoId}`, {
-        hasCachedThumbnail,
-        cacheType,
-        cacheSize,
-        indexedDBCacheInfo: indexedDBCacheInfo.length
-      })
 
     } catch (error) {
-      console.error(`[useVideoCache] 检查缩略图缓存失败: ${videoId}`, error)
 
       setThumbnailDebugInfo(prev => {
         const newMap = new Map(prev)
@@ -272,7 +461,6 @@ export function useVideoCache(options: UseVideoCacheOptions = {}): UseVideoCache
     // 如果是首次显示且没有缓存信息，则检查缓存状态
     if (!isCurrentlyShown && !thumbnailDebugInfo.has(videoId)) {
       // 这里需要视频对象，但由于架构分离，我们让外部传入
-      console.log('[useVideoCache] 需要检查缓存状态，请从外部调用 checkThumbnailCache')
     }
   }, [enableDebugInfo, videoDebugInfo, thumbnailDebugInfo])
 
@@ -281,7 +469,6 @@ export function useVideoCache(options: UseVideoCacheOptions = {}): UseVideoCache
    */
   const clearVideoCache = useCallback(async (videoId: string) => {
     try {
-      console.log(`[useVideoCache] 清除视频缓存: ${videoId}`)
 
       // 清除缩略图缓存
       const debugInfo = thumbnailDebugInfo.get(videoId)
@@ -300,9 +487,7 @@ export function useVideoCache(options: UseVideoCacheOptions = {}): UseVideoCache
         return newMap
       })
 
-      console.log(`[useVideoCache] 视频缓存清除完成: ${videoId}`)
     } catch (error) {
-      console.error(`[useVideoCache] 清除视频缓存失败: ${videoId}`, error)
     }
   }, [thumbnailDebugInfo])
 
@@ -311,6 +496,7 @@ export function useVideoCache(options: UseVideoCacheOptions = {}): UseVideoCache
     videoDebugInfo,
     thumbnailDebugInfo,
     thumbnailGeneratingVideos,
+    videoCacheStatus,
 
     // 操作
     setVideoDebugInfo,
@@ -321,6 +507,47 @@ export function useVideoCache(options: UseVideoCacheOptions = {}): UseVideoCache
     checkThumbnailCache,
     queryIndexedDBCache,
     toggleDebugInfo,
-    clearVideoCache
+    clearVideoCache,
+
+    // 新增：视频文件缓存功能
+    cacheVideo,
+    checkVideoCacheStatus,
+    registerElement,
+
+    // 便捷的状态判断
+    isCached: videoCacheStatus.isCached,
+    isLoading: videoCacheStatus.isLoading,
+    hasError: !!videoCacheStatus.error,
+    localUrl: videoCacheStatus.localUrl
+  }
+}
+
+/**
+ * 简化版本的视频缓存Hook，只提供状态查询
+ */
+export function useVideoCacheStatus(videoId: string) {
+  const [isCached, setIsCached] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const checkStatus = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      const cached = await smartPreloadService.isVideoCached(videoId)
+      setIsCached(cached)
+    } catch (error) {
+      console.error('[VideoCache] 检查状态失败:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [videoId])
+
+  useEffect(() => {
+    checkStatus()
+  }, [checkStatus])
+
+  return {
+    isCached,
+    isLoading,
+    refresh: checkStatus
   }
 }

@@ -121,6 +121,9 @@ export interface CategoryConfig {
   cleanupThreshold: number
 }
 
+// 移动端检测
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+
 // 分类配置
 const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
   image: {
@@ -137,8 +140,8 @@ const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
   },
   video: {
     storeName: 'videos',
-    maxSize: 50 * 1024 * 1024, // 50MB
-    maxItems: 200,
+    maxSize: isMobile ? 500 * 1024 * 1024 : 1024 * 1024 * 1024, // 500MB移动端 / 1GB桌面端
+    maxItems: isMobile ? 150 : 300, // 150个移动端 / 300个桌面端
     cleanupThreshold: 0.8
   },
   user: {
@@ -242,6 +245,9 @@ class EnhancedIDBService {
       // 初始化元数据
       await this.initializeMetadata()
       
+      // 申请持久化存储
+      await this.requestPersistentStorage()
+
       // 显示存储使用情况
       const usage = await this.getStorageUsage()
       console.log('[EnhancedIDB] 📊 存储使用情况:', usage)
@@ -636,6 +642,28 @@ class EnhancedIDBService {
 
   // ============ 私有方法 ============
 
+  /**
+   * 申请持久化存储
+   */
+  private async requestPersistentStorage(): Promise<boolean> {
+    try {
+      if ('storage' in navigator && 'persist' in navigator.storage) {
+        const isPersisted = await navigator.storage.persist()
+        if (isPersisted) {
+          console.log('[EnhancedIDB] ✅ 存储已持久化，不会被自动清理')
+          return true
+        } else {
+          console.warn('[EnhancedIDB] ⚠️ 未能获取持久化存储权限')
+        }
+      } else {
+        console.warn('[EnhancedIDB] ⚠️ 浏览器不支持持久化存储API')
+      }
+    } catch (error) {
+      console.error('[EnhancedIDB] ❌ 申请持久化存储失败:', error)
+    }
+    return false
+  }
+
   private async checkStorageLimit(category: string, newSize: number): Promise<void> {
     const config = CATEGORY_CONFIG[category]
     if (!config || !this.db) return
@@ -736,7 +764,21 @@ class EnhancedIDBService {
     if (typeof data === 'string') {
       return data.length * 2
     }
-    return JSON.stringify(data).length * 2
+    // 处理 Blob 对象
+    if (data instanceof Blob) {
+      return data.size
+    }
+    // 处理 ArrayBuffer
+    if (data instanceof ArrayBuffer) {
+      return data.byteLength
+    }
+    // 其他对象使用 JSON 序列化估算
+    try {
+      return JSON.stringify(data).length * 2
+    } catch {
+      // 如果无法序列化，返回默认大小
+      return 1024 // 1KB 默认值
+    }
   }
 
   private extractTemplateId(key: string): string {

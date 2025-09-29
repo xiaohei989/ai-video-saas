@@ -10,6 +10,7 @@ import { getCachedImage, smartLoadImage } from '@/utils/newImageCache'
 import { useResponsiveDevice, supportsHover } from '@/utils/deviceDetection'
 import { getProxyVideoUrl, needsCorsProxy } from '@/utils/videoUrlProxy'
 import { useVideoContext } from '@/contexts/VideoContext'
+import { smartPreloadService } from '@/services/SmartVideoPreloadService'
 
 interface ReactVideoPlayerProps {
   // 主要属性
@@ -100,6 +101,8 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
   // 生成或使用传入的视频ID
   const generatedId = useId()
   const currentVideoId = videoId || `video-${generatedId}`
+
+  // 组件创建日志已移除
   
   // 基于分辨率的设备信息（统一使用一套判断逻辑）
   const deviceInfo = {
@@ -116,6 +119,10 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
   // 🚀 简化：只保留核心状态
   const [isPlaying, setIsPlaying] = useState(autoplay)
   const [isMuted, setIsMuted] = useState(muted)
+
+  // 视频缓存相关状态（保留用于内部逻辑）
+  const [isVideoCached, setIsVideoCached] = useState(false)
+  const [actualVideoUrl, setActualVideoUrl] = useState(videoUrl)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [showControls, setShowControls] = useState(false)
   const [hasEverPlayed, setHasEverPlayed] = useState(autoplay)
@@ -157,6 +164,13 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const controlsTimeoutRef = useRef<NodeJS.Timeout>()
   const hoverTimeoutRef = useRef<NodeJS.Timeout>()
+
+  // 缓存日志记录函数
+  const addCacheLog = useCallback((message: string) => {
+    const timestamp = new Date().toLocaleTimeString()
+    const logMessage = `[${timestamp}] ${message}`
+    console.log(`[VideoCache] ${logMessage}`)
+  }, [])
 
   // 自动隐藏控制条
   const hideControlsAfterDelay = useCallback(() => {
@@ -242,9 +256,14 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
       
       await videoRef.current.play()
       console.log('✅ 视频播放成功，ID:', currentVideoId)
+      addCacheLog(`▶️ 视频开始播放 - ${isVideoCached ? '本地缓存' : '远程流'}`)
+      if (isVideoCached) {
+        addCacheLog(`🚀 缓存命中！无需网络下载`)
+      }
     } catch (error) {
       console.error('❌ 播放失败:', error)
-      
+      addCacheLog(`❌ 播放失败: ${error instanceof Error ? error.message : '未知错误'}`)
+
       // 重置状态
       setIsPlaying(false)
       setHasEverPlayed(false)
@@ -265,7 +284,7 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
       // 触发外部错误回调
       onError?.(error)
     }
-  }, [isPlaying, clearError, onError, currentVideoId, setCurrentPlaying])
+  }, [isPlaying, clearError, onError, currentVideoId, setCurrentPlaying, addCacheLog, isVideoCached])
 
   // 🚀 简化：重试播放
   const handleRetry = useCallback(async () => {
@@ -326,7 +345,6 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
       
       // 🚀 智能判断是否需要显示加载动画
       const needsLoading = video.readyState < 3 // HAVE_FUTURE_DATA
-      console.log('[ReactVideoPlayer] 🔍 视频准备状态:', video.readyState, needsLoading ? '需要加载' : '可以播放')
       
       // 只在真正需要加载时显示加载动画
       if (needsLoading) {
@@ -337,9 +355,7 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
         setCurrentPlaying(currentVideoId) // 设置全局播放状态
         await video.play()
         setHasEverPlayed(true)
-        console.log('[ReactVideoPlayer] ✅ 悬浮播放成功')
       } catch (error) {
-        console.error('[ReactVideoPlayer] ❌ 悬浮播放失败:', error)
         setIsLoadingPlay(false)
         setCurrentPlaying(null)
       }
@@ -355,14 +371,12 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current)
       if (isLoadingPlay && !isPlaying) {
-        console.log('[ReactVideoPlayer] 🖱️ 悬浮播放取消，重置加载状态')
         setIsLoadingPlay(false)
       }
     }
     
     // 🚀 简化：如果当前视频正在播放且是悬浮触发的，则暂停
     if (isPlaying && videoRef.current && currentPlayingId === currentVideoId) {
-      console.log('[ReactVideoPlayer] 🖱️ 悬浮离开，暂停播放')
       videoRef.current.pause()
       setCurrentPlaying(null)
     }
@@ -372,7 +386,6 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
   const handleClick = useCallback(() => {
     // 🚀 修改：如果有播放错误（即使没显示错误框），也允许重试
     if (playbackError) {
-      console.log('[ReactVideoPlayer] 🔄 用户点击重试，清除错误状态')
       clearError()
       // 移动端重试前重新加载视频
       if (deviceInfo.isMobile && videoRef.current) {
@@ -408,6 +421,85 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
     }
   }, [])
 
+  // 强力调试 useEffect - 无条件执行
+  useEffect(() => {
+    console.log(`[VideoCache Debug] 🚨 FORCE useEffect 执行！videoId: ${videoId}, currentVideoId: ${currentVideoId}`)
+
+    if (!videoId) {
+      console.log(`[VideoCache Debug] ⚠️ videoId 为空！`)
+    }
+
+    try {
+      console.log(`[VideoCache Debug] ✅ 测试 useEffect 正常执行`)
+    } catch (error) {
+      console.error(`[VideoCache Debug] ❌ useEffect 执行错误:`, error)
+    }
+  }, [videoId, currentVideoId, videoUrl])
+
+  // 检查视频缓存状态并设置实际播放URL
+  useEffect(() => {
+    console.log(`[VideoCache Debug] 🔍 缓存检查 useEffect 执行！videoId: ${videoId}, currentVideoId: ${currentVideoId}, hasVideoUrl: ${!!videoUrl}`)
+
+    if (!videoId) {
+      console.log(`[VideoCache Debug] ⚠️ 缓存检查跳过：videoId 为空`)
+      return
+    }
+
+    const checkVideoCache = async () => {
+      if (!currentVideoId || !videoUrl) {
+        console.log(`[VideoCache Debug] 跳过缓存检查，currentVideoId: ${currentVideoId}, videoUrl: ${!!videoUrl}`)
+        return
+      }
+
+      try {
+        console.log(`[VideoCache Debug] 开始缓存检查，smartPreloadService: ${!!smartPreloadService}`)
+        addCacheLog(`检查视频缓存状态 - 视频ID: ${currentVideoId}`)
+
+        // 验证服务是否可用
+        if (!smartPreloadService || typeof smartPreloadService.isVideoCached !== 'function') {
+          console.error('[VideoCache Debug] smartPreloadService 不可用或方法不存在')
+          setActualVideoUrl(videoUrl)
+          return
+        }
+
+        // 检查是否已缓存
+        console.log(`[VideoCache Debug] 调用 isVideoCached...`)
+        const isCached = await smartPreloadService.isVideoCached(currentVideoId)
+        console.log(`[VideoCache Debug] 缓存检查结果: ${isCached}`)
+        setIsVideoCached(isCached)
+
+        if (isCached) {
+          addCacheLog(`✅ 视频已缓存，获取本地URL`)
+          // 获取本地缓存的视频URL
+          const localUrl = await smartPreloadService.getLocalVideoUrl(currentVideoId)
+          if (localUrl) {
+            setActualVideoUrl(localUrl)
+            addCacheLog(`✅ 使用本地缓存视频播放`)
+            console.log(`[VideoPlayer] ✅ 使用缓存视频: ${currentVideoId}`)
+          } else {
+            setActualVideoUrl(videoUrl)
+            addCacheLog(`⚠️ 缓存视频URL获取失败，使用原始URL`)
+          }
+        } else {
+          setActualVideoUrl(videoUrl)
+          addCacheLog(`❌ 视频未缓存，使用远程URL`)
+        }
+      } catch (error) {
+        console.error('[VideoPlayer] 检查缓存失败:', error)
+        addCacheLog(`❌ 缓存检查失败: ${error instanceof Error ? error.message : '未知错误'}`)
+        setActualVideoUrl(videoUrl)
+      }
+    }
+
+    // 添加短暂延迟确保组件完全挂载
+    const timer = setTimeout(() => {
+      checkVideoCache()
+    }, 100) // 100ms 延迟
+
+    return () => clearTimeout(timer)
+  }, [currentVideoId, videoUrl])
+
+
   // 🚀 使用代理URL以解决移动端CORS问题
   const proxyVideoUrl = getProxyVideoUrl(videoUrl)
   
@@ -428,7 +520,6 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
       
       // 微信/QQ浏览器特殊处理
       if (deviceInfo.isWechat || deviceInfo.isQQ) {
-        console.log('[ReactVideoPlayer] 📱 检测到微信/QQ浏览器，启用X5内核优化')
         el.setAttribute('x5-playsinline', 'true')
         el.setAttribute('x5-video-player-type', 'h5')
         el.setAttribute('x5-video-player-fullscreen', 'false')
@@ -441,7 +532,6 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
       
       // iOS Chrome特殊处理
       if (deviceInfo.isIOSChrome) {
-        console.log('[ReactVideoPlayer] 📱 检测到iOS Chrome，启用特殊兼容处理')
         // iOS Chrome需要更严格的设置
         el.setAttribute('webkit-playsinline', 'true')
         el.setAttribute('playsinline', 'true')
@@ -450,7 +540,6 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
       
       // Android Chrome优化
       if (deviceInfo.isAndroid) {
-        console.log('[ReactVideoPlayer] 📱 检测到Android设备，启用Android优化')
         el.setAttribute('preload', 'metadata')
       }
       
@@ -464,7 +553,6 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
       }
       
     } catch (error) {
-      console.warn('[ReactVideoPlayer] 移动端属性设置失败:', error)
     }
   }, [deviceInfo])
 
@@ -472,7 +560,6 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
   useEffect(() => {
     if (!thumbnailUrl) {
       const fallbackPoster = lowResPosterUrl || defaultPoster
-      console.log('[ReactVideoPlayer] ⚠️ 无thumbnailUrl，使用占位图:', lowResPosterUrl ? 'lowRes' : 'default')
       setCurrentPoster(fallbackPoster)
       if (videoRef.current) {
         videoRef.current.poster = fallbackPoster
@@ -482,15 +569,13 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
 
     // 移动端优化策略：启用轻量级Base64缓存
     if (isMobile) {
-      console.log('[ReactVideoPlayer] 📱 移动端模式：启用轻量级Base64缓存')
       
       const loadMobilePoster = async () => {
         try {
           // 移动端直接尝试智能缓存，但禁用渐进式加载
-          const cachedImageUrl = await smartLoadImage(thumbnailUrl, {
+          await smartLoadImage(thumbnailUrl, {
             enableFastPreview: false, // 移动端禁用渐进式加载
             onFinalLoad: (finalUrl) => {
-              console.log('[ReactVideoPlayer] 📱 移动端最终图:', typeof finalUrl, finalUrl.startsWith('data:') ? 'Base64缓存' : 'CDN地址')
               setCurrentPoster(finalUrl)
               if (videoRef.current) {
                 videoRef.current.poster = finalUrl
@@ -498,9 +583,7 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
             }
           })
           
-          console.log('[ReactVideoPlayer] 📱 移动端缓存加载完成:', typeof cachedImageUrl)
         } catch (error) {
-          console.warn('[ReactVideoPlayer] 📱 移动端缓存失败，使用原图:', error)
           setCurrentPoster(thumbnailUrl)
           if (videoRef.current) {
             videoRef.current.poster = thumbnailUrl
@@ -513,27 +596,22 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
     }
 
     const loadCachedPoster = async () => {
-      console.log('[ReactVideoPlayer] 🧠 开始智能缓存加载:', thumbnailUrl)
       
       try {
         // 桌面端使用高质量直接加载（完全禁用模糊图）
-        const finalImageUrl = await smartLoadImage(thumbnailUrl, {
+        await smartLoadImage(thumbnailUrl, {
           enableFastPreview: false, // 强制禁用快速预览，彻底消除模糊图
           onFinalLoad: (finalUrl) => {
-            console.log('[ReactVideoPlayer] ✅ 高质量图片加载:', typeof finalUrl, finalUrl.startsWith('data:') ? 'Base64缓存' : 'CDN地址')
             setCurrentPoster(finalUrl)
             
             // 同步更新video元素的poster
             if (videoRef.current) {
               videoRef.current.poster = finalUrl
-              console.log('[ReactVideoPlayer] ✅ video元素poster已更新为高质量图片')
             }
           }
         })
         
-        console.log('[ReactVideoPlayer] 🎯 智能加载完成:', typeof finalImageUrl)
       } catch (error) {
-        console.error('[ReactVideoPlayer] ❌ 智能加载失败:', error)
         // 降级到原始URL
         setCurrentPoster(thumbnailUrl)
         if (videoRef.current) {
@@ -552,7 +630,6 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
     
     // 如果当前播放的视频不是本视频，且本视频正在播放，则暂停
     if (currentPlayingId !== currentVideoId && isPlaying) {
-      console.log('[ReactVideoPlayer] 🎯 Context暂停其他视频:', currentVideoId, '当前播放:', currentPlayingId)
       videoRef.current.pause()
     }
   }, [currentPlayingId, currentVideoId, isPlaying])
@@ -602,28 +679,28 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
         controlsList={deviceInfo.isMobile ? "nodownload noremoteplayback" : "nodownload"}
         className="w-full h-full object-cover"
         onLoadStart={() => {
-          console.log('[ReactVideoPlayer] 📱 开始加载视频...')
+          addCacheLog(`📥 开始加载视频 - ${isVideoCached ? '本地缓存' : '远程'}`)
           handleLoadStart?.()
         }}
         onLoadedMetadata={() => {
-          console.log('[ReactVideoPlayer] 📱 视频元数据加载完成')
+          addCacheLog(`📋 视频元数据加载完成`)
           handleReady?.()
         }}
         onCanPlayThrough={() => {
-          console.log('[ReactVideoPlayer] 📱 视频可以流畅播放')
           // 视频可以流畅播放，清除加载状态
+          addCacheLog(`✅ 视频可以流畅播放`)
           setIsLoadingPlay(false)
         }}
         onWaiting={() => {
-          console.log('[ReactVideoPlayer] ⏳ 视频缓冲中...')
           // 缓冲不足，显示加载动画
           if (isPlaying || hasEverPlayed) {
+            addCacheLog(`⏳ 视频缓冲中...`)
             setIsLoadingPlay(true)
           }
         }}
         onCanPlay={() => {
-          console.log('[ReactVideoPlayer] 🎬 视频可以播放')
           // 可以播放，隐藏加载动画
+          addCacheLog(`🎥 视频准备就绪`)
           setIsLoadingPlay(false)
         }}
         onPlay={() => {
@@ -632,17 +709,14 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
           setIsLoadingPlay(false) // 重置加载状态
           setShowControls(true)
           hideControlsAfterDelay()
-          console.log('[ReactVideoPlayer] 📱 视频开始播放')
           onPlay?.()
         }}
         onPause={() => {
           setIsPlaying(false)
           setShowControls(true)
-          console.log('[ReactVideoPlayer] 📱 视频暂停')
           onPause?.()
         }}
         onError={(error) => {
-          console.error('[ReactVideoPlayer] 📱 视频加载错误:', error, 'URL:', proxyVideoUrl)
           
           // 重置播放状态和加载状态
           setIsPlaying(false)
@@ -666,21 +740,26 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
           // 🚀 修改：不显示错误提示框，只记录错误信息
           setPlaybackError(errorMessage)
           
-          console.warn('[ReactVideoPlayer] 📱 视频元素加载失败，将显示播放按钮供用户重试:', errorMessage)
           
           // 触发外部错误回调
           onError?.(error)
         }}
       >
-        {/* 🚀 使用代理URL，提供多种视频格式支持 */}
-        <source src={proxyVideoUrl} type="video/mp4" />
-        {/* 如果代理URL和原URL不同，提供原URL作为回退 */}
-        {proxyVideoUrl !== videoUrl && (
-          <source src={videoUrl} type="video/mp4" />
-        )}
-        {/* 如果原视频URL不是MP4格式，尝试推测MP4版本 */}
-        {!videoUrl.includes('.mp4') && (
-          <source src={videoUrl.replace(/\.[^.]+$/, '.mp4')} type="video/mp4" />
+        {/* 🚀 优先使用本地缓存URL，回退到代理URL */}
+        {isVideoCached ? (
+          <source src={actualVideoUrl} type="video/mp4" />
+        ) : (
+          <>
+            <source src={getProxyVideoUrl(actualVideoUrl)} type="video/mp4" />
+            {/* 如果代理URL和原URL不同，提供原URL作为回退 */}
+            {getProxyVideoUrl(actualVideoUrl) !== actualVideoUrl && (
+              <source src={actualVideoUrl} type="video/mp4" />
+            )}
+            {/* 如果原视频URL不是MP4格式，尝试推测MP4版本 */}
+            {!actualVideoUrl.includes('.mp4') && (
+              <source src={actualVideoUrl.replace(/\.[^.]+$/, '.mp4')} type="video/mp4" />
+            )}
+          </>
         )}
         {deviceInfo.isIOSChrome ? 
           'iOS Chrome不支持此视频格式，建议使用Safari浏览器' :
@@ -732,6 +811,7 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
           </div>
         </div>
       )}
+
 
     </div>
   )

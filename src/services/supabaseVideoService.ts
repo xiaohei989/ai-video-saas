@@ -1078,18 +1078,14 @@ class SupabaseVideoService {
     try {
       // 检查是否需要生成缩略图
       if (video.status !== 'completed' || !video.video_url) {
-        console.log(`[AutoThumbnail] 跳过缩略图生成: 视频未完成或无URL - ${video.id}`)
         return false
       }
 
       // 检查是否已有缩略图
       if (video.thumbnail_url && !video.thumbnail_url.startsWith('data:image/svg+xml')) {
-        console.log(`[AutoThumbnail] 跳过缩略图生成: 已有缩略图 - ${video.id}`)
         return false
       }
 
-      console.log(`[AutoThumbnail] 开始为视频生成缩略图: ${video.id}`)
-      console.log(`[AutoThumbnail] 视频URL: ${video.video_url}`)
 
       // 动态导入避免循环依赖
       const { extractAndUploadThumbnail } = await import('../utils/videoThumbnail')
@@ -1107,7 +1103,6 @@ class SupabaseVideoService {
           blurUrl = data.data.publicUrl as string
         }
       } catch (e) {
-        console.warn('[AutoThumbnail] 生成模糊图（Edge）失败，先只写入高清:', e)
       }
 
       // 更新视频记录的缩略图URL（含模糊图，失败时只写高清）
@@ -1118,15 +1113,12 @@ class SupabaseVideoService {
       } as any)
 
       if (updateResult) {
-        console.log(`[AutoThumbnail] ✅ 缩略图生成成功: ${video.id} -> ${thumbnailUrl}`)
         return true
       } else {
-        console.error(`[AutoThumbnail] ❌ 更新数据库失败: ${video.id}`)
         return false
       }
 
     } catch (error) {
-      console.error(`[AutoThumbnail] ❌ 生成缩略图失败: ${video.id}`, error)
       
       // 生成失败时不更新数据库状态，仅记录日志
       

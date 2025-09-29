@@ -49,7 +49,6 @@ class AutoThumbnailService {
     videoList?: Video[]
   ): Promise<ProcessingStats> {
     if (this.isProcessing) {
-      console.log('[AutoThumbnail] 已有处理任务在进行中，跳过')
       return { total: 0, processed: 0, succeeded: 0, failed: 0, skipped: 0 }
     }
 
@@ -64,18 +63,15 @@ class AutoThumbnailService {
     }
 
     try {
-      console.log('[AutoThumbnail] 🚀 开始检测缺失的缩略图...')
       
       // 获取需要处理的视频列表
       const videosToProcess = await this.getVideosNeedingThumbnails(userId, videoList)
       
       if (videosToProcess.length === 0) {
-        console.log('[AutoThumbnail] ✅ 所有视频都已有缩略图')
         return stats
       }
 
       stats.total = videosToProcess.length
-      console.log(`[AutoThumbnail] 📝 发现 ${videosToProcess.length} 个视频需要生成缩略图`)
 
       // 按创建时间排序，优先处理最新的视频
       videosToProcess.sort((a, b) => 
@@ -92,7 +88,6 @@ class AutoThumbnailService {
         try {
           await Promise.allSettled(batchPromises)
         } catch (error) {
-          console.error('[AutoThumbnail] 批处理错误:', error)
         }
 
         // 批次间添加延迟，避免性能影响
@@ -101,10 +96,8 @@ class AutoThumbnailService {
         }
       }
 
-      console.log(`[AutoThumbnail] ✅ 处理完成: ${stats.succeeded}成功 / ${stats.failed}失败 / ${stats.skipped}跳过`)
       
     } catch (error) {
-      console.error('[AutoThumbnail] ❌ 自动补充失败:', error)
     } finally {
       this.isProcessing = false
       this.processingVideos.clear()
@@ -136,7 +129,6 @@ class AutoThumbnailService {
         .limit(20) // 限制查询数量
 
       if (error) {
-        console.error('[AutoThumbnail] 查询视频失败:', error)
         return []
       }
 
@@ -181,21 +173,17 @@ class AutoThumbnailService {
     this.processingVideos.add(video.id)
 
     try {
-      console.log(`[AutoThumbnail] 🎬 处理视频: ${video.title || video.id}`)
       
       const success = await supabaseVideoService.autoGenerateThumbnailOnComplete(video as any)
       
       if (success) {
         stats.succeeded++
-        console.log(`[AutoThumbnail] ✅ 成功: ${video.title || video.id}`)
       } else {
         stats.failed++
-        console.log(`[AutoThumbnail] ❌ 失败: ${video.title || video.id}`)
       }
       
     } catch (error) {
       stats.failed++
-      console.error(`[AutoThumbnail] ❌ 处理异常: ${video.title || video.id}`, error)
     } finally {
       stats.processed++
       this.processingVideos.delete(video.id)
@@ -239,7 +227,6 @@ class AutoThumbnailService {
    * 停止所有处理任务
    */
   stop(): void {
-    console.log('[AutoThumbnail] 🛑 停止自动缩略图处理')
     this.isProcessing = false
     this.processingVideos.clear()
   }

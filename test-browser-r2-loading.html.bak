@@ -212,6 +212,7 @@
         
         // 测试5: 模拟newImageCache.ts的getImageAsBase64函数
         async function testGetImageAsBase64Simulation() {
+            console.log('[NewImageCache] 📡 获取图片数据:', testUrl.substring(0, 60) + '...')
             
             try {
                 // 检查网络状态
@@ -243,6 +244,7 @@
                     contentType: response.headers.get('content-type'),
                     contentLength: response.headers.get('content-length')
                 };
+                console.log('[NewImageCache] 📊 响应状态:', responseInfo);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP错误 ${response.status}: ${response.statusText}`)
@@ -274,6 +276,7 @@
                     base64Size: `${(base64.length / 1024).toFixed(2)}KB`,
                     quality: sizeKB > 50 ? '✅ 高质量' : sizeKB > 20 ? '🟡 中等质量' : '⚠️ 低质量'
                 };
+                console.log('[NewImageCache] ✅ 图片数据获取成功:', resultInfo);
                 
                 addResult(
                     '✅ Step 5: getImageAsBase64函数模拟测试', 
@@ -287,6 +290,7 @@
                 const errorType = error instanceof Error ? error.name : 'UnknownError';
                 const errorMessage = error instanceof Error ? error.message : String(error);
                 
+                console.error('[NewImageCache] ❌ 获取图片失败:', {
                     url: testUrl.substring(0, 60) + '...',
                     errorType,
                     errorMessage

@@ -65,24 +65,14 @@ export function getUpdateInterval(): number {
  */
 export async function triggerAutoThumbnailFill(userId: string): Promise<void> {
   try {
-    console.log('[videoHelpers] 🎬 开始自动缩略图补充流程')
 
     // 调用自动缩略图服务
     const result = await autoThumbnailService.autoFillMissingThumbnails(userId)
 
-    console.log(`[videoHelpers] ✅ 自动缩略图补充完成:`, {
-      total: result.total,
-      processed: result.processed,
-      succeeded: result.succeeded,
-      failed: result.failed,
-      skipped: result.skipped
-    })
 
     if (result.failed > 0) {
-      console.warn(`[videoHelpers] ⚠️ 有 ${result.failed} 个视频缩略图生成失败`)
     }
   } catch (error) {
-    console.error('[videoHelpers] ❌ 自动缩略图补充失败:', error)
   }
 }
 

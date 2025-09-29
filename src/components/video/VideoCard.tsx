@@ -26,6 +26,7 @@ import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
 import { formatRelativeTime, formatDuration } from '@/utils/timeFormat'
 import CachedImage from '@/components/ui/CachedImage'
 import VideoDebugInfo from './VideoDebugInfo'
+import { simpleTemplatePreload } from '@/services/simpleTemplatePreload'
 import type { Video, ThumbnailDebugInfo } from '@/types/video.types'
 import type { VideoTask } from '@/services/VideoTaskManager'
 import type { VideoProgress } from '@/services/progressManager'
@@ -140,6 +141,24 @@ export function VideoCard({
     setShowVideoPlayer(false)
   }, [])
 
+  // 鼠标悬停预加载（类似模板页面的实现）
+  const handleMouseEnter = useCallback(() => {
+    // 🚀 鼠标悬停时触发预加载
+    if (video.video_url) {
+      console.log(`[VideoCard] 🎯 悬浮触发视频缓存: ${video.id}`)
+      simpleTemplatePreload.preloadOnHover(video.id, video.video_url)
+    }
+  }, [video.id, video.video_url])
+
+  // 移动端触摸/点击缓存（为移动端提供缓存机会）
+  const handleTouchStart = useCallback(() => {
+    // 📱 移动端首次触摸时触发缓存
+    if (video.video_url) {
+      console.log(`[VideoCard] 📱 移动端触摸触发视频缓存: ${video.id}`)
+      simpleTemplatePreload.preloadOnHover(video.id, video.video_url)
+    }
+  }, [video.id, video.video_url])
+
   // 计算任务耗时
   const getTaskDuration = () => {
     if (!activeTask || !activeTask.createdAt) return ''
@@ -178,13 +197,18 @@ export function VideoCard({
     <Card className="relative overflow-hidden group hover:shadow-lg transition-shadow duration-200">
       <CardContent className="p-0">
         {/* 缩略图区域 */}
-        <div className="relative aspect-video bg-muted group">
+        <div
+          className="relative aspect-video bg-muted group"
+          onMouseEnter={handleMouseEnter}
+          onTouchStart={handleTouchStart}
+        >
           {/* 视频播放器（仅在视频完成状态显示，支持悬浮播放） */}
           {video.status === 'completed' && video.video_url ? (
             <ReactVideoPlayer
               videoUrl={video.video_url}
               thumbnailUrl={video.thumbnail_url || video.blur_thumbnail_url || ''}
               lowResPosterUrl={video.blur_thumbnail_url}
+              videoId={video.id}
               autoplay={false}
               muted={true}
               autoPlayOnHover={true} // 桌面端悬浮自动播放，移动端点击播放
@@ -407,7 +431,7 @@ export function VideoCard({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>查看缓存调试信息</p>
+                    <p>查看视频缓存调试信息</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -422,12 +446,13 @@ export function VideoCard({
         {/* 调试信息展示 */}
         <VideoDebugInfo
           videoId={video.id}
-          debugInfo={debugInfo}
+          thumbnailDebugInfo={debugInfo}
+          videoDebugInfo={undefined} // TODO: 需要添加视频缓存调试信息
           isVisible={showDebugInfo}
           onToggle={onToggleDebugInfo}
           onCacheCleared={() => onCheckCache(video)}
           onThumbnailRepaired={() => {
-            // 缩略图修复完成后，重新检查缓存状态
+            // 视频缓存修复完成后，重新检查缓存状态
             onCheckCache(video)
           }}
         />
@@ -438,6 +463,7 @@ export function VideoCard({
             <div className="relative w-full h-full">
               <ReactVideoPlayer
                 video={video}
+                videoId={video.id}
                 onClose={handleClosePreview}
                 showControls={true}
                 autoplay={true}

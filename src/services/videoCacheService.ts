@@ -77,7 +77,6 @@ class VideoCacheService {
       const videoInfo = cached.videos[0] // 取第一个视频作为示例
       const videoTitle = videoInfo?.title || videoInfo?.template_name || '未知视频'
       const videoId = videoInfo?.id || 'unknown'
-      console.log(`[VideoCache] 🚀 内存缓存命中: 视频ID[${videoId}] "${videoTitle}" (${cached.videos.length}个视频, ${Math.round((Date.now() - cached.timestamp) / 1000)}秒前缓存)`)
       return cached
     }
     
@@ -85,7 +84,6 @@ class VideoCacheService {
     if (cached) {
       this.memoryCache.delete(cacheKey)
       this.accessOrder.delete(cacheKey) // 🚀 同时清理访问记录
-      console.log(`[VideoCache] 🧹 清理过期内存缓存: ${cacheKey}`)
     }
     
     return null
@@ -111,7 +109,6 @@ class VideoCacheService {
       if (lruKey) {
         this.memoryCache.delete(lruKey)
         this.accessOrder.delete(lruKey)
-        console.log(`[VideoCache] 🚀 LRU淘汰缓存: ${lruKey} (访问时间: ${minAccessTime})`)
       } else {
         // 降级到FIFO（防错处理）
         const oldestKey = this.memoryCache.keys().next().value
@@ -141,18 +138,15 @@ class VideoCacheService {
           const videoTitle = videoInfo?.title || videoInfo?.template_name || '未知视频'
           const videoId = videoInfo?.id || 'unknown'
           const ageMinutes = Math.round((Date.now() - cached.timestamp) / 60000)
-          console.log(`[VideoCache] 📱 统一缓存命中: 视频ID[${videoId}] "${videoTitle}" (${cached.videos.length}个视频, ${ageMinutes}分钟前缓存)`)
           
           // 同时加载到内存缓存（会自动更新LRU）
           this.setToMemory(cacheKey, cached)
           
           return cached
         } else {
-          console.log(`[VideoCache] 🧹 清理过期统一缓存: ${cacheKey}`)
         }
       }
     } catch (error) {
-      console.warn('[VideoCache] 统一缓存读取失败:', error)
     }
     
     return null
@@ -168,9 +162,7 @@ class VideoCacheService {
         category: 'video',
         ttl: this.DEFAULT_MAX_AGE * 2 / 1000 // 转换为秒
       })
-      console.log(`[VideoCache] 📱 统一缓存存储成功: ${storageKey}`)
     } catch (error) {
-      console.warn('[VideoCache] 统一缓存存储失败:', error)
     }
   }
 
@@ -234,7 +226,6 @@ class VideoCacheService {
     const videoTitle = sampleVideo?.title || sampleVideo?.template_name || '未知视频'
     const videoId = sampleVideo?.id || 'unknown'
     const estimatedSize = Math.round(JSON.stringify(data).length / 1024) // 估算KB
-    console.log(`[VideoCache] 💾 缓存已生成: 视频ID[${videoId}] "${videoTitle}" (${videos.length}个视频, 约${estimatedSize}KB, 页码${page}/${Math.ceil(total/pageSize)})`)
   }
 
   /**
@@ -265,7 +256,6 @@ class VideoCacheService {
           await this.cacheVideos(userId, videos, total, page, pageSize, filter, pagination)
         }
       } catch (error) {
-        console.warn('[VideoCache] 后台更新失败:', error)
       }
     }
     
@@ -317,10 +307,8 @@ class VideoCacheService {
     try {
       await unifiedCache.clearAll()
       
-      console.log(`[VideoCache] 🗑️ 清理了用户${userId}的${keysToDelete.length}个内存缓存项，并清理了统一缓存`)
       
     } catch (error) {
-      console.warn('[VideoCache] 清理用户缓存失败:', error)
     }
   }
 
@@ -340,12 +328,6 @@ class VideoCacheService {
     const memorySize = this.memoryCache.size
     const storageSize = videoStats?.count || 0
     
-    console.log('[VideoCache] 📊 缓存统计 (统一缓存系统):', {
-      内存缓存项: memorySize,
-      持久化缓存项: storageSize,
-      缓存命中率: videoStats?.hitRate ? `${(videoStats.hitRate * 100).toFixed(1)}%` : '0%',
-      存储大小: videoStats?.size ? `${(videoStats.size / 1024 / 1024).toFixed(2)}MB` : '0MB'
-    })
     
     return {
       memorySize,

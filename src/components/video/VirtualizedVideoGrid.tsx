@@ -206,6 +206,7 @@ const VideoCard: React.FC<{
                   src={primaryUrl}
                   fallbackSrc={fallbackUrl}
                   poster={video.thumbnail_url || undefined}
+                  videoId={video.id}
                   className="w-full h-full"
                   autoPlayOnHover={!isMobile}
                   showPlayButton={true}
@@ -230,6 +231,7 @@ const VideoCard: React.FC<{
                   src={primaryUrl}
                   fallbackSrc={fallbackUrl}
                   poster={video.thumbnail_url || undefined}
+                  videoId={video.id}
                   className="w-full h-full"
                   autoPlayOnHover={!isMobile}
                   showPlayButton={true}

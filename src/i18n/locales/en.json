@@ -1093,6 +1093,12 @@
     "allRightsReserved": "All rights reserved."
   },
   "legal": {
+    "common": {
+      "legalDocument": "Legal Document",
+      "tableOfContents": "Table of Contents",
+      "printPdf": "Print / PDF",
+      "backToTop": "Back to Top"
+    },
     "privacyPolicy": {
       "title": "Privacy Policy",
       "lastUpdated": "Last Updated",

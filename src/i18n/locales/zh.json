@@ -1191,6 +1191,12 @@
     }
   },
   "legal": {
+    "common": {
+      "legalDocument": "法律文档",
+      "tableOfContents": "目录",
+      "printPdf": "打印 / PDF",
+      "backToTop": "返回顶部"
+    },
     "privacyPolicy": {
       "title": "隐私政策",
       "lastUpdated": "最后更新",

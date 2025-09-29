@@ -13,6 +13,7 @@ interface SimplePreloadTask {
 class SimpleTemplatePreloadService {
   private preloadedVideos = new Set<string>()
   private preloadedThumbnails = new Set<string>()
+  private cachedVideos = new Set<string>() // 跟踪已完整缓存的视频
   private isProcessing = false
   private activePreloads = 0 // 当前活跃的预加载任务数
   private readonly MAX_CONCURRENT = 2 // 最大并发预加载数量
@@ -68,9 +69,42 @@ class SimpleTemplatePreloadService {
    * 🎯 鼠标悬停时预加载
    */
   preloadOnHover(templateId: string, videoUrl: string): void {
+    // 检查元数据预加载
     if (!this.preloadedVideos.has(videoUrl)) {
       console.log('[SimplePreload] 🎯 悬停预加载:', templateId)
       this.preloadVideo(templateId, videoUrl, 0) // 高优先级
+    }
+
+    // 检查完整视频缓存（防止重复缓存）
+    if (!this.cachedVideos.has(videoUrl)) {
+      console.log('[SimplePreload] 🚀 开始完整视频缓存:', templateId)
+      this.cachedVideos.add(videoUrl) // 立即标记为正在缓存，防止重复
+      this.cacheVideoOnHover(templateId, videoUrl)
+    } else {
+      console.log('[SimplePreload] ⚡ 视频已缓存，跳过:', templateId)
+    }
+  }
+
+  /**
+   * 🎯 悬停时缓存完整视频
+   */
+  private async cacheVideoOnHover(templateId: string, videoUrl: string): Promise<void> {
+    try {
+      // 导入 smartPreloadService
+      const { smartPreloadService } = await import('./SmartVideoPreloadService')
+
+      console.log('[SimplePreload] 🎯 开始缓存完整视频:', templateId)
+
+      // 调用完整视频缓存
+      const success = await smartPreloadService.cacheVideoManually(templateId, videoUrl)
+
+      if (success) {
+        console.log('[SimplePreload] ✅ 悬停视频缓存成功:', templateId)
+      } else {
+        console.log('[SimplePreload] ⚠️ 悬停视频缓存失败:', templateId)
+      }
+    } catch (error) {
+      console.error('[SimplePreload] ❌ 悬停视频缓存错误:', error)
     }
   }
 
@@ -183,6 +217,7 @@ class SimpleTemplatePreloadService {
     this.clearAllPreloads() // 先停止所有任务
     this.preloadedVideos.clear()
     this.preloadedThumbnails.clear()
+    this.cachedVideos.clear() // 清理完整缓存跟踪
     console.log('[SimplePreload] 🗑️ 预加载缓存已清理')
   }
 }

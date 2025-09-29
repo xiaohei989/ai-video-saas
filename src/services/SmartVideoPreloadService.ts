@@ -13,6 +13,7 @@
 
 import { unifiedCache } from './UnifiedCacheService'
 import videoLoaderService, { NetworkQuality } from './VideoLoaderService'
+import { simpleVideoCacheService } from './SimpleVideoCacheService'
 // thumbnailGenerator 服务已简化，现在使用浏览器原生 Media Fragments
 
 // 缓存前缀常量
@@ -294,17 +295,17 @@ class SmartVideoPreloadService {
         const distance = this.calculateViewportDistance(entry)
         
         if (entry.isIntersecting) {
-          // 在视口内 - 立即加载
+          // 在视口内 - 立即缓存完整视频
           this.addToQueue(video, 'full', priority + 100)
         } else if (distance <= this.strategy.viewport.thumbnail) {
-          // 缩略图范围
-          this.addToQueue(video, 'thumbnail', priority + 50)
+          // 缩略图范围 - 也缓存完整视频（因为文件小）
+          this.addToQueue(video, 'full', priority + 80)
         } else if (distance <= this.strategy.viewport.metadata) {
-          // 元数据范围
-          this.addToQueue(video, 'metadata', priority + 25)
+          // 元数据范围 - 缓存完整视频（优先级稍低）
+          this.addToQueue(video, 'full', priority + 50)
         } else if (distance <= this.strategy.viewport.preconnect) {
-          // 预连接范围
-          this.preconnectCDN(video.url)
+          // 预连接范围 - 低优先级缓存
+          this.addToQueue(video, 'full', priority + 20)
         }
       })
     }, {
@@ -342,11 +343,11 @@ class SmartVideoPreloadService {
     const timerId = this.hoverTimers.get(video.id)
     
     if (isHovering) {
-      // 开始悬停 - 设置延迟触发
+      // 开始悬停 - 立即缓存完整视频（因为文件小，直接缓存）
       const timer = setTimeout(() => {
-        this.addToQueue(video, 'preview', 90)
+        this.addToQueue(video, 'full', 90)
         this.hoverTimers.delete(video.id)
-      }, this.strategy.hover.delay)
+      }, Math.min(this.strategy.hover.delay, 200)) // 减少延迟到200ms
       
       this.hoverTimers.set(video.id, timer)
     } else {
@@ -576,26 +577,49 @@ class SmartVideoPreloadService {
    * 预加载完整视频
    */
   private async preloadFullVideo(videoId: string): Promise<void> {
-    // 根据质量策略选择版本
-    const quality = this.getTargetQuality()
-    const url = `/videos/${videoId}?quality=${quality}`
-    
-    // 使用VideoLoaderService加载
-    await videoLoaderService.loadVideo(url, {
-      quality,
-      preload: 'auto',
-      enableRangeRequests: true
-    })
-    
-    // 如果需要后台升级质量
-    if (this.strategy.quality.backgroundUpgrade && quality !== 'high') {
-      setTimeout(() => {
-        this.addToQueue(
-          { id: videoId, url: `/videos/${videoId}?quality=high` },
-          'full',
-          10 // 低优先级
-        )
-      }, 5000)
+    try {
+      // 首先检查是否已经缓存
+      const isCached = await simpleVideoCacheService.isVideoCached(videoId)
+      if (isCached) {
+        console.log(`[SmartPreload] ✅ 视频已缓存，跳过预加载: ${videoId}`)
+        return
+      }
+
+      // 根据质量策略选择版本
+      const quality = this.getTargetQuality()
+      const url = `/videos/${videoId}?quality=${quality}`
+
+      // 直接缓存完整视频文件
+      const cacheSuccess = await simpleVideoCacheService.cacheVideo(videoId, url, {
+        quality,
+        priority: 'normal'
+      })
+
+      if (cacheSuccess) {
+        console.log(`[SmartPreload] ✅ 视频缓存成功: ${videoId}`)
+      } else {
+        console.warn(`[SmartPreload] ⚠️ 视频缓存失败，使用传统预加载: ${videoId}`)
+
+        // 降级到传统预加载
+        await videoLoaderService.loadVideo(url, {
+          quality,
+          preload: 'auto',
+          enableRangeRequests: true
+        })
+      }
+
+      // 如果需要后台升级质量
+      if (this.strategy.quality.backgroundUpgrade && quality !== 'high') {
+        setTimeout(() => {
+          this.addToQueue(
+            { id: videoId, url: `/videos/${videoId}?quality=high` },
+            'full',
+            10 // 低优先级
+          )
+        }, 5000)
+      }
+    } catch (error) {
+      console.error(`[SmartPreload] ❌ 预加载失败: ${videoId}`, error)
     }
   }
 
@@ -673,10 +697,40 @@ class SmartVideoPreloadService {
   }
 
   /**
+   * 手动缓存视频
+   */
+  async cacheVideoManually(videoId: string, videoUrl: string): Promise<boolean> {
+    return await simpleVideoCacheService.cacheVideo(videoId, videoUrl, {
+      priority: 'high'
+    })
+  }
+
+  /**
+   * 检查视频缓存状态
+   */
+  async isVideoCached(videoId: string): Promise<boolean> {
+    return await simpleVideoCacheService.isVideoCached(videoId)
+  }
+
+  /**
+   * 获取本地视频URL
+   */
+  async getLocalVideoUrl(videoId: string): Promise<string | null> {
+    return await simpleVideoCacheService.getLocalVideoUrl(videoId)
+  }
+
+  /**
    * 获取统计信息
    */
   getStats(): PreloadStats {
     return { ...this.stats }
+  }
+
+  /**
+   * 获取视频缓存统计信息
+   */
+  async getVideoCacheStats() {
+    return await simpleVideoCacheService.getCacheStats()
   }
 
   /**

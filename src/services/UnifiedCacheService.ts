@@ -62,10 +62,10 @@ const MEMORY_CONFIG = {
     evictionRatio: 0.2
   },
   video: {
-    maxSize: isMobile ? 5 * 1024 * 1024 : 12 * 1024 * 1024, // 5MB/12MB
-    maxItems: isMobile ? 20 : 50,
-    defaultTTL: 6 * 60 * 60, // 6小时
-    evictionRatio: 0.4
+    maxSize: isMobile ? 20 * 1024 * 1024 : 50 * 1024 * 1024, // 20MB/50MB (内存缓存)
+    maxItems: isMobile ? 30 : 80, // 支持更多视频元数据
+    defaultTTL: 24 * 60 * 60, // 24小时 (延长缓存时间)
+    evictionRatio: 0.3
   },
   user: {
     maxSize: isMobile ? 2 * 1024 * 1024 : 5 * 1024 * 1024, // 2MB/5MB

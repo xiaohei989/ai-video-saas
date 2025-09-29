@@ -174,17 +174,24 @@ const TemplateCard = memo(({
   
   // 简化的视频处理 - 只保留必要的事件处理
   const handleVideoCanPlay = () => {
-    console.log('[TemplateCard] 视频已准备就绪:', template.id)
   }
   
   const handleVideoError = (error: any) => {
-    console.error('[TemplateCard] 视频加载错误:', template.id, error)
   }
   
   // 鼠标悬停预加载（保留缓存优化）
   const handleMouseEnter = () => {
     // 🚀 鼠标悬停时触发预加载
     if (template.previewUrl) {
+      simpleTemplatePreload.preloadOnHover(template.id, transformCDNUrl(template.previewUrl))
+    }
+  }
+
+  // 移动端触摸缓存
+  const handleTouchStart = () => {
+    // 📱 移动端首次触摸时触发缓存
+    if (template.previewUrl) {
+      console.log(`[TemplateGrid] 📱 移动端触摸触发模板缓存: ${template.id}`)
       simpleTemplatePreload.preloadOnHover(template.id, transformCDNUrl(template.previewUrl))
     }
   }
@@ -222,9 +229,10 @@ const TemplateCard = memo(({
 
   return (
     <Card className="overflow-hidden shadow-md flex flex-col">
-      <div 
+      <div
         className="aspect-video bg-muted relative group"
         onMouseEnter={handleMouseEnter}
+        onTouchStart={handleTouchStart}
       >
         {template.previewUrl ? (
           <div className="relative w-full h-full">
@@ -233,6 +241,7 @@ const TemplateCard = memo(({
               videoUrl={template.previewUrl ? transformCDNUrl(template.previewUrl) : ''}
               thumbnailUrl={template.thumbnailUrl ? transformCDNUrl(template.thumbnailUrl) : ''}
               lowResPosterUrl={template.blurThumbnailUrl ? transformCDNUrl(template.blurThumbnailUrl) : ''}
+              videoId={template.id}
               autoplay={false} // 手动控制播放
               muted={true} // 默认静音
               // 🚀 修复：移动端和桌面端都让ReactVideoPlayer内部智能控制
