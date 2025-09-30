@@ -272,7 +272,7 @@ export default function AuthCallback() {
       console.log('[AuthCallback] 处理成功认证，用户:', userEmail)
       setSuccess(true)
       setIsProcessing(false)
-      
+
       // 🆕 处理OAuth邀请码
       try {
         const { data: { session } } = await supabase.auth.getSession();

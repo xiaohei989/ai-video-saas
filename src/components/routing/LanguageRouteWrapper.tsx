@@ -60,15 +60,36 @@ export function LanguageRouteWrapper({ children }: { children: React.ReactNode }
  */
 export function RootRedirect() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { i18n } = useTranslation()
 
   useEffect(() => {
+    // 🚀 关键修复：检测 OAuth 回调参数
+    const searchParams = new URLSearchParams(location.search)
+    const hasOAuthCode = searchParams.has('code')
+    const hasOAuthState = searchParams.has('state')
+
     // 检测用户偏好语言
     const preferredLang = detectBrowserLanguage()
 
     // 同步i18n
     if (preferredLang !== i18n.language) {
       i18n.changeLanguage(preferredLang)
+    }
+
+    // 🚀 如果是 OAuth 回调（有 code 参数），重定向到 auth/callback
+    if (hasOAuthCode || hasOAuthState) {
+      const targetPath = `/${preferredLang}/auth/callback${location.search}`
+
+      console.log('[RootRedirect] 检测到 OAuth 回调，重定向到:', {
+        detectedLanguage: preferredLang,
+        targetPath,
+        hasCode: hasOAuthCode,
+        hasState: hasOAuthState
+      })
+
+      navigate(targetPath, { replace: true })
+      return
     }
 
     // 重定向到带语言前缀的首页
@@ -80,7 +101,7 @@ export function RootRedirect() {
     })
 
     navigate(targetPath, { replace: true })
-  }, [navigate, i18n])
+  }, [navigate, location, i18n])
 
   return (
     <div className="flex items-center justify-center min-h-screen">
