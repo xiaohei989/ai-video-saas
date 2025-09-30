@@ -44,23 +44,25 @@ export function PricingPlans({
 
   const handlePlanSelect = async (planId: string) => {
     if (!user) {
-      // 未登录用户跳转到登录页面
-      window.location.href = `/signin?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
+      // 🚀 修复：未登录用户跳转到带语言前缀的登录页面
+      const currentLang = i18n.language || 'en'
+      window.location.href = `/${currentLang}/signin?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
       return
     }
-    
+
     setLoadingPlan(planId)
-    
+
     try {
       if (onPlanSelect) {
         await onPlanSelect(planId)
       } else {
-        // 默认跳转到结账页面
+        // 🚀 修复：默认跳转到结账页面，确保回调 URL 包含语言前缀
+        const currentLang = i18n.language || 'en'
         const result = await stripeService.createSubscriptionCheckout(
           planId,
           user.id,
-          `${window.location.origin}/pricing?success=true`,
-          `${window.location.origin}/pricing?cancelled=true`,
+          `${window.location.origin}/${currentLang}/pricing?success=true`,
+          `${window.location.origin}/${currentLang}/pricing?cancelled=true`,
           i18n.language
         )
 

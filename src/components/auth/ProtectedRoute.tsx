@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Loader2 } from 'lucide-react'
 import { SubscriptionService } from '@/services/subscriptionService'
 import type { Subscription } from '@/types'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 
 interface ProtectedRouteProps {
   children?: React.ReactNode
@@ -22,6 +23,7 @@ export default function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { user, profile, loading } = useAuth()
   const location = useLocation()
+  const { currentLanguage } = useLanguageRouter()
   const [subscriptionStatus, setSubscriptionStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [subscription, setSubscription] = React.useState<Subscription | null>(null)
   const [subscriptionError, setSubscriptionError] = React.useState<Error | null>(null)
@@ -173,13 +175,15 @@ export default function ProtectedRoute({
   
   // 检查认证要求
   if (shouldRedirectToLogin) {
-    // 保存用户尝试访问的路径，登录后重定向回来
-    return <Navigate to={fallbackPath} state={{ from: location }} replace />
+    // 🚀 修复：保存用户尝试访问的路径，登录后重定向回来，确保包含语言前缀
+    const loginPath = fallbackPath.startsWith('/') ? `/${currentLanguage}${fallbackPath}` : `/${currentLanguage}/${fallbackPath}`
+    return <Navigate to={loginPath} state={{ from: location }} replace />
   }
 
   // 检查用户资料要求
   if (requireProfile && (!profile || !profile.username)) {
-    return <Navigate to="/profile/setup" state={{ from: location }} replace />
+    // 🚀 修复：确保个人资料设置页面包含语言前缀
+    return <Navigate to={`/${currentLanguage}/profile/setup`} state={{ from: location }} replace />
   }
 
   // 检查订阅要求
@@ -188,9 +192,10 @@ export default function ProtectedRoute({
 
     if (subscriptionStatus === 'error') {
       console.warn('[PROTECTED ROUTE] 订阅检查失败，跳转到定价页面', subscriptionError)
+      // 🚀 修复：确保定价页面包含语言前缀
       return (
         <Navigate
-          to="/pricing"
+          to={`/${currentLanguage}/pricing`}
           state={{ from: location, reason: 'subscription_check_failed' }}
           replace
         />
@@ -198,9 +203,10 @@ export default function ProtectedRoute({
     }
 
     if (!hasActiveSubscription) {
+      // 🚀 修复：确保定价页面包含语言前缀
       return (
         <Navigate
-          to="/pricing"
+          to={`/${currentLanguage}/pricing`}
           state={{ from: location, reason: 'subscription_required' }}
           replace
         />

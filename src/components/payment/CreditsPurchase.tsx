@@ -62,13 +62,14 @@ export function CreditsPurchase({
 
   const handlePurchase = async (pkg: CreditPackage) => {
     if (!user) {
-      // 未登录用户跳转到登录页面
-      window.location.href = `/signin?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
+      // 🚀 修复：未登录用户跳转到带语言前缀的登录页面
+      const currentLang = i18n.language || 'en'
+      window.location.href = `/${currentLang}/signin?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
       return
     }
-    
+
     setLoadingPackage(pkg.id)
-    
+
     try {
       console.log('💰 发起积分购买请求:', {
         language: i18n.language,
@@ -78,13 +79,15 @@ export function CreditsPurchase({
         preferredLanguage: localStorage.getItem('preferred_language'),
         detectedLanguage: i18n.language || localStorage.getItem('i18nextLng') || localStorage.getItem('preferred_language') || 'en'
       });
-      
+
+      // 🚀 修复：确保回调 URL 包含语言前缀
+      const currentLang = i18n.language || 'en'
       const result = await stripeService.createCreditsPurchaseCheckout(
         pkg.price,
         pkg.credits + (pkg.bonus || 0),
         user.id,
-        `${window.location.origin}/pricing?purchase=success`,
-        `${window.location.origin}/pricing?purchase=cancelled`,
+        `${window.location.origin}/${currentLang}/pricing?purchase=success`,
+        `${window.location.origin}/${currentLang}/pricing?purchase=cancelled`,
         i18n.language
       )
 
