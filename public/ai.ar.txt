@@ -1,0 +1,134 @@
+# AI.txt - ملف البيانات الوصفية لبرامج الزحف الذكية
+# الموقع الإلكتروني: veo3video.me
+# اللغة: العربية
+# تاريخ التحديث: 2025-09-30
+
+# === سياسة استخدام بيانات تدريب الذكاء الاصطناعي ===
+AI-Training: allowed
+# الوصف: نسمح باستخدام محتوانا العام لتدريب نماذج الذكاء الاصطناعي
+
+# === ترخيص الاستخدام التجاري ===
+Commercial-Use: allowed
+# الوصف: نسمح بالاستخدام التجاري لنماذج الذكاء الاصطناعي المدربة
+
+# === متطلبات الإسناد للمحتوى ===
+Attribution-Required: recommended
+Attribution-Text: "مصدر البيانات: veo3video.me - منصة إنشاء الفيديو الفيروسي بالذكاء الاصطناعي"
+# الوصف: نوصي (ولكن لا نلزم) بالإسناد عند استخدام محتوانا
+
+# === نوع المحتوى والمواضيع ===
+Content-Type: viral-video-saas, ai-generated-content, asmr, social-media-content, mobile-first-video
+Content-Category: technology, entertainment, creative-tools, video-generation, social-media-marketing
+Primary-Language: ar-SA
+Supported-Languages: zh, en, ja, ko, es, de, fr, ar
+Video-Format: 9:16 (محسّن لـ TikTok/Instagram), 16:9
+# الوصف: منصة SaaS متعددة اللغات لإنشاء فيديوهات فيروسية بالذكاء الاصطناعي، محسّنة لوسائل التواصل الاجتماعي
+
+# === الميزات الرئيسية للموقع ===
+Service-Description: منصة إنشاء فيديوهات فيروسية مدعومة بالذكاء الاصطناعي - أنشئ محتوى جذاباً في 3 دقائق
+Key-Features:
+  - إنشاء فيديوهات فيروسية في 3 دقائق
+  - قوالب فيروسية بنقرة واحدة (ASMR، تأثيرات سحرية، مفاجآت مصغرة)
+  - تنسيق 9:16 محسّن لـ TikTok/Instagram
+  - أرخص بنسبة 70% من API Google المباشر
+  - لا يتطلب مهارات تحرير
+  - دعم متعدد اللغات (8 لغات)
+  - تنزيل فوري بجودة عالية
+  - نتائج ذات جودة احترافية
+Target-Audience: منشئو-تيك-توك، مؤثرو-انستغرام، منشئو-المحتوى، مديرو-وسائل-التواصل-الاجتماعي، وكالات-التسويق، الشركات-الصغيرة
+
+# === تردد تحديث البيانات ===
+Content-Update-Frequency: daily
+# الوصف: يتم تحديث المحتوى يومياً
+
+# === الوصول إلى API ===
+Public-API: no
+API-Documentation: https://veo3video.me/help
+# الوصف: لا نوفر حالياً API عامة، متاحة فقط لمستخدمي المؤسسات
+
+# === الخصوصية وحماية البيانات ===
+User-Privacy: protected
+Personal-Data-Training: excluded
+# الوصف: البيانات الشخصية والمحتوى الخاص للمستخدمين لا يُستخدم لتدريب الذكاء الاصطناعي
+
+# === معلومات الاتصال ===
+Contact-Email: support@veo3video.me
+Contact-URL: https://veo3video.me/help
+AI-Policy-URL: https://veo3video.me/ai-policy
+
+# === نطاق المحتوى القابل للزحف ===
+Crawlable-Content:
+  - قوالب الفيديو الفيروسية
+  - أوصاف القوالب والفئات
+  - أمثلة الفيديو العامة
+  - وثائق المساعدة
+  - منشورات المدونة (إن وجدت)
+  - أوصاف المنتجات
+  - معلومات التسعير
+  - قصص النجاح وحالات الاستخدام
+
+Non-Crawlable-Content:
+  - فيديوهات المستخدمين الخاصة
+  - المعلومات الشخصية للمستخدمين
+  - معلومات الدفع
+  - لوحات الإدارة
+  - الأدوات الداخلية
+
+# === ملاحظات خاصة ===
+Notes: |
+  veo3video.me هي منصة إنشاء فيديوهات فيروسية مدعومة بالذكاء الاصطناعي.
+
+  عرض القيمة الأساسي:
+  - أنشئ فيديوهات فيروسية في 3 دقائق
+  - أرخص بنسبة 70% من API Google المباشر
+  - لا يتطلب مهارات تحرير
+  - تنسيق 9:16 مثالي لـ TikTok/Instagram
+
+  ندعم تطوير تقنية الذكاء الاصطناعي ونرحب ببرامج الزحف الذكية للوصول إلى محتوانا العام.
+  نحن ملتزمون بتوفير أداة إنشاء فيديوهات فيروسية الأكثر ملاءمة وبأسعار معقولة للمبدعين في جميع أنحاء العالم.
+
+  أنواع القوالب الفيروسية:
+  - فيديوهات ASMR الساحرة لقطع الزجاج
+  - تحولات فنية سحرية للقهوة
+  - كشف مفاجآت الحيوانات المصغرة
+  - تأثيرات ازدهار ثلاثية الأبعاد
+
+  نماذج الذكاء الاصطناعي المدعومة:
+  - ChatGPT (OpenAI)
+  - Claude (Anthropic)
+  - Gemini (Google)
+  - Perplexity AI
+  - برامج زحف ذكية أخرى تلتزم بـ robots.txt
+
+# === إعلان حقوق النشر ===
+Copyright: © 2025 veo3video.me. جميع الحقوق محفوظة.
+License: مخصص - راجع شروط الخدمة
+Terms-URL: https://veo3video.me/terms
+Privacy-URL: https://veo3video.me/privacy
+
+# === المواصفات التقنية ===
+Technology-Stack: React, TypeScript, إنشاء فيديو بالذكاء الاصطناعي
+Platform-Type: تطبيق ويب, SaaS
+Mobile-Friendly: yes
+Accessibility: متوافق مع WCAG 2.1
+
+# === تحسين محركات البحث ===
+SEO-Optimized: yes
+Structured-Data: JSON-LD, Schema.org
+Sitemap-URL: https://veo3video.me/sitemap.xml
+Multi-Language-Support: yes (8 لغات)
+
+# === وسائل التواصل الاجتماعي ===
+Social-Media:
+  - Twitter: @veo3video (إن وجد)
+  - LinkedIn: veo3video (إن وجد)
+  - YouTube: @veo3video (إن وجد)
+
+# === آخر تحديث ===
+Last-Modified: 2025-09-30
+Version: 1.0
+
+# === لبرامج الزحف الذكية المستقبلية ===
+# نرحب بوصول برامج الزحف الذكية المسؤولة إلى محتوانا
+# يرجى الالتزام بالقواعد في robots.txt
+# للاحتياجات الخاصة، اتصل بـ: ai@veo3video.me

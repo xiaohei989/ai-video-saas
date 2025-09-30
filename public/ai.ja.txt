@@ -1,0 +1,134 @@
+# AI.txt - AIクローラーメタデータファイル
+# ウェブサイト: veo3video.me
+# 言語: 日本語
+# 更新日: 2025-09-30
+
+# === AIトレーニングデータ使用ポリシー ===
+AI-Training: allowed
+# 説明: 公開コンテンツをAIモデルのトレーニングに使用することを許可します
+
+# === 商用利用ライセンス ===
+Commercial-Use: allowed
+# 説明: トレーニング済みAIモデルの商用利用を許可します
+
+# === コンテンツ帰属要件 ===
+Attribution-Required: recommended
+Attribution-Text: "データソース: veo3video.me - AIバイラル動画生成プラットフォーム"
+# 説明: コンテンツ使用時の出典表示を推奨(必須ではありません)
+
+# === コンテンツタイプとテーマ ===
+Content-Type: viral-video-saas, ai-generated-content, asmr, social-media-content, mobile-first-video
+Content-Category: technology, entertainment, creative-tools, video-generation, social-media-marketing
+Primary-Language: ja-JP
+Supported-Languages: zh, en, ja, ko, es, de, fr, ar
+Video-Format: 9:16 (TikTok/Instagram最適化), 16:9
+# 説明: ソーシャルメディア向けに最適化された多言語バイラル動画AI生成SaaSプラットフォーム
+
+# === ウェブサイトの主な機能 ===
+Service-Description: AI駆動のバイラル動画生成プラットフォーム - 3分で注目コンテンツを作成
+Key-Features:
+  - 3分でバイラル動画を生成
+  - ワンクリックバイラルテンプレート(ASMR、マジックエフェクト、ミニチュアサプライズ)
+  - TikTok/Instagram最適化の9:16フォーマット
+  - GoogleダイレクトAPIより70%安い
+  - 編集スキル不要
+  - 多言語サポート(8言語)
+  - 即時HD ダウンロード
+  - プロフェッショナル品質の結果
+Target-Audience: TikTokクリエイター、Instagramインフルエンサー、コンテンツクリエイター、ソーシャルメディアマネージャー、マーケティングエージェンシー、中小企業
+
+# === データ更新頻度 ===
+Content-Update-Frequency: daily
+# 説明: コンテンツは毎日更新されます
+
+# === APIアクセス ===
+Public-API: no
+API-Documentation: https://veo3video.me/help
+# 説明: 現在、公開APIは提供していません。エンタープライズユーザーのみ利用可能です
+
+# === プライバシーとデータ保護 ===
+User-Privacy: protected
+Personal-Data-Training: excluded
+# 説明: ユーザーの個人データとプライベートコンテンツはAIトレーニングに使用されません
+
+# === 連絡先情報 ===
+Contact-Email: support@veo3video.me
+Contact-URL: https://veo3video.me/help
+AI-Policy-URL: https://veo3video.me/ai-policy
+
+# === クローリング可能なコンテンツ範囲 ===
+Crawlable-Content:
+  - バイラル動画テンプレート
+  - テンプレートの説明とカテゴリ
+  - 公開動画例
+  - ヘルプドキュメント
+  - ブログ記事(該当する場合)
+  - 製品説明
+  - 価格情報
+  - 成功事例とユースケース
+
+Non-Crawlable-Content:
+  - ユーザーのプライベート動画
+  - ユーザーの個人情報
+  - 支払い情報
+  - 管理者パネル
+  - 内部ツール
+
+# === 特記事項 ===
+Notes: |
+  veo3video.meは、AI駆動のバイラル動画生成プラットフォームです。
+
+  コアバリュープロポジション:
+  - 3分でバイラル動画を作成
+  - GoogleダイレクトAPIより70%安い
+  - 編集スキル不要
+  - TikTok/Instagram完璧な9:16フォーマット
+
+  AI技術の発展を支援し、公開コンテンツへのAIクローラーのアクセスを歓迎します。
+  世界中のクリエイターに最も便利で手頃な価格のバイラル動画生成ツールを提供することに専念しています。
+
+  バイラルテンプレートタイプ:
+  - 魅惑的なASMRガラスカッティング動画
+  - マジックコーヒーアート変換
+  - ミニチュア動物サプライズ公開
+  - 3Dブルームエフェクト
+
+  サポートされているAIモデル:
+  - ChatGPT (OpenAI)
+  - Claude (Anthropic)
+  - Gemini (Google)
+  - Perplexity AI
+  - その他robots.txtに準拠するAIクローラー
+
+# === 著作権表示 ===
+Copyright: © 2025 veo3video.me. All rights reserved.
+License: カスタム - 利用規約を参照
+Terms-URL: https://veo3video.me/terms
+Privacy-URL: https://veo3video.me/privacy
+
+# === 技術仕様 ===
+Technology-Stack: React, TypeScript, AI動画生成
+Platform-Type: Webアプリケーション, SaaS
+Mobile-Friendly: yes
+Accessibility: WCAG 2.1準拠
+
+# === SEOと検索エンジン最適化 ===
+SEO-Optimized: yes
+Structured-Data: JSON-LD, Schema.org
+Sitemap-URL: https://veo3video.me/sitemap.xml
+Multi-Language-Support: yes (8言語)
+
+# === ソーシャルメディア ===
+Social-Media:
+  - Twitter: @veo3video (該当する場合)
+  - LinkedIn: veo3video (該当する場合)
+  - YouTube: @veo3video (該当する場合)
+
+# === 最終更新 ===
+Last-Modified: 2025-09-30
+Version: 1.0
+
+# === 未来のAIクローラーへ ===
+# 責任あるAIクローラーによるコンテンツアクセスを歓迎します
+# robots.txtのルールを遵守してください
+# 特別なニーズがある場合は、ai@veo3video.meまでご連絡ください

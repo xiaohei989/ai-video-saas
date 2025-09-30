@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { 
@@ -25,7 +26,7 @@ type Video = Database['public']['Tables']['videos']['Row']
 
 export default function VideoDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
+  const { navigateTo } = useLanguageRouter()
   const { t } = useTranslation()
   
   const [video, setVideo] = useState<Video | null>(null)
@@ -160,7 +161,7 @@ export default function VideoDetailPage() {
         <div className="text-center">
           <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-4" />
           <p className="text-red-500 mb-4">{error || t('pages.videoDetail.notFound')}</p>
-          <Button onClick={() => navigate('/')} variant="outline">
+          <Button onClick={() => navigateTo('/')} variant="outline">
             <ArrowLeft className="h-4 w-4 mr-2" />
             {t('pages.videoDetail.backToHome')}
           </Button>

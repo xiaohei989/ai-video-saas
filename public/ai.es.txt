@@ -1,0 +1,134 @@
+# AI.txt - Archivo de metadatos para rastreadores de IA
+# Sitio web: veo3video.me
+# Idioma: Español
+# Fecha de actualización: 2025-09-30
+
+# === Política de uso de datos de entrenamiento de IA ===
+AI-Training: allowed
+# Descripción: Permitimos el uso de nuestro contenido público para el entrenamiento de modelos de IA
+
+# === Licencia de uso comercial ===
+Commercial-Use: allowed
+# Descripción: Permitimos el uso comercial de modelos de IA entrenados
+
+# === Requisitos de atribución de contenido ===
+Attribution-Required: recommended
+Attribution-Text: "Fuente de datos: veo3video.me - Plataforma de generación de videos virales con IA"
+# Descripción: Recomendamos (pero no exigimos) la atribución al usar nuestro contenido
+
+# === Tipo de contenido y temas ===
+Content-Type: viral-video-saas, ai-generated-content, asmr, social-media-content, mobile-first-video
+Content-Category: technology, entertainment, creative-tools, video-generation, social-media-marketing
+Primary-Language: es-ES
+Supported-Languages: zh, en, ja, ko, es, de, fr, ar
+Video-Format: 9:16 (optimizado para TikTok/Instagram), 16:9
+# Descripción: Plataforma SaaS multilingüe de generación de videos virales con IA, optimizada para redes sociales
+
+# === Funciones principales del sitio web ===
+Service-Description: Plataforma de generación de videos virales impulsada por IA - Crea contenido cautivador en 3 minutos
+Key-Features:
+  - Generación de videos virales en 3 minutos
+  - Plantillas virales con un clic (ASMR, efectos mágicos, sorpresas en miniatura)
+  - Formato 9:16 optimizado para TikTok/Instagram
+  - 70% más barato que la API directa de Google
+  - No se requieren habilidades de edición
+  - Soporte multilingüe (8 idiomas)
+  - Descarga instantánea en HD
+  - Resultados de calidad profesional
+Target-Audience: creadores-de-tiktok, influencers-de-instagram, creadores-de-contenido, gestores-de-redes-sociales, agencias-de-marketing, pequeñas-empresas
+
+# === Frecuencia de actualización de datos ===
+Content-Update-Frequency: daily
+# Descripción: El contenido se actualiza diariamente
+
+# === Acceso a la API ===
+Public-API: no
+API-Documentation: https://veo3video.me/help
+# Descripción: Actualmente no proporcionamos una API pública, solo disponible para usuarios empresariales
+
+# === Privacidad y protección de datos ===
+User-Privacy: protected
+Personal-Data-Training: excluded
+# Descripción: Los datos personales y el contenido privado de los usuarios no se utilizan para el entrenamiento de IA
+
+# === Información de contacto ===
+Contact-Email: support@veo3video.me
+Contact-URL: https://veo3video.me/help
+AI-Policy-URL: https://veo3video.me/ai-policy
+
+# === Alcance del contenido rastreable ===
+Crawlable-Content:
+  - Plantillas de videos virales
+  - Descripciones y categorías de plantillas
+  - Ejemplos de videos públicos
+  - Documentación de ayuda
+  - Publicaciones de blog (si están disponibles)
+  - Descripciones de productos
+  - Información de precios
+  - Casos de éxito y casos de uso
+
+Non-Crawlable-Content:
+  - Videos privados de usuarios
+  - Información personal de usuarios
+  - Información de pago
+  - Paneles de administración
+  - Herramientas internas
+
+# === Notas especiales ===
+Notes: |
+  veo3video.me es una plataforma de generación de videos virales impulsada por IA.
+
+  Propuesta de valor principal:
+  - Crea videos virales en 3 minutos
+  - 70% más barato que la API directa de Google
+  - No se requieren habilidades de edición
+  - Formato 9:16 perfecto para TikTok/Instagram
+
+  Apoyamos el desarrollo de la tecnología de IA y damos la bienvenida a los rastreadores de IA para acceder a nuestro contenido público.
+  Nos dedicamos a proporcionar la herramienta de generación de videos virales más conveniente y asequible para creadores de todo el mundo.
+
+  Tipos de plantillas virales:
+  - Videos fascinantes de corte de vidrio ASMR
+  - Transformaciones mágicas de arte del café
+  - Revelaciones sorpresa de animales en miniatura
+  - Efectos de floración 3D
+
+  Modelos de IA compatibles:
+  - ChatGPT (OpenAI)
+  - Claude (Anthropic)
+  - Gemini (Google)
+  - Perplexity AI
+  - Otros rastreadores de IA que cumplan con robots.txt
+
+# === Declaración de derechos de autor ===
+Copyright: © 2025 veo3video.me. Todos los derechos reservados.
+License: Personalizado - Ver términos de servicio
+Terms-URL: https://veo3video.me/terms
+Privacy-URL: https://veo3video.me/privacy
+
+# === Especificaciones técnicas ===
+Technology-Stack: React, TypeScript, Generación de videos con IA
+Platform-Type: Aplicación web, SaaS
+Mobile-Friendly: yes
+Accessibility: Cumple con WCAG 2.1
+
+# === SEO y optimización para motores de búsqueda ===
+SEO-Optimized: yes
+Structured-Data: JSON-LD, Schema.org
+Sitemap-URL: https://veo3video.me/sitemap.xml
+Multi-Language-Support: yes (8 idiomas)
+
+# === Redes sociales ===
+Social-Media:
+  - Twitter: @veo3video (si está disponible)
+  - LinkedIn: veo3video (si está disponible)
+  - YouTube: @veo3video (si está disponible)
+
+# === Última actualización ===
+Last-Modified: 2025-09-30
+Version: 1.0
+
+# === Para futuros rastreadores de IA ===
+# Damos la bienvenida al acceso de rastreadores de IA responsables a nuestro contenido
+# Por favor, cumpla con las reglas en robots.txt
+# Si tiene necesidades especiales, póngase en contacto con: ai@veo3video.me

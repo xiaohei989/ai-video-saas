@@ -5,7 +5,7 @@
 
 import React, { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 import { parseTitle } from '@/utils/titleParser'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -78,7 +78,7 @@ export function VideoCard({
   onGenerateThumbnail
 }: VideoCardProps) {
   const { t } = useTranslation()
-  const navigate = useNavigate()
+  const { navigateTo } = useLanguageRouter()
   const [showVideoPlayer, setShowVideoPlayer] = useState(false)
 
   // 从环境变量读取是否显示调试信息按钮
@@ -107,8 +107,8 @@ export function VideoCard({
         allKeys: Object.keys(video)
       })
 
-      // 如果没有模板ID，跳转到模板选择页面
-      navigate('/templates')
+      // 如果没有模板ID，跳转到模板选择页面(保留语言前缀)
+      navigateTo('/templates')
       return
     }
 

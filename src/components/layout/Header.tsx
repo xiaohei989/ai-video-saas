@@ -79,7 +79,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
   const { theme, setTheme } = useTheme()
-  const { currentLanguage, changeLanguage: changeLanguageRouter } = useLanguageRouter()
+  const { currentLanguage, changeLanguage: changeLanguageRouter, navigateTo } = useLanguageRouter()
   
   // 移动端强制导航方案
   const [isNavigating, setIsNavigating] = useState(false)
@@ -319,9 +319,9 @@ export function Header({ className = "" }: HeaderProps = {}) {
       
       console.log('Calling signOut function...')
       await signOut()
-      
+
       console.log('Sign out successful, navigating to home')
-      navigate('/')
+      navigateTo('/')
     } catch (error: any) {
       console.error('Sign out error:', error)
     } finally {

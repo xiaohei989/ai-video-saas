@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTranslation } from 'react-i18next'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 import { 
   Loader2, 
   User, 
@@ -19,7 +20,7 @@ import {
   Save,
   X
 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+
 import { toast } from 'sonner'
 
 interface SocialLinks {
@@ -31,7 +32,7 @@ interface SocialLinks {
 
 export default function ProfileEditPage() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
+  const { navigateTo } = useLanguageRouter()
   const { user, profile, updateProfile, refreshProfile } = useAuth()
   
   // 表单状态
@@ -507,7 +508,7 @@ export default function ProfileEditPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate('/profile')}
+            onClick={() => navigateTo('/profile')}
             disabled={isSaving}
           >
             {t('common.cancel')}

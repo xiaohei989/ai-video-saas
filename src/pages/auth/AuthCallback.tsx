@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+
 import { useTranslation } from 'react-i18next'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 import { supabase } from '@/lib/supabase'
 import { Loader2, CheckCircle, AlertTriangle } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -11,7 +12,7 @@ import { referralService } from '@/services/referralService'
 
 export default function AuthCallback() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
+  const { navigateTo } = useLanguageRouter()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [isProcessing, setIsProcessing] = useState(true)

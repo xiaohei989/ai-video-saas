@@ -1,5 +1,6 @@
 # AI.txt - AI爬虫元数据文件
 # 网站: veo3video.me
+# 语言: 简体中文
 # 更新时间: 2025-09-30
 
 # === AI训练数据使用政策 ===
@@ -12,29 +13,29 @@ Commercial-Use: allowed
 
 # === 内容归属要求 ===
 Attribution-Required: recommended
-Attribution-Text: "数据来源: veo3video.me - ASMR视频AI生成平台"
+Attribution-Text: "数据来源: veo3video.me - AI病毒视频生成平台"
 # 说明: 推荐(但不强制)在使用我们的内容时注明出处
 
 # === 内容类型和主题 ===
 Content-Type: viral-video-saas, ai-generated-content, asmr, social-media-content, mobile-first-video
 Content-Category: technology, entertainment, creative-tools, video-generation, social-media-marketing
-Primary-Language: zh-CN, en-US
+Primary-Language: zh-CN
 Supported-Languages: zh, en, ja, ko, es, de, fr, ar
-Video-Format: 9:16 (TikTok/Instagram optimized), 16:9
-# 说明: 多语言病毒式视频AI生成SaaS平台，专为社交媒体优化
+Video-Format: 9:16 (TikTok/Instagram优化), 16:9
+# 说明: 多语言病毒式视频AI生成SaaS平台,专为社交媒体优化
 
 # === 网站主要功能 ===
-Service-Description: AI-powered viral video generation platform - Create scroll-stopping content in 3 minutes
+Service-Description: AI驱动的病毒视频生成平台 - 3分钟创建吸睛内容
 Key-Features:
-  - Viral video generation in 3 minutes
-  - One-click viral templates (ASMR, magic effects, miniature surprises)
-  - TikTok/Instagram optimized 9:16 format
-  - 70% cheaper than Google's direct API
-  - No editing skills required
-  - Multi-language support (8 languages)
-  - Instant HD downloads
-  - Professional quality results
-Target-Audience: tiktok-creators, instagram-influencers, content-creators, social-media-managers, marketing-agencies, small-businesses
+  - 3分钟生成病毒视频
+  - 一键病毒模板(ASMR、魔法特效、微型惊喜)
+  - TikTok/Instagram优化的9:16格式
+  - 比Google直接API便宜70%
+  - 无需编辑技能
+  - 多语言支持(8种语言)
+  - 即时高清下载
+  - 专业品质效果
+Target-Audience: 抖音创作者、Instagram网红、内容创作者、社交媒体经理、营销机构、小型企业
 
 # === 数据更新频率 ===
 Content-Update-Frequency: daily
@@ -43,7 +44,7 @@ Content-Update-Frequency: daily
 # === API访问 ===
 Public-API: no
 API-Documentation: https://veo3video.me/help
-# 说明: 目前不提供公开API，仅供企业版用户
+# 说明: 目前不提供公开API,仅供企业版用户
 
 # === 隐私和数据保护 ===
 User-Privacy: protected
@@ -57,21 +58,21 @@ AI-Policy-URL: https://veo3video.me/ai-policy
 
 # === 可爬取的内容范围 ===
 Crawlable-Content:
-  - Viral video templates
-  - Template descriptions and categories
-  - Public video examples
-  - Help documentation
-  - Blog posts (if available)
-  - Product descriptions
-  - Pricing information
-  - Success stories and use cases
+  - 病毒视频模板
+  - 模板描述和分类
+  - 公开视频示例
+  - 帮助文档
+  - 博客文章(如有)
+  - 产品描述
+  - 定价信息
+  - 成功案例和使用场景
 
 Non-Crawlable-Content:
-  - User private videos
-  - User personal information
-  - Payment information
-  - Admin panels
-  - Internal tools
+  - 用户私人视频
+  - 用户个人信息
+  - 支付信息
+  - 管理员面板
+  - 内部工具
 
 # === 特殊说明 ===
 Notes: |
@@ -97,31 +98,34 @@ Notes: |
   - Claude (Anthropic)
   - Gemini (Google)
   - Perplexity AI
+  - 百度文心一言
   - 其他遵守robots.txt的AI爬虫
 
 # === 版权声明 ===
-Copyright: © 2025 veo3video.me. All rights reserved.
-License: Custom - See terms of service
+Copyright: © 2025 veo3video.me. 保留所有权利。
+License: 自定义 - 详见服务条款
 Terms-URL: https://veo3video.me/terms
 Privacy-URL: https://veo3video.me/privacy
 
 # === 技术规格 ===
-Technology-Stack: React, TypeScript, AI Video Generation
-Platform-Type: Web Application, SaaS
+Technology-Stack: React, TypeScript, AI视频生成
+Platform-Type: Web应用程序, SaaS
 Mobile-Friendly: yes
-Accessibility: WCAG 2.1 compliant
+Accessibility: WCAG 2.1 合规
 
 # === SEO和搜索引擎友好性 ===
 SEO-Optimized: yes
 Structured-Data: JSON-LD, Schema.org
 Sitemap-URL: https://veo3video.me/sitemap.xml
-Multi-Language-Support: yes (8 languages)
+Multi-Language-Support: yes (8种语言)
 
 # === 社交媒体 ===
 Social-Media:
-  - Twitter: @veo3video (if available)
-  - LinkedIn: veo3video (if available)
-  - YouTube: @veo3video (if available)
+  - Twitter: @veo3video (如有)
+  - LinkedIn: veo3video (如有)
+  - YouTube: @veo3video (如有)
+  - 微博: @veo3video (如有)
+  - 微信公众号: veo3video (如有)
 
 # === 最后更新 ===
 Last-Modified: 2025-09-30
@@ -130,4 +134,4 @@ Version: 1.0
 # === 面向未来的AI爬虫 ===
 # 我们欢迎负责任的AI爬虫访问我们的内容
 # 请遵守 robots.txt 中的规则
-# 如有特殊需求，请联系: ai@veo3video.me
+# 如有特殊需求,请联系: ai@veo3video.me

@@ -8,8 +8,9 @@ import { Heart, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useLike } from '@/hooks/useLike'
 import { useAuthState } from '@/hooks/useAuthState'
-import { useNavigate } from 'react-router-dom'
+
 import { useTranslation } from 'react-i18next'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 
 interface LikeCounterButtonProps {
   templateId: string
@@ -45,7 +46,7 @@ export function LikeCounterButton({
   disableBaselineLoad = false // 🚀 改为false，允许在需要时进行基线加载
 }: LikeCounterButtonProps) {
   const { user } = useAuthState()
-  const navigate = useNavigate()
+  const { navigateTo } = useLanguageRouter()
   const { t } = useTranslation()
 
   const {
@@ -102,7 +103,7 @@ export function LikeCounterButton({
 
     if (!user) {
       // 未登录用户点击跳转到登录页
-      navigate('/signin')
+      navigateTo('/signin')
       return
     }
 

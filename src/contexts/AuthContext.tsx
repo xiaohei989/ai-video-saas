@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { supabase, ensureValidSession } from '@/lib/supabase'
-import { useNavigate } from 'react-router-dom'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 import { referralService } from '@/services/referralService'
 import { edgeCacheClient } from '@/services/EdgeFunctionCacheClient'
 import i18n from '@/i18n/config'
@@ -95,7 +95,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 // 认证提供者组件
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const navigate = useNavigate()
+  const { navigateTo } = useLanguageRouter()
   // 🚀 关键修复：同步初始化user和loading状态，避免状态不一致
   const getInitialAuthState = () => {
     try {
@@ -661,7 +661,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             
             if (isUserInitiatedSignIn) {
               console.log('[AUTH] User-initiated sign in from auth page, navigating to templates')
-              navigate('/templates')
+              navigateTo('/templates')
             } else {
             }
             
@@ -693,11 +693,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             stopTokenCheck()
             console.log('[AUTH] User signed out')
             isInitialLoadRef.current = false
-            navigate('/')
+            navigateTo('/')
             break
           case 'PASSWORD_RECOVERY':
             console.log('[AUTH] Password recovery, navigating to reset page')
-            navigate('/reset-password')
+            navigateTo('/reset-password')
             break
           case 'USER_UPDATED':
             console.log('[AUTH] User updated, refreshing profile')
@@ -1109,7 +1109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // Use i18n.t() for translation since we can't use hook in this context
       toast.success(i18n.t('notifications.operationCompleted'))
-      navigate('/profile')
+      navigateTo('/profile')
     } catch (err) {
       setError(err as AuthError)
       throw err

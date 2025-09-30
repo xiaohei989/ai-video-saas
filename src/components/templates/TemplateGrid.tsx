@@ -17,6 +17,7 @@ import { useAnalytics } from '@/hooks/useAnalytics'
 import { simpleTemplatePreload } from '@/services/simpleTemplatePreload'
 import { likesCacheService } from '@/services/likesCacheService'
 import { transformCDNUrl } from '@/config/cdnConfig'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 
 // 模板类型定义（与数据库转换后的格式一致）
 interface Template {
@@ -158,7 +159,7 @@ const TemplateCard = memo(({
 }) => {
   const { t } = useTranslation()
   const { trackTemplateView, trackEvent } = useAnalytics()
-  const navigate = useNavigate()
+  const { navigateTo } = useLanguageRouter()
 
   // 🚀 管理实际视频URL（可能是缓存URL）
   const [actualVideoUrl, setActualVideoUrl] = useState(
@@ -225,8 +226,8 @@ const TemplateCard = memo(({
     if (onUseTemplate) {
       onUseTemplate(template)
     } else {
-      // 默认行为：导航到创建页面
-      navigate(`/create?template=${template.slug}`)
+      // 默认行为：导航到创建页面（保留语言前缀）
+      navigateTo(`/create?template=${template.slug}`)
     }
   }
 

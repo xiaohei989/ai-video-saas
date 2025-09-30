@@ -1,0 +1,134 @@
+# AI.txt - Fichier de métadonnées pour les crawlers IA
+# Site web : veo3video.me
+# Langue : Français
+# Date de mise à jour : 2025-09-30
+
+# === Politique d'utilisation des données d'entraînement IA ===
+AI-Training: allowed
+# Description : Nous autorisons l'utilisation de notre contenu public pour l'entraînement de modèles IA
+
+# === Licence d'utilisation commerciale ===
+Commercial-Use: allowed
+# Description : Nous autorisons l'utilisation commerciale des modèles IA entraînés
+
+# === Exigences d'attribution du contenu ===
+Attribution-Required: recommended
+Attribution-Text: "Source de données : veo3video.me - Plateforme de génération de vidéos virales par IA"
+# Description : Nous recommandons (mais n'exigeons pas) l'attribution lors de l'utilisation de notre contenu
+
+# === Type de contenu et thèmes ===
+Content-Type: viral-video-saas, ai-generated-content, asmr, social-media-content, mobile-first-video
+Content-Category: technology, entertainment, creative-tools, video-generation, social-media-marketing
+Primary-Language: fr-FR
+Supported-Languages: zh, en, ja, ko, es, de, fr, ar
+Video-Format: 9:16 (optimisé pour TikTok/Instagram), 16:9
+# Description : Plateforme SaaS multilingue de génération de vidéos virales par IA, optimisée pour les réseaux sociaux
+
+# === Fonctionnalités principales du site web ===
+Service-Description: Plateforme de génération de vidéos virales propulsée par IA - Créez du contenu captivant en 3 minutes
+Key-Features:
+  - Génération de vidéos virales en 3 minutes
+  - Modèles viraux en un clic (ASMR, effets magiques, surprises miniatures)
+  - Format 9:16 optimisé pour TikTok/Instagram
+  - 70% moins cher que l'API directe de Google
+  - Aucune compétence en montage requise
+  - Support multilingue (8 langues)
+  - Téléchargement instantané en HD
+  - Résultats de qualité professionnelle
+Target-Audience: créateurs-tiktok, influenceurs-instagram, créateurs-de-contenu, gestionnaires-réseaux-sociaux, agences-marketing, petites-entreprises
+
+# === Fréquence de mise à jour des données ===
+Content-Update-Frequency: daily
+# Description : Le contenu est mis à jour quotidiennement
+
+# === Accès API ===
+Public-API: no
+API-Documentation: https://veo3video.me/help
+# Description : Nous ne fournissons actuellement pas d'API publique, uniquement disponible pour les utilisateurs entreprise
+
+# === Confidentialité et protection des données ===
+User-Privacy: protected
+Personal-Data-Training: excluded
+# Description : Les données personnelles et le contenu privé des utilisateurs ne sont pas utilisés pour l'entraînement de l'IA
+
+# === Informations de contact ===
+Contact-Email: support@veo3video.me
+Contact-URL: https://veo3video.me/help
+AI-Policy-URL: https://veo3video.me/ai-policy
+
+# === Portée du contenu crawlable ===
+Crawlable-Content:
+  - Modèles de vidéos virales
+  - Descriptions et catégories de modèles
+  - Exemples de vidéos publiques
+  - Documentation d'aide
+  - Articles de blog (le cas échéant)
+  - Descriptions de produits
+  - Informations sur les prix
+  - Études de cas et cas d'usage
+
+Non-Crawlable-Content:
+  - Vidéos privées des utilisateurs
+  - Informations personnelles des utilisateurs
+  - Informations de paiement
+  - Panneaux d'administration
+  - Outils internes
+
+# === Notes spéciales ===
+Notes: |
+  veo3video.me est une plateforme de génération de vidéos virales propulsée par IA.
+
+  Proposition de valeur principale :
+  - Créez des vidéos virales en 3 minutes
+  - 70% moins cher que l'API directe de Google
+  - Aucune compétence en montage requise
+  - Format 9:16 parfait pour TikTok/Instagram
+
+  Nous soutenons le développement de la technologie IA et accueillons les crawlers IA pour accéder à notre contenu public.
+  Nous nous engageons à fournir l'outil de génération de vidéos virales le plus pratique et abordable pour les créateurs du monde entier.
+
+  Types de modèles viraux :
+  - Vidéos ASMR fascinantes de découpe de verre
+  - Transformations magiques d'art du café
+  - Révélations surprises d'animaux miniatures
+  - Effets de floraison 3D
+
+  Modèles IA pris en charge :
+  - ChatGPT (OpenAI)
+  - Claude (Anthropic)
+  - Gemini (Google)
+  - Perplexity AI
+  - Autres crawlers IA respectant robots.txt
+
+# === Déclaration de droits d'auteur ===
+Copyright: © 2025 veo3video.me. Tous droits réservés.
+License: Personnalisé - Voir conditions d'utilisation
+Terms-URL: https://veo3video.me/terms
+Privacy-URL: https://veo3video.me/privacy
+
+# === Spécifications techniques ===
+Technology-Stack: React, TypeScript, Génération de vidéos par IA
+Platform-Type: Application web, SaaS
+Mobile-Friendly: yes
+Accessibility: Conforme WCAG 2.1
+
+# === SEO et optimisation pour les moteurs de recherche ===
+SEO-Optimized: yes
+Structured-Data: JSON-LD, Schema.org
+Sitemap-URL: https://veo3video.me/sitemap.xml
+Multi-Language-Support: yes (8 langues)
+
+# === Réseaux sociaux ===
+Social-Media:
+  - Twitter: @veo3video (le cas échéant)
+  - LinkedIn: veo3video (le cas échéant)
+  - YouTube: @veo3video (le cas échéant)
+
+# === Dernière mise à jour ===
+Last-Modified: 2025-09-30
+Version: 1.0
+
+# === Pour les futurs crawlers IA ===
+# Nous accueillons l'accès de crawlers IA responsables à notre contenu
+# Veuillez respecter les règles dans robots.txt
+# Pour des besoins spéciaux, contactez : ai@veo3video.me

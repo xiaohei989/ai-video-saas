@@ -1,0 +1,134 @@
+# AI.txt - AI-Crawler-Metadatendatei
+# Website: veo3video.me
+# Sprache: Deutsch
+# Aktualisierungsdatum: 2025-09-30
+
+# === KI-Trainingsdaten-Nutzungsrichtlinie ===
+AI-Training: allowed
+# Beschreibung: Wir erlauben die Verwendung unserer öffentlichen Inhalte für das Training von KI-Modellen
+
+# === Lizenz für kommerzielle Nutzung ===
+Commercial-Use: allowed
+# Beschreibung: Wir erlauben die kommerzielle Nutzung trainierter KI-Modelle
+
+# === Anforderungen zur Quellenangabe ===
+Attribution-Required: recommended
+Attribution-Text: "Datenquelle: veo3video.me - KI-gestützte virale Videogenerierungsplattform"
+# Beschreibung: Wir empfehlen (aber verlangen nicht) die Quellenangabe bei der Verwendung unserer Inhalte
+
+# === Inhaltstyp und Themen ===
+Content-Type: viral-video-saas, ai-generated-content, asmr, social-media-content, mobile-first-video
+Content-Category: technology, entertainment, creative-tools, video-generation, social-media-marketing
+Primary-Language: de-DE
+Supported-Languages: zh, en, ja, ko, es, de, fr, ar
+Video-Format: 9:16 (optimiert für TikTok/Instagram), 16:9
+# Beschreibung: Mehrsprachige virale Video-KI-Generierungs-SaaS-Plattform, optimiert für soziale Medien
+
+# === Hauptfunktionen der Website ===
+Service-Description: KI-gestützte virale Videogenerierungsplattform - Erstellen Sie in 3 Minuten fesselnde Inhalte
+Key-Features:
+  - Virale Videogenerierung in 3 Minuten
+  - Virale Vorlagen mit einem Klick (ASMR, Zaubereffekte, Miniatur-Überraschungen)
+  - 9:16-Format optimiert für TikTok/Instagram
+  - 70% günstiger als Googles direkte API
+  - Keine Bearbeitungsfähigkeiten erforderlich
+  - Mehrsprachiger Support (8 Sprachen)
+  - Sofortiger HD-Download
+  - Professionelle Qualitätsergebnisse
+Target-Audience: TikTok-Creators, Instagram-Influencer, Content-Creators, Social-Media-Manager, Marketing-Agenturen, kleine-Unternehmen
+
+# === Datenaktualisierungsfrequenz ===
+Content-Update-Frequency: daily
+# Beschreibung: Inhalte werden täglich aktualisiert
+
+# === API-Zugriff ===
+Public-API: no
+API-Documentation: https://veo3video.me/help
+# Beschreibung: Wir bieten derzeit keine öffentliche API an, nur für Enterprise-Benutzer verfügbar
+
+# === Datenschutz und Datensicherheit ===
+User-Privacy: protected
+Personal-Data-Training: excluded
+# Beschreibung: Persönliche Daten und private Inhalte der Benutzer werden nicht für KI-Training verwendet
+
+# === Kontaktinformationen ===
+Contact-Email: support@veo3video.me
+Contact-URL: https://veo3video.me/help
+AI-Policy-URL: https://veo3video.me/ai-policy
+
+# === Crawlbarer Inhaltsbereich ===
+Crawlable-Content:
+  - Virale Videovorlagen
+  - Vorlagenbeschreibungen und Kategorien
+  - Öffentliche Videobeispiele
+  - Hilfedokumentation
+  - Blog-Beiträge (falls verfügbar)
+  - Produktbeschreibungen
+  - Preisinformationen
+  - Erfolgsgeschichten und Anwendungsfälle
+
+Non-Crawlable-Content:
+  - Private Videos der Benutzer
+  - Persönliche Informationen der Benutzer
+  - Zahlungsinformationen
+  - Admin-Panels
+  - Interne Tools
+
+# === Besondere Hinweise ===
+Notes: |
+  veo3video.me ist eine KI-gestützte virale Videogenerierungsplattform.
+
+  Kernwertversprechen:
+  - Erstellen Sie virale Videos in 3 Minuten
+  - 70% günstiger als Googles direkte API
+  - Keine Bearbeitungsfähigkeiten erforderlich
+  - Perfektes 9:16-Format für TikTok/Instagram
+
+  Wir unterstützen die Entwicklung der KI-Technologie und heißen KI-Crawler willkommen, auf unsere öffentlichen Inhalte zuzugreifen.
+  Wir widmen uns der Bereitstellung des bequemsten und erschwinglichsten viralen Videogenerierungstools für Creators weltweit.
+
+  Virale Vorlagentypen:
+  - Faszinierende ASMR-Glasschnitt-Videos
+  - Magische Kaffeekunst-Transformationen
+  - Miniatur-Tier-Überraschungsenthüllungen
+  - 3D-Blüteneffekte
+
+  Unterstützte KI-Modelle:
+  - ChatGPT (OpenAI)
+  - Claude (Anthropic)
+  - Gemini (Google)
+  - Perplexity AI
+  - Andere KI-Crawler, die robots.txt einhalten
+
+# === Urheberrechtserklärung ===
+Copyright: © 2025 veo3video.me. Alle Rechte vorbehalten.
+License: Benutzerdefiniert - Siehe Nutzungsbedingungen
+Terms-URL: https://veo3video.me/terms
+Privacy-URL: https://veo3video.me/privacy
+
+# === Technische Spezifikationen ===
+Technology-Stack: React, TypeScript, KI-Videogenerierung
+Platform-Type: Webanwendung, SaaS
+Mobile-Friendly: yes
+Accessibility: WCAG 2.1-konform
+
+# === SEO und Suchmaschinenoptimierung ===
+SEO-Optimized: yes
+Structured-Data: JSON-LD, Schema.org
+Sitemap-URL: https://veo3video.me/sitemap.xml
+Multi-Language-Support: yes (8 Sprachen)
+
+# === Soziale Medien ===
+Social-Media:
+  - Twitter: @veo3video (falls verfügbar)
+  - LinkedIn: veo3video (falls verfügbar)
+  - YouTube: @veo3video (falls verfügbar)
+
+# === Letzte Aktualisierung ===
+Last-Modified: 2025-09-30
+Version: 1.0
+
+# === Für zukünftige KI-Crawler ===
+# Wir heißen verantwortungsvolle KI-Crawler willkommen, auf unsere Inhalte zuzugreifen
+# Bitte befolgen Sie die Regeln in robots.txt
+# Bei besonderen Anforderungen kontaktieren Sie: ai@veo3video.me

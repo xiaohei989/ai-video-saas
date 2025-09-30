@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
+
 import { Gem, ArrowUpRight, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/AuthContext'
@@ -12,7 +13,7 @@ interface CreditDisplayProps {
 
 export function CreditDisplay({ className }: CreditDisplayProps) {
   const { t } = useTranslation()
-  const navigate = useNavigate()
+  const { navigateTo } = useLanguageRouter()
   const { user, profile, loading: authLoading } = useAuth()
   const [subscription, setSubscription] = useState<any>(null)
 
@@ -69,7 +70,7 @@ export function CreditDisplay({ className }: CreditDisplayProps) {
       {/* 升级按钮 - 仅对免费用户显示，企业用户不显示，移动端更紧凑 */}
       {isFreeUser && !isEnterpriseUser && (
         <Button
-          onClick={() => navigate('/pricing')}
+          onClick={() => navigateTo('/pricing')}
           size="sm"
           variant="default"
           className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-all duration-200 shadow-sm hover:shadow-md px-1 py-0.5 md:px-1.5 md:py-0.5 text-[9px] md:text-xs h-5 md:h-6"

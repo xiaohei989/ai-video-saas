@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTranslation } from 'react-i18next'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 import { Loader2, Lock, CheckCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function ResetPasswordForm() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
+  const { navigateTo } = useLanguageRouter()
   const { updatePassword, session, loading } = useAuth()
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -58,7 +59,7 @@ export default function ResetPasswordForm() {
       
       // 3秒后跳转到个人资料页
       setTimeout(() => {
-        navigate('/profile')
+        navigateTo('/profile')
       }, 3000)
     } catch (err: any) {
       console.error('Password update error:', err)

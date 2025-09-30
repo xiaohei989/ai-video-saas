@@ -9,9 +9,10 @@ import { Heart, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useLike } from '@/hooks/useLike'
 import { useAuthState } from '@/hooks/useAuthState'
-import { useNavigate } from 'react-router-dom'
+
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 
 interface LikeButtonProps {
   templateId: string
@@ -41,7 +42,7 @@ export function LikeButton({
   enableHapticFeedback = true
 }: LikeButtonProps) {
   const { user } = useAuthState()
-  const navigate = useNavigate()
+  const { navigateTo } = useLanguageRouter()
   const { t } = useTranslation()
   
   const {
@@ -107,7 +108,7 @@ export function LikeButton({
 
     if (!user) {
       toast.error(t('like.loginToLike'))
-      navigate('/signin')
+      navigateTo('/signin')
       return
     }
 

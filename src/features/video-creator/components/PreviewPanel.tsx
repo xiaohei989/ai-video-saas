@@ -1,5 +1,6 @@
 import { useMemo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 import { Play, Loader2, Clock, Zap, Monitor, Smartphone, Lock } from 'lucide-react'
 import { Template } from '../data/templates'
 import { localizeTemplate } from '../data/templates/index'
@@ -24,7 +25,7 @@ import { useTemplateLikes } from '@/hooks/useTemplateLikes'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useQuery } from '@tanstack/react-query'
 import stripeService from '@/services/stripeService'
-import { useNavigate } from 'react-router-dom'
+
 
 interface PreviewPanelProps {
   template: Template
@@ -62,7 +63,7 @@ export default function PreviewPanel({
   
   // 本地化模板
   const localizedTemplate = localizeTemplate(template, i18n.language)
-  const navigate = useNavigate()
+  const { navigateTo } = useLanguageRouter()
   // Force re-render every second to update time
   const [, setTick] = useState(0)
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false)
@@ -324,7 +325,7 @@ export default function PreviewPanel({
             <AlertDialogAction 
               onClick={() => {
                 setShowUpgradeDialog(false)
-                navigate('/pricing')
+                navigateTo('/pricing')
               }}
               className="bg-blue-600 hover:bg-blue-700"
             >

@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 import ConfigPanel from './ConfigPanel'
 import PreviewPanel from './PreviewPanel'
 import PromptSection from './PromptSection'
@@ -23,7 +24,7 @@ export default function VideoCreator() {
   const [searchParams] = useSearchParams()
   const templateIdFromUrl = searchParams.get('template')
   const paramsFromUrl = searchParams.get('params')
-  const navigate = useNavigate()
+  const { navigateTo } = useLanguageRouter()
   const authContext = useContext(AuthContext)
   const user = authContext?.user
   const { trackVideoGeneration, trackTemplateView, trackTemplateUse } = useAnalytics()
@@ -244,7 +245,7 @@ export default function VideoCreator() {
           }),
           action: submitStatus.tier !== 'enterprise' ? {
             label: t('videoCreator.upgradePlan'),
-            onClick: () => navigate('/pricing')
+            onClick: () => navigateTo('/pricing')
           } : undefined
         })
         return
@@ -321,7 +322,7 @@ export default function VideoCreator() {
           }),
           action: {
             label: t('videoCreator.viewPricingPlans'),
-            onClick: () => navigate('/pricing')
+            onClick: () => navigateTo('/pricing')
           }
         })
         return
@@ -336,7 +337,7 @@ export default function VideoCreator() {
         }),
         action: {
           label: t('videoCreator.viewPricingPlans'),
-          onClick: () => navigate('/pricing')
+          onClick: () => navigateTo('/pricing')
         }
       })
       return
@@ -429,7 +430,7 @@ export default function VideoCreator() {
         }
         
         // 立即跳转到我的视频页面
-        navigate('/videos')
+        navigateTo('/videos')
         
         console.log('Task submitted successfully, redirecting to videos page')
         
@@ -467,7 +468,7 @@ export default function VideoCreator() {
             }),
             action: {
               label: t('videoCreator.viewPricingPlans'),
-              onClick: () => navigate('/pricing')
+              onClick: () => navigateTo('/pricing')
             }
           })
         } else if (errorMessage.includes('达到.*限制') || errorMessage.includes('并发') || errorMessage.includes('concurrent') || errorMessage.includes('limit')) {
@@ -482,7 +483,7 @@ export default function VideoCreator() {
               }),
               action: submitStatus.tier !== 'enterprise' ? {
                 label: t('videoCreator.upgradePlan'),
-                onClick: () => navigate('/pricing')
+                onClick: () => navigateTo('/pricing')
               } : undefined
             })
           } catch {
@@ -490,7 +491,7 @@ export default function VideoCreator() {
               description: errorMessage,
               action: {
                 label: t('videoCreator.upgradePlan'),
-                onClick: () => navigate('/pricing')
+                onClick: () => navigateTo('/pricing')
               }
             })
           }

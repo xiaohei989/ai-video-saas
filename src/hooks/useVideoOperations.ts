@@ -12,6 +12,7 @@ import videoShareService from '@/services/videoShareService'
 import { getPlayerUrl, getUrlInfo, getBestVideoUrl } from '@/utils/videoUrlPriority'
 import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 import { AuthContext } from '@/contexts/AuthContext'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 import type { Video, DeleteDialogState } from '@/types/video.types'
 
 interface UseVideoOperationsOptions {
@@ -57,7 +58,7 @@ export function useVideoOperations(options: UseVideoOperationsOptions = {}): Use
   const { t } = useTranslation()
   const authContext = useContext(AuthContext)
   const user = authContext?.user
-  const navigate = useNavigate()
+  const { navigateTo } = useLanguageRouter()
 
   // 状态管理
   const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
@@ -144,13 +145,13 @@ export function useVideoOperations(options: UseVideoOperationsOptions = {}): Use
         return
       }
 
-      // 导航到播放页面
-      navigate(`/video/${video.id}`)
+      // 导航到播放页面（保留语言前缀）
+      navigateTo(`/video/${video.id}`)
     } catch (error) {
       console.error('[useVideoOperations] 播放视频异常:', error)
       toast.error(t('videos.playFailed'))
     }
-  }, [user, t, navigate])
+  }, [user, t, navigateTo])
 
   /**
    * 下载视频
@@ -169,7 +170,7 @@ export function useVideoOperations(options: UseVideoOperationsOptions = {}): Use
     try {
       if (!isPaidUser) {
         toast.info(t('videos.upgradeToDownload'))
-        navigate('/pricing')
+        navigateTo('/pricing')
         return
       }
 
@@ -267,7 +268,7 @@ export function useVideoOperations(options: UseVideoOperationsOptions = {}): Use
       console.error('[useVideoOperations] 下载视频异常:', error)
       toast.error(t('videos.downloadFailed'))
     }
-  }, [user, t, navigate, isPaidUser, subscriptionLoading])
+  }, [user, t, navigateTo, isPaidUser, subscriptionLoading])
 
   /**
    * 动态缩略图生成
@@ -316,10 +317,10 @@ export function useVideoOperations(options: UseVideoOperationsOptions = {}): Use
    * 虚拟化网格重新生成操作
    */
   const handleVirtualRegenerate = useCallback((video: Video) => {
-    // 导航到创建页面，预填充模板信息
+    // 导航到创建页面，预填充模板信息（保留语言前缀）
     const templateId = video.template_id || ''
-    navigate(`/create?template=${templateId}&regenerate=${video.id}`)
-  }, [navigate])
+    navigateTo(`/create?template=${templateId}&regenerate=${video.id}`)
+  }, [navigateTo])
 
   return {
     // 状态

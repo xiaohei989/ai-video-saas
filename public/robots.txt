@@ -1,5 +1,6 @@
 # robots.txt for veo3video.me
-# 多语言ASMR视频AI生成平台
+# AI驱动的病毒视频生成平台 - 3分钟创建吸睛内容
+# AI-powered viral video generation platform - Create scroll-stopping content in 3 minutes
 
 # ===== 传统搜索引擎 =====
 
@@ -111,15 +112,27 @@ Disallow: /*.json$
 Disallow: /api/
 Disallow: /auth/callback
 
-# 允许访问的重要资源
+# 允许访问的重要资源(病毒视频内容)
 Allow: /templates/
 Allow: /videos/
 Allow: /pricing
 Allow: /help
+Allow: /about
 Allow: /*.webp$
 Allow: /*.jpg$
 Allow: /*.png$
 Allow: /*.mp4$
+
+# 允许访问多语言AI元数据文件
+Allow: /ai.txt
+Allow: /ai.zh.txt
+Allow: /ai.ja.txt
+Allow: /ai.ko.txt
+Allow: /ai.es.txt
+Allow: /ai.de.txt
+Allow: /ai.fr.txt
+Allow: /ai.ar.txt
+Allow: /.well-known/ai-plugin.json
 
 # ===== 网站地图 =====
 
@@ -136,7 +149,25 @@ Sitemap: https://veo3video.me/sitemap-de.xml
 Sitemap: https://veo3video.me/sitemap-fr.xml
 Sitemap: https://veo3video.me/sitemap-ar.xml
 
+# ===== 多语言AI元数据文件 =====
+# 我们提供多语言AI爬虫元数据文件:
+# 英语: https://veo3video.me/ai.txt
+# 中文: https://veo3video.me/ai.zh.txt
+# 日语: https://veo3video.me/ai.ja.txt
+# 韩语: https://veo3video.me/ai.ko.txt
+# 西班牙语: https://veo3video.me/ai.es.txt
+# 德语: https://veo3video.me/ai.de.txt
+# 法语: https://veo3video.me/ai.fr.txt
+# 阿拉伯语: https://veo3video.me/ai.ar.txt
+
 # ===== 备注 =====
 # 更新时间: 2025-09-30
 # 联系方式: support@veo3video.me
 # AI内容政策: https://veo3video.me/ai.txt
+# AI插件描述: https://veo3video.me/.well-known/ai-plugin.json
+#
+# 核心价值:
+# - 3分钟创建病毒视频
+# - 比Google API便宜70%
+# - TikTok/Instagram 9:16格式优化
+# - 无需编辑技能

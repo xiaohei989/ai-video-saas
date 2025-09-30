@@ -1,9 +1,10 @@
 // import React from 'react' // unused
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from 'react-i18next'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 import MembershipBadge from '@/components/subscription/MembershipBadge'
 import { useSEO } from '@/hooks/useSEO'
 import { 
@@ -19,7 +20,7 @@ import {
 
 export default function UserCenterPage() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
+  const { navigateTo } = useLanguageRouter()
   const { user, profile, signOut } = useAuth()
 
   // SEO优化
@@ -28,7 +29,7 @@ export default function UserCenterPage() {
   const handleSignOut = async () => {
     try {
       await signOut()
-      navigate('/')
+      navigateTo('/')
     } catch (error) {
       console.error('Sign out error:', error)
     }
