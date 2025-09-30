@@ -1112,10 +1112,37 @@
     "confirm": "確認"
   },
   "video": {
+    "myVideos": "マイビデオ",
+    "loading": "動画を読み込み中...",
+    "fetchingData": "動画データを取得中...",
+    "backgroundLoading": {
+      "mobile": "バックグラウンドで読み込み中...",
+      "desktop": "バックグラウンドでタスクステータスとその他のデータを読み込み中...",
+      "description": {
+        "mobile": "ページは利用可能です。バックグラウンドでデータを同期中",
+        "desktop": "基本コンテンツは読み込み済み。バックグラウンドでタスクステータスとその他の動画を取得中"
+      }
+    },
+    "downloadingProgress": "動画をダウンロード中 {{progress}}%",
+    "downloadingSize": "動画をダウンロード中 {{size}}MB",
+    "downloadComplete": "動画ダウンロード完了！",
+    "browserRestriction": "ブラウザの制限により、新しいウィンドウで動画を開いています...",
+    "saveAsInstruction": "新しいウィンドウで右クリックして「名前を付けて保存」で動画を保存してください",
+    "downloadError": "ダウンロード失敗: {{error}}",
+    "status": {
+      "pending": "保留中",
+      "processing": "処理中",
+      "completed": "完了",
+      "failed": "失敗"
+    },
+    "noVideos": "動画なし",
+    "noVideosDescription": "まだ動画コンテンツがありません、最初の動画を作成しましょう！",
+    "untitled": "無題の動画",
+    "play": "再生",
+    "generateFirst": "最初の動画を生成",
     "preview": "動画プレビュー",
     "previewPaused": "動画プレビューが一時停止されました",
     "previewFailed": "動画プレビューに失敗しました",
-    "loading": "動画を読み込み中...",
     "loadFailed": "動画の読み込みに失敗しました",
     "player": "動画プレーヤー",
     "thumbnail": "動画サムネイル",

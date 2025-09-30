@@ -1,0 +1,162 @@
+{
+  "schema_version": "v1",
+  "name_for_model": "veo3video",
+  "name_for_human": "Veo3Video ASMR Generator",
+  "description_for_model": "Veo3Video is an AI-powered ASMR video generation platform. It helps users create professional healing and relaxing short videos in 30 seconds. The platform offers a rich template library, personalized customization, and supports TikTok, Instagram, YouTube and other platforms. Key features include: AI video generation, ASMR content creation, template-based production, multi-language support (8 languages), HD video export, subscription plans, and credit system.",
+  "description_for_human": "Create professional ASMR videos in seconds with AI. No skills needed!",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "web_app",
+    "url": "https://veo3video.me",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://veo3video.me/logo.png",
+  "contact_email": "support@veo3video.me",
+  "legal_info_url": "https://veo3video.me/terms",
+  "website_url": "https://veo3video.me",
+  "primary_category": "media_creation",
+  "additional_categories": [
+    "video_editing",
+    "ai_tools",
+    "creative_tools",
+    "multimedia",
+    "saas"
+  ],
+  "tags": [
+    "asmr",
+    "video-generation",
+    "ai-video",
+    "content-creation",
+    "social-media",
+    "tiktok",
+    "youtube",
+    "short-videos",
+    "healing",
+    "relaxation"
+  ],
+  "languages": [
+    "zh-CN",
+    "en-US",
+    "ja-JP",
+    "ko-KR",
+    "es-ES",
+    "de-DE",
+    "fr-FR",
+    "ar-SA"
+  ],
+  "pricing": {
+    "model": "freemium",
+    "free_tier": {
+      "available": true,
+      "description": "Free tier with limited credits"
+    },
+    "paid_plans": [
+      {
+        "name": "Basic",
+        "price": "$9.99/month",
+        "features": [
+          "200 credits per month",
+          "Unlimited HD downloads",
+          "3 concurrent videos",
+          "9:16 portrait format",
+          "Email support"
+        ]
+      },
+      {
+        "name": "Pro",
+        "price": "$19.99/month",
+        "features": [
+          "1500 credits per month",
+          "Unlimited HD downloads",
+          "5 concurrent videos",
+          "9:16 portrait format",
+          "Priority support"
+        ]
+      },
+      {
+        "name": "Enterprise",
+        "price": "$99.99/month",
+        "features": [
+          "6000 credits per month",
+          "Unlimited HD downloads",
+          "10 concurrent videos",
+          "9:16 portrait format",
+          "Dedicated support",
+          "API access"
+        ]
+      }
+    ]
+  },
+  "features": {
+    "video_generation": {
+      "description": "AI-powered ASMR video generation",
+      "quality_options": ["standard", "high_quality"],
+      "formats": ["16:9", "9:16"],
+      "duration": "typically 1-3 minutes per video"
+    },
+    "templates": {
+      "description": "Rich template library for various styles",
+      "categories": ["creative", "visual", "relaxing", "healing"]
+    },
+    "multi_language": {
+      "description": "Full platform support for 8 languages",
+      "languages": ["Chinese", "English", "Japanese", "Korean", "Spanish", "German", "French", "Arabic"]
+    }
+  },
+  "technical_info": {
+    "platform": "Web Application",
+    "technology": "React, TypeScript, AI Video Generation",
+    "mobile_friendly": true,
+    "accessibility": "WCAG 2.1 compliant"
+  },
+  "seo_info": {
+    "keywords": [
+      "ASMR video generator",
+      "AI video creation",
+      "healing videos",
+      "relaxing content",
+      "short video maker",
+      "TikTok videos",
+      "YouTube ASMR",
+      "video templates",
+      "AI video editor"
+    ],
+    "target_audience": [
+      "Content creators",
+      "Social media marketers",
+      "Video producers",
+      "ASMR enthusiasts",
+      "Small businesses",
+      "Individual creators"
+    ]
+  },
+  "usage_examples": [
+    "Create ASMR relaxation videos for TikTok",
+    "Generate healing content for YouTube",
+    "Produce promotional videos for Instagram",
+    "Make creative short videos for social media",
+    "Design meditation and relaxation content"
+  ],
+  "support": {
+    "documentation_url": "https://veo3video.me/help",
+    "faq_url": "https://veo3video.me/help",
+    "contact_methods": [
+      {
+        "type": "email",
+        "value": "support@veo3video.me"
+      },
+      {
+        "type": "web_form",
+        "value": "https://veo3video.me/help"
+      }
+    ]
+  },
+  "privacy": {
+    "user_data_training": false,
+    "description": "User personal data and private content are not used for AI training"
+  },
+  "last_updated": "2025-09-30",
+  "version": "1.0.0"
+}

@@ -53,8 +53,8 @@
     "signInSuccess": "로그인 성공!",
     "loginSuccess": "로그인 성공!",
     "redirectingToApp": "앱으로 이동 중입니다...",
-    "completingLogin": "로그인을 완료하는 중",
-    "verifyingCredentials": "잠시만 기다려 주세요, 인증 정보를 확인 중입니다...",
+    "completingLogin": "로그인을 완료하는 중...",
+    "verifyingCredentials": "잠시만 기다려 주세요, 인증 정보를 확인 중입니다",
     "redirectingIn3Seconds": "3초 후 로그인 페이지로 이동합니다...",
     "redirectNow": "지금 로그인 페이지로 이동",
     "signUpError": "회원가입 실패",
@@ -68,7 +68,7 @@
     "checkEmail": "이메일을 확인하세요",
     "resetEmailSent": "비밀번호 재설정 링크가 이메일로 전송되었습니다",
     "newPassword": "새 비밀번호",
-    "newPasswordPlaceholder": "새 비밀번호 입력",
+    "newPasswordPlaceholder": "새 비밀번호를 입력해주세요",
     "updatePassword": "비밀번호 업데이트",
     "passwordUpdated": "비밀번호가 성공적으로 업데이트되었습니다",
     "termsAgreement": "회원가입을 통해 다음에 동의합니다",
@@ -77,8 +77,6 @@
     "invalidUsername": "잘못된 사용자명 형식",
     "emailAlreadyRegistered": "이메일이 이미 등록되어 있습니다",
     "googleSignUpError": "Google 회원가입 실패",
-    "completingLogin": "로그인을 완료하는 중...",
-    "verifyingCredentials": "잠시만 기다려 주세요, 인증 정보를 확인 중입니다",
     "sessionError": "세션을 설정할 수 없습니다, 다시 로그인해 주세요",
     "authError": "로그인 중 오류가 발생했습니다",
     "redirectingToLogin": "로그인 페이지로 이동 중입니다...",
@@ -92,7 +90,6 @@
     "userNotFound": "사용자를 찾을 수 없습니다",
     "rateLimitError": "요청이 너무 많습니다. 잠시 후 다시 시도해주세요",
     "resetPasswordError": "비밀번호 재설정에 실패했습니다",
-    "newPasswordPlaceholder": "새 비밀번호를 입력해주세요",
     "confirmNewPassword": "새 비밀번호 확인",
     "confirmNewPasswordPlaceholder": "새 비밀번호를 다시 입력해주세요",
     "updatingPassword": "업데이트 중...",
@@ -379,34 +376,26 @@
     "lastPage": "마지막 페이지"
   },
   "video": {
-    "myVideos": "내 비디오",
     "loading": "비디오 로딩 중...",
-    "fetchingData": "비디오 데이터 가져오기 중...",
     "backgroundLoading": {
       "mobile": "백그라운드에서 로딩 중...",
       "desktop": "백그라운드에서 작업 상태 및 추가 데이터 로딩 중...",
       "description": {
-        "mobile": "페이지 사용 가능, 백그라운드에서 데이터 동기화 중",
-        "desktop": "기본 콘텐츠 로드됨, 백그라운드에서 작업 상태 및 추가 비디오 가져오는 중"
+        "mobile": "페이지 준비 완료, 백그라운드에서 데이터 동기화 중",
+        "desktop": "기본 콘텐츠 로드 완료, 백그라운드에서 작업 상태 및 추가 비디오 가져오는 중"
       }
     },
-    "downloadingProgress": "비디오 다운로드 중 {{progress}}%",
-    "downloadingSize": "비디오 다운로드 중 {{size}}MB",
-    "downloadComplete": "비디오 다운로드 완료!",
-    "browserRestriction": "브라우저 제한으로 인해 새 창에서 비디오를 열고 있습니다...",
-    "saveAsInstruction": "새 창에서 마우스 오른쪽 클릭하여 '다른 이름으로 저장'을 선택하여 비디오를 저장해 주세요",
-    "downloadError": "다운로드 실패: {{error}}",
-    "status": {
-      "pending": "대기 중",
-      "processing": "처리 중",
-      "completed": "완료",
-      "failed": "실패"
-    },
-    "noVideos": "비디오 없음",
-    "noVideosDescription": "아직 비디오 콘텐츠가 없습니다. 첫 번째 비디오를 만들어 보세요!",
-    "untitled": "제목 없는 비디오",
-    "play": "재생",
-    "generateFirst": "첫 번째 비디오 생성"
+    "preview": "비디오 미리보기",
+    "previewPaused": "비디오 미리보기가 일시정지되었습니다",
+    "previewFailed": "비디오 미리보기에 실패했습니다",
+    "loadFailed": "비디오 로드에 실패했습니다",
+    "player": "비디오 플레이어",
+    "thumbnail": "비디오 썸네일",
+    "cache": {
+      "confirmClear": "비디오 관련 캐시를 모두 삭제하시겠습니까? 비디오 미리보기, 썸네일 캐시 등의 데이터가 삭제됩니다.",
+      "clearing": "캐시 삭제 중...",
+      "cleared": "캐시가 성공적으로 삭제되었습니다"
+    }
   },
   "time": {
     "justNow": "방금 전",
@@ -427,26 +416,29 @@
     }
   },
   "credits": {
-    "balance": "크레딧 잔액",
-    "buy": "크레딧 구매",
-    "history": "거래 내역",
-    "insufficient": "크레딧 부족"
+    "packages": {
+      "basic": "기본 패키지",
+      "pro": "프로 패키지",
+      "premium": "프리미엄 패키지",
+      "enterprise": "엔터프라이즈 패키지"
+    },
+    "popular": "인기",
+    "save": "{{percent}}% 절약",
+    "credits": "{{count}} 크레딧",
+    "bonusCredits": "+{{bonus}} 보너스 크레딧",
+    "actualReceive": "실제 획득: {{credits}} 크레딧",
+    "unitPrice": "단가: {{price}} / 크레딧",
+    "saveComparedToBasic": "기본 패키지대비 {{percent}}% 절약",
+    "buyNow": "지금 구매",
+    "processing": "처리 중..."
   },
   "common": {
+    "retry": "다시 시도",
+    "remaining": "남은 시간",
     "loading": "로딩 중...",
-    "error": "오류가 발생했습니다",
-    "success": "성공",
+    "error": "오류",
     "cancel": "취소",
-    "save": "저장",
-    "saving": "저장 중...",
-    "delete": "삭제",
-    "edit": "편집",
-    "view": "보기",
-    "viewAll": "모두 보기",
-    "share": "공유",
-    "signOut": "로그아웃",
-    "backToHome": "홈으로 돌아가기",
-    "loadMore": "더 보기"
+    "confirm": "확인"
   },
   "shareModal": {
     "title": "비디오 공유로 크레딧 획득",
@@ -486,7 +478,7 @@
     "clickGenerate": "생성을 클릭하여 비디오를 만들어보세요",
     "loginRequired": "비디오 생성을 위해 먼저 로그인해주세요",
     "cannotSubmit": "새 작업을 제출할 수 없습니다",
-    "upgradePlan": "플랜 업그레이드",
+    "upgradePlan": "요금제 업그레이드",
     "systemBusy": "시스템이 바쁩니다. 잠시 후 다시 시도해주세요",
     "submittingTask": "작업 제출 중...",
     "queuedForProcessing": "처리를 위해 대기열에 추가되었습니다...",
@@ -505,7 +497,6 @@
     "concurrencyLimitError": "🚫 동시 생성 한도에 도달했습니다",
     "concurrencyLimitDescription": "{{tier}} 사용자는 최대 {{limit}}개의 비디오를 동시에 생성할 수 있습니다",
     "viewPricingPlans": "요금제 보기",
-    "upgradePlan": "요금제 업그레이드",
     "finalizing": "최종 처리 중...",
     "restoring": "복구 중...",
     "unknownStatus": "알 수 없는 상태"
@@ -597,7 +588,7 @@
   },
   "subscription": {
     "basic": "기본",
-    "pro": "프로", 
+    "pro": "프로",
     "enterprise": "엔터프라이즈",
     "monthly": "/월",
     "subscribe": "구독",
@@ -611,7 +602,7 @@
     "toBeUpdated": "업데이트 예정",
     "billingInterval": {
       "monthly": "월간",
-      "annually": "연간", 
+      "annually": "연간",
       "freeMonths": "2개월 무료",
       "saveMonthly": "2개월 절약",
       "yearlyCredits": "연간 {{credits}} 크레딧",
@@ -710,23 +701,6 @@
       "cancelNote": "이 작업은 되돌릴 수 없지만 재구독은 가능합니다.",
       "cancelledNotice": "구독이 {{date}}에 취소됩니다. 그 전까지는 모든 기능을 정상적으로 사용할 수 있습니다."
     }
-  },
-  "credits": {
-    "packages": {
-      "basic": "기본 패키지",
-      "pro": "프로 패키지",
-      "premium": "프리미엄 패키지",
-      "enterprise": "엔터프라이즈 패키지"
-    },
-    "popular": "인기",
-    "save": "{{percent}}% 절약",
-    "credits": "{{count}} 크레딧",
-    "bonusCredits": "+{{bonus}} 보너스 크레딧",
-    "actualReceive": "실제 획득: {{credits}} 크레딧",
-    "unitPrice": "단가: {{price}} / 크레딧",
-    "saveComparedToBasic": "기본 패키지대비 {{percent}}% 절약",
-    "buyNow": "지금 구매",
-    "processing": "처리 중..."
   },
   "referral": {
     "loadingInfo": "초대 정보 로드 중...",
@@ -1007,7 +981,7 @@
       "title": "사용자 경험 향상을 위해 쿠키를 사용합니다",
       "description": "웹사이트 사용 현황을 파악하고 서비스 개선을 위해 Google Analytics를 사용합니다. 이 데이터는 익명화되어 있으며 광고에는 사용되지 않습니다.",
       "accept": "모두 허용",
-      "decline": "필수만 허용", 
+      "decline": "필수만 허용",
       "showDetails": "자세히 보기",
       "hideDetails": "자세히 숨기기",
       "essential": "필수 쿠키",
@@ -1095,28 +1069,6 @@
           "description": "개발 환경에서는 이벤트가 콘솔에만 출력되고 GA로 전송되지 않습니다. 프로덕션에서는 정상적으로 전송됩니다."
         }
       }
-    }
-  },
-  "common": {
-    "retry": "다시 시도",
-    "remaining": "남은 시간",
-    "loading": "로딩 중...",
-    "error": "오류",
-    "cancel": "취소",
-    "confirm": "확인"
-  },
-  "video": {
-    "preview": "비디오 미리보기",
-    "previewPaused": "비디오 미리보기가 일시정지되었습니다",
-    "previewFailed": "비디오 미리보기에 실패했습니다",
-    "loading": "비디오 로딩 중...",
-    "loadFailed": "비디오 로드에 실패했습니다",
-    "player": "비디오 플레이어",
-    "thumbnail": "비디오 썸네일",
-    "cache": {
-      "confirmClear": "비디오 관련 캐시를 모두 삭제하시겠습니까? 비디오 미리보기, 썸네일 캐시 등의 데이터가 삭제됩니다.",
-      "clearing": "캐시 삭제 중...",
-      "cleared": "캐시가 성공적으로 삭제되었습니다"
     }
   },
   "admin": {

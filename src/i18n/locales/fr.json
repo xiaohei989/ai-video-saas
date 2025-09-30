@@ -53,8 +53,8 @@
     "signInSuccess": "Connexion réussie !",
     "loginSuccess": "Connexion réussie !",
     "redirectingToApp": "Redirection vers l'application...",
-    "completingLogin": "Finalisation de la connexion",
-    "verifyingCredentials": "Veuillez patienter, vérification de vos informations d'identification...",
+    "completingLogin": "Finalisation de la connexion...",
+    "verifyingCredentials": "Veuillez patienter, vérification de vos identifiants",
     "redirectingIn3Seconds": "Redirection vers la page de connexion dans 3 secondes...",
     "redirectNow": "Aller à la page de connexion maintenant",
     "signUpError": "Échec de l'inscription",
@@ -68,7 +68,7 @@
     "checkEmail": "Vérifiez votre e-mail",
     "resetEmailSent": "Le lien de réinitialisation du mot de passe a été envoyé à votre e-mail",
     "newPassword": "Nouveau mot de passe",
-    "newPasswordPlaceholder": "Entrez le nouveau mot de passe",
+    "newPasswordPlaceholder": "Saisissez votre nouveau mot de passe",
     "updatePassword": "Mettre à jour le mot de passe",
     "passwordUpdated": "Mot de passe mis à jour avec succès",
     "termsAgreement": "En vous inscrivant, vous acceptez nos",
@@ -80,8 +80,6 @@
     "signingOut": "Déconnexion...",
     "signOutSuccess": "Déconnexion réussie",
     "signOutError": "Échec de la déconnexion",
-    "completingLogin": "Finalisation de la connexion...",
-    "verifyingCredentials": "Veuillez patienter, vérification de vos identifiants",
     "sessionError": "Impossible d'établir la session, veuillez vous reconnecter",
     "authError": "Une erreur s'est produite lors de la connexion",
     "redirectingToLogin": "Redirection vers la page de connexion...",
@@ -95,7 +93,6 @@
     "userNotFound": "Utilisateur non trouvé",
     "rateLimitError": "Trop de demandes, veuillez réessayer plus tard",
     "resetPasswordError": "Échec de la réinitialisation du mot de passe",
-    "newPasswordPlaceholder": "Saisissez votre nouveau mot de passe",
     "confirmNewPassword": "Confirmer le nouveau mot de passe",
     "confirmNewPasswordPlaceholder": "Saisissez à nouveau votre nouveau mot de passe",
     "updatingPassword": "Mise à jour...",
@@ -390,47 +387,26 @@
     "lastPage": "Dernière page"
   },
   "video": {
-    "myVideos": "Mes vidéos",
     "loading": "Chargement de la vidéo...",
-    "fetchingData": "Récupération des données vidéo...",
     "backgroundLoading": {
       "mobile": "Chargement en arrière-plan...",
-      "desktop": "Chargement du statut des tâches et de données supplémentaires en arrière-plan...",
+      "desktop": "Chargement du statut des tâches et d'autres données en arrière-plan...",
       "description": {
-        "mobile": "Page disponible, synchronisation des données en arrière-plan",
-        "desktop": "Contenu de base chargé, récupération du statut des tâches et de vidéos supplémentaires en arrière-plan"
+        "mobile": "Page prête, synchronisation des données en arrière-plan",
+        "desktop": "Contenu de base chargé, récupération du statut des tâches et d'autres vidéos en arrière-plan"
       }
     },
-    "downloadingProgress": "Téléchargement de la vidéo {{progress}}%",
-    "downloadingSize": "Téléchargement de la vidéo {{size}}Mo",
-    "downloadComplete": "Téléchargement de la vidéo terminé !",
-    "browserRestriction": "En raison des restrictions du navigateur, ouverture de la vidéo dans une nouvelle fenêtre...",
-    "saveAsInstruction": "Veuillez faire un clic droit et sélectionner 'Enregistrer sous' pour sauvegarder la vidéo dans la nouvelle fenêtre",
-    "downloadError": "Échec du téléchargement : {{error}}",
-    "status": {
-      "pending": "En attente",
-      "processing": "En cours",
-      "completed": "Terminé",
-      "failed": "Échec"
-    },
-    "noVideos": "Aucune vidéo",
-    "noVideosDescription": "Pas encore de contenu vidéo, créez votre première vidéo !",
-    "untitled": "Vidéo sans titre",
-    "play": "Lire",
-    "generateFirst": "Générez votre première vidéo",
-    "customTemplate": "Modèle personnalisé",
-    "actions": {
-      "useTemplate": "Utiliser le modèle",
-      "createNew": "Créer une nouvelle vidéo",
-      "download": "Télécharger la vidéo",
-      "share": "Partager la vidéo",
-      "delete": "Supprimer la vidéo"
-    },
-    "confirmDelete": "Confirmer la suppression",
-    "confirmDeleteDesc": "Êtes-vous sûr de vouloir supprimer cette vidéo ? Cette action ne peut pas être annulée.",
-    "videoTitle": "Titre de la vidéo",
-    "cancel": "Annuler",
-    "confirm": "Confirmer la suppression"
+    "preview": "Aperçu Vidéo",
+    "previewPaused": "Aperçu vidéo en pause",
+    "previewFailed": "Échec de l'aperçu vidéo",
+    "loadFailed": "Échec du chargement de la vidéo",
+    "player": "Lecteur Vidéo",
+    "thumbnail": "Miniature Vidéo",
+    "cache": {
+      "confirmClear": "Êtes-vous sûr de vouloir effacer tous les caches liés aux vidéos ? Cela supprimera les aperçus vidéo, les caches de miniatures et autres données.",
+      "clearing": "Suppression du cache...",
+      "cleared": "Cache supprimé avec succès"
+    }
   },
   "time": {
     "justNow": "À l'instant",
@@ -791,21 +767,12 @@
     }
   },
   "common": {
+    "retry": "Réessayer",
+    "remaining": "Restant",
     "loading": "Chargement...",
-    "error": "Une erreur s'est produite",
-    "success": "Succès",
+    "error": "Erreur",
     "cancel": "Annuler",
-    "save": "Enregistrer",
-    "saving": "Enregistrement...",
-    "delete": "Supprimer",
-    "edit": "Modifier",
-    "view": "Voir",
-    "viewAll": "Voir tout",
-    "share": "Partager",
-    "signOut": "Se déconnecter",
-    "backToHome": "Retour à l'accueil",
-    "loadMore": "Charger plus",
-    "unknownError": "Erreur inconnue"
+    "confirm": "Confirmer"
   },
   "shareModal": {
     "title": "Partager Vidéo & Gagner des Crédits",
@@ -1205,28 +1172,6 @@
         "description": "Centre d'aide générateur vidéo ASMR IA. Tutoriels création détaillés, FAQ, support technique. Guide démarrage rapide pour création vidéo.",
         "keywords": "centre d'aide,tutoriels création vidéo,guide création ASMR,FAQ,support technique,guide utilisateur"
       }
-    }
-  },
-  "common": {
-    "retry": "Réessayer",
-    "remaining": "Restant",
-    "loading": "Chargement...",
-    "error": "Erreur",
-    "cancel": "Annuler",
-    "confirm": "Confirmer"
-  },
-  "video": {
-    "preview": "Aperçu Vidéo",
-    "previewPaused": "Aperçu vidéo en pause",
-    "previewFailed": "Échec de l'aperçu vidéo",
-    "loading": "Chargement de la vidéo...",
-    "loadFailed": "Échec du chargement de la vidéo",
-    "player": "Lecteur Vidéo",
-    "thumbnail": "Miniature Vidéo",
-    "cache": {
-      "confirmClear": "Êtes-vous sûr de vouloir effacer tous les caches liés aux vidéos ? Cela supprimera les aperçus vidéo, les caches de miniatures et autres données.",
-      "clearing": "Suppression du cache...",
-      "cleared": "Cache supprimé avec succès"
     }
   },
   "admin": {

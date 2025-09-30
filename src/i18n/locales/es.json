@@ -53,8 +53,8 @@
     "signInSuccess": "¡Inicio de sesión exitoso!",
     "loginSuccess": "¡Inicio de sesión exitoso!",
     "redirectingToApp": "Redirigiendo a la aplicación...",
-    "completingLogin": "Completando inicio de sesión",
-    "verifyingCredentials": "Por favor espere, verificando sus credenciales...",
+    "completingLogin": "Completando inicio de sesión...",
+    "verifyingCredentials": "Por favor espere, verificando sus credenciales",
     "redirectingIn3Seconds": "Redirigiendo a la página de inicio de sesión en 3 segundos...",
     "redirectNow": "Ir a la página de inicio de sesión ahora",
     "signUpError": "Error al registrarse",
@@ -68,7 +68,7 @@
     "checkEmail": "Revisa tu correo",
     "resetEmailSent": "Se ha enviado el enlace de restablecimiento a tu correo",
     "newPassword": "Nueva contraseña",
-    "newPasswordPlaceholder": "Ingresa nueva contraseña",
+    "newPasswordPlaceholder": "Ingresa tu nueva contraseña",
     "updatePassword": "Actualizar contraseña",
     "passwordUpdated": "Contraseña actualizada exitosamente",
     "termsAgreement": "Al registrarte, aceptas nuestros",
@@ -77,8 +77,6 @@
     "invalidUsername": "Formato de nombre de usuario inválido",
     "emailAlreadyRegistered": "El correo ya está registrado",
     "googleSignUpError": "Error al registrarse con Google",
-    "completingLogin": "Completando inicio de sesión...",
-    "verifyingCredentials": "Por favor espere, verificando sus credenciales",
     "sessionError": "No se puede establecer la sesión, por favor inicie sesión nuevamente",
     "authError": "Ocurrió un error durante el inicio de sesión",
     "redirectingToLogin": "Redirigiendo a la página de inicio de sesión...",
@@ -92,7 +90,6 @@
     "userNotFound": "Usuario no encontrado",
     "rateLimitError": "Demasiadas solicitudes, por favor intenta más tarde",
     "resetPasswordError": "Error al restablecer la contraseña",
-    "newPasswordPlaceholder": "Ingresa tu nueva contraseña",
     "confirmNewPassword": "Confirmar nueva contraseña",
     "confirmNewPasswordPlaceholder": "Ingresa tu nueva contraseña nuevamente",
     "updatingPassword": "Actualizando...",
@@ -379,34 +376,26 @@
     "lastPage": "Última página"
   },
   "video": {
-    "myVideos": "Mis Videos",
-    "loading": "Cargando video...",
-    "fetchingData": "Obteniendo datos del video...",
+    "loading": "Cargando vídeo...",
     "backgroundLoading": {
       "mobile": "Cargando en segundo plano...",
       "desktop": "Cargando estado de tareas y más datos en segundo plano...",
       "description": {
-        "mobile": "Página disponible, sincronizando datos en segundo plano",
+        "mobile": "Página lista, sincronizando datos en segundo plano",
         "desktop": "Contenido básico cargado, obteniendo estado de tareas y más videos en segundo plano"
       }
     },
-    "downloadingProgress": "Descargando video {{progress}}%",
-    "downloadingSize": "Descargando video {{size}}MB",
-    "downloadComplete": "¡Descarga de video completada!",
-    "browserRestriction": "Debido a restricciones del navegador, abriendo video en nueva ventana...",
-    "saveAsInstruction": "Por favor haz clic derecho y selecciona 'Guardar como' para guardar el video en la nueva ventana",
-    "downloadError": "Error en la descarga: {{error}}",
-    "status": {
-      "pending": "Pendiente",
-      "processing": "Procesando",
-      "completed": "Completado",
-      "failed": "Fallido"
-    },
-    "noVideos": "Sin videos",
-    "noVideosDescription": "Aún no hay contenido de video, ¡crea tu primer video!",
-    "untitled": "Video sin título",
-    "play": "Reproducir",
-    "generateFirst": "Genera tu primer video"
+    "preview": "Vista Previa de Vídeo",
+    "previewPaused": "Vista previa de vídeo pausada",
+    "previewFailed": "Error en vista previa de vídeo",
+    "loadFailed": "Error al cargar el vídeo",
+    "player": "Reproductor de Vídeo",
+    "thumbnail": "Miniatura de Vídeo",
+    "cache": {
+      "confirmClear": "¿Estás seguro de que quieres borrar toda la caché relacionada con vídeos? Esto borrará las vistas previas de vídeos, caché de miniaturas y otros datos.",
+      "clearing": "Borrando caché...",
+      "cleared": "Caché borrada exitosamente"
+    }
   },
   "time": {
     "justNow": "Ahora mismo",
@@ -433,26 +422,29 @@
     }
   },
   "credits": {
-    "balance": "Saldo de Créditos",
-    "buy": "Comprar Créditos",
-    "history": "Historial de Transacciones",
-    "insufficient": "Créditos insuficientes"
+    "packages": {
+      "basic": "Paquete Básico",
+      "pro": "Paquete Pro",
+      "premium": "Paquete Premium",
+      "enterprise": "Paquete Enterprise"
+    },
+    "popular": "Popular",
+    "save": "Ahorra {{percent}}%",
+    "credits": "{{count}} créditos",
+    "bonusCredits": "+{{bonus}} créditos bonus",
+    "actualReceive": "Recibirás: {{credits}} créditos",
+    "unitPrice": "Precio unitario: {{price}} / crédito",
+    "saveComparedToBasic": "Ahorra {{percent}}% comparado con el paquete básico",
+    "buyNow": "Comprar Ahora",
+    "processing": "Procesando..."
   },
   "common": {
+    "retry": "Reintentar",
+    "remaining": "Restante",
     "loading": "Cargando...",
-    "error": "Ocurrió un error",
-    "success": "Éxito",
+    "error": "Error",
     "cancel": "Cancelar",
-    "save": "Guardar",
-    "saving": "Guardando...",
-    "delete": "Eliminar",
-    "edit": "Editar",
-    "view": "Ver",
-    "viewAll": "Ver todo",
-    "share": "Compartir",
-    "signOut": "Cerrar sesión",
-    "backToHome": "Volver al inicio",
-    "loadMore": "Cargar más"
+    "confirm": "Confirmar"
   },
   "shareModal": {
     "title": "Comparte Video y Gana Créditos",
@@ -492,7 +484,7 @@
     "clickGenerate": "Haz clic en Generar para crear tu video",
     "loginRequired": "Por favor inicia sesión primero para generar videos",
     "cannotSubmit": "No se puede enviar nueva tarea",
-    "upgradePlan": "Actualizar plan",
+    "upgradePlan": "Actualizar Plan",
     "systemBusy": "El sistema está ocupado, inténtelo de nuevo más tarde",
     "submittingTask": "Enviando tarea...",
     "queuedForProcessing": "Añadido a la cola para procesamiento...",
@@ -511,7 +503,6 @@
     "concurrencyLimitError": "🚫 Límite máximo de generación concurrente alcanzado",
     "concurrencyLimitDescription": "Los usuarios {{tier}} pueden generar hasta {{limit}} videos simultáneamente",
     "viewPricingPlans": "Ver Planes",
-    "upgradePlan": "Actualizar Plan",
     "finalizing": "Finalizando...",
     "restoring": "Restaurando...",
     "unknownStatus": "Estado desconocido"
@@ -604,7 +595,7 @@
   "subscription": {
     "basic": "Básico",
     "pro": "Pro",
-    "enterprise": "Empresa", 
+    "enterprise": "Empresa",
     "monthly": "/mes",
     "subscribe": "Suscribirse",
     "cancel": "Cancelar Suscripción",
@@ -617,7 +608,7 @@
     "toBeUpdated": "Por actualizar",
     "billingInterval": {
       "monthly": "Mensual",
-      "annually": "Anual", 
+      "annually": "Anual",
       "freeMonths": "2 Meses Gratis",
       "saveMonthly": "Ahorra 2 meses",
       "yearlyCredits": "{{credits}} créditos por año",
@@ -716,23 +707,6 @@
       "cancelNote": "Esta acción no se puede deshacer, pero puedes volver a suscribirte.",
       "cancelledNotice": "Tu suscripción será cancelada el {{date}}. Hasta entonces, puedes continuar usando todas las funciones normalmente."
     }
-  },
-  "credits": {
-    "packages": {
-      "basic": "Paquete Básico",
-      "pro": "Paquete Pro",
-      "premium": "Paquete Premium",
-      "enterprise": "Paquete Enterprise"
-    },
-    "popular": "Popular",
-    "save": "Ahorra {{percent}}%",
-    "credits": "{{count}} créditos",
-    "bonusCredits": "+{{bonus}} créditos bonus",
-    "actualReceive": "Recibirás: {{credits}} créditos",
-    "unitPrice": "Precio unitario: {{price}} / crédito",
-    "saveComparedToBasic": "Ahorra {{percent}}% comparado con el paquete básico",
-    "buyNow": "Comprar Ahora",
-    "processing": "Procesando..."
   },
   "referral": {
     "loadingInfo": "Cargando información de invitación...",
@@ -1013,7 +987,7 @@
       "title": "Usamos cookies para mejorar tu experiencia",
       "description": "Utilizamos Google Analytics para entender cómo usas nuestro sitio web y así poder mejorar nuestros servicios. Estos datos son anónimos y no se utilizan para publicidad.",
       "accept": "Aceptar Todo",
-      "decline": "Solo Esenciales", 
+      "decline": "Solo Esenciales",
       "showDetails": "Más Información",
       "hideDetails": "Ocultar Detalles",
       "essential": "Cookies Esenciales",
@@ -1101,28 +1075,6 @@
           "description": "En desarrollo, los eventos solo se imprimen en la consola y no se envían a GA. En producción se envían normalmente."
         }
       }
-    }
-  },
-  "common": {
-    "retry": "Reintentar",
-    "remaining": "Restante",
-    "loading": "Cargando...",
-    "error": "Error",
-    "cancel": "Cancelar",
-    "confirm": "Confirmar"
-  },
-  "video": {
-    "preview": "Vista Previa de Vídeo",
-    "previewPaused": "Vista previa de vídeo pausada",
-    "previewFailed": "Error en vista previa de vídeo",
-    "loading": "Cargando vídeo...",
-    "loadFailed": "Error al cargar el vídeo",
-    "player": "Reproductor de Vídeo",
-    "thumbnail": "Miniatura de Vídeo",
-    "cache": {
-      "confirmClear": "¿Estás seguro de que quieres borrar toda la caché relacionada con vídeos? Esto borrará las vistas previas de vídeos, caché de miniaturas y otros datos.",
-      "clearing": "Borrando caché...",
-      "cleared": "Caché borrada exitosamente"
     }
   },
   "admin": {

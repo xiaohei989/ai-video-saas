@@ -53,8 +53,8 @@
     "signInSuccess": "Anmeldung erfolgreich!",
     "loginSuccess": "Anmeldung erfolgreich!",
     "redirectingToApp": "Weiterleitung zur Anwendung...",
-    "completingLogin": "Anmeldung wird abgeschlossen",
-    "verifyingCredentials": "Bitte warten, Ihre Anmeldedaten werden überprüft...",
+    "completingLogin": "Anmeldung wird abgeschlossen...",
+    "verifyingCredentials": "Bitte warten, Anmeldedaten werden überprüft",
     "redirectingIn3Seconds": "Weiterleitung zur Anmeldeseite in 3 Sekunden...",
     "redirectNow": "Jetzt zur Anmeldeseite gehen",
     "signUpError": "Registrierung fehlgeschlagen",
@@ -68,7 +68,7 @@
     "checkEmail": "Prüfen Sie Ihre E-Mail",
     "resetEmailSent": "Passwort-Reset-Link wurde an Ihre E-Mail gesendet",
     "newPassword": "Neues Passwort",
-    "newPasswordPlaceholder": "Neues Passwort eingeben",
+    "newPasswordPlaceholder": "Geben Sie Ihr neues Passwort ein",
     "updatePassword": "Passwort aktualisieren",
     "passwordUpdated": "Passwort erfolgreich aktualisiert",
     "termsAgreement": "Durch die Registrierung stimmen Sie unseren",
@@ -80,8 +80,6 @@
     "signingOut": "Abmeldung läuft...",
     "signOutSuccess": "Abmeldung erfolgreich",
     "signOutError": "Abmeldung fehlgeschlagen",
-    "completingLogin": "Anmeldung wird abgeschlossen...",
-    "verifyingCredentials": "Bitte warten, Anmeldedaten werden überprüft",
     "sessionError": "Session kann nicht erstellt werden, bitte melden Sie sich erneut an",
     "authError": "Ein Fehler ist bei der Anmeldung aufgetreten",
     "redirectingToLogin": "Weiterleitung zur Anmeldeseite...",
@@ -95,7 +93,6 @@
     "userNotFound": "Benutzer nicht gefunden",
     "rateLimitError": "Zu viele Anfragen, bitte versuchen Sie es später erneut",
     "resetPasswordError": "Passwort-Zurücksetzung fehlgeschlagen",
-    "newPasswordPlaceholder": "Geben Sie Ihr neues Passwort ein",
     "confirmNewPassword": "Neues Passwort bestätigen",
     "confirmNewPasswordPlaceholder": "Geben Sie Ihr neues Passwort erneut ein",
     "updatingPassword": "Wird aktualisiert...",
@@ -390,47 +387,26 @@
     "lastPage": "Letzte Seite"
   },
   "video": {
-    "myVideos": "Meine Videos",
     "loading": "Video wird geladen...",
-    "fetchingData": "Videodaten werden abgerufen...",
     "backgroundLoading": {
-      "mobile": "Lädt im Hintergrund...",
-      "desktop": "Lädt Aufgabenstatus und weitere Daten im Hintergrund...",
+      "mobile": "Wird im Hintergrund geladen...",
+      "desktop": "Aufgabenstatus und weitere Daten werden im Hintergrund geladen...",
       "description": {
-        "mobile": "Seite verfügbar, Daten werden im Hintergrund synchronisiert",
-        "desktop": "Grundinhalt geladen, Aufgabenstatus und weitere Videos werden im Hintergrund abgerufen"
+        "mobile": "Seite bereit, Daten werden im Hintergrund synchronisiert",
+        "desktop": "Grundinhalte geladen, Aufgabenstatus und weitere Videos werden im Hintergrund abgerufen"
       }
     },
-    "downloadingProgress": "Video wird heruntergeladen {{progress}}%",
-    "downloadingSize": "Video wird heruntergeladen {{size}}MB",
-    "downloadComplete": "Video-Download abgeschlossen!",
-    "browserRestriction": "Aufgrund von Browser-Einschränkungen wird das Video in einem neuen Fenster geöffnet...",
-    "saveAsInstruction": "Bitte rechtsklicken und 'Speichern unter' wählen, um das Video im neuen Fenster zu speichern",
-    "downloadError": "Download fehlgeschlagen: {{error}}",
-    "status": {
-      "pending": "Ausstehend",
-      "processing": "Verarbeitung",
-      "completed": "Abgeschlossen",
-      "failed": "Fehlgeschlagen"
-    },
-    "noVideos": "Keine Videos",
-    "noVideosDescription": "Noch kein Videoinhalt, erstellen Sie Ihr erstes Video!",
-    "untitled": "Unbenanntes Video",
-    "play": "Abspielen",
-    "generateFirst": "Generieren Sie Ihr erstes Video",
-    "customTemplate": "Benutzerdefinierte Vorlage",
-    "actions": {
-      "useTemplate": "Vorlage verwenden",
-      "createNew": "Neues Video erstellen",
-      "download": "Video herunterladen",
-      "share": "Video teilen",
-      "delete": "Video löschen"
-    },
-    "confirmDelete": "Löschen bestätigen",
-    "confirmDeleteDesc": "Sind Sie sicher, dass Sie dieses Video löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-    "videoTitle": "Videotitel",
-    "cancel": "Abbrechen",
-    "confirm": "Löschen bestätigen"
+    "preview": "Video-Vorschau",
+    "previewPaused": "Video-Vorschau pausiert",
+    "previewFailed": "Video-Vorschau fehlgeschlagen",
+    "loadFailed": "Video-Ladevorgang fehlgeschlagen",
+    "player": "Video-Player",
+    "thumbnail": "Video-Miniaturansicht",
+    "cache": {
+      "confirmClear": "Sind Sie sicher, dass Sie alle videobezogenen Caches löschen möchten? Dies löscht Video-Vorschauen, Miniaturansicht-Caches und andere Daten.",
+      "clearing": "Cache wird gelöscht...",
+      "cleared": "Cache erfolgreich gelöscht"
+    }
   },
   "time": {
     "justNow": "Gerade eben",
@@ -791,21 +767,12 @@
     }
   },
   "common": {
-    "loading": "Laden...",
-    "error": "Ein Fehler ist aufgetreten",
-    "success": "Erfolg",
+    "retry": "Wiederholen",
+    "remaining": "Verbleibend",
+    "loading": "Wird geladen...",
+    "error": "Fehler",
     "cancel": "Abbrechen",
-    "save": "Speichern",
-    "saving": "Speichern...",
-    "delete": "Löschen",
-    "edit": "Bearbeiten",
-    "view": "Anzeigen",
-    "viewAll": "Alle anzeigen",
-    "share": "Teilen",
-    "signOut": "Abmelden",
-    "backToHome": "Zurück zur Startseite",
-    "loadMore": "Mehr laden",
-    "unknownError": "Unbekannter Fehler"
+    "confirm": "Bestätigen"
   },
   "shareModal": {
     "title": "Video teilen & Credits verdienen",
@@ -1205,28 +1172,6 @@
         "description": "ASMR Video KI Generator Hilfezentrum. Detaillierte Erstellungstutorials, FAQ, technischer Support. Schnellstartanleitung für Video-Erstellung.",
         "keywords": "Hilfezentrum,Video Erstellung Tutorials,ASMR Erstellungsanleitung,FAQ,technischer Support,Benutzerhandbuch"
       }
-    }
-  },
-  "common": {
-    "retry": "Wiederholen",
-    "remaining": "Verbleibend",
-    "loading": "Wird geladen...",
-    "error": "Fehler",
-    "cancel": "Abbrechen",
-    "confirm": "Bestätigen"
-  },
-  "video": {
-    "preview": "Video-Vorschau",
-    "previewPaused": "Video-Vorschau pausiert",
-    "previewFailed": "Video-Vorschau fehlgeschlagen",
-    "loading": "Video wird geladen...",
-    "loadFailed": "Video-Ladevorgang fehlgeschlagen",
-    "player": "Video-Player",
-    "thumbnail": "Video-Miniaturansicht",
-    "cache": {
-      "confirmClear": "Sind Sie sicher, dass Sie alle videobezogenen Caches löschen möchten? Dies löscht Video-Vorschauen, Miniaturansicht-Caches und andere Daten.",
-      "clearing": "Cache wird gelöscht...",
-      "cleared": "Cache erfolgreich gelöscht"
     }
   },
   "admin": {

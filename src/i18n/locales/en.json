@@ -407,49 +407,6 @@
     "nextPage": "Next",
     "lastPage": "Last page"
   },
-  "video": {
-    "myVideos": "My Videos",
-    "loading": "Loading video...",
-    "fetchingData": "Fetching video data...",
-    "backgroundLoading": {
-      "mobile": "Loading in background...",
-      "desktop": "Loading task status and more data in background...",
-      "description": {
-        "mobile": "Page ready, syncing data in background",
-        "desktop": "Basic content loaded, fetching task status and more videos in background"
-      }
-    },
-    "downloadingProgress": "Downloading video {{progress}}%",
-    "downloadingSize": "Downloading video {{size}}MB",
-    "downloadComplete": "Video download complete!",
-    "browserRestriction": "Due to browser restrictions, opening video in new window...",
-    "saveAsInstruction": "Please right-click and select 'Save As' to save the video in the new window",
-    "downloadError": "Download failed: {{error}}",
-    "status": {
-      "pending": "Pending",
-      "processing": "Processing",
-      "completed": "Completed",
-      "failed": "Failed"
-    },
-    "noVideos": "No videos yet",
-    "noVideosDescription": "No video content yet, create your first video!",
-    "untitled": "Untitled video",
-    "play": "Play",
-    "generateFirst": "Generate your first video",
-    "customTemplate": "Custom Template",
-    "actions": {
-      "useTemplate": "Use Template",
-      "createNew": "Create New Video",
-      "download": "Download Video",
-      "share": "Share Video",
-      "delete": "Delete Video"
-    },
-    "confirmDelete": "Confirm Delete",
-    "confirmDeleteDesc": "Are you sure you want to delete this video? This action cannot be undone.",
-    "videoTitle": "Video Title",
-    "cancel": "Cancel",
-    "confirm": "Confirm Delete"
-  },
   "pages": {
     "videoEmbed": {
       "loading": "Loading video...",
@@ -883,9 +840,6 @@
     "remaining": "Remaining",
     "confirm": "Confirm"
   },
-  "video": {
-    "madeWith": "Made with veo3video.me"
-  },
   "shareModal": {
     "title": "Share Video & Earn Credits",
     "description": "Showcase your work, invite friends to join, and both earn credit rewards!",
@@ -1229,11 +1183,52 @@
     }
   },
   "video": {
+    "myVideos": "My Videos",
+    "loading": "Loading video...",
+    "fetchingData": "Fetching video data...",
+    "backgroundLoading": {
+      "mobile": "Loading in background...",
+      "desktop": "Loading task status and more data in background...",
+      "description": {
+        "mobile": "Page ready, syncing data in background",
+        "desktop": "Basic content loaded, fetching task status and more videos in background"
+      }
+    },
+    "downloadingProgress": "Downloading video {{progress}}%",
+    "downloadingSize": "Downloading video {{size}}MB",
+    "downloadComplete": "Video download complete!",
+    "browserRestriction": "Due to browser restrictions, opening video in new window...",
+    "saveAsInstruction": "Please right-click and select 'Save As' to save the video in the new window",
+    "downloadError": "Download failed: {{error}}",
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "completed": "Completed",
+      "failed": "Failed"
+    },
+    "noVideos": "No videos yet",
+    "noVideosDescription": "No video content yet, create your first video!",
+    "untitled": "Untitled video",
+    "play": "Play",
+    "generateFirst": "Generate your first video",
+    "customTemplate": "Custom Template",
+    "actions": {
+      "useTemplate": "Use Template",
+      "createNew": "Create New Video",
+      "download": "Download Video",
+      "share": "Share Video",
+      "delete": "Delete Video"
+    },
+    "confirmDelete": "Confirm Delete",
+    "confirmDeleteDesc": "Are you sure you want to delete this video? This action cannot be undone.",
+    "videoTitle": "Video Title",
+    "cancel": "Cancel",
+    "confirm": "Confirm Delete",
+    "madeWith": "Made with veo3video.me",
+    "loadFailed": "Video load failed",
     "preview": "Video Preview",
     "previewPaused": "Video preview paused",
     "previewFailed": "Video preview failed",
-    "loading": "Loading video...",
-    "loadFailed": "Video load failed",
     "player": "Video Player",
     "thumbnail": "Video Thumbnail",
     "cache": {

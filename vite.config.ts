@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import compression from 'vite-plugin-compression'
 import { removeUnnecessaryPreloads, smartResourceHints, devPerformanceOptimizer } from './src/utils/vite-plugins'
 
 export default defineConfig(({ mode }) => {
@@ -26,7 +27,21 @@ export default defineConfig(({ mode }) => {
       react(),
       removeUnnecessaryPreloads(),
       smartResourceHints(),
-      devPerformanceOptimizer()
+      devPerformanceOptimizer(),
+      // 🚀 Brotli压缩 - 提供更好的压缩率(比gzip高20-30%)
+      compression({
+        algorithm: 'brotliCompress',
+        ext: '.br',
+        threshold: 10240, // 只压缩大于10KB的文件
+        deleteOriginFile: false
+      }),
+      // 🚀 Gzip压缩 - 兼容旧浏览器
+      compression({
+        algorithm: 'gzip',
+        ext: '.gz',
+        threshold: 10240,
+        deleteOriginFile: false
+      })
     ],
     define: {
       // Pass env variables to the app
@@ -293,11 +308,84 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'build',
       sourcemap: true,
+      // 🚀 CSS优化 - 使用lightningcss压缩
+      cssMinify: 'lightningcss',
       // Cloudflare Pages 优化配置
       rollupOptions: {
+        // 🚀 增强Tree Shaking配置
+        treeshake: {
+          moduleSideEffects: false,
+          propertyReadSideEffects: false,
+          unknownGlobalSideEffects: false
+        },
         output: {
-          // 暂时禁用手动chunk分割，让Rollup自动处理
-          // 这避免了复杂的React依赖关系导致的初始化问题
+          // 🚀 手动代码分割 - 优化bundle体积
+          manualChunks: {
+            // React核心库 - 共享基础
+            'react-vendor': [
+              'react',
+              'react-dom',
+              'react-router-dom'
+            ],
+
+            // 🎯 管理后台独立chunk (最大优化收益)
+            'admin': [
+              'react-admin',
+              'ra-supabase'
+            ],
+
+            // 📊 图表库独立chunk
+            'charts': ['recharts'],
+
+            // ☁️ AWS SDK独立chunk
+            'aws': ['@aws-sdk/client-s3'],
+
+            // 🤖 Google AI独立chunk
+            'google-ai': ['@google/genai'],
+
+            // 🎨 UI组件库
+            'ui-vendor': [
+              '@radix-ui/react-alert-dialog',
+              '@radix-ui/react-dropdown-menu',
+              '@radix-ui/react-progress',
+              '@radix-ui/react-select',
+              '@radix-ui/react-slider',
+              '@radix-ui/react-slot',
+              '@radix-ui/react-switch',
+              '@radix-ui/react-tabs',
+              '@radix-ui/react-tooltip'
+            ],
+
+            // 💰 支付相关
+            'payment': [
+              '@stripe/stripe-js',
+              'stripe'
+            ],
+
+            // 🗄️ 数据库和状态管理
+            'data': [
+              '@supabase/supabase-js',
+              '@tanstack/react-query',
+              'zustand'
+            ],
+
+            // 🌐 国际化
+            'i18n': [
+              'i18next',
+              'react-i18next'
+            ],
+
+            // 🎬 视频播放器
+            'video-player': ['react-player'],
+
+            // 📦 工具库
+            'utils': [
+              'date-fns',
+              'clsx',
+              'tailwind-merge',
+              'class-variance-authority'
+            ]
+          }
         },
       },
       // 生产环境启用压缩
@@ -328,24 +416,38 @@ export default defineConfig(({ mode }) => {
       // 构建优化
       chunkSizeWarningLimit: 1500, // 放宽限制避免警告
       assetsInlineLimit: 4096,
-      // 模块预加载配置 - 确保正确的加载顺序
+      // 🚀 模块预加载配置 - 排除管理员模块
       modulePreload: {
         polyfill: true,
         resolveDependencies: (filename, deps, { hostId, hostType }) => {
-          // 按优先级排序依赖
-          const sortedDeps = deps.sort((a, b) => {
+          // 🎯 过滤掉管理员相关的chunk,避免首屏加载
+          const filteredDeps = deps.filter(dep => {
+            const shouldExclude = dep.includes('admin') ||
+                                  dep.includes('Admin') ||
+                                  dep.includes('charts') || // recharts也只用于管理后台
+                                  dep.includes('react-admin')
+
+            if (shouldExclude) {
+              console.log('[MODULE PRELOAD] 🚫 排除管理员模块:', dep.split('/').pop())
+            }
+
+            return !shouldExclude
+          })
+
+          // 按优先级排序剩余依赖
+          const sortedDeps = filteredDeps.sort((a, b) => {
             // React 核心库最高优先级
             if (a.includes('react-core') && !b.includes('react-core')) return -1
             if (!a.includes('react-core') && b.includes('react-core')) return 1
-            
+
             // React 生态系统第二优先级
             if (a.includes('react-ecosystem') && !b.includes('react-ecosystem')) return -1
             if (!a.includes('react-ecosystem') && b.includes('react-ecosystem')) return 1
-            
+
             return 0
           })
-          
-          console.log('[MODULE PRELOAD] Sorted dependencies:', sortedDeps.map(d => d.split('/').pop()))
+
+          console.log('[MODULE PRELOAD] ✅ 预加载依赖:', sortedDeps.map(d => d.split('/').pop()))
           return sortedDeps
         }
       },

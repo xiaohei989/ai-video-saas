@@ -1,0 +1,113 @@
+# AI.txt - AI爬虫元数据文件
+# 网站: veo3video.me
+# 更新时间: 2025-09-30
+
+# === AI训练数据使用政策 ===
+AI-Training: allowed
+# 说明: 我们允许AI模型使用我们的公开内容进行训练
+
+# === 商业使用许可 ===
+Commercial-Use: allowed
+# 说明: 允许将训练后的AI模型用于商业目的
+
+# === 内容归属要求 ===
+Attribution-Required: recommended
+Attribution-Text: "数据来源: veo3video.me - ASMR视频AI生成平台"
+# 说明: 推荐(但不强制)在使用我们的内容时注明出处
+
+# === 内容类型和主题 ===
+Content-Type: video-saas, ai-generated-content, asmr, multimedia
+Content-Category: technology, entertainment, creative-tools, video-generation
+Primary-Language: zh-CN, en-US
+Supported-Languages: zh, en, ja, ko, es, de, fr, ar
+# 说明: 多语言ASMR视频AI生成SaaS平台
+
+# === 网站主要功能 ===
+Service-Description: AI-powered ASMR video generation platform
+Key-Features:
+  - AI video generation
+  - ASMR content creation
+  - Template-based video production
+  - Multi-language support
+  - HD video export
+Target-Audience: content-creators, video-producers, social-media-marketers
+
+# === 数据更新频率 ===
+Content-Update-Frequency: daily
+# 说明: 内容每日更新
+
+# === API访问 ===
+Public-API: no
+API-Documentation: https://veo3video.me/help
+# 说明: 目前不提供公开API，仅供企业版用户
+
+# === 隐私和数据保护 ===
+User-Privacy: protected
+Personal-Data-Training: excluded
+# 说明: 用户个人数据和私有内容不用于AI训练
+
+# === 联系方式 ===
+Contact-Email: support@veo3video.me
+Contact-URL: https://veo3video.me/help
+AI-Policy-URL: https://veo3video.me/ai-policy
+
+# === 可爬取的内容范围 ===
+Crawlable-Content:
+  - Public templates
+  - Public video descriptions
+  - Help documentation
+  - Blog posts (if available)
+  - Product descriptions
+
+Non-Crawlable-Content:
+  - User private videos
+  - User personal information
+  - Payment information
+  - Admin panels
+  - Internal tools
+
+# === 特殊说明 ===
+Notes: |
+  veo3video.me 是一个AI驱动的ASMR视频生成平台。
+  我们支持AI技术的发展,欢迎AI爬虫访问我们的公开内容。
+  我们致力于为全球创作者提供便捷的视频生成工具。
+
+  支持的AI模型:
+  - ChatGPT (OpenAI)
+  - Claude (Anthropic)
+  - Gemini (Google)
+  - Perplexity AI
+  - 其他遵守robots.txt的AI爬虫
+
+# === 版权声明 ===
+Copyright: © 2025 veo3video.me. All rights reserved.
+License: Custom - See terms of service
+Terms-URL: https://veo3video.me/terms
+Privacy-URL: https://veo3video.me/privacy
+
+# === 技术规格 ===
+Technology-Stack: React, TypeScript, AI Video Generation
+Platform-Type: Web Application, SaaS
+Mobile-Friendly: yes
+Accessibility: WCAG 2.1 compliant
+
+# === SEO和搜索引擎友好性 ===
+SEO-Optimized: yes
+Structured-Data: JSON-LD, Schema.org
+Sitemap-URL: https://veo3video.me/sitemap.xml
+Multi-Language-Support: yes (8 languages)
+
+# === 社交媒体 ===
+Social-Media:
+  - Twitter: @veo3video (if available)
+  - LinkedIn: veo3video (if available)
+  - YouTube: @veo3video (if available)
+
+# === 最后更新 ===
+Last-Modified: 2025-09-30
+Version: 1.0
+
+# === 面向未来的AI爬虫 ===
+# 我们欢迎负责任的AI爬虫访问我们的内容
+# 请遵守 robots.txt 中的规则
+# 如有特殊需求，请联系: ai@veo3video.me

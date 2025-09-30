@@ -61,6 +61,7 @@ import { useTheme } from '@/hooks/useTheme'
 import { Moon, Sun, Monitor } from 'lucide-react'
 import { CreditDisplay } from './CreditDisplay'
 import { languageDebugger } from '@/utils/languageDebugger'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 
 interface HeaderProps {
   className?: string
@@ -78,6 +79,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
   const { theme, setTheme } = useTheme()
+  const { currentLanguage, changeLanguage: changeLanguageRouter } = useLanguageRouter()
   
   // 移动端强制导航方案
   const [isNavigating, setIsNavigating] = useState(false)
@@ -248,14 +250,14 @@ export function Header({ className = "" }: HeaderProps = {}) {
         to: lng,
         timestamp: new Date().toISOString()
       })
-      
+
       // 🚀 语言切换验证 - 确保切换的语言是有效的
       const supportedLanguages = ['en', 'zh', 'ja', 'ko', 'es', 'de', 'fr', 'ar']
       if (!supportedLanguages.includes(lng)) {
-        console.warn('[Header] 无效的语言代码:', lng, '，使用默认英语')
-        lng = 'en'
+        console.warn('[Header] 无效的语言代码:', lng, '，使用默认中文')
+        lng = 'zh'
       }
-      
+
       // 特殊检查：如果用户选择阿拉伯语，记录此次选择
       if (lng === 'ar') {
         console.log('[Header] 用户明确选择阿拉伯语，记录偏好')
@@ -264,21 +266,24 @@ export function Header({ className = "" }: HeaderProps = {}) {
         // 如果选择其他语言，清除阿拉伯语选择标记
         localStorage.removeItem('user_explicitly_chose_arabic')
       }
-      
+
       // 清理OAuth修复标记
       localStorage.removeItem('language_fixed_after_oauth')
-      
-      // 执行语言切换
+
+      // 执行语言切换 - 使用新的语言路由系统
       const oldLanguage = i18n.language
-      i18n.changeLanguage(lng)
+
+      // 使用useLanguageRouter的changeLanguage方法，会自动更新URL
+      changeLanguageRouter(lng)
+
       localStorage.setItem('preferred_language', lng)
       setLangDropdownOpen(false)
-      
+
       // 🚀 记录语言切换
       languageDebugger.logLanguageChange(oldLanguage, lng, 'user_manual_selection')
-      
-      console.log('[Header] 语言切换完成:', lng)
-      
+
+      console.log('[Header] 语言切换完成:', lng, '，URL已更新')
+
     } catch (error) {
       console.error('[Header] 语言切换失败:', error)
       // 失败时确保关闭下拉菜单
@@ -297,7 +302,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
     { code: 'ar', name: 'العربية', shortName: 'العربية', country: 'SA' },
   ]
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0]
+  const currentLanguageObj = languages.find(lang => lang.code === currentLanguage) || languages[0]
 
   const handleSignOut = async () => {
     console.log('Sign out button clicked')
@@ -473,8 +478,8 @@ export function Header({ className = "" }: HeaderProps = {}) {
                 onClick={() => setLangDropdownOpen(!langDropdownOpen)}
                 className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md hover:bg-accent"
               >
-                <FlagImage country={currentLanguage.country} className="h-5 w-5 rounded-full " />
-                <span>{currentLanguage.shortName}</span>
+                <FlagImage country={currentLanguageObj.country} className="h-5 w-5 rounded-full " />
+                <span>{currentLanguageObj.shortName}</span>
                 <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${langDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               
