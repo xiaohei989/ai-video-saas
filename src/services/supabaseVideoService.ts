@@ -1099,10 +1099,16 @@ class SupabaseVideoService {
         const { data, error } = await supabase.functions.invoke('generate-blur-thumbnail', {
           body: { videoId: video.id, thumbnailUrl: fullUrl, width: 48, quality: 30 }
         })
-        if (!error && data?.success) {
+        if (error) {
+          console.warn(`[Thumbnail] ⚠️ 模糊图生成失败 (Edge Function 错误): ${error.message}`)
+        } else if (!data?.success) {
+          console.warn(`[Thumbnail] ⚠️ 模糊图生成失败: ${data?.error || '未知错误'}`)
+        } else {
           blurUrl = data.data.publicUrl as string
+          console.log(`[Thumbnail] ✅ 模糊图生成成功: ${blurUrl}`)
         }
       } catch (e) {
+        console.warn(`[Thumbnail] ⚠️ 模糊图生成异常:`, e)
       }
 
       // 更新视频记录的缩略图URL（含模糊图，失败时只写高清）

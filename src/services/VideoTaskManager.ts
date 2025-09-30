@@ -153,7 +153,10 @@ class VideoTaskManager {
 
     console.log(`[TASK MANAGER] 标记任务完成: ${taskId}`)
 
-    // 更新本地任务状态
+    // 🚀 立即从活跃任务中移除，避免界面卡在 100%
+    this.activeTasks.delete(taskId)
+
+    // 创建完成任务对象用于通知
     const completedTask: VideoTask = {
       ...task,
       status: 'completed',
@@ -162,12 +165,9 @@ class VideoTaskManager {
       videoUrl
     }
 
-    // 通知订阅者任务完成
+    // 通知订阅者任务完成（此时任务已从活跃列表移除）
     this.notifySubscribers(taskId, completedTask)
-    
-    // 从活跃任务中移除
-    this.activeTasks.delete(taskId)
-    
+
     console.log(`[TASK MANAGER] 任务完成处理完毕: ${taskId}`)
 
     // 🚀 自动生成缩略图（异步执行，不阻塞任务完成流程）
@@ -182,7 +182,7 @@ class VideoTaskManager {
   private async triggerThumbnailGeneration(taskId: string, videoUrl: string): Promise<void> {
     try {
       console.log(`[TASK MANAGER] 🖼️ 开始为完成的视频生成缩略图: ${taskId}`)
-      
+
       // 获取完整的视频记录
       const video = await supabaseVideoService.getVideo(taskId)
       if (!video) {
@@ -196,8 +196,11 @@ class VideoTaskManager {
           const success = await supabaseVideoService.autoGenerateThumbnailOnComplete(video)
           if (success) {
             console.log(`[TASK MANAGER] ✅ 缩略图生成成功: ${taskId}`)
+
+            // 🎯 缩略图生成成功后，触发数据刷新事件
+            this.notifyThumbnailUpdate(taskId)
           } else {
-            console.warn(`[TASK MANAGER] ⚠️ 缩略图生成失败: ${taskId}`)
+            console.warn(`[TASK MANAGER] ⚠️ 缩略图生成失败或跳过: ${taskId}`)
           }
         } catch (error) {
           console.error(`[TASK MANAGER] ❌ 缩略图生成异常: ${taskId}`, error)
@@ -206,6 +209,21 @@ class VideoTaskManager {
 
     } catch (error) {
       console.error(`[TASK MANAGER] 触发缩略图生成失败: ${taskId}`, error)
+    }
+  }
+
+  /**
+   * 🎯 通知缩略图更新
+   * 触发订阅者刷新视频数据
+   */
+  private notifyThumbnailUpdate(taskId: string): void {
+    console.log(`[TASK MANAGER] 📢 通知缩略图更新: ${taskId}`)
+
+    // 触发自定义事件，通知前端刷新视频数据
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('video-thumbnail-updated', {
+        detail: { videoId: taskId }
+      }))
     }
   }
 

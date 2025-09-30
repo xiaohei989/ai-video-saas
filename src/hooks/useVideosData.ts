@@ -3,7 +3,7 @@
  * 包含快速加载、后台加载、分页等逻辑
  */
 
-import { useState, useEffect, useCallback, useContext } from 'react'
+import React, { useState, useEffect, useCallback, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import supabaseVideoService from '@/services/supabaseVideoService'
@@ -72,6 +72,10 @@ export function useVideosData(options: UseVideosDataOptions = {}): UseVideosData
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
+  // 🔧 修复: 使用 useRef 而不是 useState,避免触发重渲染和依赖循环
+  const isQuickLoadingRef = React.useRef(false)
+  const isBackgroundLoadingRef = React.useRef(false)
+
   // 兼容性：保留原有的loading和isInitialLoad状态
   const loading = loadingState.initial
   const isInitialLoad = loadingState.initial
@@ -84,6 +88,18 @@ export function useVideosData(options: UseVideosDataOptions = {}): UseVideosData
    * 🚀 快速加载：优先从缓存显示，后台更新数据
    */
   const quickLoad = useCallback(async (): Promise<QuickLoadResult> => {
+    // 🔧 修复: 防止并发调用
+    if (isQuickLoadingRef.current) {
+      console.log('[useVideosData] ⚠️ 快速加载已在进行中，跳过重复调用')
+      return {
+        initialResult: null,
+        fromCache: false,
+        usedFullCacheForDisplay: false
+      }
+    }
+
+    isQuickLoadingRef.current = true
+
     const startTime = performance.now()
     const loadingPhase = isMobile ? 'mobile_quick_load' : 'desktop_quick_load'
     let initialResult: Awaited<ReturnType<typeof supabaseVideoService.getUserVideos>> | null = null
@@ -241,6 +257,9 @@ export function useVideosData(options: UseVideosDataOptions = {}): UseVideosData
         initial: false,
         basicLoaded: true
       }))
+    } finally {
+      // 🔧 修复: 无论成功或失败都要释放锁
+      isQuickLoadingRef.current = false
     }
 
     return {
@@ -257,6 +276,14 @@ export function useVideosData(options: UseVideosDataOptions = {}): UseVideosData
     quickLoadResult: QuickLoadResult,
     opts: BackgroundLoadOptions = {}
   ) => {
+    // 🔧 修复: 防止并发调用
+    if (isBackgroundLoadingRef.current) {
+      console.log('[useVideosData] ⚠️ 后台加载已在进行中，跳过重复调用')
+      return
+    }
+
+    isBackgroundLoadingRef.current = true
+
     try {
       console.log('[useVideosData] 📚 开始后台加载非关键数据...')
 
@@ -281,6 +308,9 @@ export function useVideosData(options: UseVideosDataOptions = {}): UseVideosData
     } catch (error) {
       console.error('[useVideosData] 后台加载失败:', error)
       // 后台加载失败不影响基础UI显示
+    } finally {
+      // 🔧 修复: 释放锁
+      isBackgroundLoadingRef.current = false
     }
   }, [user?.id])
 

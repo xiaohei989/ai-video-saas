@@ -26,8 +26,8 @@ export interface AIModelResponse {
 class AIContentService {
   private readonly apiKey: string
   private readonly endpoint: string
-  private readonly primaryModel = 'gpt-3.5-turbo-0125'
-  private readonly fallbackModel = 'claude-3-5-haiku-20241022'
+  private readonly primaryModel = 'claude-3-5-haiku-20241022'
+  private readonly fallbackModel = 'gpt-3.5-turbo-0125'
   // private readonly maxRetries = 2 // unused
   private readonly timeout = 10000
 

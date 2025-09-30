@@ -92,6 +92,23 @@ export default function VideosPageNew() {
     }
   }, [videosData.loadingState.fullLoaded, handleAutoThumbnailFill])
 
+  // 🎯 监听缩略图更新事件，实时刷新视频数据
+  React.useEffect(() => {
+    const handleThumbnailUpdate = (event: CustomEvent<{ videoId: string }>) => {
+      const { videoId } = event.detail
+      console.log(`[VideosPageNew] 🔔 收到缩略图更新通知: ${videoId}`)
+
+      // 刷新视频列表数据以获取最新的缩略图
+      videosData.refreshVideos()
+    }
+
+    window.addEventListener('video-thumbnail-updated', handleThumbnailUpdate as EventListener)
+
+    return () => {
+      window.removeEventListener('video-thumbnail-updated', handleThumbnailUpdate as EventListener)
+    }
+  }, [videosData.refreshVideos])
+
   // 组合缓存检查和调试信息切换
   const handleToggleDebugInfo = useCallback(async (videoId: string) => {
     await videoCache.toggleDebugInfo(videoId)

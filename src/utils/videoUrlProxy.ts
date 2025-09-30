@@ -98,14 +98,13 @@ export function getProxyVideoUrl(originalUrl: string, enableSmartFallback: boole
     return originalUrl;
   }
 
-  // 🚀 用户视频：保持原有逻辑
-  // 开发环境使用代理
+  // 🚀 用户视频：开发环境使用 Vite 代理避免 CORS 问题
   if (import.meta.env.DEV) {
     if (originalUrl.includes(r2Domain)) {
       const path = originalUrl.replace(`https://${r2Domain}`, '');
       return `/api/r2${path}`;
     }
-    
+
     // 🚀 代理原始R2域名（pub-*.r2.dev）
     if (originalUrl.includes('.r2.dev')) {
       const urlObj = new URL(originalUrl);
@@ -230,9 +229,14 @@ export function needsCorsProxy(url: string): boolean {
     return false;
   }
   
-  // 🚀 用户视频CORS策略：保持原有逻辑
-  // 开发环境：R2域名需要代理
+  // 🚀 用户视频CORS策略：开发环境使用代理不需要 CORS
+  // 开发环境：使用 Vite 代理，不需要 CORS 设置
   if (import.meta.env.DEV) {
+    // 代理 URL 不需要 CORS（已经在 Vite 代理中处理）
+    if (url.startsWith('/api/r2/')) {
+      return false;
+    }
+    // 直接 CDN 访问需要 CORS
     return url.includes(r2Domain) || url.includes('.r2.dev');
   }
   

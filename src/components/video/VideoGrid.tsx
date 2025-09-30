@@ -126,7 +126,7 @@ export function VideoGrid({
         <div className="flex justify-end">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" />
-            <span>{t('videos.backgroundLoading.mobile')}</span>
+            <span>{t('video.backgroundLoading.mobile')}</span>
           </div>
         </div>
       )}

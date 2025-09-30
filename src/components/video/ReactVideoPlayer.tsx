@@ -89,9 +89,9 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
   const handleReady = onCanPlay || onReady
   const handleLoadStart = onLoadStart
 
-  // 确保必需的videoUrl存在
+  // 如果没有 videoUrl，降级显示缩略图
   if (!videoUrl) {
-    console.error('videoUrl 或 src 属性是必需的')
+    // 静默返回 null，让父组件处理显示逻辑
     return null
   }
   const { isMobile, isDesktop } = useResponsiveDevice()
@@ -425,58 +425,44 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
 
   // 强力调试 useEffect - 无条件执行
   useEffect(() => {
-    console.log(`[VideoCache Debug] 🚨 FORCE useEffect 执行！videoId: ${videoId}, currentVideoId: ${currentVideoId}`)
-
     if (!videoId) {
-      console.log(`[VideoCache Debug] ⚠️ videoId 为空！`)
+      // videoId 为空
     }
 
     try {
-      console.log(`[VideoCache Debug] ✅ 测试 useEffect 正常执行`)
+      // useEffect 正常执行
     } catch (error) {
-      console.error(`[VideoCache Debug] ❌ useEffect 执行错误:`, error)
+      console.error(`useEffect 执行错误:`, error)
     }
   }, [videoId, currentVideoId, videoUrl])
 
   // 检查视频缓存状态并设置实际播放URL
   useEffect(() => {
-    console.log(`[VideoCache Debug] 🔍 缓存检查 useEffect 执行！videoId: ${videoId}, currentVideoId: ${currentVideoId}, hasVideoUrl: ${!!videoUrl}`)
-
     if (!videoId) {
-      console.log(`[VideoCache Debug] ⚠️ 缓存检查跳过：videoId 为空`)
       return
     }
 
     const checkVideoCache = async () => {
       if (!currentVideoId || !videoUrl) {
-        console.log(`[VideoCache Debug] 跳过缓存检查，currentVideoId: ${currentVideoId}, videoUrl: ${!!videoUrl}`)
         return
       }
 
       try {
-        console.log(`[VideoCache Debug] 开始缓存检查，smartPreloadService: ${!!smartPreloadService}`)
         addCacheLog(`检查视频缓存状态 - 视频ID: ${currentVideoId}`)
 
         // 验证服务是否可用
         if (!smartPreloadService || typeof smartPreloadService.isVideoCached !== 'function') {
-          console.error('[VideoCache Debug] smartPreloadService 不可用或方法不存在')
           setActualVideoUrl(videoUrl)
           return
         }
 
         // 检查是否已缓存
-        console.log(`[VideoCache Debug] 调用 isVideoCached...`)
-        console.log(`[VideoCache Debug] 使用的ID进行缓存检查: ${currentVideoId}`)
-        console.log(`[VideoCache Debug] 原始videoId: ${videoId}`)
         const isCached = await smartPreloadService.isVideoCached(currentVideoId)
-        console.log(`[VideoCache Debug] 缓存检查结果: ${isCached}`)
         setIsVideoCached(isCached)
 
         // 如果没有缓存，额外检查是否使用了错误的ID
         if (!isCached && videoId && videoId !== currentVideoId) {
-          console.log(`[VideoCache Debug] 🔍 ID不匹配，用原始videoId再次检查: ${videoId}`)
-          const isCachedWithOriginalId = await smartPreloadService.isVideoCached(videoId)
-          console.log(`[VideoCache Debug] 原始videoId缓存检查结果: ${isCachedWithOriginalId}`)
+          await smartPreloadService.isVideoCached(videoId)
         }
 
         if (isCached) {
@@ -705,13 +691,13 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
         onWaiting={() => {
           // 缓冲不足，显示加载动画
           if (isPlaying || hasEverPlayed) {
-            addCacheLog(`⏳ 视频缓冲中...`)
+            addCacheLog(isVideoCached ? `⚡ 缓存视频加载中...` : `⏳ 视频缓冲中...`)
             setIsLoadingPlay(true)
           }
         }}
         onCanPlay={() => {
           // 可以播放，隐藏加载动画
-          addCacheLog(`🎥 视频准备就绪`)
+          addCacheLog(isVideoCached ? `⚡ 缓存视频准备就绪` : `🎥 视频准备就绪`)
           setIsLoadingPlay(false)
         }}
         onPlay={() => {

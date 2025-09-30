@@ -320,10 +320,13 @@ html.dark {
     backdrop-filter: blur(4px) !important;
   }
   
-  /* 移动端减少不必要的动画 */
-  .animate-pulse, .animate-spin, .animate-bounce {
+  /* 移动端减少不必要的动画，但保留关键的加载指示器 */
+  .animate-pulse, .animate-bounce {
     animation: none !important;
   }
+
+  /* 保留 Loader 组件的旋转动画，这对用户体验很重要 */
+  /* .animate-spin 不在此禁用列表中 */
   
   /* 移动端简化视觉效果 */
   .performance-emergency .bg-black\/30, .performance-emergency .bg-black\/20 {

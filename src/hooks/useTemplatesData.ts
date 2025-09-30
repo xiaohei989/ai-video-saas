@@ -4,7 +4,7 @@
  * 优化版：支持多层缓存和快速加载，避免页面切换时的骨架屏
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { templatesApiService, TemplateListItem, TemplateListParams } from '@/services/templatesApiService'
 import { templatesCacheService } from '@/services/templatesCacheService'
@@ -158,7 +158,10 @@ function syncTemplatesToLikesCache(templates: TemplateListItem[]): void {
 export function useTemplatesData() {
   const { i18n } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
-  
+
+  // 🔧 修复: 使用 useRef 防止并发加载导致重复缓存写入
+  const isLoadingRef = React.useRef(false)
+
   // 从URL参数初始化状态
   const [state, setState] = useState<TemplatesDataState>(() => {
     const page = searchParams.get('page')
@@ -199,17 +202,26 @@ export function useTemplatesData() {
 
   // 🚀 快速加载：优先从缓存显示，后台更新数据
   const quickLoad = useCallback(async () => {
-    const params: TemplateListParams = {
-      page: state.pagination.page,
-      pageSize: state.pagination.pageSize,
-      sort: state.filters.sort,
-      tags: state.filters.tags.length > 0 ? state.filters.tags : undefined,
-      category: state.filters.category,
-      search: state.filters.search || undefined
+    // 🔧 修复: 防止并发调用
+    if (isLoadingRef.current) {
+      console.log('[useTemplatesData] ⚠️ 加载已在进行中，跳过重复调用')
+      return
     }
 
-    const startTime = performance.now()
-    console.log('[useTemplatesData] 🚀 开始快速加载流程:', params)
+    isLoadingRef.current = true
+
+    try {
+      const params: TemplateListParams = {
+        page: state.pagination.page,
+        pageSize: state.pagination.pageSize,
+        sort: state.filters.sort,
+        tags: state.filters.tags.length > 0 ? state.filters.tags : undefined,
+        category: state.filters.category,
+        search: state.filters.search || undefined
+      }
+
+      const startTime = performance.now()
+      console.log('[useTemplatesData] 🚀 开始快速加载流程:', params)
 
     // 1. 首先检查缓存
     const cached = await templatesCacheService.getCachedTemplates(params)
@@ -283,11 +295,15 @@ export function useTemplatesData() {
       } catch (error) {
         console.warn('[useTemplatesData] 后台更新失败:', error)
       }
-      
+
       return true // 缓存命中
     }
-    
+
     return false // 缓存未命中
+    } finally {
+      // 🔧 修复: 释放锁
+      isLoadingRef.current = false
+    }
   }, [state.pagination.page, state.pagination.pageSize, state.filters.sort, state.filters.tags, state.filters.category, state.filters.search, i18n.language])
 
   // 🚀 标准加载：从网络获取数据

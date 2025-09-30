@@ -81,6 +81,9 @@ export function VideoCard({
   const navigate = useNavigate()
   const [showVideoPlayer, setShowVideoPlayer] = useState(false)
 
+  // 从环境变量读取是否显示调试信息按钮
+  const showDebugButton = import.meta.env.VITE_SHOW_VIDEO_DEBUG_INFO === 'true'
+
   // 解析视频标题
   const { title: parsedTitle, isProcessed: titleIsProcessed } = parseTitle(video.title || '')
 
@@ -145,6 +148,13 @@ export function VideoCard({
 
   // 缓存URL状态
   const [actualVideoUrl, setActualVideoUrl] = useState(video.video_url)
+
+  // 同步 video.video_url 的变化
+  React.useEffect(() => {
+    if (video.video_url && video.video_url !== actualVideoUrl) {
+      setActualVideoUrl(video.video_url)
+    }
+  }, [video.video_url])
 
   // 鼠标悬停预加载（类似模板页面的实现）
   const handleMouseEnter = useCallback(async () => {
@@ -213,8 +223,8 @@ export function VideoCard({
           {video.status === 'completed' && video.video_url ? (
             <ReactVideoPlayer
               videoUrl={actualVideoUrl}
-              thumbnailUrl={video.thumbnail_url || video.blur_thumbnail_url || ''}
-              lowResPosterUrl={video.blur_thumbnail_url}
+              thumbnailUrl={video.thumbnail_url || video.thumbnail_blur_url || ''}
+              lowResPosterUrl={video.thumbnail_blur_url}
               videoId={video.id}
               autoplay={false}
               muted={true}
@@ -225,32 +235,52 @@ export function VideoCard({
           ) : (
             /* 缩略图显示（非完成状态或无视频URL时） */
             <CachedImage
-              src={video.thumbnail_url || video.blur_thumbnail_url || ''}
+              src={video.thumbnail_url || video.thumbnail_blur_url || ''}
               alt={parsedTitle}
               className="w-full h-full object-cover"
               fastPreview={true}
-              placeholderSrc={video.blur_thumbnail_url}
+              placeholderSrc={video.thumbnail_blur_url}
               onLoad={() => onCheckCache(video)}
             />
           )}
 
-          {/* 处理中的进度覆盖 */}
-          {(video.status === 'processing' || video.status === 'pending') && (
-            <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white">
-              <div className="text-center space-y-2">
-                <Loader2 className="w-8 h-8 animate-spin mx-auto" />
-                <div className="text-sm font-medium">{getProgressText()}</div>
+          {/* 处理中的进度覆盖 - 只有当确实有活跃任务或进度信息时才显示 */}
+          {(video.status === 'processing' || video.status === 'pending') &&
+           (activeTask || videoProgress) &&
+           !(video.status === 'completed' && video.video_url) && // 如果已完成且有视频URL，不显示进度
+           getProgressPercentage() < 100 && ( // 进度达到100%时不显示
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95 flex flex-col items-center justify-center text-white z-10 overflow-hidden">
+              {/* 多彩流光动画背景层 */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent -skew-x-12 animate-[shimmer_2s_ease-in-out_infinite]" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/15 to-transparent -skew-x-12 animate-[shimmer_2.5s_ease-in-out_infinite_0.3s]" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-pink-500/10 to-transparent -skew-x-12 animate-[shimmer_3s_ease-in-out_infinite_0.6s]" />
 
-                {/* 进度条 */}
-                <div className="w-32 bg-white/20 rounded-full h-2">
-                  <div
-                    className="bg-white rounded-full h-2 transition-all duration-300"
-                    style={{ width: `${getProgressPercentage()}%` }}
-                  />
+              {/* 动态光点效果 */}
+              <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+              <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+              <div className="absolute top-1/2 right-1/3 w-24 h-24 bg-pink-500/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '0.5s' }} />
+
+              <div className="text-center space-y-3 relative z-10">
+                {/* 旋转加载图标 - 添加光晕效果 */}
+                <div className="relative inline-block">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full blur-xl opacity-50 animate-pulse" />
+                  <Loader2 className="w-12 h-12 animate-spin mx-auto relative z-10" />
                 </div>
 
-                <div className="text-xs text-gray-300">
-                  {getProgressPercentage().toFixed(0)}% • {getTaskDuration()}
+                {/* 渐变进度条 */}
+                <div className="w-40 bg-white/20 rounded-full h-2.5 overflow-hidden relative">
+                  <div
+                    className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full h-2.5 transition-all duration-300 relative"
+                    style={{ width: `${getProgressPercentage()}%` }}
+                  >
+                    {/* 进度条流光效果 */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-[shimmer_1s_ease-in-out_infinite]" />
+                  </div>
+                </div>
+
+                {/* 百分比显示 - 添加渐变文字 */}
+                <div className="text-base font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  {getProgressPercentage().toFixed(0)}%
                 </div>
               </div>
             </div>
@@ -291,31 +321,6 @@ export function VideoCard({
           {video.duration && (
             <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
               {formatDuration(video.duration)}
-            </div>
-          )}
-
-          {/* 缩略图生成按钮 */}
-          {!video.thumbnail_url && !isGeneratingThumbnail && (
-            <div className="absolute top-2 left-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => onGenerateThumbnail(video)}
-                className="opacity-80 hover:opacity-100"
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                生成缩略图
-              </Button>
-            </div>
-          )}
-
-          {/* 缩略图生成中 */}
-          {isGeneratingThumbnail && (
-            <div className="absolute top-2 left-2">
-              <div className="flex items-center gap-2 bg-blue-500/90 text-white px-2 py-1 rounded text-xs">
-                <Loader2 className="w-3 h-3 animate-spin" />
-                生成中...
-              </div>
             </div>
           )}
         </div>
@@ -426,21 +431,23 @@ export function VideoCard({
                   </TooltipContent>
                 </Tooltip>
 
-                {/* 调试信息按钮 */}
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onToggleDebugInfo(video.id)}
-                    >
-                      <Info className="w-4 h-4" strokeWidth={1.5} />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>查看视频缓存调试信息</p>
-                  </TooltipContent>
-                </Tooltip>
+                {/* 调试信息按钮 - 根据环境变量控制显示 */}
+                {showDebugButton && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onToggleDebugInfo(video.id)}
+                      >
+                        <Info className="w-4 h-4" strokeWidth={1.5} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>查看视频缓存调试信息</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
               </div>
             </TooltipProvider>
 
@@ -450,19 +457,21 @@ export function VideoCard({
           </div>
         </div>
 
-        {/* 调试信息展示 */}
-        <VideoDebugInfo
-          videoId={video.id}
-          thumbnailDebugInfo={thumbnailDebugInfo}
-          videoDebugInfo={videoDebugInfo}
-          isVisible={showDebugInfo}
-          onToggle={onToggleDebugInfo}
-          onCacheCleared={() => onCheckCache(video)}
-          onThumbnailRepaired={() => {
-            // 视频缓存修复完成后，重新检查缓存状态
-            onCheckCache(video)
-          }}
-        />
+        {/* 调试信息展示 - 根据环境变量控制显示 */}
+        {showDebugButton && (
+          <VideoDebugInfo
+            videoId={video.id}
+            thumbnailDebugInfo={thumbnailDebugInfo}
+            videoDebugInfo={videoDebugInfo}
+            isVisible={showDebugInfo}
+            onToggle={onToggleDebugInfo}
+            onCacheCleared={() => onCheckCache(video)}
+            onThumbnailRepaired={() => {
+              // 视频缓存修复完成后，重新检查缓存状态
+              onCheckCache(video)
+            }}
+          />
+        )}
 
         {/* 视频预览播放器 */}
         {showVideoPlayer && video.status === 'completed' && (

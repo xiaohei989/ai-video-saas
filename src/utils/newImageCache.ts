@@ -209,9 +209,12 @@ export const cacheImage = async (url: string, options: {
   try {
     const existing = await getCachedImage(url, options.cacheKey)
     if (existing) {
+      console.log(`[NewImageCache] ✅ 缓存已存在,跳过下载:`, url.substring(0, 60))
       return existing
     }
+    console.log(`[NewImageCache] ❌ 无有效缓存,开始下载:`, url.substring(0, 60))
   } catch (error) {
+    console.log(`[NewImageCache] ⚠️ 缓存检查失败:`, error)
   }
   
   // 处理图片
@@ -252,15 +255,18 @@ async function processAndCacheImage(imageUrl: string, options: {
       }
       
       // 缓存完整的Base64图片数据（非SVG占位符）
+      console.log(`[NewImageCache] 💾 写入缓存 - URL:`, imageUrl.substring(0, 60), `大小: ${(base64Data.length / 1024).toFixed(2)}KB`)
       const success = await unifiedCache.set(options.key, base64Data, {
         category: 'image',
         ttl: 24 * 60 * 60, // 24小时
         compress: false // 不需要额外压缩
       })
-      
+
       if (success) {
+        console.log(`[NewImageCache] ✅ 缓存写入成功`)
         return base64Data
       } else {
+        console.log(`[NewImageCache] ❌ 缓存写入失败`)
         return imageUrl
       }
     } else {
@@ -727,35 +733,21 @@ export const smartLoadImage = async (originalUrl: string, options: {
   const finalCached = await getCachedImage(finalUrl)
   if (finalCached && finalCached.startsWith('data:')) {
     const sizeKB = (finalCached.length / 1024).toFixed(2)
-    // 严格质量标准：只有>50KB才认为是高质量，>20KB为中等质量
-    if (parseFloat(sizeKB) > 50) {
-      onFinalLoad?.(finalCached)
-      return finalCached
-    } else {
-      // 质量不达标，重新获取
-    }
+    // 🔧 修复: 只要有有效的Base64缓存就使用,不再强制要求大小
+    // 原因: 原图本身可能就很小,不应该重复缓存
+    onFinalLoad?.(finalCached)
+    return finalCached
   }
   
   // 直接加载高质量图片（无模糊图阶段）
   try {
     const cached = await cacheImage(finalUrl, { compress: false })
-    
-    // 验证缓存结果的质量
+
+    // 🔧 修复: 验证缓存结果,但不再根据大小判断是否使用
     if (cached && cached.startsWith('data:')) {
-      const sizeKB = (cached.length / 1024).toFixed(2)
-      if (parseFloat(sizeKB) > 50) {
-        // 高质量
-        onFinalLoad?.(cached)
-        return cached
-      } else if (parseFloat(sizeKB) > 20) {
-        // 中等质量
-        onFinalLoad?.(cached)
-        return cached
-      } else {
-        // 中等质量也可以使用，只是不是最佳
-        onFinalLoad?.(cached)
-        return cached
-      }
+      // 任何成功缓存的Base64数据都使用,不再检查大小
+      onFinalLoad?.(cached)
+      return cached
     } else {
       // 缓存失败，直接使用原图
       onFinalLoad?.(originalUrl)

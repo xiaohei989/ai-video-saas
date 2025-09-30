@@ -3,6 +3,7 @@ import { cn } from '@/utils/cn'
 import { getProxyVideoUrl, needsCorsProxy } from '@/utils/videoUrlProxy'
 import { smartLoadImage, getCachedImage } from '@/utils/newImageCache'
 import { useTranslation } from 'react-i18next'
+import { Loader2 } from 'lucide-react'
 
 interface CachedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string
@@ -206,7 +207,7 @@ export default function CachedImage({
       return (
         <div className={cn("bg-muted animate-pulse relative overflow-hidden", className?.replace(/absolute|inset-\d+/g, ''))} {...props}>
           <div className="w-full h-full bg-muted-foreground/10 flex items-center justify-center">
-            <div className="text-xs text-muted-foreground">加载中...</div>
+            <Loader2 className="w-6 h-6 text-muted-foreground/50 animate-spin" />
           </div>
         </div>
       )
@@ -229,7 +230,7 @@ export default function CachedImage({
     return (
       <div className={cn("bg-muted animate-pulse relative overflow-hidden", className?.replace(/absolute|inset-\d+/g, ''))} {...props}>
         <div className="w-full h-full bg-muted-foreground/10 flex items-center justify-center">
-          <div className="text-xs text-muted-foreground">加载中...</div>
+          <Loader2 className="w-6 h-6 text-muted-foreground/50 animate-spin" />
         </div>
       </div>
     )

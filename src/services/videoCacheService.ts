@@ -206,6 +206,21 @@ class VideoCacheService {
     pagination?: any
   ): Promise<void> {
     const cacheKey = this.getCacheKey(userId, filter, pagination)
+
+    // 🔧 修复: 检查是否已经有相同的缓存,避免重复写入
+    const existingCache = this.getFromMemory(cacheKey)
+    if (existingCache) {
+      // 检查数据是否相同(通过比较视频数量和第一个视频ID)
+      if (
+        existingCache.videos.length === videos.length &&
+        existingCache.videos[0]?.id === videos[0]?.id &&
+        existingCache.total === total
+      ) {
+        console.log(`[VideoCacheService] ⏭️ 缓存数据未变化，跳过写入 (${videos.length}个视频)`)
+        return
+      }
+    }
+
     const sanitizedVideos = videos.map(video => this.sanitizeVideo(video))
 
     const data: CachedVideoData = {
@@ -226,6 +241,7 @@ class VideoCacheService {
     const videoTitle = sampleVideo?.title || sampleVideo?.template_name || '未知视频'
     const videoId = sampleVideo?.id || 'unknown'
     const estimatedSize = Math.round(JSON.stringify(data).length / 1024) // 估算KB
+    console.log(`[VideoCacheService] ✅ 缓存已更新: ${videos.length}个视频, 约${estimatedSize}KB`)
   }
 
   /**
