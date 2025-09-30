@@ -69,7 +69,6 @@ interface HeaderProps {
 
 export function Header({ className = "" }: HeaderProps = {}) {
   const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
   const location = useLocation()
   const { user, profile, signOut } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -115,9 +114,9 @@ export function Header({ className = "" }: HeaderProps = {}) {
     // 强制导航
     setIsNavigating(true)
     console.log(`[Header] 🚀 强制导航: ${elementName} -> ${path}`)
-    
+
     try {
-      navigate(path)
+      navigateTo(path)
       console.log(`[Header] ✅ 导航成功: ${path}`)
     } catch (error) {
       console.error(`[Header] ❌ 导航失败:`, error)
@@ -127,7 +126,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
         setIsNavigating(false)
       }, 500)
     }
-  }, [navigate, location.pathname, isNavigating])
+  }, [navigateTo, location.pathname, isNavigating])
   
   // 导航状态调试
   useEffect(() => {

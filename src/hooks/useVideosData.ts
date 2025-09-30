@@ -4,7 +4,6 @@
  */
 
 import React, { useState, useEffect, useCallback, useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import supabaseVideoService from '@/services/supabaseVideoService'
 import { videoCacheService } from '@/services/videoCacheService'
@@ -57,7 +56,6 @@ export function useVideosData(options: UseVideosDataOptions = {}): UseVideosData
 
   const authContext = useContext(AuthContext)
   const user = authContext?.user
-  const navigate = useNavigate()
 
   // 状态管理
   const [videos, setVideos] = useState<Video[]>([])

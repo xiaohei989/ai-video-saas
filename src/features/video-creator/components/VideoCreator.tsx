@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 import ConfigPanel from './ConfigPanel'
@@ -24,6 +24,7 @@ export default function VideoCreator() {
   const [searchParams] = useSearchParams()
   const templateIdFromUrl = searchParams.get('template')
   const paramsFromUrl = searchParams.get('params')
+  const navigate = useNavigate() // for updating URL search params only
   const { navigateTo } = useLanguageRouter()
   const authContext = useContext(AuthContext)
   const user = authContext?.user

@@ -1,0 +1,130 @@
+/* TEAM */
+
+Website: https://veo3video.me
+Company: Veo3Video
+Location: Global (Remote-First)
+Type: AI SaaS Platform
+
+/* ABOUT */
+
+Veo3Video is an AI-powered viral video generation platform.
+
+Our Mission:
+  Making viral video creation accessible to everyone.
+  Create scroll-stopping content in just 3 minutes.
+  70% cheaper than Google's direct API.
+  No editing skills required.
+
+Core Values:
+  - Innovation: Leveraging cutting-edge AI technology
+  - Accessibility: Tools for creators of all skill levels
+  - Affordability: Premium features at competitive prices
+  - Global Reach: Supporting 8 languages worldwide
+
+/* TECHNOLOGY */
+
+Frontend:
+  React 18+
+  TypeScript
+  Tailwind CSS
+  Shadcn UI Components
+
+Backend:
+  Supabase (PostgreSQL)
+  Edge Functions
+  Real-time Subscriptions
+
+AI & Video:
+  Google Veo3 API
+  AI Content Generation
+  Cloud Video Processing
+  CDN Distribution (Cloudflare R2)
+
+Build Tools:
+  Vite
+  ESLint
+  PostCSS
+
+Deployment:
+  Cloudflare Pages
+  Global CDN
+  Edge Computing
+
+/* FEATURES */
+
+Video Generation:
+  - AI-powered viral video creation
+  - One-click viral templates
+  - ASMR, magic effects, miniature surprises
+  - 3D bloom effects
+
+Format Optimization:
+  - Perfect 9:16 vertical format
+  - TikTok/Instagram ready
+  - YouTube Shorts compatible
+  - Instant HD downloads
+
+Multi-language:
+  Chinese (Simplified)
+  English
+  Japanese
+  Korean
+  Spanish
+  German
+  French
+  Arabic
+
+Business Model:
+  - Freemium with credit system
+  - Three subscription tiers ($9.99, $19.99, $99.99)
+  - Pay-per-video option
+  - Referral rewards program
+
+/* STANDARDS & COMPLIANCE */
+
+Accessibility: WCAG 2.1 Compliant
+Security: HTTPS, RFC 9116 (security.txt)
+SEO: Multi-language sitemaps, Structured data (JSON-LD)
+Privacy: GDPR Compliant, User data protection
+AI Ethics: Responsible AI use, No user data for training
+
+/* THANKS */
+
+Inspired by the global creator community
+Special thanks to:
+  - Open source contributors
+  - Early beta testers
+  - Our user community
+  - Technology partners
+
+/* SITE */
+
+Last update: 2025-09-30
+Language: Multi-language (8 languages)
+Doctype: HTML5
+IDE: Visual Studio Code
+Standards: W3C, WCAG 2.1, RFC 9116
+
+/* CONTACT */
+
+Email: support@veo3video.me
+Help Center: https://veo3video.me/help
+Security: security@veo3video.me
+
+/* SOCIAL */
+
+Follow us for updates and tips!
+(Links to be added as social presence grows)
+
+/* META */
+
+This humans.txt file is part of an initiative
+for knowing the people behind a website.
+See http://humanstxt.org for more information.
+
+Made with ❤️ for creators worldwide.
+
+/* CREDITS */
+
+This file follows the humansTXT initiative.
+"We are humans, not machines."

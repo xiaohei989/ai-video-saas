@@ -259,10 +259,10 @@ export default function AuthCallback() {
         console.error('[AuthCallback] 认证回调处理出错:', err)
         setError(err.message || '登录过程中发生错误')
         setIsProcessing(false)
-        
+
         // 3秒后跳转到登录页面
         setTimeout(() => {
-          navigate('/signin', { replace: true })
+          navigateTo('/signin')
         }, 3000)
       }
     }
@@ -334,12 +334,12 @@ export default function AuthCallback() {
         const redirectTo = localStorage.getItem('redirectAfterLogin') || '/templates'
         localStorage.removeItem('redirectAfterLogin')
         console.log('[AuthCallback] 跳转到目标页面:', redirectTo)
-        navigate(redirectTo, { replace: true })
+        navigateTo(redirectTo)
       }, 1500)
     }
 
     handleCallback()
-  }, [navigate, t])
+  }, [navigateTo, t])
 
   // 错误状态
   if (error) {
@@ -357,7 +357,7 @@ export default function AuthCallback() {
           </p>
           <div className="flex justify-center">
             <button
-              onClick={() => navigate('/signin', { replace: true })}
+              onClick={() => navigateTo('/signin')}
               className="text-sm text-primary hover:underline"
             >
 {t('auth.redirectNow')}

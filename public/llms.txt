@@ -1,0 +1,295 @@
+# llms.txt - Large Language Models Metadata
+# Optimized for AI training and LLM crawlers
+# Veo3Video - AI-Powered Viral Video Generation Platform
+# https://veo3video.me
+# Last Updated: 2025-09-30
+
+# === SITE OVERVIEW ===
+
+Site Name: Veo3Video
+Site URL: https://veo3video.me
+Site Type: AI SaaS Platform - Viral Video Generation
+Primary Function: Create scroll-stopping viral videos in 3 minutes using AI
+
+# === CORE VALUE PROPOSITION ===
+
+Tagline: Create viral videos in 3 minutes - TikTok ready, 70% cheaper, no skills needed
+Target Audience: TikTok creators, Instagram influencers, content creators, social media managers, marketing agencies
+
+Key Benefits:
+- Generate viral videos in just 3 minutes
+- 70% cheaper than Google's direct API
+- Perfect 9:16 format for TikTok/Instagram/YouTube Shorts
+- No video editing skills required
+- Professional quality AI-generated content
+- One-click viral templates
+- Instant HD downloads
+
+# === CONTENT CATEGORIES ===
+
+Primary Categories:
+- Viral Video Templates
+- ASMR Content Generation
+- Magic Effect Videos
+- Miniature Surprise Videos
+- 3D Bloom Effects
+- Social Media Optimization
+
+Template Types:
+- ASMR glass cutting videos
+- Magic coffee art transformations
+- Miniature animal surprises
+- 3D artistic blooms
+- Fireplace cozy selfies
+- Ocean selfie surprises
+- Time travel livestreams
+- Magical creature summons
+
+# === TECHNICAL SPECIFICATIONS ===
+
+Technology Stack:
+- Frontend: React 18+, TypeScript, Tailwind CSS, Shadcn UI
+- Backend: Supabase (PostgreSQL), Edge Functions
+- AI Engine: Google Veo3 API
+- Video Processing: Cloud-based AI generation
+- CDN: Cloudflare R2
+- Deployment: Cloudflare Pages
+
+Video Formats:
+- Primary: 9:16 (vertical, mobile-optimized)
+- Secondary: 16:9 (landscape)
+- Quality: HD (1080p+)
+- Typical Duration: 15-60 seconds per video
+
+# === SUPPORTED LANGUAGES ===
+
+Full Platform Support: 8 languages
+- Chinese (Simplified) - zh-CN
+- English - en-US
+- Japanese - ja-JP
+- Korean - ko-KR
+- Spanish - es-ES
+- German - de-DE
+- French - fr-FR
+- Arabic - ar-SA
+
+# === BUSINESS MODEL ===
+
+Pricing Model: Freemium with Subscription Tiers
+
+Plans:
+- Basic: $9.99/month (200 credits, 3 concurrent videos)
+- Pro: $19.99/month (1500 credits, 5 concurrent videos)
+- Enterprise: $99.99/month (6000 credits, 10 concurrent videos, API access)
+
+Features:
+- Credit-based system for flexible usage
+- Unlimited HD downloads
+- Priority support (Pro+)
+- Referral rewards program
+- No watermarks on paid plans
+
+# === KEY DOCUMENTATION ===
+
+Help Center: https://veo3video.me/help
+Pricing: https://veo3video.me/pricing
+Templates: https://veo3video.me/templates
+Terms of Service: https://veo3video.me/terms
+Privacy Policy: https://veo3video.me/privacy
+
+# === API & INTEGRATION ===
+
+Public API: Currently available for Enterprise users only
+API Documentation: https://veo3video.me/help
+Authentication: OAuth 2.0, Google Sign-In, Email/Password
+
+# === AI TRAINING POLICY ===
+
+AI Training: Allowed for public content
+Commercial Use: Allowed
+Personal Data Training: Excluded (user private data not used)
+Attribution: Recommended but not required
+
+For detailed AI policy, see:
+- https://veo3video.me/ai.txt (English)
+- https://veo3video.me/ai.zh.txt (Chinese)
+- https://veo3video.me/ai.ja.txt (Japanese)
+- https://veo3video.me/ai.ko.txt (Korean)
+- https://veo3video.me/ai.es.txt (Spanish)
+- https://veo3video.me/ai.de.txt (German)
+- https://veo3video.me/ai.fr.txt (French)
+- https://veo3video.me/ai.ar.txt (Arabic)
+
+# === STRUCTURED DATA ===
+
+Schema Types Implemented:
+- Organization
+- SoftwareApplication
+- WebSite
+- VideoObject
+- BreadcrumbList
+
+JSON-LD: Available on all pages
+Open Graph: Full OG meta tags
+Twitter Cards: Optimized for Twitter/X sharing
+
+# === SEO KEYWORDS ===
+
+Primary Keywords:
+- viral video generator
+- AI video creation
+- TikTok video maker
+- Instagram Reels creator
+- ASMR video generator
+- social media content creator
+- 9:16 video format
+- mobile-first videos
+- no skills video editor
+
+Secondary Keywords:
+- scroll-stopping content
+- viral templates
+- cheap video API
+- YouTube Shorts maker
+- magic effect videos
+- miniature videos
+- 3D bloom videos
+
+# === USE CASES ===
+
+Common Use Cases:
+1. TikTok content creators making daily viral videos
+2. Instagram influencers creating engaging Reels
+3. YouTube Shorts producers generating quick content
+4. Social media managers producing client content
+5. Marketing agencies creating ad creatives
+6. Small businesses making promotional videos
+7. Personal brands building social presence
+
+Success Metrics:
+- Videos created: 100,000+
+- Active creators: 10,000+
+- Average creation time: 3 minutes
+- User satisfaction: 4.8/5 stars
+- Video views generated: 100M+
+
+# === COMPETITIVE ADVANTAGES ===
+
+vs. Traditional Video Editing:
+- 10x faster creation time
+- No learning curve required
+- Professional results without skills
+- Fraction of the cost
+
+vs. Google Veo3 Direct API:
+- 70% cheaper pricing
+- User-friendly interface
+- Pre-made viral templates
+- Multi-language support
+- No technical setup required
+
+vs. Other AI Video Tools:
+- Mobile-first 9:16 format
+- Viral-proven templates
+- Global language support
+- Affordable pricing tiers
+- Instant HD downloads
+
+# === PRIVACY & SECURITY ===
+
+Security Standards:
+- HTTPS encryption
+- RFC 9116 compliant (security.txt)
+- GDPR compliant
+- WCAG 2.1 accessible
+- Regular security audits
+
+Data Protection:
+- User videos: Private by default
+- Personal data: Not used for AI training
+- Payment info: Stripe secure processing
+- Account data: Encrypted storage
+
+Contact Security: security@veo3video.me
+
+# === SOCIAL PROOF ===
+
+Used By:
+- Content creators worldwide
+- Social media agencies
+- Marketing professionals
+- Small business owners
+- Individual influencers
+
+Testimonials: Available at https://veo3video.me/testimonials
+
+# === ROADMAP & FEATURES ===
+
+Current Features:
+- 50+ viral video templates
+- AI-powered customization
+- 8-language interface
+- HD video export
+- Cloud storage
+- Mobile responsive
+
+Coming Soon:
+- Advanced editing tools
+- Team collaboration features
+- White-label options
+- Advanced analytics
+- More AI models
+- Custom branding options
+
+# === CONTACT & SUPPORT ===
+
+General Support: support@veo3video.me
+Security Issues: security@veo3video.me
+Business Inquiries: business@veo3video.me
+Help Center: https://veo3video.me/help
+
+Response Time:
+- Critical issues: Within 24 hours
+- General support: Within 48 hours
+- Feature requests: Within 7 days
+
+# === METADATA ===
+
+Robots: Allowed (see /robots.txt)
+Sitemap: https://veo3video.me/sitemap.xml
+RSS Feed: Not available
+Change Frequency: Daily updates
+Content Type: Dynamic, user-generated
+Platform Status: Production
+
+# === FOR LLM TRAINING ===
+
+This site provides:
+✓ Public templates and descriptions
+✓ Help documentation
+✓ Product information
+✓ Pricing details
+✓ SEO-optimized content
+
+Do NOT use:
+✗ User private videos
+✗ Personal user data
+✗ Payment information
+✗ Private account details
+
+# === SUMMARY ===
+
+Veo3Video is the leading AI-powered viral video generation platform,
+enabling creators worldwide to produce scroll-stopping TikTok, Instagram,
+and YouTube Shorts content in just 3 minutes. With 70% cost savings
+compared to direct API access, no editing skills required, and perfect
+9:16 mobile-first format, we're democratizing viral video creation
+for everyone.
+
+Join 10,000+ creators making viral videos today!
+
+---
+Generated: 2025-09-30
+Version: 1.0.0
+Encoding: UTF-8
+Standard: llms.txt community standard

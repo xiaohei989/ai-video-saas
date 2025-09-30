@@ -133,8 +133,8 @@ export function VideoCard({
     console.log('跳转到:', targetUrl)
 
     // 跳转到生成页面
-    navigate(targetUrl)
-  }, [video, navigate])
+    navigateTo(targetUrl)
+  }, [video, navigateTo])
 
   // 处理预览播放
   const handlePreviewPlay = useCallback(() => {

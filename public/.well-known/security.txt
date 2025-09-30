@@ -1,0 +1,33 @@
+# security.txt - RFC 9116
+# Veo3Video - AI-Powered Viral Video Generation Platform
+# https://veo3video.me
+
+Contact: mailto:security@veo3video.me
+Contact: https://veo3video.me/help
+Expires: 2026-09-30T23:59:59.000Z
+Preferred-Languages: en, zh, ja, ko, es, de, fr, ar
+
+Policy: https://veo3video.me/security-policy
+
+# About Veo3Video
+# We are an AI-powered viral video generation platform
+# Create scroll-stopping content in 3 minutes
+# 70% cheaper than Google's direct API
+# TikTok/Instagram optimized 9:16 format
+
+Acknowledgments: https://veo3video.me/security-acknowledgments
+
+# Reporting Guidelines
+# Please report security vulnerabilities responsibly
+# We appreciate your help in keeping our platform secure
+# Expected response time: Within 48 hours
+
+Hiring: https://veo3video.me/careers
+
+# Additional Information
+# Platform: Web Application (React, TypeScript)
+# Services: AI Video Generation, ASMR Content, Social Media Optimization
+# Supported Languages: 8 languages (zh, en, ja, ko, es, de, fr, ar)
+
+# Last Updated: 2025-09-30
+# Version: 1.0.0

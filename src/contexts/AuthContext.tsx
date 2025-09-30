@@ -724,7 +724,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       stopTokenCheck() // 清理Token检查定时器
       subscription.unsubscribe()
     }
-  }, [navigate])
+  }, [navigateTo])
 
   // 注册
   const signUp = async (email: string, password: string, metadata?: SignUpMetadata) => {
