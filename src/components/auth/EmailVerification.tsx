@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { Mail, RefreshCw } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useTranslation } from 'react-i18next'
+import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 
 interface EmailVerificationProps {
   email: string
@@ -13,6 +14,7 @@ interface EmailVerificationProps {
 
 export function EmailVerification({ email, onBack }: EmailVerificationProps) {
   const { t } = useTranslation()
+  const { currentLanguage } = useLanguageRouter()
   const [isResending, setIsResending] = useState(false)
   const [lastSentTime, setLastSentTime] = useState<Date | null>(null)
 
@@ -30,7 +32,7 @@ export function EmailVerification({ email, onBack }: EmailVerificationProps) {
         type: 'signup',
         email: email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`
+          emailRedirectTo: `${window.location.origin}/${currentLanguage}/auth/callback`
         }
       })
 

@@ -95,7 +95,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 // 认证提供者组件
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { navigateTo } = useLanguageRouter()
+  const { navigateTo, currentLanguage } = useLanguageRouter()
   // 🚀 关键修复：同步初始化user和loading状态，避免状态不一致
   const getInitialAuthState = () => {
     try {
@@ -756,7 +756,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             device_fingerprint: undefined,
             ip_address: undefined
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/${currentLanguage}/auth/callback`,
         },
       })
 
@@ -884,10 +884,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // 标记当前使用Google OAuth
       localStorage.setItem('oauth_provider', 'google')
 
+      // 构建带语言前缀的回调 URL
+      const callbackUrl = `${window.location.origin}/${currentLanguage}/auth/callback`
+      console.log('[AUTH] Google OAuth 回调 URL:', callbackUrl)
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: callbackUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -960,10 +964,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // 标记当前使用Apple OAuth，供AuthCallback识别
       localStorage.setItem('oauth_provider', 'apple')
 
+      // 构建带语言前缀的回调 URL
+      const callbackUrl = `${window.location.origin}/${currentLanguage}/auth/callback`
+      console.log('[AUTH] Apple OAuth 回调 URL:', callbackUrl)
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: callbackUrl,
           // 移除response_mode配置，让Supabase使用Apple OAuth的默认form_post模式
           // Apple OAuth需要使用form_post模式来正确传递用户信息
         },
