@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 import compression from 'vite-plugin-compression'
 import { removeUnnecessaryPreloads, smartResourceHints, devPerformanceOptimizer } from './src/utils/vite-plugins'
+import { stripeSyncPlugin } from './src/utils/vite-plugin-stripe-sync'
 
 export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
@@ -24,6 +25,11 @@ export default defineConfig(({ mode }) => {
   
   return {
     plugins: [
+      // 🔄 Stripe 环境变量自动同步插件
+      stripeSyncPlugin({
+        enabled: mode === 'development', // 仅在开发模式启用
+        mode: 'auto', // 自动检测测试/生产模式
+      }),
       react(),
       removeUnnecessaryPreloads(),
       smartResourceHints(),

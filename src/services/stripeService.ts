@@ -278,9 +278,12 @@ class StripeService {
         }
       })
 
+      console.log('Checkout session response:', { data, error })
+
       if (error) {
         console.error('Error creating checkout session:', error)
-        
+        console.error('Full error details:', JSON.stringify(error, null, 2))
+
         // 记录支付失败
         await securityMonitor.logSecurityEvent({
           type: ThreatType.SUSPICIOUS_PATTERN,

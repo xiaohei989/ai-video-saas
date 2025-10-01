@@ -197,6 +197,10 @@ export const stripeConfig = getStripeConfig();
 
 // 在开发环境下打印配置信息
 if (import.meta.env.DEV) {
+  console.log('🔧 [Stripe Env Debug] VITE_STRIPE_MODE:', import.meta.env.VITE_STRIPE_MODE);
+  console.log('🔧 [Stripe Env Debug] Current Mode:', getStripeMode());
+  console.log('🔧 [Stripe Env Debug] PublishableKey:', getStripePublishableKey()?.substring(0, 20) + '...');
+
   // 验证配置
   const validation = validateStripeConfig();
   if (!validation.valid) {

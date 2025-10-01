@@ -254,14 +254,24 @@ export function getEdgeStripeEnvironmentInfo() {
   const mode = getEdgeStripeMode();
   const config = getEdgeStripeConfig();
   const secretKey = getStripeSecretKey();
-  const webhookSecret = getWebhookSecret();
-  
+
+  // 🔧 修复：webhook secret是可选的，只在webhook处理时需要
+  let webhookSecret = '';
+  let webhookSecretSource = 'none';
+  try {
+    webhookSecret = getWebhookSecret();
+    webhookSecretSource = webhookSecret === config.webhookSecret ? 'config' : 'env';
+  } catch (error) {
+    // Webhook secret不是必需的，忽略错误
+    console.log('[STRIPE_CONFIG] ℹ️ Webhook secret not configured (optional for checkout)');
+  }
+
   return {
     mode,
     isTestMode: mode === 'test',
     environment: mode === 'test' ? '测试环境' : '生产环境',
     secretKeySource: secretKey === config.secretKey ? 'config' : 'env',
-    webhookSecretSource: webhookSecret === config.webhookSecret ? 'config' : 'env',
+    webhookSecretSource,
     prices: config.prices
   };
 }

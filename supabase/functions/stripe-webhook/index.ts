@@ -115,38 +115,97 @@ function determineSubscriptionAction(
 }
 
 /**
- * 计算升级积分
+ * 获取订阅的月度积分（统一转换为月度单位）
+ */
+function getMonthlyCredits(tier: TierType): number {
+  const credits = TIER_CREDITS[tier] || 0
+  // 如果是年度计划，除以12得到月均积分
+  if (tier.includes('-annual')) {
+    return Math.floor(credits / 12)
+  }
+  return credits
+}
+
+/**
+ * 获取订阅的周期天数
+ */
+function getPeriodDays(tier: TierType): number {
+  return tier.includes('-annual') ? 365 : 30
+}
+
+/**
+ * 计算升级积分 - 改进版
+ * 支持跨周期升级（annual <-> monthly）的正确补偿
  */
 function calculateUpgradeCredits(
   oldTier: TierType,
   newTier: TierType,
   daysRemaining: number
 ): { credits: number, details: any } {
-  const oldCredits = TIER_CREDITS[oldTier] || 0
-  const newCredits = TIER_CREDITS[newTier] || 0
-  const creditDiff = newCredits - oldCredits
-  
-  if (creditDiff <= 0) {
-    return { credits: 0, details: { reason: 'No upgrade or downgrade', oldCredits, newCredits } }
+  console.log(`[UPGRADE_CREDITS] 开始计算升级补偿: ${oldTier} -> ${newTier}, 剩余${daysRemaining}天`)
+
+  // 🔧 修复：统一转换为月度积分进行比较
+  const oldMonthlyCredits = getMonthlyCredits(oldTier)
+  const newMonthlyCredits = getMonthlyCredits(newTier)
+  const monthlyDiff = newMonthlyCredits - oldMonthlyCredits
+
+  console.log(`[UPGRADE_CREDITS] 月度积分: ${oldTier}(${oldMonthlyCredits}) -> ${newTier}(${newMonthlyCredits})`)
+
+  if (monthlyDiff <= 0) {
+    console.log(`[UPGRADE_CREDITS] 月度积分未增加，不予补偿`)
+    return {
+      credits: 0,
+      details: {
+        reason: 'No upgrade or monthly credit increase',
+        oldMonthlyCredits,
+        newMonthlyCredits,
+        monthlyDiff
+      }
+    }
   }
-  
-  // 按剩余天数比例计算
-  const monthlyDays = 30
-  const ratio = Math.min(daysRemaining / monthlyDays, 1)
-  const upgradeCredits = Math.floor(creditDiff * ratio)
-  
+
+  // 方案：基础补偿（原订阅剩余价值）+ 升级奖励（当月差价补偿）
+
+  // 1. 计算原订阅剩余价值补偿
+  const oldPeriodDays = getPeriodDays(oldTier)
+  const oldTotalCredits = TIER_CREDITS[oldTier] || 0
+  const oldDailyCredits = oldTotalCredits / oldPeriodDays
+  const remainingValueCredits = Math.floor(oldDailyCredits * daysRemaining)
+
+  console.log(`[UPGRADE_CREDITS] 原订阅剩余价值: ${oldDailyCredits.toFixed(2)} 积分/天 × ${daysRemaining}天 = ${remainingValueCredits} 积分`)
+
+  // 2. 计算升级差价补偿（当月的差价，最多补偿30天）
+  const daysInCurrentMonth = Math.min(daysRemaining, 30)
+  const ratio = daysInCurrentMonth / 30
+  const upgradeBonusCredits = Math.floor(monthlyDiff * ratio)
+
+  console.log(`[UPGRADE_CREDITS] 升级差价补偿: (${newMonthlyCredits} - ${oldMonthlyCredits}) × ${ratio.toFixed(2)} = ${upgradeBonusCredits} 积分`)
+
+  // 3. 总补偿 = 剩余价值 + 升级奖励
+  const totalCredits = remainingValueCredits + upgradeBonusCredits
+
+  console.log(`[UPGRADE_CREDITS] 总补偿: ${remainingValueCredits} + ${upgradeBonusCredits} = ${totalCredits} 积分`)
+
   const details = {
     oldTier,
     newTier,
-    oldCredits,
-    newCredits,
-    creditDiff,
     daysRemaining,
-    ratio,
-    calculation: `${creditDiff} * ${ratio} = ${upgradeCredits}`
+    oldPeriodDays,
+    // 原订阅信息
+    oldTotalCredits,
+    oldMonthlyCredits,
+    oldDailyCredits: parseFloat(oldDailyCredits.toFixed(2)),
+    // 新订阅信息
+    newMonthlyCredits,
+    monthlyDiff,
+    // 补偿计算
+    remainingValueCredits,
+    upgradeBonusCredits,
+    totalCredits,
+    calculation: `剩余价值 ${remainingValueCredits} + 升级奖励 ${upgradeBonusCredits} = ${totalCredits}`
   }
-  
-  return { credits: upgradeCredits, details }
+
+  return { credits: totalCredits, details }
 }
 
 /**

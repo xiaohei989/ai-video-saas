@@ -1,4 +1,6 @@
 import ReactGA from 'react-ga4'
+import { supabase } from '@/lib/supabase'
+import { UAParser } from 'ua-parser-js'
 
 export interface AnalyticsEvent {
   action: string
@@ -46,10 +48,129 @@ class AnalyticsService {
   private isInitialized = false
   private measurementId: string | null = null
   private consentGiven = false
+  private sessionId: string | null = null
 
   constructor() {
     this.measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID
     this.loadConsentFromStorage()
+    this.sessionId = this.getOrCreateSessionId()
+  }
+
+  /**
+   * 生成或获取会话ID
+   */
+  private getOrCreateSessionId(): string {
+    const SESSION_KEY = 'analytics_session_id'
+    const SESSION_DURATION = 30 * 60 * 1000 // 30分钟
+
+    let sessionData = sessionStorage.getItem(SESSION_KEY)
+
+    if (sessionData) {
+      try {
+        const { id, timestamp } = JSON.parse(sessionData)
+        // 检查会话是否过期
+        if (Date.now() - timestamp < SESSION_DURATION) {
+          // 更新时间戳
+          sessionStorage.setItem(SESSION_KEY, JSON.stringify({ id, timestamp: Date.now() }))
+          return id
+        }
+      } catch (e) {
+        console.error('[Analytics] Failed to parse session data:', e)
+      }
+    }
+
+    // 创建新会话
+    const newSessionId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+      id: newSessionId,
+      timestamp: Date.now()
+    }))
+
+    return newSessionId
+  }
+
+  /**
+   * 解析User Agent
+   */
+  private parseUserAgent(userAgent: string) {
+    const parser = new UAParser(userAgent)
+    const result = parser.getResult()
+
+    return {
+      browser: result.browser.name || 'Unknown',
+      os: result.os.name || 'Unknown',
+      device_type: result.device.type || 'desktop'
+    }
+  }
+
+  /**
+   * 检查当前用户是否为管理员
+   */
+  private async isCurrentUserAdmin(): Promise<boolean> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return false
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+
+      return profile?.role === 'admin'
+    } catch (error) {
+      console.error('[Analytics] Error checking admin status:', error)
+      return false
+    }
+  }
+
+  /**
+   * 记录页面访问到Supabase数据库
+   */
+  private async trackPageViewToDatabase(pagePath: string, pageTitle?: string) {
+    try {
+      // 过滤管理员访问
+      const isAdmin = await this.isCurrentUserAdmin()
+      if (isAdmin) {
+        console.log('[Analytics] Skipping tracking for admin user')
+        return false
+      }
+
+      if (!this.sessionId) {
+        this.sessionId = this.getOrCreateSessionId()
+      }
+
+      const userAgent = navigator.userAgent
+      const { browser, os, device_type } = this.parseUserAgent(userAgent)
+      const referrer = document.referrer || ''
+
+      // 调用Supabase函数记录页面访问
+      const { error } = await supabase.rpc('record_page_view', {
+        p_session_id: this.sessionId,
+        p_page_path: pagePath,
+        p_page_title: pageTitle || document.title,
+        p_referrer: referrer,
+        p_user_agent: userAgent,
+        p_device_type: device_type,
+        p_browser: browser,
+        p_os: os,
+        // IP地址和地理位置将由后端获取
+        p_ip_address: null,
+        p_country: null,
+        p_city: null
+      })
+
+      if (error) {
+        console.error('[Analytics] Failed to track page view to database:', error)
+        return false
+      }
+
+      console.log('[Analytics] Page view tracked to database:', { sessionId: this.sessionId, pagePath, pageTitle })
+      return true
+    } catch (error) {
+      console.error('[Analytics] Error tracking page view to database:', error)
+      return false
+    }
   }
 
   private loadConsentFromStorage() {
@@ -199,6 +320,10 @@ class AnalyticsService {
    * 跟踪页面浏览
    */
   trackPageView(path: string, title?: string, additionalData?: Record<string, any>) {
+    // 总是记录到Supabase数据库（用于内部统计）
+    this.trackPageViewToDatabase(path, title)
+
+    // 只在用户同意的情况下发送到Google Analytics
     if (!this.hasConsent()) return
 
     try {

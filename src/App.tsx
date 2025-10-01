@@ -1,5 +1,5 @@
-import React, { lazy, Suspense } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import React, { lazy, Suspense, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from './hooks/useTheme'
 import { AuthProvider } from './contexts/AuthContext'
@@ -172,10 +172,24 @@ function App() {
   )
 }
 
+// 页面追踪组件
+function PageViewTracker() {
+  const location = useLocation()
+
+  useEffect(() => {
+    // 追踪页面浏览
+    analyticsService.trackPageView(location.pathname, document.title)
+  }, [location])
+
+  return null
+}
+
 // 语言前缀路由组件
 function LanguagePrefixedRoutes() {
   return (
-    <Routes>
+    <>
+      <PageViewTracker />
+      <Routes>
       {/* Public routes */}
       <Route path="/" element={<FullScreenLayout><HomePage /></FullScreenLayout>} />
       <Route path="/templates" element={<Layout><TemplatesPage /></Layout>} />
@@ -248,7 +262,8 @@ function LanguagePrefixedRoutes() {
           <AdminApp />
         </AdminRoute>
       } />
-    </Routes>
+      </Routes>
+    </>
   )
 }
 

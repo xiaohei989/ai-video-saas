@@ -90,8 +90,8 @@ BEGIN
     (SELECT COALESCE(SUM(amount), 0) FROM public.payments WHERE status = 'succeeded' AND created_at >= DATE_TRUNC('week', NOW())) as revenue_this_week,
     (SELECT COALESCE(SUM(amount), 0) FROM public.payments WHERE status = 'succeeded' AND created_at >= DATE_TRUNC('month', NOW())) as revenue_this_month,
     (SELECT COUNT(*) FROM public.subscriptions WHERE status = 'active') as active_subscriptions,
-    (SELECT COUNT(*) FROM public.videos) as total_videos,
-    (SELECT COUNT(*) FROM public.videos WHERE DATE(created_at) = CURRENT_DATE) as videos_today,
+    (SELECT COUNT(*) FROM public.videos WHERE is_deleted = false) as total_videos,
+    (SELECT COUNT(*) FROM public.videos WHERE is_deleted = false AND DATE(created_at) = CURRENT_DATE) as videos_today,
     (SELECT COALESCE(COUNT(*), 0) FROM public.support_tickets WHERE status IN ('open', 'in_progress')) as pending_tickets,
     (SELECT COUNT(*) FROM public.profiles WHERE is_banned = true) as banned_users;
 END;
@@ -160,13 +160,14 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
   RETURN QUERY
-  SELECT 
+  SELECT
     DATE(created_at) as video_date,
     COUNT(*) as video_count,
     COUNT(*) FILTER (WHERE status = 'completed') as completed_count,
     COUNT(*) FILTER (WHERE status = 'failed') as failed_count
   FROM public.videos
   WHERE created_at >= NOW() - (days_back || ' days')::INTERVAL
+    AND is_deleted = false
   GROUP BY DATE(created_at)
   ORDER BY video_date DESC;
 END;

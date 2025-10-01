@@ -263,12 +263,18 @@ serve(async (req) => {
     console.error('[CHECKOUT] ❌ 发生错误:', {
       message: error.message,
       stack: error.stack,
-      name: error.name
+      name: error.name,
+      fullError: JSON.stringify(error, Object.getOwnPropertyNames(error))
     })
+
+    // 返回更详细的错误信息用于调试
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: error.message,
-        details: `Checkout session creation failed: ${error.message}`
+        errorName: error.name,
+        details: `Checkout session creation failed: ${error.message}`,
+        stack: error.stack,
+        timestamp: new Date().toISOString()
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

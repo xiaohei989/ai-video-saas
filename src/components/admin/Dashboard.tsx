@@ -23,13 +23,23 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts'
-import { getAdminStats } from '@/services/adminDataProvider'
+import {
+  getAdminStats,
+  getWebsiteAnalytics,
+  getPageViewTrends,
+  getPopularPages,
+  getDeviceDistribution,
+  getTrafficSources
+} from '@/services/adminDataProvider'
 import {
   Users,
   DollarSign,
   Video,
   MessageCircle,
-  AlertTriangle
+  AlertTriangle,
+  Eye,
+  Monitor,
+  Globe
 } from 'lucide-react'
 
 interface DashboardStats {
@@ -69,17 +79,57 @@ interface DashboardStats {
   }
 }
 
+interface WebsiteAnalytics {
+  total_page_views: number
+  unique_visitors: number
+  total_sessions: number
+  avg_session_duration: number
+  bounce_rate: number
+  page_views_today: number
+  unique_visitors_today: number
+  page_views_this_week: number
+  unique_visitors_this_week: number
+}
+
 const COLORS = ['#2563eb', '#7c3aed', '#059669', '#dc2626', '#ea580c', '#ca8a04']
 
 export const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [websiteAnalytics, setWebsiteAnalytics] = useState<WebsiteAnalytics | null>(null)
+  const [pageViewTrends, setPageViewTrends] = useState<any[]>([])
+  const [popularPages, setPopularPages] = useState<any[]>([])
+  const [deviceDistribution, setDeviceDistribution] = useState<any[]>([])
+  const [trafficSources, setTrafficSources] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [period, setPeriod] = useState<'day' | 'week' | 'month'>('day')
 
   useEffect(() => {
     loadStats()
+    loadWebsiteAnalytics()
   }, [period])
+
+  const loadWebsiteAnalytics = async () => {
+    try {
+      const daysBack = period === 'day' ? 7 : period === 'week' ? 30 : 90
+
+      const [analytics, trends, pages, devices, sources] = await Promise.all([
+        getWebsiteAnalytics(daysBack),
+        getPageViewTrends(daysBack),
+        getPopularPages(daysBack, 10),
+        getDeviceDistribution(daysBack),
+        getTrafficSources(daysBack)
+      ])
+
+      setWebsiteAnalytics(analytics)
+      setPageViewTrends(trends)
+      setPopularPages(pages)
+      setDeviceDistribution(devices)
+      setTrafficSources(sources)
+    } catch (err) {
+      console.error('[Dashboard] Load website analytics error:', err)
+    }
+  }
 
   const loadStats = async () => {
     try {
@@ -283,6 +333,65 @@ export const Dashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* 网站访问统计卡片 */}
+      {websiteAnalytics && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">总浏览量</CardTitle>
+              <Eye className="h-4 w-4 text-purple-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-purple-600">{websiteAnalytics.total_page_views?.toLocaleString()}</div>
+              <p className="text-xs text-muted-foreground">
+                今日 {websiteAnalytics.page_views_today?.toLocaleString()} | 本周 {websiteAnalytics.page_views_this_week?.toLocaleString()}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">独立访客</CardTitle>
+              <Users className="h-4 w-4 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">{websiteAnalytics.unique_visitors?.toLocaleString()}</div>
+              <p className="text-xs text-muted-foreground">
+                今日 {websiteAnalytics.unique_visitors_today?.toLocaleString()} | 本周 {websiteAnalytics.unique_visitors_this_week?.toLocaleString()}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">平均访问时长</CardTitle>
+              <Monitor className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">
+                {Math.round(websiteAnalytics.avg_session_duration || 0)}秒
+              </div>
+              <p className="text-xs text-muted-foreground">
+                跳出率 {websiteAnalytics.bounce_rate?.toFixed(1)}%
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">总会话数</CardTitle>
+              <Globe className="h-4 w-4 text-orange-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600">{websiteAnalytics.total_sessions?.toLocaleString()}</div>
+              <p className="text-xs text-muted-foreground">
+                用户活跃度统计
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* 关键指标卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         <Card>
@@ -391,6 +500,111 @@ export const Dashboard: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* 网站访问趋势和数据分析 */}
+      {pageViewTrends.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* 页面访问趋势 */}
+          <Card>
+            <CardHeader>
+              <CardTitle>页面访问趋势</CardTitle>
+              <CardDescription>每日页面浏览量和独立访客数</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={pageViewTrends.slice(-7)}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="view_date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Area type="monotone" dataKey="page_views" stroke="#7c3aed" fill="#7c3aed" fillOpacity={0.3} name="页面浏览量" />
+                  <Area type="monotone" dataKey="unique_visitors" stroke="#2563eb" fill="#2563eb" fillOpacity={0.3} name="独立访客" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* 设备类型分布 */}
+          <Card>
+            <CardHeader>
+              <CardTitle>设备类型分布</CardTitle>
+              <CardDescription>访客使用的设备类型统计</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={deviceDistribution}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    dataKey="visitor_count"
+                    label={({ device_type, percentage }) => `${device_type} ${percentage}%`}
+                  >
+                    {deviceDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* 热门页面和流量来源 */}
+      {(popularPages.length > 0 || trafficSources.length > 0) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* 热门页面 */}
+          {popularPages.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>热门页面</CardTitle>
+                <CardDescription>访问量最高的页面（前10）</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {popularPages.slice(0, 10).map((page, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{page.page_path}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {page.unique_visitors} 独立访客 · 平均 {Math.round(page.avg_time_on_page)}秒
+                        </p>
+                      </div>
+                      <div className="ml-4 text-sm font-semibold text-purple-600">
+                        {page.view_count}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 流量来源 */}
+          {trafficSources.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>流量来源</CardTitle>
+                <CardDescription>访客来源分析</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={trafficSources.slice(0, 10)}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="referrer_domain" angle={-45} textAnchor="end" height={100} />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="visitor_count" fill="#059669" name="访客数" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
 
       {/* 分布图表 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

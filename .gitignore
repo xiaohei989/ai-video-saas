@@ -56,3 +56,4 @@ wrangler.toml.bak
 
 # Supabase
 .supabase/.env.local.backup
+.env.local.backup

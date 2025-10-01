@@ -636,3 +636,118 @@ export const getAdminStats = async (period = 'day') => {
     body: { period }
   })
 }
+
+// 获取网站访问统计
+export const getWebsiteAnalytics = async (daysBack = 7) => {
+  try {
+    const { data, error } = await supabase.rpc('get_website_analytics', {
+      days_back: daysBack
+    })
+
+    if (error) {
+      console.error('[getWebsiteAnalytics] Error:', error)
+      throw error
+    }
+
+    return data?.[0] || {
+      total_page_views: 0,
+      unique_visitors: 0,
+      total_sessions: 0,
+      avg_session_duration: 0,
+      bounce_rate: 0,
+      page_views_today: 0,
+      unique_visitors_today: 0,
+      page_views_this_week: 0,
+      unique_visitors_this_week: 0
+    }
+  } catch (error) {
+    console.error('[getWebsiteAnalytics] Error:', error)
+    return {
+      total_page_views: 0,
+      unique_visitors: 0,
+      total_sessions: 0,
+      avg_session_duration: 0,
+      bounce_rate: 0,
+      page_views_today: 0,
+      unique_visitors_today: 0,
+      page_views_this_week: 0,
+      unique_visitors_this_week: 0
+    }
+  }
+}
+
+// 获取页面访问趋势
+export const getPageViewTrends = async (daysBack = 30) => {
+  try {
+    const { data, error } = await supabase.rpc('get_page_view_trends', {
+      days_back: daysBack
+    })
+
+    if (error) throw error
+    return data || []
+  } catch (error) {
+    console.error('[getPageViewTrends] Error:', error)
+    return []
+  }
+}
+
+// 获取热门页面
+export const getPopularPages = async (daysBack = 7, pageLimit = 10) => {
+  try {
+    const { data, error } = await supabase.rpc('get_popular_pages', {
+      days_back: daysBack,
+      page_limit: pageLimit
+    })
+
+    if (error) throw error
+    return data || []
+  } catch (error) {
+    console.error('[getPopularPages] Error:', error)
+    return []
+  }
+}
+
+// 获取访客地理分布
+export const getVisitorGeoDistribution = async (daysBack = 7) => {
+  try {
+    const { data, error } = await supabase.rpc('get_visitor_geo_distribution', {
+      days_back: daysBack
+    })
+
+    if (error) throw error
+    return data || []
+  } catch (error) {
+    console.error('[getVisitorGeoDistribution] Error:', error)
+    return []
+  }
+}
+
+// 获取设备类型分布
+export const getDeviceDistribution = async (daysBack = 7) => {
+  try {
+    const { data, error } = await supabase.rpc('get_device_distribution', {
+      days_back: daysBack
+    })
+
+    if (error) throw error
+    return data || []
+  } catch (error) {
+    console.error('[getDeviceDistribution] Error:', error)
+    return []
+  }
+}
+
+// 获取流量来源
+export const getTrafficSources = async (daysBack = 7) => {
+  try {
+    const { data, error } = await supabase.rpc('get_traffic_sources', {
+      days_back: daysBack
+    })
+
+    if (error) throw error
+    return data || []
+  } catch (error) {
+    console.error('[getTrafficSources] Error:', error)
+    return []
+  }
+}
