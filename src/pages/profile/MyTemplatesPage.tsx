@@ -34,7 +34,7 @@ import {
   TrendingUp,
   FileText,
   Loader2
-} from 'lucide-react'
+} from '@/components/icons'
 import {
   DropdownMenu,
   DropdownMenuContent,

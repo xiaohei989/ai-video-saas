@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTranslation } from 'react-i18next'
 import { useLanguageRouter } from '@/hooks/useLanguageRouter'
-import { Loader2, Lock, CheckCircle } from 'lucide-react'
+import { Loader2, Lock, CheckCircle } from '@/components/icons'
 import { toast } from 'sonner'
 
 export default function ResetPasswordForm() {

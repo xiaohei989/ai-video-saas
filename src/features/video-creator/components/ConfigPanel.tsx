@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ChevronRight, ChevronDown, Gem, AlertCircle, Sparkles, Shuffle } from 'lucide-react'
+import { ChevronRight, ChevronDown, Gem, AlertCircle, Sparkles, Shuffle } from '@/components/icons'
 import { Template } from '../data/templates'
 import { localizeTemplate } from '../data/templates/index'
 import { CustomSelect } from '@/components/ui/custom-select'

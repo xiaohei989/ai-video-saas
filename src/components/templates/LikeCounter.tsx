@@ -3,7 +3,7 @@
  * 点赞数量显示组件（仅展示，无交互）
  */
 
-import { Heart } from 'lucide-react'
+import { Heart } from '@/components/icons'
 import { cn } from '@/lib/utils'
 
 interface LikeCounterProps {

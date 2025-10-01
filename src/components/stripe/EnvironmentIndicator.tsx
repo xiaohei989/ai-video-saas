@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { getStripeEnvironmentInfo, isStripeTestMode } from '@/config/stripe-env'
-import { AlertTriangle, Check, Info, Settings } from 'lucide-react'
+import { AlertTriangle, Check, Info, Settings } from '@/components/icons'
 
 export function EnvironmentIndicator() {
   const [isExpanded, setIsExpanded] = useState(false)

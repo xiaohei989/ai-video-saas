@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLanguageRouter } from '@/hooks/useLanguageRouter'
-import { Play, Loader2, Clock, Zap, Monitor, Smartphone, Lock } from 'lucide-react'
+import { Play, Loader2, Clock, Zap, Monitor, Smartphone, Lock } from '@/components/icons'
 import { Template } from '../data/templates'
 import { localizeTemplate } from '../data/templates/index'
 import { Progress } from '@/components/ui/progress'

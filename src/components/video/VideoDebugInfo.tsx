@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react'
-import { Info, Loader2, Copy, ChevronDown, ChevronUp, Trash2, Wrench } from 'lucide-react'
+import { Info, Loader2, Copy, ChevronDown, ChevronUp, Trash2, Wrench } from '@/components/icons'
 import { toast } from 'sonner'
 import { clearSingleImageCache } from '@/utils/newImageCache'
 import { repairThumbnail } from '@/services/thumbnailRepairService'

@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 @import './background-video.css';
 @import './hero-title-effects.css';
 @import './flowing-button-effects.css';
@@ -215,29 +214,7 @@ body {
   color: var(--primary) !important;
 }
 
-/* Ensure dark mode is applied */
-body.dark,
-html.dark {
-  --background: hsl(223.8136 0.0000% 3.9388%);
-  --foreground: hsl(223.8136 0.0004% 98.0256%);
-  --card: hsl(223.8136 0.0000% 9.0527%);
-  --card-foreground: hsl(223.8136 0.0004% 98.0256%);
-  --popover: hsl(223.8136 0.0000% 14.9382%);
-  --popover-foreground: hsl(223.8136 0.0004% 98.0256%);
-  --primary: hsl(223.8136 0.0001% 89.8161%);
-  --primary-foreground: hsl(223.8136 0.0000% 9.0527%);
-  --secondary: hsl(223.8136 0.0000% 14.9382%);
-  --secondary-foreground: hsl(223.8136 0.0004% 98.0256%);
-  --muted: hsl(223.8136 0.0000% 14.9382%);
-  --muted-foreground: hsl(223.8136 0.0000% 63.0163%);
-  --accent: hsl(223.8136 0.0000% 25.0471%);
-  --accent-foreground: hsl(223.8136 0.0004% 98.0256%);
-  --destructive: hsl(358.7594 101.8439% 69.8357%);
-  --destructive-foreground: hsl(223.8136 0.0004% 98.0256%);
-  --border: hsl(220 15% 25%);
-  --input: hsl(220 15% 28%);
-  --ring: hsl(223.8136 0.0000% 45.1519%);
-}
+/* Ensure dark mode is applied - 简化版本,移除重复定义 */
 
 @layer base {
   * {
@@ -262,73 +239,37 @@ html.dark {
   letter-spacing: 0.025em;
 }
 
-/* 移动端性能保护样式 */
+/* 移动端性能保护样式 - 优化版本 */
 .performance-emergency {
-  /* 禁用所有动画和过渡效果 */
-  *, *::before, *::after {
-    animation-duration: 0s !important;
-    animation-delay: 0s !important;
-    transition-duration: 0s !important;
-    transition-delay: 0s !important;
-  }
-  
   /* 简化视觉效果 */
-  .shadow-lg, .shadow-xl, .shadow-2xl {
-    box-shadow: none !important;
-  }
-  
-  /* 禁用背景图片 */
+  * { animation: none !important; transition: none !important; }
+  .shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: none !important; }
   .bg-gradient-to-r, .bg-gradient-to-l, .bg-gradient-to-t, .bg-gradient-to-b,
   .bg-gradient-to-br, .bg-gradient-to-bl, .bg-gradient-to-tr, .bg-gradient-to-tl {
     background-image: none !important;
     background-color: var(--muted) !important;
   }
-  
-  /* 简化边框效果 */
-  .border-2, .border-4 {
-    border-width: 1px !important;
-  }
-  
-  /* 禁用模糊效果 */
+  .border-2, .border-4 { border-width: 1px !important; }
   .backdrop-blur, .backdrop-blur-sm, .backdrop-blur-md, .backdrop-blur-lg {
     backdrop-filter: none !important;
   }
-  
-  /* 隐藏装饰性元素 */
-  .decoration-element, .floating-element {
-    display: none !important;
-  }
+  .decoration-element, .floating-element { display: none !important; }
 }
 
 /* 移动端优化的视频播放按钮 */
 @media (max-width: 768px) {
-  .mobile-video-play-overlay {
-    background: rgba(0, 0, 0, 0.6) !important;
-    backdrop-filter: none !important;
-  }
-  
+  .mobile-video-play-overlay { background: rgba(0, 0, 0, 0.6) !important; backdrop-filter: none !important; }
   .mobile-video-play-button {
-    width: 48px !important;
-    height: 48px !important;
+    width: 48px !important; height: 48px !important;
     background: rgba(0, 0, 0, 0.3) !important;
     border: 2px solid rgba(255, 255, 255, 0.8) !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    border-radius: 50% !important; display: flex !important;
+    align-items: center !important; justify-content: center !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
     backdrop-filter: blur(4px) !important;
   }
-  
-  /* 移动端减少不必要的动画，但保留关键的加载指示器 */
-  .animate-pulse, .animate-bounce {
-    animation: none !important;
-  }
-
-  /* 保留 Loader 组件的旋转动画，这对用户体验很重要 */
-  /* .animate-spin 不在此禁用列表中 */
-  
-  /* 移动端简化视觉效果 */
+  /* 移动端减少不必要的动画 */
+  .animate-pulse, .animate-bounce { animation: none !important; }
   .performance-emergency .bg-black\/30, .performance-emergency .bg-black\/20 {
     background-color: rgba(0, 0, 0, 0.5) !important;
   }

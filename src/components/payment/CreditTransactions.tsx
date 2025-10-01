@@ -11,7 +11,7 @@ import {
   RefreshCw,
   ChevronDown,
   ChevronUp
-} from 'lucide-react'
+} from '@/components/icons'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useAuthContext } from '@/contexts/AuthContext'

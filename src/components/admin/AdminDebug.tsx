@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase'
 import { getAdminStats } from '@/services/adminDataProvider'
 import { useCacheManager } from '@/utils/cacheManager'
-import { Trash2, RefreshCcw, HardDrive, AlertCircle, CheckCircle } from 'lucide-react'
+import { Trash2, RefreshCcw, HardDrive, AlertCircle, CheckCircle } from '@/components/icons'
 import { toast } from 'sonner'
 
 const AdminDebug: React.FC = () => {

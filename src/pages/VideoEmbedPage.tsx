@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, Loader2 } from '@/components/icons'
 import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
 import supabaseVideoService from '@/services/supabaseVideoService'
 import type { Database } from '@/lib/supabase'

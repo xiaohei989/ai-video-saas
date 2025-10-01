@@ -11,7 +11,7 @@
  */
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { BatteryLow } from 'lucide-react'
+import { BatteryLow } from '@/components/icons'
 import { cn } from '@/utils/cn'
 import { unifiedCache } from '@/services/UnifiedCacheService'
 // thumbnailGenerator 服务已简化，现在使用浏览器原生 Media Fragments

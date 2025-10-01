@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { X, Cookie, Settings } from 'lucide-react'
+import { X, Cookie, Settings } from '@/components/icons'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import analyticsService from '@/services/analyticsService'
 

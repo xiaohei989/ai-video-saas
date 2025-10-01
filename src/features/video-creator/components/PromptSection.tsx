@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { Eye, EyeOff, Copy, Lock, Gem } from 'lucide-react'
+import { Eye, EyeOff, Copy, Lock, Gem } from '@/components/icons'
 import { Template } from '../data/templates'
 import { Button } from '@/components/ui/button'
 import { PromptGenerator } from '@/services/promptGenerator'

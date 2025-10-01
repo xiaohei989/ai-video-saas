@@ -2,7 +2,7 @@ import React from 'react'
 import ThumbnailGenerator from '@/components/admin/ThumbnailGenerator'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { RefreshCw, ImageUp, Images } from 'lucide-react'
+import { RefreshCw, ImageUp, Images } from '@/components/icons'
 import supabaseVideoService from '@/services/supabaseVideoService'
 import BatchBlurThumbnailsPage from '@/pages/admin/BatchBlurThumbnailsPage'
 

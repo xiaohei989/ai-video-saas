@@ -18,7 +18,7 @@ import {
   AlertCircle,
   Lock,
   Info
-} from 'lucide-react'
+} from '@/components/icons'
 import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
 import { getPlayerUrl, getBestVideoUrl } from '@/utils/videoUrlPriority'
 import { getProxyVideoUrl } from '@/utils/videoUrlProxy'

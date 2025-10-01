@@ -22,7 +22,7 @@ import {
   Settings,
   FileText,
   Receipt
-} from 'lucide-react'
+} from '@/components/icons'
 
 const AdminApp: React.FC = () => {
   // 添加调试信息

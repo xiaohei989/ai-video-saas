@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ArrowUp, Clock, FileText, Printer } from 'lucide-react'
+import { ArrowUp, Clock, FileText, Printer } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 

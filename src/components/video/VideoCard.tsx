@@ -21,7 +21,7 @@ import {
   Lock,
   Info,
   Plus
-} from 'lucide-react'
+} from '@/components/icons'
 import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
 import { formatRelativeTime, formatDuration } from '@/utils/timeFormat'
 import CachedImage from '@/components/ui/CachedImage'

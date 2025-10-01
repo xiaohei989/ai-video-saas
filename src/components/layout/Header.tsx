@@ -15,7 +15,7 @@ import {
   DollarSign,
   TrendingUp,
   Gift
-} from 'lucide-react'
+} from '@/components/icons'
 
 // 圆形国旗组件（使用稳定的 flagcdn.com CDN）
 const FlagImage = ({ country, className }: { country: string; className?: string }) => {
@@ -58,7 +58,7 @@ import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/AuthContext'
 import MembershipBadge from '@/components/subscription/MembershipBadge'
 import { useTheme } from '@/hooks/useTheme'
-import { Moon, Sun, Monitor } from 'lucide-react'
+import { Moon, Sun, Monitor } from '@/components/icons'
 import { CreditDisplay } from './CreditDisplay'
 import { languageDebugger } from '@/utils/languageDebugger'
 import { useLanguageRouter } from '@/hooks/useLanguageRouter'
@@ -560,7 +560,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
                         <span>{t('user.settings')}</span>
                       </Link>
                       <Link
-                        to="/pricing?activeTab=referral"
+                        to={`/${currentLanguage}/pricing?activeTab=referral`}
                         className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-accent transition-colors duration-200"
                         onClick={() => setUserMenuOpen(false)}
                       >
@@ -707,7 +707,7 @@ export function Header({ className = "" }: HeaderProps = {}) {
                       <span>{t('user.settings')}</span>
                     </Link>
                     <Link
-                      to="/pricing?activeTab=referral"
+                      to={`/${currentLanguage}/pricing?activeTab=referral`}
                       className="flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-accent transition-all duration-200"
                       onClick={() => setMobileMenuOpen(false)}
                     >

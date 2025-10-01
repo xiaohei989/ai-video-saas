@@ -13,7 +13,7 @@ import {
   X,
   Check,
   Info
-} from 'lucide-react'
+} from '@/components/icons'
 import { ExportMode, ExportOptions, ExportConfig } from '@/types/translation'
 
 interface ExportOptionsDialogProps {

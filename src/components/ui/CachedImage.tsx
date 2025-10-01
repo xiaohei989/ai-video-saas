@@ -3,7 +3,7 @@ import { cn } from '@/utils/cn'
 import { getProxyVideoUrl, needsCorsProxy } from '@/utils/videoUrlProxy'
 import { smartLoadImage, getCachedImage } from '@/utils/newImageCache'
 import { useTranslation } from 'react-i18next'
-import { Loader2 } from 'lucide-react'
+import { Loader2 } from '@/components/icons'
 
 interface CachedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string

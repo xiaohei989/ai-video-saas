@@ -10,7 +10,7 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react'
+import { Play, Pause, Volume2, VolumeX } from '@/components/icons'
 import { cn } from '@/utils/cn'
 
 export interface BackgroundVideoProps {

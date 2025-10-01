@@ -1,0 +1,163 @@
+
+> ai-video-saas@1.0.0 build
+> vite build
+
+[VITE CONFIG] Cloudflare Pages environment: undefined
+NODE_ENV=production is not supported in the .env file. Only NODE_ENV=development is supported to create a development build of your project. If you need to set process.env.NODE_ENV, you can set it in the Vite config instead.
+[STRIPE SYNC] ⏭️  插件已禁用
+vite v7.1.5 building for production...
+transforming...
+[vite:css][lightningcss] Unknown at rule: @custom-variant
+27 |  }
+28 |  
+29 |  @custom-variant dark (&:is(.dark *));
+   |                 ^
+30 |  
+31 |  :root {
+[vite:css][lightningcss] Unknown at rule: @theme
+125 |    }
+126 |  
+127 |    @theme inline {
+    |          ^
+128 |      --color-background: var(--background);
+129 |      --color-foreground: var(--foreground);
+[vite:css][lightningcss] Unknown at rule: @apply
+219 |  @layer base {
+220 |    * {
+221 |      @apply border-border outline-ring/50;
+    |            ^
+222 |      }
+223 |    body {
+[vite:css][lightningcss] Unknown at rule: @apply
+222 |      }
+223 |    body {
+224 |      @apply bg-background text-foreground;
+    |            ^
+225 |      }
+226 |  }
+[vite:css][lightningcss] Unknown at rule: @theme
+2  |  @import './background-video.css';
+3  |  @import './hero-title-effects.css';
+4  |  @import './flowing-button-effects.css';
+   |          ^
+5  |  
+6  |  /* 流光动画 */
+[vite:css][lightningcss] Unknown at rule: @theme
+474 |      radial-gradient(circle at 40% 40%, #f093fb 0%, transparent 50%),
+475 |      linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+476 |    background-size: 300% 300%, 250% 250%, 200% 200%, 400% 400%;
+    |          ^
+477 |    animation: fluidFlow 10s ease-in-out infinite;
+478 |    position: relative;
+[vite:css][lightningcss] Unknown at rule: @tailwind
+893 |      /* 优化触摸目标 */
+894 |      min-height: 48px !important;
+895 |      min-width: 48px !important;
+    |             ^
+896 |      /* 确保文字和图标清晰显示 */
+897 |      color: var(--foreground) !important;
+✓ 6750 modules transformed.
+
+✨ [vite-plugin-compression]:algorithm=gzip - compressed file successfully: 
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/AccountSettingsPage-CzgLZwbO.js.gz       17.70kb / gzip: 4.36kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/HelpCenterPage-mK9ia7nD.js.gz            19.91kb / gzip: 5.20kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/CookiePolicyPage-BLEG0uRz.js.gz          18.36kb / gzip: 4.32kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/LikeCounterButton-BY6Hrm-E.js.gz         24.25kb / gzip: 8.03kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/ProfileEditPage-CE9rdn4Y.js.gz           10.06kb / gzip: 3.27kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/PrivacyPolicyPage-DIFBp82x.js.gz         13.10kb / gzip: 3.70kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/CacheManagementPage-D1yg0X08.js.gz       25.44kb / gzip: 7.01kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/PublicProfilePage-R6_Oq_BF.js.gz         10.29kb / gzip: 2.89kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/MyTemplatesPage-C3uzEHpu.js.gz           17.57kb / gzip: 4.28kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/ReactVideoPlayer-CNQoNBe4.js.gz          31.63kb / gzip: 10.50kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/SignUpForm-DYDlp4pG.js.gz                15.12kb / gzip: 4.77kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/PricingPage-BbcI3vRL.js.gz               29.77kb / gzip: 7.30kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TemplatesPage-C4HkQd2h.js.gz             21.89kb / gzip: 6.96kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TermsOfServicePage-tPA04NsY.js.gz        14.77kb / gzip: 4.45kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/VideosPageNew-Dl00N0q9.js.gz             53.22kb / gzip: 15.66kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/SignInForm-Dvkft9ox.js.gz                10.39kb / gzip: 4.04kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TemplateTranslationPage-CuUGOfSn.js.gz   62.79kb / gzip: 14.54kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/i18n-4tOUDOVU.js.gz                      44.86kb / gzip: 14.19kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/utils-C47uvp_8.js.gz                     44.99kb / gzip: 13.12kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/zh-CN-C_PMnDnb.js.gz                     21.70kb / gzip: 5.02kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/videoMigrationService-Dk8Bl30b.js.gz     17.30kb / gzip: 4.44kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/progressManager-D1cKAnWQ.js.gz           11.15kb / gzip: 3.40kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/clear-cache.html.gz                             13.37kb / gzip: 2.80kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/veo3Service-CSUEWqP1.js.gz               19.51kb / gzip: 4.70kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-cdn-connectivity.html.gz                   12.30kb / gzip: 3.28kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/ios-thumbnail-debug.html.gz                     10.04kb / gzip: 2.56kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-media-fragments.html.gz                    15.42kb / gzip: 3.51kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/AdminApp-DWIRvk2g.js.gz                  96.55kb / gzip: 23.25kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/VideoCreator-BbGPfU2j.js.gz              76.97kb / gzip: 22.56kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/react-vendor-COyF_Xw4.js.gz              90.64kb / gzip: 29.72kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/index-xSeW-FVS.css.gz                    149.36kb / gzip: 23.65kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/ui-vendor-CY6UGmfc.js.gz                 109.10kb / gzip: 34.09kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/data-AxqqqMgY.js.gz                      154.05kb / gzip: 40.65kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/aws-CZ9kIWbF.js.gz                       219.15kb / gzip: 66.73kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/charts-DGWHKTxs.js.gz                    328.63kb / gzip: 92.80kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/admin-CXt-blgp.js.gz                     982.81kb / gzip: 265.30kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/index-CL525ygB.js.gz                     1397.66kb / gzip: 413.79kb
+
+
+
+✨ [vite-plugin-compression]:algorithm=brotliCompress - compressed file successfully: 
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/AccountSettingsPage-CzgLZwbO.js.br       17.70kb / brotliCompress: 3.76kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/CacheManagementPage-D1yg0X08.js.br       25.44kb / brotliCompress: 5.97kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/CookiePolicyPage-BLEG0uRz.js.br          18.36kb / brotliCompress: 3.45kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/LikeCounterButton-BY6Hrm-E.js.br         24.25kb / brotliCompress: 7.05kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/HelpCenterPage-mK9ia7nD.js.br            19.91kb / brotliCompress: 4.46kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/PrivacyPolicyPage-DIFBp82x.js.br         13.10kb / brotliCompress: 2.90kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/ProfileEditPage-CE9rdn4Y.js.br           10.06kb / brotliCompress: 2.84kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/PricingPage-BbcI3vRL.js.br               29.77kb / brotliCompress: 6.41kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/MyTemplatesPage-C3uzEHpu.js.br           17.57kb / brotliCompress: 3.80kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/SignInForm-Dvkft9ox.js.br                10.39kb / brotliCompress: 3.52kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TemplatesPage-C4HkQd2h.js.br             21.89kb / brotliCompress: 6.17kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/ReactVideoPlayer-CNQoNBe4.js.br          31.63kb / brotliCompress: 9.26kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/SignUpForm-DYDlp4pG.js.br                15.12kb / brotliCompress: 4.14kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TermsOfServicePage-tPA04NsY.js.br        14.77kb / brotliCompress: 3.47kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/PublicProfilePage-R6_Oq_BF.js.br         10.29kb / brotliCompress: 2.57kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TemplateTranslationPage-CuUGOfSn.js.br   62.79kb / brotliCompress: 12.48kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/i18n-4tOUDOVU.js.br                      44.86kb / brotliCompress: 12.82kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/VideosPageNew-Dl00N0q9.js.br             53.22kb / brotliCompress: 13.69kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/progressManager-D1cKAnWQ.js.br           11.15kb / brotliCompress: 3.06kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/videoMigrationService-Dk8Bl30b.js.br     17.30kb / brotliCompress: 3.81kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/veo3Service-CSUEWqP1.js.br               19.51kb / brotliCompress: 4.08kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/zh-CN-C_PMnDnb.js.br                     21.70kb / brotliCompress: 4.37kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/clear-cache.html.br                             13.37kb / brotliCompress: 2.22kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-cdn-connectivity.html.br                   12.30kb / brotliCompress: 2.60kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/utils-C47uvp_8.js.br                     44.99kb / brotliCompress: 11.61kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/ios-thumbnail-debug.html.br                     10.04kb / brotliCompress: 1.97kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-media-fragments.html.br                    15.42kb / brotliCompress: 2.69kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/AdminApp-DWIRvk2g.js.br                  96.55kb / brotliCompress: 19.23kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/VideoCreator-BbGPfU2j.js.br              76.97kb / brotliCompress: 19.31kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/react-vendor-COyF_Xw4.js.br              90.64kb / brotliCompress: 26.31kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/ui-vendor-CY6UGmfc.js.br                 109.10kb / brotliCompress: 29.79kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/data-AxqqqMgY.js.br                      154.05kb / brotliCompress: 35.79kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/index-xSeW-FVS.css.br                    149.36kb / brotliCompress: 18.49kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/aws-CZ9kIWbF.js.br                       219.15kb / brotliCompress: 55.34kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/charts-DGWHKTxs.js.br                    328.63kb / brotliCompress: 78.70kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/admin-CXt-blgp.js.br                     982.81kb / brotliCompress: 213.15kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/index-CL525ygB.js.br                     1397.66kb / brotliCompress: 318.15kb
+
+
+✗ Build failed in 4.65s
+error during build:
+src/pages/profile/AccountSettingsPage.tsx (27:2): "Bell" is not exported by "src/components/icons/index.ts", imported by "src/pages/profile/AccountSettingsPage.tsx".
+file: /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/pages/profile/AccountSettingsPage.tsx:27:2
+
+25:   Lock,
+26:   CreditCard,
+27:   Bell
+      ^
+28: } from '@/components/icons'
+29: import { useTheme } from '@/hooks/useTheme'
+
+    at getRollupError (file:///Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at Module.error (file:///Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/node_modules/rollup/dist/es/shared/node-entry.js:16948:16)
+    at Module.traceVariable (file:///Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/node_modules/rollup/dist/es/shared/node-entry.js:17400:29)
+    at ModuleScope.findVariable (file:///Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/node_modules/rollup/dist/es/shared/node-entry.js:15070:39)
+    at FunctionScope.findVariable (file:///Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/node_modules/rollup/dist/es/shared/node-entry.js:5642:38)
+    at FunctionBodyScope.findVariable (file:///Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/node_modules/rollup/dist/es/shared/node-entry.js:5642:38)
+    at Identifier.bind (file:///Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/node_modules/rollup/dist/es/shared/node-entry.js:5413:40)
+    at CallExpression.bind (file:///Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/node_modules/rollup/dist/es/shared/node-entry.js:2800:28)
+    at CallExpression.bind (file:///Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/node_modules/rollup/dist/es/shared/node-entry.js:12096:15)

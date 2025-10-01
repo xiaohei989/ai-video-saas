@@ -29,7 +29,7 @@ import {
   Receipt,
   TrendingUp,
   Users
-} from 'lucide-react'
+} from '@/components/icons'
 import { supabase } from '@/lib/supabase'
 import { formatShortDate } from '@/utils/dateFormat'
 

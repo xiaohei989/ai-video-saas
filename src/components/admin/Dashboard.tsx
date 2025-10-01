@@ -40,7 +40,7 @@ import {
   Eye,
   Monitor,
   Globe
-} from 'lucide-react'
+} from '@/components/icons'
 
 interface DashboardStats {
   total_users: number

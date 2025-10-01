@@ -1,7 +1,7 @@
 import React from 'react'
 import { Navigate, useLocation, Outlet } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
-import { Loader2 } from 'lucide-react'
+import { Loader2 } from '@/components/icons'
 import { SubscriptionService } from '@/services/subscriptionService'
 import type { Subscription } from '@/types'
 import { useLanguageRouter } from '@/hooks/useLanguageRouter'

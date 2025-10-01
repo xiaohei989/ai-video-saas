@@ -19,7 +19,7 @@ import {
   Loader2,
   ExternalLink,
   X
-} from 'lucide-react'
+} from '@/components/icons'
 import { CustomSelect } from '@/components/ui/custom-select'
 import { toast } from 'sonner'
 import { AuthContext } from '@/contexts/AuthContext'

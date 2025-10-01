@@ -18,7 +18,7 @@ import {
   Video,
   Tags,
   Grid
-} from 'lucide-react'
+} from '@/components/icons'
 
 export interface TemplatePerformanceMetrics {
   // 页面加载性能

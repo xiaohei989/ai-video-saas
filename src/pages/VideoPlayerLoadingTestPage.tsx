@@ -6,7 +6,7 @@
 import React, { useState } from 'react'
 import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
 import { Button } from '@/components/ui/button'
-import { RefreshCw, Smartphone, Monitor } from 'lucide-react'
+import { RefreshCw, Smartphone, Monitor } from '@/components/icons'
 import { CDN_CONFIG } from '@/config/cdnConfig'
 
 export default function VideoPlayerLoadingTestPage() {

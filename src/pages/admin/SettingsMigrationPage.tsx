@@ -17,7 +17,7 @@ import {
   Settings,
   Database,
   Loader2
-} from 'lucide-react'
+} from '@/components/icons'
 import { migrateUserSettings, batchMigrateAllUsers, validateMigration } from '@/scripts/migrateUserSettings'
 import { useAuth } from '@/contexts/AuthContext'
 

@@ -3,7 +3,7 @@
  * 视频加载动画组件 - 用于视频预览加载时显示
  */
 
-import { Play, Loader2 } from 'lucide-react'
+import { Play, Loader2 } from '@/components/icons'
 
 interface VideoLoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg'

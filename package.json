@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:cloudflare": "cp .env.cloudflare .env.local && npm run build",
+    "build:cloudflare": "npm run build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -31,6 +31,13 @@
   "author": "",
   "license": "ISC",
   "type": "module",
+  "sideEffects": [
+    "*.css",
+    "*.scss",
+    "./src/services/analyticsService.ts",
+    "./src/utils/debugSupabase.ts",
+    "./src/i18n/config.ts"
+  ],
   "dependencies": {
     "@aws-sdk/client-s3": "^3.888.0",
     "@google/genai": "^1.15.0",
@@ -101,7 +108,6 @@
     "postcss": "^8.5.6",
     "terser": "^5.44.0",
     "ts-prune": "^0.10.3",
-    "tw-animate-css": "^1.3.7",
     "vite": "^7.1.3",
     "vite-plugin-compression": "^0.5.1"
   }

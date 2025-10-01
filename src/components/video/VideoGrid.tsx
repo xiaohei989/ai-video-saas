@@ -6,7 +6,7 @@
 import React, { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
-import { Search, Loader2 } from 'lucide-react'
+import { Search, Loader2 } from '@/components/icons'
 import Pagination from '@/components/ui/pagination'
 import VideoCard from './VideoCard'
 import type { Video, ThumbnailDebugInfo, LoadingState } from '@/types/video.types'

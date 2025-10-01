@@ -24,7 +24,7 @@ import {
   Minus,
   Share2,
   ExternalLink
-} from 'lucide-react'
+} from '@/components/icons'
 
 interface PublicProfile {
   id: string

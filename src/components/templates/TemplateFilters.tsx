@@ -7,7 +7,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Hash, TrendingUp, Sparkles } from 'lucide-react'
+import { Hash, TrendingUp, Sparkles } from '@/components/icons'
 import { getPopularTags } from '@/features/video-creator/data/templates/index'
 
 // 临时使用简单的状态管理，稍后替换为Zustand

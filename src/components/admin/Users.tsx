@@ -28,7 +28,7 @@ import {
   ReferenceManyField
 } from 'react-admin'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { UserX, UserCheck, MapPin, CreditCard, Video, FileText } from 'lucide-react'
+import { UserX, UserCheck, MapPin, CreditCard, Video, FileText } from '@/components/icons'
 
 const VideoStatsField = () => {
   const record = useRecordContext()

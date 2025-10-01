@@ -7,7 +7,7 @@ import {
   Share2, 
   Copy, 
   Loader2,
-} from 'lucide-react'
+} from '@/components/icons'
 
 // 社交媒体图标组件
 const TwitterIcon = ({ className }: { className?: string }) => (

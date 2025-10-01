@@ -15,7 +15,7 @@ import {
   LogOut,
   ChevronRight,
   Edit
-} from 'lucide-react'
+} from '@/components/icons'
 
 
 export default function UserCenterPage() {

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useCallback, useRef, useEffect, useId } from 'react'
-import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, Loader2 } from 'lucide-react'
+import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, Loader2 } from '@/components/icons'
 import { cn } from '@/lib/utils'
 import { getCachedImage, smartLoadImage } from '@/utils/newImageCache'
 import { useResponsiveDevice, supportsHover } from '@/utils/deviceDetection'

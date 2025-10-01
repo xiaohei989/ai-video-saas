@@ -15,7 +15,7 @@ import {
   ChevronUp,
   FileText,
   Zap
-} from 'lucide-react'
+} from '@/components/icons'
 import { TemplateTranslationJob } from '@/types/translation'
 
 interface TranslationProgressSectionProps {

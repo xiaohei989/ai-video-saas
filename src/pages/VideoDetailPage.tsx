@@ -13,7 +13,7 @@ import {
   User,
   Loader2,
   AlertCircle
-} from 'lucide-react'
+} from '@/components/icons'
 import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
 import VideoShareModal from '@/components/share/VideoShareModal'
 import supabaseVideoService from '@/services/supabaseVideoService'

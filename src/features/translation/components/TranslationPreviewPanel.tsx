@@ -14,7 +14,7 @@ import {
   ChevronDown,
   FileText,
   AlertTriangle
-} from 'lucide-react'
+} from '@/components/icons'
 import { Template } from '@/features/video-creator/data/templates'
 import { localizeTemplate } from '@/features/video-creator/data/templates/index'
 import { CustomSelect } from '@/components/ui/custom-select'

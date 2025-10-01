@@ -9,7 +9,7 @@
  */
 
 import React from 'react'
-import { Play } from 'lucide-react'
+import { Play } from '@/components/icons'
 import { cn } from '@/utils/cn'
 
 interface VideoSkeletonProps {

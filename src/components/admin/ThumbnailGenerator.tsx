@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import supabaseVideoService from '@/services/supabaseVideoService'
-import { Play, Pause, Download, RefreshCw, AlertCircle, CheckCircle } from 'lucide-react'
+import { Play, Pause, Download, RefreshCw, AlertCircle, CheckCircle } from '@/components/icons'
 
 interface Video {
   id: string

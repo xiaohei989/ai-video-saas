@@ -316,6 +316,10 @@ export default defineConfig(({ mode }) => {
       sourcemap: true,
       // 🚀 CSS优化 - 使用lightningcss压缩
       cssMinify: 'lightningcss',
+      // 🚀 增强CSS Tree Shaking
+      cssCodeSplit: true, // 按路由分割CSS
+      // 🚀 优化资源内联
+      assetsInlineLimit: 4096, // 小于4KB的资源内联为base64
       // Cloudflare Pages 优化配置
       rollupOptions: {
         // 🚀 增强Tree Shaking配置
@@ -325,103 +329,105 @@ export default defineConfig(({ mode }) => {
           unknownGlobalSideEffects: false
         },
         output: {
-          // 🚀 手动代码分割 - 优化bundle体积
-          manualChunks: {
-            // React核心库 - 共享基础
-            'react-vendor': [
-              'react',
-              'react-dom',
-              'react-router-dom'
-            ],
+          // 🔧 临时禁用代码分割以诊断模块加载问题
+          manualChunks: undefined,
 
-            // 🎯 管理后台独立chunk (最大优化收益)
-            'admin': [
-              'react-admin',
-              'ra-supabase'
-            ],
+          /*
+          // 🚀 智能代码分割 - 使用函数方式实现更精细的控制
+          manualChunks: (id) => {
+            // 排除node_modules之外的代码
+            if (!id.includes('node_modules')) {
+              return undefined
+            }
 
-            // 📊 图表库独立chunk
-            'charts': ['recharts'],
+            // 🎯 管理后台相关 (最大chunk,完全分离)
+            if (id.includes('react-admin') || id.includes('ra-supabase')) {
+              return 'admin'
+            }
 
-            // ☁️ AWS SDK独立chunk
-            'aws': ['@aws-sdk/client-s3'],
+            // 📊 图表库 (仅管理后台使用)
+            if (id.includes('recharts') || id.includes('victory')) {
+              return 'charts'
+            }
 
-            // 🤖 Google AI独立chunk
-            'google-ai': ['@google/genai'],
+            // ☁️ AWS SDK (大型库,按需加载)
+            if (id.includes('@aws-sdk')) {
+              return 'aws'
+            }
 
-            // 🎨 UI组件库
-            'ui-vendor': [
-              '@radix-ui/react-alert-dialog',
-              '@radix-ui/react-dropdown-menu',
-              '@radix-ui/react-progress',
-              '@radix-ui/react-select',
-              '@radix-ui/react-slider',
-              '@radix-ui/react-slot',
-              '@radix-ui/react-switch',
-              '@radix-ui/react-tabs',
-              '@radix-ui/react-tooltip'
-            ],
+            // 🤖 Google AI (AI功能专用)
+            if (id.includes('@google/genai')) {
+              return 'google-ai'
+            }
 
-            // 💰 支付相关
-            'payment': [
-              '@stripe/stripe-js',
-              'stripe'
-            ],
+            // 🎨 Radix UI组件库 (统一打包)
+            if (id.includes('@radix-ui')) {
+              return 'ui-vendor'
+            }
+
+            // 💰 支付相关 (Stripe)
+            if (id.includes('stripe') || id.includes('@stripe')) {
+              return 'payment'
+            }
 
             // 🗄️ 数据库和状态管理
-            'data': [
-              '@supabase/supabase-js',
-              '@tanstack/react-query',
-              'zustand'
-            ],
+            if (id.includes('@supabase/supabase-js')) {
+              return 'data'
+            }
+            if (id.includes('@tanstack/react-query')) {
+              return 'data'
+            }
+            if (id.includes('zustand')) {
+              return 'data'
+            }
 
             // 🌐 国际化
-            'i18n': [
-              'i18next',
-              'react-i18next'
-            ],
+            if (id.includes('i18next') || id.includes('react-i18next')) {
+              return 'i18n'
+            }
 
             // 🎬 视频播放器
-            'video-player': ['react-player'],
+            if (id.includes('react-player')) {
+              return 'video-player'
+            }
+
+            // ⚛️ React核心库 - 统一打包避免加载顺序问题
+            if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/react-router') ||
+                id.includes('/scheduler/') || id.match(/node_modules\/react$/)) {
+              return 'react-vendor'
+            }
 
             // 📦 工具库
-            'utils': [
-              'date-fns',
-              'clsx',
-              'tailwind-merge',
-              'class-variance-authority'
-            ]
-          }
+            if (id.includes('date-fns') || id.includes('clsx') ||
+                id.includes('tailwind-merge') || id.includes('class-variance-authority')) {
+              return 'utils'
+            }
+
+            // 🎨 Lucide图标 (优化后应该很小)
+            if (id.includes('lucide-react')) {
+              return 'icons'
+            }
+
+            // 其他node_modules统一打包为vendor
+            return 'vendor'
+          },
+          */
+          // 优化chunk文件名
+          chunkFileNames: 'assets/[name]-[hash].js',
+          // 启用实验性CSS代码分割
+          experimentalMinChunkSize: 10000
         },
       },
-      // 生产环境启用压缩
+      // 生产环境使用 terser 压缩并移除 console
       minify: mode === 'production' ? 'terser' : false,
-      terserOptions: {
+      terserOptions: mode === 'production' ? {
         compress: {
-          drop_console: mode === 'production',
-          drop_debugger: mode === 'production',
-          // 保留必要的函数名，避免 React Context 解析问题
-          keep_fnames: /^(createContext|useContext|Context)$/,
-          // 避免变量提升导致的初始化问题
-          hoist_vars: false,
-          hoist_funs: false,
-          // 保持原始声明顺序
-          sequences: false,
+          drop_console: true,
+          drop_debugger: true,
         },
-        format: {
-          // 确保输出兼容 Cloudflare Pages
-          comments: false,
-        },
-        mangle: {
-          // 保留关键的 React 函数名
-          reserved: ['createContext', 'useContext', 'Context', 'React'],
-          // 不要混淆顶级作用域的变量名
-          toplevel: false,
-        },
-      },
+      } : undefined,
       // 构建优化
       chunkSizeWarningLimit: 1500, // 放宽限制避免警告
-      assetsInlineLimit: 4096,
       // 🚀 模块预加载配置 - 排除管理员模块
       modulePreload: {
         polyfill: true,
@@ -457,8 +463,6 @@ export default defineConfig(({ mode }) => {
           return sortedDeps
         }
       },
-      // CSS代码分割优化
-      cssCodeSplit: true,
     },
   }
 })

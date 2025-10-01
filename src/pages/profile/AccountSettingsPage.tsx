@@ -25,7 +25,7 @@ import {
   Lock,
   CreditCard,
   Bell
-} from 'lucide-react'
+} from '@/components/icons'
 import { useTheme } from '@/hooks/useTheme'
 import SubscriptionStatus from '@/components/subscription/SubscriptionStatus'
 import { SubscriptionService } from '@/services/subscriptionService'

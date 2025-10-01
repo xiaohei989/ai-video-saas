@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown } from '@/components/icons'
 import { useTranslation } from 'react-i18next'
 import PortalDropdown from './portal-dropdown'
 

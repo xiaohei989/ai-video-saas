@@ -11,7 +11,7 @@ import supabaseVideoService from '@/services/supabaseVideoService'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Play, Upload, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
+import { Play, Upload, CheckCircle, AlertCircle, Loader2 } from '@/components/icons'
 
 interface TestVideo {
   id: string

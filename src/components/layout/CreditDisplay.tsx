@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLanguageRouter } from '@/hooks/useLanguageRouter'
 
-import { Gem, ArrowUpRight, Loader2 } from 'lucide-react'
+import { Gem, ArrowUpRight, Loader2 } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/AuthContext'
 import stripeService from '@/services/stripeService'

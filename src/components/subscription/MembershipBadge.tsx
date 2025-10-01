@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
-import { Crown, CreditCard, Star } from 'lucide-react'
+import { Crown, CreditCard, Star } from '@/components/icons'
 import { SubscriptionService } from '@/services/subscriptionService'
 import { edgeCacheClient } from '@/services/EdgeFunctionCacheClient'
 import type { Subscription } from '@/types'

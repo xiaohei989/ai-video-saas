@@ -13,7 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Settings, CreditCard, AlertTriangle, ExternalLink } from 'lucide-react'
+import { Settings, CreditCard, AlertTriangle, ExternalLink } from '@/components/icons'
 import { SubscriptionService } from '@/services/subscriptionService'
 import type { Subscription } from '@/types'
 import { format } from 'date-fns'

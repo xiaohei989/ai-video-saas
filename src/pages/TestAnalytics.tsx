@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import analyticsService from '@/services/analyticsService'
-import { CheckCircle, XCircle, Play, ShoppingCart, Heart, Share2, Download } from 'lucide-react'
+import { CheckCircle, XCircle, Play, ShoppingCart, Heart, Share2, Download } from '@/components/icons'
 import { toast } from 'sonner'
 
 export default function TestAnalytics() {

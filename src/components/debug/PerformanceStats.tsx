@@ -6,7 +6,7 @@
 import React, { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Activity, Zap, Database, Clock, Smartphone, Monitor } from 'lucide-react'
+import { Activity, Zap, Database, Clock, Smartphone, Monitor } from '@/components/icons'
 
 interface PerformanceStatsProps {
   metrics: {

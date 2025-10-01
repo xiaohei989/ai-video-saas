@@ -1,0 +1,1139 @@
+
+> ai-video-saas@1.0.0 build:cloudflare
+> cp .env.cloudflare .env.local && npm run build
+
+
+> ai-video-saas@1.0.0 build
+> vite build
+
+[VITE CONFIG] Cloudflare Pages environment: undefined
+NODE_ENV=production is not supported in the .env file. Only NODE_ENV=development is supported to create a development build of your project. If you need to set process.env.NODE_ENV, you can set it in the Vite config instead.
+[STRIPE SYNC] ⏭️  插件已禁用
+vite v7.1.5 building for production...
+transforming...
+✓ 6752 modules transformed.
+Initially, there are
+73 chunks, of which
+39 are below minChunkSize.
+After merging chunks, there are
+44 chunks, of which
+5 are below minChunkSize.
+rendering chunks...
+[plugin vite:reporter] 
+(!) /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/lib/supabase.ts is dynamically imported by /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/securityMonitorService.ts but also statically imported by /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/components/admin/AdminDebug.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/components/admin/AdminRoute.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/components/admin/SystemSettings.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/components/admin/TemplateManagement.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/components/admin/ThumbnailGenerator.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/components/auth/EmailVerification.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/components/auth/SignUpForm.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/contexts/AuthContext.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/hooks/useAuthState.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/pages/ThumbnailTestPage.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/pages/admin/BatchBlurThumbnailsPage.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/pages/admin/OrdersPage.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/pages/auth/AuthCallback.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/pages/profile/MyTemplatesPage.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/pages/profile/ProfileEditPage.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/pages/profile/PublicProfilePage.tsx, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/AutoThumbnailService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/EdgeFunctionCacheClient.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/RedisCacheIntegrationService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/adminAuthProvider.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/adminDataProvider.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/analyticsService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/creditService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/emailValidator.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/imageUploadService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/referralService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/stripeService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/subscriptionService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/supabaseVideoService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/supportService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/templateFileService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/templateLikeService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/templateSyncService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/templatesApiService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/thumbnailRepairService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/userSettingsService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/videoQueue/CleanupService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/videoQueue/ConcurrencyController.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/videoQueue/MetadataGenerator.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/videoQueue/StateRestorer.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/videoQueue/UserManager.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/services/videoShareService.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/utils/syncTemplates.ts, /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/utils/videoThumbnail.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/pages/admin/BatchBlurThumbnailsPage.tsx is dynamically imported by /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/App.tsx but also statically imported by /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/src/components/admin/AdminThumbnailManager.tsx, dynamic import will not move module into another chunk.
+
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[VITE PLUGIN] Removing unnecessary preload links...
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'VideoPlayerControlsTestPage-xYnsRgcW.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'index-Ca_pWsHP.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'VideoPlayerControlsTestPage-xYnsRgcW.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'index-Ca_pWsHP.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'videoMigrationService-NvOIXEqL.js',
+  'data-CsQWajvU.js',
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'utils-B21Bm6ie.js',
+  'aws-CAL1RdVD.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'videoMigrationService-NvOIXEqL.js',
+  'data-CsQWajvU.js',
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'utils-B21Bm6ie.js',
+  'aws-CAL1RdVD.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'imageUploadService-Cr3OFqkI.js',
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'imageUploadService-Cr3OFqkI.js',
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'imageUploadService-Cr3OFqkI.js',
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'videoMigrationService-NvOIXEqL.js',
+  'data-CsQWajvU.js',
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'utils-B21Bm6ie.js',
+  'aws-CAL1RdVD.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'QingyunApiService-Q7VfHhIO.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'index-Ca_pWsHP.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'videoMigrationService-NvOIXEqL.js',
+  'data-CsQWajvU.js',
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'utils-B21Bm6ie.js',
+  'aws-CAL1RdVD.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'videoMigrationService-NvOIXEqL.js',
+  'data-CsQWajvU.js',
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'utils-B21Bm6ie.js',
+  'aws-CAL1RdVD.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'veo3Service-C7oBse8v.js',
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'QingyunApiService-Q7VfHhIO.js',
+  'index-Ca_pWsHP.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js',
+  'imageUploadService-Cr3OFqkI.js',
+  'progressManager-DmNzngda.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'progressManager-DmNzngda.js',
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'index-Ca_pWsHP.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'progressManager-DmNzngda.js',
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'index-Ca_pWsHP.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'progressManager-DmNzngda.js',
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'index-Ca_pWsHP.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'veo3Service-C7oBse8v.js',
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'QingyunApiService-Q7VfHhIO.js',
+  'index-Ca_pWsHP.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js',
+  'imageUploadService-Cr3OFqkI.js',
+  'progressManager-DmNzngda.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'veo3Service-C7oBse8v.js',
+  'vendor-n7WBuBvI.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'QingyunApiService-Q7VfHhIO.js',
+  'index-Ca_pWsHP.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js',
+  'imageUploadService-Cr3OFqkI.js',
+  'progressManager-DmNzngda.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'videoThumbnail-CYwn0uca.js',
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'index-Ca_pWsHP.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'videoThumbnail-CYwn0uca.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'videoThumbnail-CYwn0uca.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'HomePage-CTyH12Hv.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'icons-CFcMEUP8.js',
+  'i18n-B5flm_1L.js',
+  'payment-CTi97xFt.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'VideoCreator-DptFxvvo.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'progress-DQPZb5y-.js',
+  'ui-vendor-CqQyjEtk.js',
+  'tabs-Dhb4Tet8.js',
+  'VideoDetailPage-B4pXRAm7.js',
+  'VideoPlayerControlsTestPage-xYnsRgcW.js',
+  'LikeCounterButton-Di5ZXIKR.js',
+  'SimpleAITest-AFAamUqr.js',
+  'payment-CTi97xFt.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'TemplatesPage-BAR6d_f8.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'select-C07u-wDw.js',
+  'ui-vendor-CqQyjEtk.js',
+  'icons-CFcMEUP8.js',
+  'LikeCounterButton-Di5ZXIKR.js',
+  'i18n-B5flm_1L.js',
+  'VideoPlayerControlsTestPage-xYnsRgcW.js',
+  'pagination-XHDchhzh.js',
+  'payment-CTi97xFt.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'VideosPageNew-6Mez0AgK.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'VideoDetailPage-B4pXRAm7.js',
+  'VideoPlayerControlsTestPage-xYnsRgcW.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js',
+  'input-B90CWPo5.js',
+  'pagination-XHDchhzh.js',
+  'select-C07u-wDw.js',
+  'progressManager-DmNzngda.js',
+  'payment-CTi97xFt.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'PricingPage-D0bjOkY6.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'tabs-Dhb4Tet8.js',
+  'ui-vendor-CqQyjEtk.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'input-B90CWPo5.js',
+  'payment-CTi97xFt.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'SignInForm-C1_D1kbQ.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'input-B90CWPo5.js',
+  'ResetPasswordForm-3FkxNlvL.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'payment-CTi97xFt.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'SignUpForm-BY-9BxWu.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'input-B90CWPo5.js',
+  'ResetPasswordForm-3FkxNlvL.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'payment-CTi97xFt.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'ResetPasswordForm-3FkxNlvL.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'input-B90CWPo5.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'ResetPasswordForm-3FkxNlvL.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'input-B90CWPo5.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'AuthCallback-DHF7NyTp.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'payment-CTi97xFt.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'ProfileEditPage-DFz_fL3B.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'input-B90CWPo5.js',
+  'ResetPasswordForm-3FkxNlvL.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'payment-CTi97xFt.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'PublicProfilePage-B9P25aHh.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'payment-CTi97xFt.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'MyTemplatesPage-CxHeyuZQ.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'input-B90CWPo5.js',
+  'select-C07u-wDw.js',
+  'ui-vendor-CqQyjEtk.js',
+  'icons-CFcMEUP8.js',
+  'i18n-B5flm_1L.js',
+  'payment-CTi97xFt.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'AccountSettingsPage-ClqgqfMY.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'input-B90CWPo5.js',
+  'ResetPasswordForm-3FkxNlvL.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'select-C07u-wDw.js',
+  'ui-vendor-CqQyjEtk.js',
+  'payment-CTi97xFt.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'PrivacyPolicyPage-DUqWKi17.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'QingyunApiService-Q7VfHhIO.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'payment-CTi97xFt.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'TermsOfServicePage-CTO3Oq8D.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'QingyunApiService-Q7VfHhIO.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'payment-CTi97xFt.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'CookiePolicyPage-BEo3vyGT.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'QingyunApiService-Q7VfHhIO.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'payment-CTi97xFt.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'HelpCenterPage-DF81M1_V.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'input-B90CWPo5.js',
+  'ResetPasswordForm-3FkxNlvL.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'tabs-Dhb4Tet8.js',
+  'ui-vendor-CqQyjEtk.js',
+  'payment-CTi97xFt.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'VideoDetailPage-B4pXRAm7.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'VideoPlayerControlsTestPage-xYnsRgcW.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'VideoPlayerControlsTestPage-xYnsRgcW.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js'
+]
+[MODULE PRELOAD] 🚫 排除管理员模块: AdminApp-7JvQnRaW.js
+[MODULE PRELOAD] 🚫 排除管理员模块: charts-BdbdeqKb.js
+[MODULE PRELOAD] 🚫 排除管理员模块: admin-BRDcGXVs.js
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'input-B90CWPo5.js',
+  'select-C07u-wDw.js',
+  'ui-vendor-CqQyjEtk.js',
+  'payment-CTi97xFt.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'ThumbnailTestPage-B1Zt3MNw.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'VideoPlayerControlsTestPage-xYnsRgcW.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'payment-CTi97xFt.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'TemplateTranslationPage-B2FP_5KE.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'payment-CTi97xFt.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'TestVeoApi-BshLeHR_.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'select-C07u-wDw.js',
+  'ui-vendor-CqQyjEtk.js',
+  'icons-CFcMEUP8.js',
+  'veo3Service-C7oBse8v.js',
+  'QingyunApiService-Q7VfHhIO.js',
+  'i18n-B5flm_1L.js',
+  'imageUploadService-Cr3OFqkI.js',
+  'progressManager-DmNzngda.js',
+  'payment-CTi97xFt.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'SimpleWatermarkTest-BsAot_9o.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'SimpleWatermarkTest-BsAot_9o.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'TestApicoreApi-CJcuGOY_.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'input-B90CWPo5.js',
+  'select-C07u-wDw.js',
+  'ui-vendor-CqQyjEtk.js',
+  'icons-CFcMEUP8.js',
+  'textarea-q4Ft4ijF.js',
+  'progress-DQPZb5y-.js',
+  'imageUploadService-Cr3OFqkI.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'TestAnalytics-C7_1LmGe.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'input-B90CWPo5.js',
+  'ResetPasswordForm-3FkxNlvL.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'payment-CTi97xFt.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'TestAIContent-D2cG4WF2.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'textarea-q4Ft4ijF.js',
+  'input-B90CWPo5.js',
+  'ResetPasswordForm-3FkxNlvL.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'SimpleAITest-AFAamUqr.js',
+  'payment-CTi97xFt.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'SimpleAITest-AFAamUqr.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'i18n-B5flm_1L.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'DeviceTestPage-CDiSryCy.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js',
+  'ui-vendor-CqQyjEtk.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'VideoPlayerControlsTestPage-xYnsRgcW.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'VideoPlayerControlsTestPage-xYnsRgcW.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'VideoPlayerControlsTestPage-xYnsRgcW.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'i18n-B5flm_1L.js',
+  'icons-CFcMEUP8.js'
+]
+[MODULE PRELOAD] ✅ 预加载依赖: [
+  'CacheManagementPage-C6VQgH1m.js',
+  'react-vendor-Bo8dYJ-E.js',
+  'vendor-n7WBuBvI.js',
+  'utils-B21Bm6ie.js',
+  'data-CsQWajvU.js',
+  'aws-CAL1RdVD.js',
+  'tabs-Dhb4Tet8.js',
+  'ui-vendor-CqQyjEtk.js',
+  'progress-DQPZb5y-.js',
+  'select-C07u-wDw.js',
+  'icons-CFcMEUP8.js',
+  'payment-CTi97xFt.js',
+  'i18n-B5flm_1L.js'
+]
+computing gzip size...
+build/index.html                                          8.68 kB │ gzip:   2.91 kB
+build/assets/index-BYQVSxFt.css                         147.86 kB │ gzip:  23.68 kB
+build/assets/textarea-q4Ft4ijF.js                         0.81 kB │ gzip:   0.46 kB │ map:     1.20 kB
+build/assets/progress-DQPZb5y-.js                         0.83 kB │ gzip:   0.47 kB │ map:     1.38 kB
+build/assets/input-B90CWPo5.js                            0.87 kB │ gzip:   0.49 kB │ map:     1.26 kB
+build/assets/tabs-Dhb4Tet8.js                             1.75 kB │ gzip:   0.64 kB │ map:     2.83 kB
+build/assets/admin-BRDcGXVs.js                            1.81 kB │ gzip:   0.70 kB │ map:     5.85 kB
+build/assets/payment-CTi97xFt.js                          5.02 kB │ gzip:   1.68 kB │ map:     9.65 kB
+build/assets/SimpleAITest-AFAamUqr.js                    12.00 kB │ gzip:   4.42 kB │ map:    19.92 kB
+build/assets/select-C07u-wDw.js                          12.04 kB │ gzip:   3.64 kB │ map:    22.65 kB
+build/assets/TestAIContent-D2cG4WF2.js                   12.41 kB │ gzip:   2.85 kB │ map:    15.62 kB
+build/assets/ThumbnailTestPage-B1Zt3MNw.js               12.90 kB │ gzip:   3.01 kB │ map:    19.74 kB
+build/assets/videoThumbnail-CYwn0uca.js                  12.96 kB │ gzip:   3.46 kB │ map:    36.98 kB
+build/assets/ResetPasswordForm-3FkxNlvL.js               13.58 kB │ gzip:   2.48 kB │ map:    19.48 kB
+build/assets/pagination-XHDchhzh.js                      13.82 kB │ gzip:   3.61 kB │ map:    21.80 kB
+build/assets/AuthCallback-DHF7NyTp.js                    14.45 kB │ gzip:   3.79 kB │ map:    23.75 kB
+build/assets/DeviceTestPage-CDiSryCy.js                  14.55 kB │ gzip:   2.52 kB │ map:    18.05 kB
+build/assets/TestAnalytics-C7_1LmGe.js                   15.55 kB │ gzip:   2.43 kB │ map:    20.13 kB
+build/assets/TestVeoApi-BshLeHR_.js                      16.98 kB │ gzip:   4.53 kB │ map:    26.38 kB
+build/assets/VideoDetailPage-B4pXRAm7.js                 19.47 kB │ gzip:   4.50 kB │ map:    32.04 kB
+build/assets/PublicProfilePage-B9P25aHh.js               19.52 kB │ gzip:   3.33 kB │ map:    27.50 kB
+build/assets/HomePage-CTyH12Hv.js                        20.02 kB │ gzip:   5.13 kB │ map:    39.85 kB
+build/assets/QingyunApiService-Q7VfHhIO.js               20.05 kB │ gzip:   5.57 kB │ map:    34.48 kB
+build/assets/ProfileEditPage-DFz_fL3B.js                 20.55 kB │ gzip:   4.04 kB │ map:    30.22 kB
+build/assets/SignInForm-C1_D1kbQ.js                      21.26 kB │ gzip:   5.62 kB │ map:    35.84 kB
+build/assets/data-CsQWajvU.js                            22.11 kB │ gzip:   6.01 kB │ map:    43.35 kB
+build/assets/TestApicoreApi-CJcuGOY_.js                  22.53 kB │ gzip:   4.90 kB │ map:    31.24 kB
+build/assets/SimpleWatermarkTest-BsAot_9o.js             23.62 kB │ gzip:   6.05 kB │ map:    35.64 kB
+build/assets/progressManager-DmNzngda.js                 24.17 kB │ gzip:   5.64 kB │ map:    47.95 kB
+build/assets/PrivacyPolicyPage-DUqWKi17.js               24.48 kB │ gzip:   4.12 kB │ map:    23.82 kB
+build/assets/imageUploadService-Cr3OFqkI.js              24.80 kB │ gzip:   6.78 kB │ map:    46.21 kB
+build/assets/TermsOfServicePage-CTO3Oq8D.js              25.67 kB │ gzip:   4.89 kB │ map:    26.55 kB
+build/assets/videoMigrationService-NvOIXEqL.js           29.13 kB │ gzip:   6.21 kB │ map:    34.18 kB
+build/assets/SignUpForm-BY-9BxWu.js                      32.91 kB │ gzip:   6.66 kB │ map:    49.41 kB
+build/assets/CookiePolicyPage-BEo3vyGT.js                33.15 kB │ gzip:   4.81 kB │ map:    34.23 kB
+build/assets/MyTemplatesPage-CxHeyuZQ.js                 33.96 kB │ gzip:   5.21 kB │ map:    52.54 kB
+build/assets/AccountSettingsPage-ClqgqfMY.js             39.50 kB │ gzip:   5.56 kB │ map:    56.39 kB
+build/assets/HelpCenterPage-DF81M1_V.js                  40.67 kB │ gzip:   7.28 kB │ map:    59.85 kB
+build/assets/veo3Service-C7oBse8v.js                     41.30 kB │ gzip:   6.94 kB │ map:    93.49 kB
+build/assets/TemplatesPage-BAR6d_f8.js                   45.60 kB │ gzip:  10.49 kB │ map:    86.24 kB
+build/assets/CacheManagementPage-C6VQgH1m.js             51.88 kB │ gzip:   9.13 kB │ map:    70.03 kB
+build/assets/PricingPage-D0bjOkY6.js                     53.37 kB │ gzip:   9.16 kB │ map:    80.66 kB
+build/assets/icons-CFcMEUP8.js                           56.26 kB │ gzip:  10.29 kB │ map:   111.18 kB
+build/assets/LikeCounterButton-Di5ZXIKR.js               61.17 kB │ gzip:  14.74 kB │ map:   106.62 kB
+build/assets/i18n-B5flm_1L.js                            87.15 kB │ gzip:  20.19 kB │ map:   155.58 kB
+build/assets/VideoPlayerControlsTestPage-xYnsRgcW.js    112.98 kB │ gzip:  24.01 kB │ map:   201.91 kB
+build/assets/VideosPageNew-6Mez0AgK.js                  127.48 kB │ gzip:  26.93 kB │ map:   245.55 kB
+build/assets/TemplateTranslationPage-B2FP_5KE.js        129.61 kB │ gzip:  20.90 kB │ map:   207.66 kB
+build/assets/aws-CAL1RdVD.js                            145.17 kB │ gzip:  29.34 kB │ map:   572.61 kB
+build/assets/VideoCreator-DptFxvvo.js                   181.26 kB │ gzip:  38.83 kB │ map:   315.86 kB
+build/assets/AdminApp-7JvQnRaW.js                       196.77 kB │ gzip:  32.13 kB │ map:   305.88 kB
+build/assets/ui-vendor-CqQyjEtk.js                      204.40 kB │ gzip:  38.92 kB │ map:   367.20 kB
+build/assets/utils-B21Bm6ie.js                          244.57 kB │ gzip:  41.01 kB │ map:   585.55 kB
+build/assets/charts-BdbdeqKb.js                         484.61 kB │ gzip:  89.40 kB │ map:   991.66 kB
+build/assets/react-vendor-Bo8dYJ-E.js                   750.36 kB │ gzip: 142.73 kB │ map: 1,354.33 kB
+build/assets/index-Ca_pWsHP.js                        1,479.60 kB │ gzip: 379.19 kB │ map:   868.30 kB
+build/assets/vendor-n7WBuBvI.js                       3,326.88 kB │ gzip: 678.11 kB │ map: 9,136.18 kB
+✓ built in 8.05s
+
+✨ [vite-plugin-compression]:algorithm=gzip - compressed file successfully: 
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/AuthCallback-DHF7NyTp.js.gz                  14.11kb / gzip: 3.68kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/AccountSettingsPage-ClqgqfMY.js.gz           38.57kb / gzip: 5.39kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/CookiePolicyPage-BEo3vyGT.js.gz              32.38kb / gzip: 4.66kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/DeviceTestPage-CDiSryCy.js.gz                14.21kb / gzip: 2.47kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/CacheManagementPage-C6VQgH1m.js.gz           50.66kb / gzip: 8.86kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/HomePage-CTyH12Hv.js.gz                      19.55kb / gzip: 5.00kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/MyTemplatesPage-CxHeyuZQ.js.gz               33.17kb / gzip: 5.07kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/LikeCounterButton-Di5ZXIKR.js.gz             59.73kb / gzip: 14.32kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/HelpCenterPage-DF81M1_V.js.gz                39.72kb / gzip: 7.06kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/PricingPage-D0bjOkY6.js.gz                   52.12kb / gzip: 8.86kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/ProfileEditPage-DFz_fL3B.js.gz               20.06kb / gzip: 3.92kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/PublicProfilePage-B9P25aHh.js.gz             19.07kb / gzip: 3.24kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/ResetPasswordForm-3FkxNlvL.js.gz             13.26kb / gzip: 2.42kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/PrivacyPolicyPage-DUqWKi17.js.gz             23.91kb / gzip: 4.01kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/SignInForm-C1_D1kbQ.js.gz                    20.76kb / gzip: 5.49kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/SimpleAITest-AFAamUqr.js.gz                  11.72kb / gzip: 4.31kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/QingyunApiService-Q7VfHhIO.js.gz             19.58kb / gzip: 5.43kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/SignUpForm-BY-9BxWu.js.gz                    32.14kb / gzip: 6.47kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/SimpleWatermarkTest-BsAot_9o.js.gz           23.06kb / gzip: 5.88kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TermsOfServicePage-CTO3Oq8D.js.gz            25.07kb / gzip: 4.76kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TemplatesPage-BAR6d_f8.js.gz                 44.53kb / gzip: 10.18kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TestAnalytics-C7_1LmGe.js.gz                 15.18kb / gzip: 2.36kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TestAIContent-D2cG4WF2.js.gz                 12.12kb / gzip: 2.78kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TestVeoApi-BshLeHR_.js.gz                    16.58kb / gzip: 4.41kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TestApicoreApi-CJcuGOY_.js.gz                22.00kb / gzip: 4.76kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/ThumbnailTestPage-B1Zt3MNw.js.gz             12.59kb / gzip: 2.93kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/VideoDetailPage-B4pXRAm7.js.gz               19.02kb / gzip: 4.39kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/data-CsQWajvU.js.gz                          21.59kb / gzip: 5.87kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/imageUploadService-Cr3OFqkI.js.gz            24.22kb / gzip: 6.60kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/icons-CFcMEUP8.js.gz                         54.94kb / gzip: 9.92kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/pagination-XHDchhzh.js.gz                    13.49kb / gzip: 3.52kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/progressManager-DmNzngda.js.gz               23.60kb / gzip: 5.48kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/select-C07u-wDw.js.gz                        11.76kb / gzip: 3.55kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/veo3Service-C7oBse8v.js.gz                   40.33kb / gzip: 6.71kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/videoMigrationService-NvOIXEqL.js.gz         28.45kb / gzip: 6.05kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/videoThumbnail-CYwn0uca.js.gz                12.65kb / gzip: 3.37kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/clear-cache.html.gz                                 13.37kb / gzip: 2.80kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/ios-thumbnail-debug.html.gz                         10.04kb / gzip: 2.56kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-cdn-connectivity.html.gz                       12.30kb / gzip: 3.28kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-media-fragments.html.gz                        15.42kb / gzip: 3.51kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/AdminApp-7JvQnRaW.js.gz                      192.15kb / gzip: 31.03kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TemplateTranslationPage-B2FP_5KE.js.gz       126.58kb / gzip: 20.10kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/VideoPlayerControlsTestPage-xYnsRgcW.js.gz   110.33kb / gzip: 23.25kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/i18n-B5flm_1L.js.gz                          85.11kb / gzip: 19.60kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/VideosPageNew-6Mez0AgK.js.gz                 124.49kb / gzip: 26.07kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/index-BYQVSxFt.css.gz                        144.39kb / gzip: 22.84kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/aws-CAL1RdVD.js.gz                           141.77kb / gzip: 28.49kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/VideoCreator-DptFxvvo.js.gz                  177.01kb / gzip: 37.64kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/utils-B21Bm6ie.js.gz                         238.84kb / gzip: 39.59kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/ui-vendor-CqQyjEtk.js.gz                     199.61kb / gzip: 37.52kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/charts-BdbdeqKb.js.gz                        473.25kb / gzip: 86.52kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/react-vendor-Bo8dYJ-E.js.gz                  732.78kb / gzip: 138.23kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/index-Ca_pWsHP.js.gz                         1444.92kb / gzip: 367.91kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/vendor-n7WBuBvI.js.gz                        3248.91kb / gzip: 656.05kb
+
+
+
+✨ [vite-plugin-compression]:algorithm=brotliCompress - compressed file successfully: 
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/AuthCallback-DHF7NyTp.js.br                  14.11kb / brotliCompress: 3.06kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/DeviceTestPage-CDiSryCy.js.br                14.21kb / brotliCompress: 2.03kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/AccountSettingsPage-ClqgqfMY.js.br           38.57kb / brotliCompress: 4.64kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/CacheManagementPage-C6VQgH1m.js.br           50.66kb / brotliCompress: 7.43kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/HomePage-CTyH12Hv.js.br                      19.55kb / brotliCompress: 4.32kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/CookiePolicyPage-BEo3vyGT.js.br              32.38kb / brotliCompress: 3.72kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/MyTemplatesPage-CxHeyuZQ.js.br               33.17kb / brotliCompress: 4.42kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/LikeCounterButton-Di5ZXIKR.js.br             59.73kb / brotliCompress: 12.18kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/HelpCenterPage-DF81M1_V.js.br                39.72kb / brotliCompress: 5.92kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/ProfileEditPage-DFz_fL3B.js.br               20.06kb / brotliCompress: 3.38kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/PricingPage-D0bjOkY6.js.br                   52.12kb / brotliCompress: 7.64kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/PublicProfilePage-B9P25aHh.js.br             19.07kb / brotliCompress: 2.86kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/QingyunApiService-Q7VfHhIO.js.br             19.58kb / brotliCompress: 4.51kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/PrivacyPolicyPage-DUqWKi17.js.br             23.91kb / brotliCompress: 3.14kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/ResetPasswordForm-3FkxNlvL.js.br             13.26kb / brotliCompress: 2.04kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/SignInForm-C1_D1kbQ.js.br                    20.76kb / brotliCompress: 4.60kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/SimpleAITest-AFAamUqr.js.br                  11.72kb / brotliCompress: 3.50kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/SignUpForm-BY-9BxWu.js.br                    32.14kb / brotliCompress: 5.48kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/SimpleWatermarkTest-BsAot_9o.js.br           23.06kb / brotliCompress: 4.89kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TestAIContent-D2cG4WF2.js.br                 12.12kb / brotliCompress: 2.22kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TermsOfServicePage-CTO3Oq8D.js.br            25.07kb / brotliCompress: 3.71kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TestAnalytics-C7_1LmGe.js.br                 15.18kb / brotliCompress: 2.03kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TestApicoreApi-CJcuGOY_.js.br                22.00kb / brotliCompress: 3.99kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TemplatesPage-BAR6d_f8.js.br                 44.53kb / brotliCompress: 8.71kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TestVeoApi-BshLeHR_.js.br                    16.58kb / brotliCompress: 3.63kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/ThumbnailTestPage-B1Zt3MNw.js.br             12.59kb / brotliCompress: 2.50kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/VideoDetailPage-B4pXRAm7.js.br               19.02kb / brotliCompress: 3.81kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/data-CsQWajvU.js.br                          21.59kb / brotliCompress: 5.11kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/icons-CFcMEUP8.js.br                         54.94kb / brotliCompress: 8.55kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/pagination-XHDchhzh.js.br                    13.49kb / brotliCompress: 2.96kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/imageUploadService-Cr3OFqkI.js.br            24.22kb / brotliCompress: 5.56kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/progressManager-DmNzngda.js.br               23.60kb / brotliCompress: 4.70kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/select-C07u-wDw.js.br                        11.76kb / brotliCompress: 2.97kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/videoThumbnail-CYwn0uca.js.br                12.65kb / brotliCompress: 2.88kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/videoMigrationService-NvOIXEqL.js.br         28.45kb / brotliCompress: 5.10kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/veo3Service-C7oBse8v.js.br                   40.33kb / brotliCompress: 5.66kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-cdn-connectivity.html.br                       12.30kb / brotliCompress: 2.60kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-media-fragments.html.br                        15.42kb / brotliCompress: 2.69kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/ios-thumbnail-debug.html.br                         10.04kb / brotliCompress: 1.97kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/clear-cache.html.br                                 13.37kb / brotliCompress: 2.22kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/AdminApp-7JvQnRaW.js.br                      192.15kb / brotliCompress: 24.62kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/TemplateTranslationPage-B2FP_5KE.js.br       126.58kb / brotliCompress: 16.67kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/VideoPlayerControlsTestPage-xYnsRgcW.js.br   110.33kb / brotliCompress: 19.59kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/VideosPageNew-6Mez0AgK.js.br                 124.49kb / brotliCompress: 21.57kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/VideoCreator-DptFxvvo.js.br                  177.01kb / brotliCompress: 30.28kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/i18n-B5flm_1L.js.br                          85.11kb / brotliCompress: 17.33kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/aws-CAL1RdVD.js.br                           141.77kb / brotliCompress: 24.29kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/index-BYQVSxFt.css.br                        144.39kb / brotliCompress: 17.85kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/ui-vendor-CqQyjEtk.js.br                     199.61kb / brotliCompress: 30.25kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/utils-B21Bm6ie.js.br                         238.84kb / brotliCompress: 29.68kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/charts-BdbdeqKb.js.br                        473.25kb / brotliCompress: 66.19kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/react-vendor-Bo8dYJ-E.js.br                  732.78kb / brotliCompress: 113.06kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/index-Ca_pWsHP.js.br                         1444.92kb / brotliCompress: 268.52kb
+build//Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/assets/vendor-n7WBuBvI.js.br                        3248.91kb / brotliCompress: 496.67kb
+
+

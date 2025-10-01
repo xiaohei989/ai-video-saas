@@ -46,7 +46,7 @@ import {
   FileJson, 
   Video,
   Settings as SettingsIcon
-} from 'lucide-react'
+} from '@/components/icons'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 import { bulkImportTemplates, bulkExportTemplates } from '@/services/templateFileService'

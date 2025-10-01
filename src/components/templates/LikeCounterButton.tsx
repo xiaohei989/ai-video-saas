@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { Heart, Loader2 } from 'lucide-react'
+import { Heart, Loader2 } from '@/components/icons'
 import { cn } from '@/lib/utils'
 import { useLike } from '@/hooks/useLike'
 import { useAuthState } from '@/hooks/useAuthState'

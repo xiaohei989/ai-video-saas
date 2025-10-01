@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Home, Film, Video, CreditCard, User, Settings } from 'lucide-react'
+import { Home, Film, Video, CreditCard, User, Settings } from '@/components/icons'
 import { cn } from '@/utils/cn'
 
 const sidebarItems = [

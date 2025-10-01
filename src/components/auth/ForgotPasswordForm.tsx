@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTranslation } from 'react-i18next'
-import { Loader2, Mail, ArrowLeft, CheckCircle } from 'lucide-react'
+import { Loader2, Mail, ArrowLeft, CheckCircle } from '@/components/icons'
 
 export default function ForgotPasswordForm() {
   const { t } = useTranslation()

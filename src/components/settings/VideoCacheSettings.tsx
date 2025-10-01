@@ -23,7 +23,7 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2
-} from 'lucide-react'
+} from '@/components/icons'
 import { cn } from '@/lib/utils'
 import { simpleVideoCacheService, type CacheSettings, type VideoCacheStats } from '@/services/SimpleVideoCacheService'
 import { smartPreloadService } from '@/services/SmartVideoPreloadService'

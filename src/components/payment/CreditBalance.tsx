@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Gem, TrendingUp, TrendingDown, Activity } from 'lucide-react'
+import { Gem, TrendingUp, TrendingDown, Activity } from '@/components/icons'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useAuthContext } from '@/contexts/AuthContext'

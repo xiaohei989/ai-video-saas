@@ -32,7 +32,7 @@ import {
   ImageField,
   UrlField
 } from 'react-admin'
-import { Check, X } from 'lucide-react'
+import { Check, X } from '@/components/icons'
 
 const TemplateFilters = [
   <SearchInput source="q" placeholder="搜索模板名称" alwaysOn />,

@@ -14,7 +14,7 @@ import {
   Eye,
   Download,
   Trash2
-} from 'lucide-react'
+} from '@/components/icons'
 import { SUPPORTED_LANGUAGES, SupportedLanguageCode } from '@/types/translation'
 import { toast } from 'sonner'
 
