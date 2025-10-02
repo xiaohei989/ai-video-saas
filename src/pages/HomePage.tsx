@@ -7,6 +7,7 @@ import OptimizedBackgroundVideo from '@/components/video/OptimizedBackgroundVide
 import AnimatedHeroTitle from '@/components/ui/AnimatedHeroTitle'
 import { defaultBackgroundVideoConfig } from '@/config/backgroundVideos'
 import { useSEO } from '@/hooks/useSEO'
+import GoogleOneTap from '@/components/auth/GoogleOneTap'
 
 export default function HomePage() {
   const { t } = useTranslation()
@@ -44,6 +45,9 @@ export default function HomePage() {
 
   return (
     <div className="relative min-h-screen">
+      {/* Google One Tap 登录 - 智能检测已登录的Google账户 */}
+      <GoogleOneTap delay={2000} context="signin" />
+
       {/* Background Video - 优化背景视频 */}
       <OptimizedBackgroundVideo
         sources={optimizedVideoSources}
