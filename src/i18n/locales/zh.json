@@ -1339,7 +1339,8 @@
       "networkError": "网络请求失败",
       "functionCallFailed": "Edge Function调用失败",
       "functionExecutionFailed": "Edge Function执行失败",
-      "insufficientCredits": "积分不足"
+      "insufficientCredits": "积分不足",
+      "noSession": "用户会话已过期，请重新登录"
     },
     "validation": {
       "emailValidationTimeout": "邮箱验证超时",

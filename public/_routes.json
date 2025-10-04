@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "include": [
+    "/:lang/*"
+  ],
+  "exclude": [
+    "/assets/*",
+    "/screenshot_1.png",
+    "/screenshot_2.png",
+    "/screenshot_3.png",
+    "/screenshot_4.png",
+    "/logo.png",
+    "/logo-128.png",
+    "/logo-256.png",
+    "/logo-512.png",
+    "/favicon.png",
+    "/favicon-16x16.png",
+    "/favicon-32x32.png",
+    "/android-chrome-192x192.png",
+    "/android-chrome-512x512.png",
+    "/apple-touch-icon.png",
+    "/*.txt",
+    "/*.xml",
+    "/*.webmanifest",
+    "/*.html",
+    "/images/*",
+    "/videos/*",
+    "/templates/*",
+    "/.well-known/*"
+  ]
+}

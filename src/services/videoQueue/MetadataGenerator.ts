@@ -335,21 +335,22 @@ export class MetadataGenerator {
    * 生成智能默认描述（超时时使用，比简单模板描述更详细）
    */
   private generateSmartDefaultDescription(templateName: string, prompt: string, parameters: Record<string, any>): string {
-    const shortPrompt = prompt.length > 80 ? prompt.substring(0, 80) + '...' : prompt
+    // 不截断prompt，而是根据长度决定描述风格
     const paramCount = Object.keys(parameters).length
 
     // 基于模板和提示词生成描述
     let description = ''
 
-    if (shortPrompt.trim()) {
-      description = `AI-generated video featuring "${shortPrompt}"`
+    if (prompt.trim()) {
+      // 如果prompt很长，只提取核心关键词
+      if (prompt.length > 150) {
+        const keywords = prompt.split(/[,，.。;；]/).slice(0, 2).join(', ').substring(0, 100)
+        description = `Amazing AI-generated video based on the creative prompt featuring ${keywords}`
+      } else {
+        description = `Amazing AI-generated video based on the creative prompt "${prompt}"`
+      }
     } else {
       description = `Creative AI video based on the ${templateName} template`
-    }
-
-    // 添加参数信息
-    if (paramCount > 0) {
-      description += ` with ${paramCount} custom parameter${paramCount > 1 ? 's' : ''}`
     }
 
     // 根据模板类型添加特色描述
@@ -364,6 +365,8 @@ export class MetadataGenerator {
       description += ', highlighting product features and design'
     } else if (lowerTemplate.includes('tech')) {
       description += ', demonstrating cutting-edge technology'
+    } else if (paramCount > 0) {
+      description += `, featuring unique elements and ${paramCount} custom parameter${paramCount > 1 ? 's' : ''}`
     } else {
       description += ', delivering engaging visual storytelling'
     }

@@ -14,8 +14,12 @@ interface AdminStatsRequest {
 }
 
 serve(async (req) => {
+  // 处理 CORS 预检请求
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, {
+      status: 200,
+      headers: corsHeaders
+    })
   }
 
   try {

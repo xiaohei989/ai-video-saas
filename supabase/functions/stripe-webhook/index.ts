@@ -235,7 +235,7 @@ serve(async (request) => {
   }
   
   if (request.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, { status: 200, headers: corsHeaders })
   }
 
   const signature = request.headers.get('Stripe-Signature')

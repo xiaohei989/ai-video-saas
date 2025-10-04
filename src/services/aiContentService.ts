@@ -137,14 +137,15 @@ class AIContentService {
       }
 
       const content = result.choices[0].message.content
-      
+
       try {
-        const parsed = JSON.parse(content)
+        // 去除前后空格，避免解析失败
+        const parsed = JSON.parse(content.trim())
         console.log(`[AI CONTENT SERVICE] ${model} 生成结果:`, {
           title: parsed.title?.substring(0, 50) + '...',
           descriptionLength: parsed.description?.length
         })
-        
+
         return parsed
       } catch (parseError) {
         console.warn(`[AI CONTENT SERVICE] JSON解析失败，尝试文本解析: ${parseError}`)
@@ -294,15 +295,24 @@ ${formattedParams}
    * 生成回退简介
    */
   private generateFallbackDescription(prompt: string, language: string): string {
-    // 提取提示词的关键信息
-    const shortPrompt = prompt.length > 100 ? prompt.substring(0, 100) + '...' : prompt
-    
-    const descriptions: Record<string, string> = {
-      'zh-CN': `基于创意提示"${shortPrompt}"生成的精彩AI视频内容，展现独特的视觉效果和有趣的故事情节。`,
-      'en': `Amazing AI-generated video based on the creative prompt "${shortPrompt}", featuring unique visual effects and interesting storylines.`,
-      'ja': `「${shortPrompt}」というクリエイティブなプロンプトに基づいて生成された素晴らしいAI動画コンテンツです。`
+    // 智能处理提示词长度
+    let processedPrompt = prompt
+
+    if (prompt.length > 150) {
+      // 提取关键部分，而不是简单截断
+      const sentences = prompt.split(/[,，.。;；]/).filter(s => s.trim())
+      processedPrompt = sentences.slice(0, 2).join(', ')
+      if (processedPrompt.length > 150) {
+        processedPrompt = processedPrompt.substring(0, 147) + '...'
+      }
     }
-    
+
+    const descriptions: Record<string, string> = {
+      'zh-CN': `基于创意提示"${processedPrompt}"生成的精彩AI视频内容，展现独特的视觉效果和有趣的故事情节。`,
+      'en': `Amazing AI-generated video based on the creative prompt "${processedPrompt}", featuring unique visual effects and interesting storylines.`,
+      'ja': `「${processedPrompt}」というクリエイティブなプロンプトに基づいて生成された素晴らしいAI動画コンテンツです。`
+    }
+
     return descriptions[language] || descriptions['zh-CN']
   }
 

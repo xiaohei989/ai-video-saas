@@ -80,10 +80,10 @@ export function useVideoOperations(options: UseVideoOperationsOptions = {}): Use
     try {
       console.log('[useVideoOperations] 删除视频:', video.id)
 
-      const { success, error } = await supabaseVideoService.deleteVideo(video.id, user.id)
+      const success = await supabaseVideoService.hardDeleteVideo(video.id, user.id)
 
       if (success) {
-        toast.success(t('videos.deleted'))
+        toast.success(t('videos.videoDeleted'))
         onVideoDeleted?.(video.id)
 
         // 关闭删除对话框
@@ -91,8 +91,8 @@ export function useVideoOperations(options: UseVideoOperationsOptions = {}): Use
 
         console.log('[useVideoOperations] 视频删除成功:', video.id)
       } else {
-        console.error('[useVideoOperations] 删除视频失败:', error)
-        toast.error(error || t('videos.deleteFailed'))
+        console.error('[useVideoOperations] 删除视频失败')
+        toast.error(t('videos.deleteFailed'))
       }
     } catch (error) {
       console.error('[useVideoOperations] 删除视频异常:', error)

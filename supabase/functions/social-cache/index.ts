@@ -1,7 +1,7 @@
 // supabase/functions/social-cache/index.ts
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { Redis } from 'https://deno.land/x/upstash_redis@v1.31.6/mod.ts'
+import { Redis } from 'https://esm.sh/@upstash/redis@1.28.4'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,7 +20,7 @@ interface SocialCacheRequest {
 serve(async (req: Request) => {
   // Handle CORS
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, { status: 200, headers: corsHeaders })
   }
 
   try {

@@ -290,7 +290,7 @@ export function VideoCard({
           {video.status === 'failed' && (
             <div className="absolute inset-0 bg-red-500/20 flex flex-col items-center justify-center text-white">
               <AlertCircle className="w-8 h-8 text-red-500 mb-2" />
-              <div className="text-sm font-medium text-red-500">生成失败</div>
+              <div className="text-sm font-medium text-red-500">{t('videos.generationFailed')}</div>
               <Button
                 variant="outline"
                 size="sm"
