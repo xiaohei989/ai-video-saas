@@ -318,117 +318,26 @@ class Veo3Service {
           //   timestamp: updateTimestamp
           // })
 
-          // 🚀 立即执行R2迁移
-          // console.log('[VEO3 SERVICE] 🔄 开始立即迁移到R2...')
-          let finalVideoUrl = result.video_url
-          let migrationSuccess = false
-          
-          try {
-            // 动态导入迁移服务，避免循环依赖
-            const { videoMigrationService } = await import('./videoMigrationService')
-            
-            // 先临时保存第三方URL到数据库，设置迁移状态为下载中
-            // console.log('[VEO3 SERVICE] 📝 临时保存第三方URL，开始迁移...')
-            await supabaseVideoService.updateVideoAsSystem(request.videoRecordId, {
-              status: 'completed',
-              video_url: result.video_url,
-              processing_completed_at: updateTimestamp,
-              migration_status: 'downloading',
-              original_video_url: result.video_url
-            })
-            
-            // 执行迁移（使用服务端迁移方法，避免CORS问题）
-            const migrationResult = await videoMigrationService.migrateVideoServerSide(request.videoRecordId)
-            // console.log('[VEO3 SERVICE] 📊 迁移结果:', {
-            //   success: migrationResult.success,
-            //   r2Url: migrationResult.r2Url,
-            //   error: migrationResult.error,
-            //   skipped: migrationResult.skipped
-            // })
-            
-            if (migrationResult.success && migrationResult.r2Url) {
-              // 迁移成功，使用R2 URL
-              finalVideoUrl = migrationResult.r2Url
-              migrationSuccess = true
-              // console.log('[VEO3 SERVICE] ✅ 迁移成功！最终视频URL:', finalVideoUrl)
-              
-              // 更新数据库，将video_url也设置为R2 URL
-              await supabaseVideoService.updateVideoAsSystem(request.videoRecordId, {
-                video_url: finalVideoUrl,  // 直接使用R2 URL作为主URL
-                r2_url: finalVideoUrl,
-                r2_key: migrationResult.r2Key || undefined,
-                migration_status: 'completed',
-                r2_uploaded_at: new Date().toISOString()
-              })
-              // console.log('[VEO3 SERVICE] ✅ 数据库已更新为R2 URL')
-            } else {
-              // 迁移失败，保持原始第三方URL
-              // console.warn('[VEO3 SERVICE] ⚠️ 迁移失败，保持原始URL:', migrationResult.error)
-              await supabaseVideoService.updateVideoAsSystem(request.videoRecordId, {
-                migration_status: 'failed'
-              })
-            }
-          } catch (migrationError) {
-            // console.error('[VEO3 SERVICE] ❌ R2迁移出错:', migrationError)
-            // 迁移失败，标记状态但不影响视频完成
-            try {
-              await supabaseVideoService.updateVideoAsSystem(request.videoRecordId, {
-                migration_status: 'failed'
-              })
-            } catch (updateError) {
-              // console.error('[VEO3 SERVICE] ❌ 更新迁移失败状态时出错:', updateError)
-            }
-          }
-          
-          // 更新内存状态为完成（使用最终URL）
-          progressManager.markAsCompleted(request.videoRecordId, finalVideoUrl)
-          // console.log('[VEO3 SERVICE] ✅ Memory state updated via progressManager with final URL:', finalVideoUrl)
+          // 💾 保存视频URL（迁移由后端触发器自动处理）
+          await supabaseVideoService.updateVideoAsSystem(request.videoRecordId, {
+            status: 'completed',
+            video_url: result.video_url,
+            processing_completed_at: updateTimestamp
+          })
 
-          // 缩略图现在由浏览器原生 Media Fragments 处理，无需额外生成
-
-          // console.log('[VEO3 SERVICE] 🎉 青云API视频处理完成:', {
-          //   videoId: request.videoRecordId,
-          //   finalUrl: finalVideoUrl,
-          //   migratedToR2: migrationSuccess,
-          //   urlType: finalVideoUrl.includes('cdn.veo3video.me') ? 'R2' : '第三方'
-          // })
+          // 更新内存状态为完成
+          progressManager.markAsCompleted(request.videoRecordId, result.video_url)
         }
         
-        // 🔍 验证数据库更新结果（包含R2迁移状态）
+        // 🔍 验证数据库更新结果
         if (request.videoRecordId) {
-          // console.log('[VEO3 SERVICE] 🔍 验证数据库更新和迁移结果...')
           try {
-            // 立即重新读取数据库验证
             const verifyResult = await supabaseVideoService.getVideo(request.videoRecordId)
-            if (verifyResult) {
-              // console.log('[VEO3 SERVICE] 📋 验证结果 - 数据库当前状态:')
-              // console.log('[VEO3 SERVICE] 🎯 状态:', verifyResult.status)
-              // console.log('[VEO3 SERVICE] 📹 video_url:', verifyResult.video_url)
-              // console.log('[VEO3 SERVICE] 🔗 r2_url:', verifyResult.r2_url)
-              // console.log('[VEO3 SERVICE] 📊 migration_status:', verifyResult.migration_status)
-              // console.log('[VEO3 SERVICE] 📏 video_url长度:', verifyResult.video_url ? verifyResult.video_url.length : 'NULL')
-              // console.log('[VEO3 SERVICE] 🏪 存储类型:', verifyResult.video_url?.includes('cdn.veo3video.me') ? 'R2存储' : '第三方存储')
-              
-              if (!verifyResult.video_url) {
-                // console.error('[VEO3 SERVICE] 🚨 数据库验证失败！video_url为空')
-              } else if (verifyResult.migration_status === 'completed' && verifyResult.r2_url) {
-                // console.log('[VEO3 SERVICE] ✅ 数据库验证成功！视频已迁移到R2存储')
-                // console.log('[VEO3 SERVICE] 🎉 迁移完成状态:')
-                // console.log('[VEO3 SERVICE]   - video_url: R2 URL')
-                // console.log('[VEO3 SERVICE]   - r2_url: 已填充')
-                // console.log('[VEO3 SERVICE]   - migration_status: completed')
-              } else if (verifyResult.migration_status === 'failed') {
-                // console.warn('[VEO3 SERVICE] ⚠️ R2迁移失败，使用原始第三方URL')
-                // console.log('[VEO3 SERVICE]   - video_url: 第三方URL')
-                // console.log('[VEO3 SERVICE]   - migration_status: failed')
-              } else {
-                // console.log('[VEO3 SERVICE] ✅ 数据库验证成功！视频已保存（迁移状态:' + verifyResult.migration_status + ')')
-              }
-            } else {
-              // console.error('[VEO3 SERVICE] 🚨 数据库验证失败！无法读取视频记录')
+            if (!verifyResult?.video_url) {
+              console.error('[VEO3 SERVICE] 🚨 数据库验证失败！video_url为空')
             }
           } catch (verifyError) {
-            // console.error('[VEO3 SERVICE] 🚨 数据库验证出错:', verifyError)
+            console.error('[VEO3 SERVICE] 🚨 数据库验证出错:', verifyError)
           }
         }
         
@@ -655,80 +564,15 @@ class Veo3Service {
           //   timestamp: updateTimestamp
           // })
 
-          // 🚀 立即执行R2迁移
-          // console.log('[VEO3 SERVICE] 🔄 开始立即迁移APICore视频到R2...')
-          let finalVideoUrl = videoUrl
-          let migrationSuccess = false
-          
-          try {
-            // 动态导入迁移服务，避免循环依赖
-            const { videoMigrationService } = await import('./videoMigrationService')
-            
-            // 先临时保存第三方URL到数据库，设置迁移状态为下载中
-            // console.log('[VEO3 SERVICE] 📝 临时保存APICore第三方URL，开始迁移...')
-            await supabaseVideoService.updateVideoAsSystem(request.videoRecordId, {
-              status: 'completed',
-              video_url: videoUrl,
-              processing_completed_at: updateTimestamp,
-              migration_status: 'downloading',
-              original_video_url: videoUrl
-            })
-            
-            // 执行迁移（使用服务端迁移方法，避免CORS问题）
-            const migrationResult = await videoMigrationService.migrateVideoServerSide(request.videoRecordId)
-            // console.log('[VEO3 SERVICE] 📊 APICore迁移结果:', {
-            //   success: migrationResult.success,
-            //   r2Url: migrationResult.r2Url,
-            //   error: migrationResult.error,
-            //   skipped: migrationResult.skipped
-            // })
-            
-            if (migrationResult.success && migrationResult.r2Url) {
-              // 迁移成功，使用R2 URL
-              finalVideoUrl = migrationResult.r2Url
-              migrationSuccess = true
-              // console.log('[VEO3 SERVICE] ✅ APICore迁移成功！最终视频URL:', finalVideoUrl)
-              
-              // 更新数据库，将video_url也设置为R2 URL
-              await supabaseVideoService.updateVideoAsSystem(request.videoRecordId, {
-                video_url: finalVideoUrl,  // 直接使用R2 URL作为主URL
-                r2_url: finalVideoUrl,
-                r2_key: migrationResult.r2Key || undefined,
-                migration_status: 'completed',
-                r2_uploaded_at: new Date().toISOString()
-              })
-              // console.log('[VEO3 SERVICE] ✅ APICore数据库已更新为R2 URL')
-            } else {
-              // 迁移失败，保持原始第三方URL
-              // console.warn('[VEO3 SERVICE] ⚠️ APICore迁移失败，保持原始URL:', migrationResult.error)
-              await supabaseVideoService.updateVideoAsSystem(request.videoRecordId, {
-                migration_status: 'failed'
-              })
-            }
-          } catch (migrationError) {
-            // console.error('[VEO3 SERVICE] ❌ APICore R2迁移出错:', migrationError)
-            // 迁移失败，标记状态但不影响视频完成
-            try {
-              await supabaseVideoService.updateVideoAsSystem(request.videoRecordId, {
-                migration_status: 'failed'
-              })
-            } catch (updateError) {
-              // console.error('[VEO3 SERVICE] ❌ 更新APICore迁移失败状态时出错:', updateError)
-            }
-          }
-          
-          // 更新内存状态为完成（使用最终URL）
-          progressManager.markAsCompleted(request.videoRecordId, finalVideoUrl)
-          // console.log('[VEO3 SERVICE] ✅ APICore Memory state updated via progressManager with final URL:', finalVideoUrl)
+          // 💾 保存视频URL（迁移由后端触发器自动处理）
+          await supabaseVideoService.updateVideoAsSystem(request.videoRecordId, {
+            status: 'completed',
+            video_url: videoUrl,
+            processing_completed_at: updateTimestamp
+          })
 
-          // 缩略图现在由浏览器原生 Media Fragments 处理，无需额外生成
-
-          // console.log('[VEO3 SERVICE] 🎉 APICore视频处理完成:', {
-          //   videoId: request.videoRecordId,
-          //   finalUrl: finalVideoUrl,
-          //   migratedToR2: migrationSuccess,
-          //   urlType: finalVideoUrl.includes('cdn.veo3video.me') ? 'R2' : '第三方'
-          // })
+          // 更新内存状态为完成
+          progressManager.markAsCompleted(request.videoRecordId, videoUrl)
         }
         
         // 延迟清理任务
@@ -1226,70 +1070,18 @@ class Veo3Service {
         
         if (videoUrl) {
           try {
-            // 🚀 立即执行R2迁移（APICore恢复任务也需要迁移）
-            // console.log(`[VEO3 SERVICE] 💾 APICore恢复任务立即迁移到R2...`)
-            let finalVideoUrl = videoUrl
-            let migrationSuccess = false
-            
-            try {
-              // 动态导入迁移服务
-              const { videoMigrationService } = await import('./videoMigrationService')
-              
-              // 先保存第三方URL到数据库，设置迁移状态为下载中
-              await supabaseVideoService.updateVideoAsSystem(videoRecordId, {
-                status: 'completed',
-                video_url: videoUrl,
-                processing_completed_at: new Date().toISOString(),
-                migration_status: 'downloading',
-                original_video_url: videoUrl
-              })
-              
-              // 执行迁移（使用服务端迁移方法，避免CORS问题）
-              const migrationResult = await videoMigrationService.migrateVideoServerSide(videoRecordId)
-              // console.log(`[VEO3 SERVICE] 📊 APICore恢复任务迁移结果:`, {
-              //   success: migrationResult.success,
-              //   r2Url: migrationResult.r2Url,
-              //   error: migrationResult.error
-              // })
-              
-              if (migrationResult.success && migrationResult.r2Url) {
-                // 迁移成功，使用R2 URL
-                finalVideoUrl = migrationResult.r2Url
-                migrationSuccess = true
-                // console.log(`[VEO3 SERVICE] ✅ APICore恢复任务迁移成功！最终URL:`, finalVideoUrl)
-                
-                // 更新数据库，将video_url也设置为R2 URL
-                await supabaseVideoService.updateVideoAsSystem(videoRecordId, {
-                  video_url: finalVideoUrl,
-                  r2_url: finalVideoUrl,
-                  r2_key: migrationResult.r2Key || undefined,
-                  migration_status: 'completed',
-                  r2_uploaded_at: new Date().toISOString()
-                })
-              } else {
-                // 迁移失败，保持原始URL
-                // console.warn(`[VEO3 SERVICE] ⚠️ APICore恢复任务迁移失败，保持原始URL:`, migrationResult.error)
-                await supabaseVideoService.updateVideoAsSystem(videoRecordId, {
-                  migration_status: 'failed'
-                })
-              }
-            } catch (migrationError) {
-              // console.error(`[VEO3 SERVICE] ❌ APICore恢复任务R2迁移出错:`, migrationError)
-              // 迁移失败，但任务仍然完成
-              await supabaseVideoService.updateVideoAsSystem(videoRecordId, {
-                status: 'completed',
-                video_url: videoUrl,
-                processing_completed_at: new Date().toISOString(),
-                migration_status: 'failed'
-              })
-            }
-            
-            // 更新进度管理器（使用最终URL）
-            progressManager.markAsCompleted(videoRecordId, finalVideoUrl)
-            // console.log(`[VEO3 SERVICE] 🎉 APICore任务 ${apicoreTaskId} 恢复并完成，使用${migrationSuccess ? 'R2' : '原始'}URL`)
+            // 💾 保存视频URL（迁移由后端触发器自动处理）
+            await supabaseVideoService.updateVideoAsSystem(videoRecordId, {
+              status: 'completed',
+              video_url: videoUrl,
+              processing_completed_at: new Date().toISOString()
+            })
+
+            // 更新进度管理器
+            progressManager.markAsCompleted(videoRecordId, videoUrl)
             return true
           } catch (updateError) {
-            // console.error(`[VEO3 SERVICE] ❌ 更新完成状态时出错:`, updateError)
+            console.error(`[VEO3 SERVICE] ❌ 更新完成状态时出错:`, updateError)
             return false
           }
         }
@@ -1431,75 +1223,19 @@ class Veo3Service {
         // console.log(`[VEO3 SERVICE] 🎬 视频URL: ${currentStatus.video_url}`)
         
         try {
-          // 🚀 立即执行R2迁移（青云恢复任务也需要迁移）
+          // 💾 保存视频URL（迁移由后端触发器自动处理）
           const supabaseVideoService = (await import('./supabaseVideoService')).default
-          // console.log(`[VEO3 SERVICE] 💾 青云恢复任务立即迁移到R2...`)
-          let finalVideoUrl = currentStatus.video_url
-          let migrationSuccess = false
-          
-          try {
-            // 动态导入迁移服务
-            const { videoMigrationService } = await import('./videoMigrationService')
-            
-            // 先保存第三方URL到数据库，设置迁移状态为下载中
-            await supabaseVideoService.updateVideoAsSystem(videoRecordId, {
-              status: 'completed',
-              video_url: currentStatus.video_url,
-              processing_completed_at: new Date().toISOString(),
-              migration_status: 'downloading',
-              original_video_url: currentStatus.video_url
-            })
-            
-            // 执行迁移（使用服务端迁移方法，避免CORS问题）
-            const migrationResult = await videoMigrationService.migrateVideoServerSide(videoRecordId)
-            // console.log(`[VEO3 SERVICE] 📊 青云恢复任务迁移结果:`, {
-            //   success: migrationResult.success,
-            //   r2Url: migrationResult.r2Url,
-            //   error: migrationResult.error
-            // })
-            
-            if (migrationResult.success && migrationResult.r2Url) {
-              // 迁移成功，使用R2 URL
-              finalVideoUrl = migrationResult.r2Url
-              migrationSuccess = true
-              // console.log(`[VEO3 SERVICE] ✅ 青云恢复任务迁移成功！最终URL:`, finalVideoUrl)
-              
-              // 更新数据库，将video_url也设置为R2 URL
-              await supabaseVideoService.updateVideoAsSystem(videoRecordId, {
-                video_url: finalVideoUrl,
-                r2_url: finalVideoUrl,
-                r2_key: migrationResult.r2Key || undefined,
-                migration_status: 'completed',
-                r2_uploaded_at: new Date().toISOString()
-              })
-            } else {
-              // 迁移失败，保持原始URL
-              // console.warn(`[VEO3 SERVICE] ⚠️ 青云恢复任务迁移失败，保持原始URL:`, migrationResult.error)
-              await supabaseVideoService.updateVideoAsSystem(videoRecordId, {
-                migration_status: 'failed'
-              })
-            }
-          } catch (migrationError) {
-            // console.error(`[VEO3 SERVICE] ❌ 青云恢复任务R2迁移出错:`, migrationError)
-            // 迁移失败，但任务仍然完成
-            await supabaseVideoService.updateVideoAsSystem(videoRecordId, {
-              status: 'completed',
-              video_url: currentStatus.video_url,
-              processing_completed_at: new Date().toISOString(),
-              migration_status: 'failed'
-            })
-          }
-          
-          // console.log(`[VEO3 SERVICE] ✅ 数据库状态更新成功`)
+          await supabaseVideoService.updateVideoAsSystem(videoRecordId, {
+            status: 'completed',
+            video_url: currentStatus.video_url,
+            processing_completed_at: new Date().toISOString()
+          })
 
-          // 更新进度管理器（使用最终URL）
-          progressManager.markAsCompleted(videoRecordId, finalVideoUrl || undefined)
-          // console.log(`[VEO3 SERVICE] ✅ 进度管理器更新成功，使用最终URL:`, finalVideoUrl)
-          
-          // console.log(`[VEO3 SERVICE] 🎉 任务 ${qingyunTaskId} 恢复并完成，使用${migrationSuccess ? 'R2' : '原始'}URL`)
+          // 更新进度管理器
+          progressManager.markAsCompleted(videoRecordId, currentStatus.video_url || undefined)
           return true
         } catch (updateError) {
-          // console.error(`[VEO3 SERVICE] ❌ 更新完成状态时出错:`, updateError)
+          console.error(`[VEO3 SERVICE] ❌ 更新完成状态时出错:`, updateError)
           return false
         }
       }
