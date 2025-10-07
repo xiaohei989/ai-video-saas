@@ -107,8 +107,8 @@ export function useVideoTasks(options: UseVideoTasksOptions = {}): UseVideoTasks
       // 显示成功通知
       toast.success('视频生成完成！')
 
-      // 清除进度管理器中的订阅
-      progressManager.unsubscribe(task.id)
+      // 清除进度管理器中的数据
+      progressManager.clearProgress(task.id)
 
     } catch (error) {
       console.error('[useVideoTasks] 处理任务完成失败:', error)
@@ -143,8 +143,8 @@ export function useVideoTasks(options: UseVideoTasksOptions = {}): UseVideoTasks
       // 显示错误通知
       toast.error(`视频生成失败: ${task.errorMessage || '未知错误'}`)
 
-      // 清除进度管理器中的订阅
-      progressManager.unsubscribe(task.id)
+      // 清除进度管理器中的数据
+      progressManager.clearProgress(task.id)
 
     } catch (error) {
       console.error('[useVideoTasks] 处理任务失败失败:', error)
