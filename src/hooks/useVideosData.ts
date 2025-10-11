@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import supabaseVideoService from '@/services/supabaseVideoService'
 import { videoCacheService } from '@/services/videoCacheService'
 import { SubscriptionService } from '@/services/subscriptionService'
@@ -57,6 +58,7 @@ export function useVideosData(options: UseVideosDataOptions = {}): UseVideosData
     enableAnalytics = true
   } = options
 
+  const { t } = useTranslation()
   const authContext = useContext(AuthContext)
   const user = authContext?.user
 
@@ -263,7 +265,7 @@ export function useVideosData(options: UseVideosDataOptions = {}): UseVideosData
         console.log('[useVideosData] 🚑 使用备用缓存数据')
         const fallbackVideos = Array.isArray(fallbackCache.videos) ? fallbackCache.videos : []
         setVideos(fallbackVideos)
-        toast.info('网络不稳定，显示缓存数据')
+        toast.info(t('common.networkError'))
       }
 
       // 无论如何都要隐藏骨架UI
@@ -404,15 +406,75 @@ export function useVideosData(options: UseVideosDataOptions = {}): UseVideosData
     if (!user?.id) return
 
     try {
-      setLoadingState(prev => ({ ...prev, initial: true }))
+      // 🆕 保存当前前端生成的临时缩略图
+      // ⚠️ 使用函数式更新获取最新的videos值，避免闭包问题
+      const frontendThumbnails = new Map<string, string>()
+      setVideos(currentVideos => {
+        currentVideos.forEach(v => {
+          if (v._frontendGenerated && v.thumbnail_url) {
+            frontendThumbnails.set(v.id, v.thumbnail_url)
+            console.log('[useVideosData] 💾 保存前端临时缩略图:', v.id)
+          }
+        })
+        return currentVideos // 不改变state，只是获取当前值
+      })
 
-      const result = await quickLoad()
-      await backgroundLoad(result)
+      // 🔧 不要设置 initial: true，避免显示骨架屏和中间状态闪烁
+      // setLoadingState(prev => ({ ...prev, initial: true }))
+
+      // 🔧 直接从服务器获取最新数据，不使用 quickLoad（避免缓存覆盖问题）
+      console.log('[useVideosData] 🔄 静默刷新视频列表（保留临时缩略图）')
+
+      const result = await supabaseVideoService.getUserVideos(
+        user.id,
+        undefined,
+        { page: 1, pageSize: maxPageSize }
+      )
+
+      const safeVideos = Array.isArray(result.videos) ? result.videos : []
+
+      // 🆕 合并数据：如果有前端临时缩略图，保留它
+      const mergedVideos = safeVideos.map(v => {
+        const frontendThumbnail = frontendThumbnails.get(v.id)
+        if (frontendThumbnail && (!v.thumbnail_url || v.thumbnail_url.includes('data:image/svg'))) {
+          console.log('[useVideosData] 🔄 应用前端临时缩略图:', v.id)
+          return {
+            ...v,
+            thumbnail_url: frontendThumbnail,
+            _frontendGenerated: true
+          }
+        }
+        // 如果后端已经有了真实缩略图，则使用后端的
+        return v
+      })
+
+      setVideos(mergedVideos)
+
+      // 更新缓存
+      videoCacheService.cacheVideos(
+        user.id,
+        mergedVideos,
+        result.total || 0,
+        result.page || 1,
+        result.pageSize || maxPageSize,
+        undefined,
+        { page: 1, pageSize: maxPageSize }
+      )
+
+      console.log('[useVideosData] ✅ 静默刷新完成，已保留前端临时缩略图')
+
+      // 加载订阅信息（如果还没加载）
+      if (subscriptionLoading) {
+        const subscription = await SubscriptionService.getCurrentSubscription(user.id)
+        setIsPaidUser(subscription?.status === 'active' || false)
+        setSubscriptionLoading(false)
+      }
+
     } catch (error) {
       console.error('[useVideosData] 刷新视频失败:', error)
-      toast.error('刷新失败，请重试')
+      toast.error(t('videos.loadVideosFailed'))
     }
-  }, [user?.id, quickLoad, backgroundLoad])
+  }, [user?.id, t, maxPageSize, subscriptionLoading]) // 移除 videos 依赖，使用函数式更新
 
   /**
    * 初始化页面数据
@@ -603,17 +665,39 @@ export function useVideosData(options: UseVideosDataOptions = {}): UseVideosData
       const { videoId, thumbnailUrl, fromPolling } = event.detail
 
       console.log('[useVideosData] 📥 收到临时缩略图生成事件:', videoId, '来源:', fromPolling ? '轮询' : 'unknown')
+      console.log('[useVideosData] 🖼️ 临时缩略图URL长度:', thumbnailUrl?.length || 0)
+      console.log('[useVideosData] 🖼️ 临时缩略图URL前100字符:', thumbnailUrl?.substring(0, 100))
+
+      // 验证缩略图URL有效性
+      if (!thumbnailUrl || thumbnailUrl.length === 0) {
+        console.error('[useVideosData] ❌ 临时缩略图URL为空，跳过更新')
+        return
+      }
 
       // 更新视频列表中的缩略图
-      setVideos(prev => prev.map(v =>
-        v.id === videoId
-          ? {
-              ...v,
-              thumbnail_url: thumbnailUrl,
-              _frontendGenerated: true // 标记为前端临时生成
-            }
-          : v
-      ))
+      setVideos(prev => {
+        const updated = prev.map(v =>
+          v.id === videoId
+            ? {
+                ...v,
+                thumbnail_url: thumbnailUrl,
+                _frontendGenerated: true // 标记为前端临时生成
+              }
+            : v
+        )
+
+        // 打印更新后的视频对象
+        const updatedVideo = updated.find(v => v.id === videoId)
+        if (updatedVideo) {
+          console.log('[useVideosData] ✅ 视频缩略图已更新:', {
+            id: updatedVideo.id,
+            thumbnail_url_length: updatedVideo.thumbnail_url?.length || 0,
+            thumbnail_url_preview: updatedVideo.thumbnail_url?.substring(0, 100)
+          })
+        }
+
+        return updated
+      })
     }
 
     // 监听自定义事件

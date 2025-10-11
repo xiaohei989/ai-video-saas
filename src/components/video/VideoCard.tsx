@@ -6,7 +6,7 @@
 import React, { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLanguageRouter } from '@/hooks/useLanguageRouter'
-import { parseTitle } from '@/utils/titleParser'
+import { parseTitle, parseDescription } from '@/utils/titleParser'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -77,15 +77,40 @@ export function VideoCard({
   onCheckCache,
   onGenerateThumbnail
 }: VideoCardProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { navigateTo } = useLanguageRouter()
   const [showVideoPlayer, setShowVideoPlayer] = useState(false)
 
   // 从环境变量读取是否显示调试信息按钮
   const showDebugButton = import.meta.env.VITE_SHOW_VIDEO_DEBUG_INFO === 'true'
 
-  // 解析视频标题
-  const { title: parsedTitle, isProcessed: titleIsProcessed } = parseTitle(video.title || '')
+  // 解析视频标题和描述（支持多语言JSON格式）
+  const currentLocale = i18n.language.split('-')[0] // zh-CN -> zh
+  const parsedTitle = parseTitle(video.title || '', currentLocale, t('videos.untitled'))
+  const parsedDescription = parseDescription(video.description || '', currentLocale, '')
+
+  // 🐛 调试：检查缩略图状态
+  React.useEffect(() => {
+    if (video.status === 'completed' && video.video_url) {
+      console.log('[VideoCard] 🐛 缩略图状态检查:', {
+        videoId: video.id,
+        status: video.status,
+        hasVideoUrl: !!video.video_url,
+        hasThumbnailUrl: !!video.thumbnail_url,
+        thumbnailUrlLength: video.thumbnail_url?.length || 0,
+        thumbnailUrlPrefix: video.thumbnail_url?.substring(0, 50),
+        isSvgThumbnail: video.thumbnail_url?.includes('data:image/svg'),
+        hasBlurUrl: !!video.thumbnail_blur_url,
+        _frontendGenerated: video._frontendGenerated,
+        shouldShowGenerating: (
+          video.status === 'completed' &&
+          video.video_url &&
+          (!video.thumbnail_url || video.thumbnail_url.includes('data:image/svg')) &&
+          !video.thumbnail_blur_url
+        )
+      })
+    }
+  }, [video.id, video.status, video.video_url, video.thumbnail_url, video.thumbnail_blur_url])
 
   // 处理视频播放
   const handlePlayClick = useCallback(() => {
@@ -244,6 +269,37 @@ export function VideoCard({
             />
           )}
 
+          {/* 🆕 缩略图生成中状态 - 仅在视频完成但完全没有缩略图时显示 */}
+          {video.status === 'completed' &&
+           video.video_url &&
+           (!video.thumbnail_url || video.thumbnail_url.includes('data:image/svg')) &&
+           !video.thumbnail_blur_url && ( // 没有任何缩略图（包括模糊图）
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95 flex flex-col items-center justify-center text-white z-10 overflow-hidden">
+              {/* 多彩流光动画背景层 */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent -skew-x-12 animate-[shimmer_2s_ease-in-out_infinite]" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/15 to-transparent -skew-x-12 animate-[shimmer_2.5s_ease-in-out_infinite_0.3s]" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-pink-500/10 to-transparent -skew-x-12 animate-[shimmer_3s_ease-in-out_infinite_0.6s]" />
+
+              {/* 动态光点效果 */}
+              <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+              <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+              <div className="absolute top-1/2 right-1/3 w-24 h-24 bg-pink-500/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '0.5s' }} />
+
+              <div className="text-center space-y-3 relative z-10">
+                {/* 旋转加载图标 - 添加光晕效果 */}
+                <div className="relative inline-block">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full blur-xl opacity-50 animate-pulse" />
+                  <Loader2 className="w-12 h-12 animate-spin mx-auto relative z-10" />
+                </div>
+
+                {/* 提示文字 */}
+                <div className="text-sm font-medium bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  {t('videos.generatingThumbnail')}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* 处理中的进度覆盖 - 只有当确实有活跃任务或进度信息时才显示 */}
           {(video.status === 'processing' || video.status === 'pending') &&
            (activeTask || videoProgress) &&
@@ -331,13 +387,13 @@ export function VideoCard({
             <div className="flex-1 min-w-0">
               <h3
                 className="text-sm font-medium text-foreground truncate"
-                title={video.title || parsedTitle}
+                title={parsedTitle}
               >
-                {video.title || parsedTitle}
+                {parsedTitle}
               </h3>
-              {video.description && (
+              {parsedDescription && (
                 <div className="text-xs text-muted-foreground mt-1 line-clamp-4">
-                  {video.description}
+                  {parsedDescription}
                 </div>
               )}
             </div>

@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useCallback, useContext } from 'react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { videoTaskManager, type VideoTask } from '@/services/VideoTaskManager'
 import { videoPollingService } from '@/services/VideoPollingService'
 import { progressManager, type VideoProgress } from '@/services/progressManager'
@@ -12,7 +13,7 @@ import { AuthContext } from '@/contexts/AuthContext'
 import type { Video } from '@/types/video.types'
 
 interface UseVideoTasksOptions {
-  onVideoUpdate?: (videos: Video[]) => void
+  onVideoUpdate?: () => void | Promise<void>
   enablePolling?: boolean
 }
 
@@ -39,6 +40,7 @@ export function useVideoTasks(options: UseVideoTasksOptions = {}): UseVideoTasks
     enablePolling = true
   } = options
 
+  const { t } = useTranslation()
   const authContext = useContext(AuthContext)
   const user = authContext?.user
 
@@ -69,13 +71,13 @@ export function useVideoTasks(options: UseVideoTasksOptions = {}): UseVideoTasks
         const newMap = new Map(prev)
         newMap.set(task.id, {
           progress: task.progress!,
-          statusText: task.statusText || '处理中...',
+          statusText: task.statusText || t('videoCreator.processing'),
           lastUpdate: Date.now()
         })
         return newMap
       })
     }
-  }, [])
+  }, [t])
 
   /**
    * 任务完成处理器
@@ -84,6 +86,33 @@ export function useVideoTasks(options: UseVideoTasksOptions = {}): UseVideoTasks
     console.log(`[useVideoTasks] 任务完成: ${task.id}`)
 
     try {
+      // 🆕 立即生成前端临时缩略图
+      if (task.videoUrl) {
+        console.log('[useVideoTasks] 🎨 任务完成，立即生成前端临时缩略图:', task.id)
+
+        try {
+          // 动态导入避免循环依赖
+          const { extractVideoThumbnail } = await import('@/utils/videoThumbnail')
+          const thumbnail = await extractVideoThumbnail(task.videoUrl, 0.1)
+
+          console.log('[useVideoTasks] ✅ 前端临时缩略图生成成功')
+
+          // 触发自定义事件，通知视频列表更新缩略图
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('video-temporary-thumbnail-generated', {
+              detail: {
+                videoId: task.id,
+                thumbnailUrl: thumbnail,
+                fromPolling: true
+              }
+            }))
+          }
+        } catch (thumbnailError) {
+          console.error('[useVideoTasks] ❌ 前端临时缩略图生成失败:', thumbnailError)
+          // 失败不影响视频完成流程
+        }
+      }
+
       // 移除完成的任务
       setActiveTasks(prev => {
         const newMap = new Map(prev)
@@ -97,15 +126,22 @@ export function useVideoTasks(options: UseVideoTasksOptions = {}): UseVideoTasks
         return newMap
       })
 
-      // 如果有回调函数，触发视频列表更新
-      if (onVideoUpdate && user?.id) {
-        // 这里需要重新获取视频列表
-        // 由于这个hook专注于任务管理，具体的视频更新逻辑应该在外部处理
-        console.log('[useVideoTasks] 任务完成，需要刷新视频列表')
+      // 🔄 任务完成后，刷新视频列表以更新状态
+      if (onVideoUpdate) {
+        console.log('[useVideoTasks] 🔄 任务完成，等待前端缩略图state更新...')
+
+        // ⚠️ 关键：等待React完成临时缩略图的state更新
+        // handleTemporaryThumbnail的setVideos是异步的，需要等待它完成
+        // 否则refreshVideos会读取到旧的state，导致临时缩略图丢失
+        await new Promise(resolve => setTimeout(resolve, 100))
+
+        console.log('[useVideoTasks] 🔄 开始刷新视频列表')
+        // 调用回调函数刷新视频列表，这样视频状态会从数据库重新获取
+        await onVideoUpdate()
       }
 
       // 显示成功通知
-      toast.success('视频生成完成！')
+      toast.success(t('videos.videoGenerationComplete'))
 
       // 清除进度管理器中的数据
       progressManager.clearProgress(task.id)
@@ -113,7 +149,7 @@ export function useVideoTasks(options: UseVideoTasksOptions = {}): UseVideoTasks
     } catch (error) {
       console.error('[useVideoTasks] 处理任务完成失败:', error)
     }
-  }, [onVideoUpdate, user?.id])
+  }, [onVideoUpdate, user?.id, t])
 
   /**
    * 任务失败处理器
@@ -134,14 +170,14 @@ export function useVideoTasks(options: UseVideoTasksOptions = {}): UseVideoTasks
         const newMap = new Map(prev)
         newMap.set(task.id, {
           progress: 0,
-          statusText: task.errorMessage || '生成失败',
+          statusText: task.errorMessage || t('videos.videoGenerationFailed'),
           lastUpdate: Date.now()
         })
         return newMap
       })
 
       // 显示错误通知
-      toast.error(`视频生成失败: ${task.errorMessage || '未知错误'}`)
+      toast.error(`${t('videos.videoGenerationFailed')}: ${task.errorMessage || t('videos.unknownError')}`)
 
       // 清除进度管理器中的数据
       progressManager.clearProgress(task.id)
@@ -149,7 +185,7 @@ export function useVideoTasks(options: UseVideoTasksOptions = {}): UseVideoTasks
     } catch (error) {
       console.error('[useVideoTasks] 处理任务失败失败:', error)
     }
-  }, [])
+  }, [t])
 
   /**
    * 刷新任务列表
