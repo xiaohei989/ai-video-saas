@@ -27,10 +27,17 @@ export function useLanguageRouter() {
    * 自动为路径添加当前语言前缀
    */
   const navigateTo = useCallback((path: string, options?: { replace?: boolean }) => {
-    const cleanPath = removeLanguagePrefix(path)
+    // 分离路径和查询参数
+    const [pathname, search] = path.split('?')
+
+    // 处理路径部分
+    const cleanPath = removeLanguagePrefix(pathname)
     const pathWithLang = addLanguagePrefix(cleanPath, currentLanguage)
 
-    navigate(pathWithLang, options)
+    // 拼接查询参数
+    const fullPath = search ? `${pathWithLang}?${search}` : pathWithLang
+
+    navigate(fullPath, options)
   }, [navigate, currentLanguage])
 
   /**

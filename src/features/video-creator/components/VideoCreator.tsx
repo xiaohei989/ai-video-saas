@@ -18,6 +18,7 @@ import { InputValidator } from '@/utils/inputValidator'
 import { securityMonitor } from '@/services/securityMonitorService'
 import { ThreatType, SecurityLevel } from '@/config/security'
 import creditService from '@/services/creditService'
+import { videoCacheService } from '@/services/videoCacheService'
 
 export default function VideoCreator() {
   const { t } = useTranslation()
@@ -419,7 +420,7 @@ export default function VideoCreator() {
             isQueued: true,
             position: result.queuePosition,
             estimatedWaitMinutes: result.estimatedWaitMinutes,
-            message: result.queuePosition && result.queuePosition > 1 
+            message: result.queuePosition && result.queuePosition > 1
               ? t('videoCreator.videosAheadInQueue', { count: result.queuePosition - 1 })
               : t('videoCreator.videoInQueue')
           })
@@ -429,10 +430,14 @@ export default function VideoCreator() {
           setGenerationStatus(t('videoCreator.generationStarted'))
           setQueueStatus({ isQueued: false })
         }
-        
-        // 立即跳转到我的视频页面
-        navigateTo('/videos')
-        
+
+        // 清除视频列表缓存，确保跳转后能看到新视频
+        console.log('[VideoCreator] 清除视频列表缓存，准备跳转')
+        await videoCacheService.clearUserCache(user.id)
+
+        // 立即跳转到我的视频页面，添加 refresh 参数确保强制刷新
+        navigateTo('/videos?refresh=true')
+
         console.log('Task submitted successfully, redirecting to videos page')
         
     } catch (error) {
