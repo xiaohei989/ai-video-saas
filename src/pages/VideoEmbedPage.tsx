@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { parseTitle } from '@/utils/titleParser'
 import { AlertCircle, Loader2 } from '@/components/icons'
 import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
 import supabaseVideoService from '@/services/supabaseVideoService'
@@ -9,7 +10,7 @@ import type { Database } from '@/lib/supabase'
 type Video = Database['public']['Tables']['videos']['Row']
 
 export default function VideoEmbedPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const [video, setVideo] = useState<Video | null>(null)
   const [loading, setLoading] = useState(true)
@@ -30,9 +31,13 @@ export default function VideoEmbedPage() {
         }
         
         setVideo(videoData)
-        
+
+        // 解析标题
+        const currentLocale = i18n.language.split('-')[0]
+        const parsedTitle = parseTitle(videoData.title, currentLocale, '视频播放')
+
         // 更新页面标题和meta标签
-        document.title = `${videoData.title || '视频播放'} | AI视频生成平台`
+        document.title = `${parsedTitle} | AI视频生成平台`
         
         // 添加必要的meta标签以支持iframe嵌入
         const updateMetaTag = (name: string, content: string) => {
@@ -97,7 +102,11 @@ export default function VideoEmbedPage() {
       </div>
     )
   }
-  
+
+  // 解析标题用于显示
+  const currentLocale = i18n.language.split('-')[0]
+  const parsedTitle = parseTitle(video.title, currentLocale, t('videos.untitled'))
+
   return (
     <div className="w-full h-screen bg-black">
       <ReactVideoPlayer
@@ -109,8 +118,8 @@ export default function VideoEmbedPage() {
         muted={true} // Twitter要求默认静音
         objectFit="contain"
         videoId={video.id}
-        videoTitle={video.title}
-        alt={video.title || '视频内容'}
+        videoTitle={parsedTitle}
+        alt={parsedTitle}
         controls={true} // 嵌入模式显示控制栏
         autoPlay={false} // 禁用自动播放，符合Twitter政策
       />

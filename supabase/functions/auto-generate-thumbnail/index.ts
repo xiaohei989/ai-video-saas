@@ -19,6 +19,8 @@ const corsHeaders = {
 interface AutoGenerateRequest {
   videoId: string
   videoUrl: string
+  migrationCompletedAt?: string
+  timeSinceMigration?: number
 }
 
 /**
@@ -163,7 +165,7 @@ serve(async (req) => {
   try {
     console.log('[AutoThumbnail] ========== 开始自动生成缩略图 ==========')
 
-    const { videoId, videoUrl }: AutoGenerateRequest = await req.json()
+    const { videoId, videoUrl, timeSinceMigration }: AutoGenerateRequest = await req.json()
 
     if (!videoId || !videoUrl) {
       return new Response(
@@ -180,6 +182,16 @@ serve(async (req) => {
 
     console.log(`[AutoThumbnail] 视频ID: ${videoId}`)
     console.log(`[AutoThumbnail] 视频URL: ${videoUrl}`)
+
+    // 🆕 智能延迟：如果刚迁移完成，等待 Cloudflare 处理
+    if (timeSinceMigration !== undefined && timeSinceMigration < 10) {
+      const waitTime = 10 - timeSinceMigration
+      console.log(`[AutoThumbnail] ⏰ 迁移完成仅 ${timeSinceMigration} 秒，等待 ${waitTime} 秒让 Cloudflare 处理...`)
+      await new Promise(resolve => setTimeout(resolve, waitTime * 1000))
+      console.log(`[AutoThumbnail] ✅ 等待完成，开始生成缩略图`)
+    } else if (timeSinceMigration !== undefined) {
+      console.log(`[AutoThumbnail] ✅ 迁移完成已 ${timeSinceMigration} 秒，直接生成`)
+    }
 
     // 创建 Supabase Admin 客户端
     const supabase = createClient(

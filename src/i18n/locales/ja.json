@@ -551,6 +551,7 @@
     "videoGenerationComplete": "🎉 動画生成完了！",
     "videoGenerationCompleteDescription": "動画の準備ができました。プレビューとダウンロードが可能です",
     "videoGenerationFailed": "動画生成に失敗しました",
+    "generatingThumbnail": "サムネイルを生成中...",
     "generationError": "生成中にエラーが発生しました",
     "loginRequired": "まずログインしてください",
     "videoDeleted": "動画を削除しました",

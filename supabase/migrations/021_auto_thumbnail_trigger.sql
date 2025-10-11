@@ -7,49 +7,68 @@
 -- 1. 启用 pg_net 扩展（用于 HTTP 调用）
 CREATE EXTENSION IF NOT EXISTS pg_net;
 
--- 2. 创建触发器函数：视频完成时自动生成缩略图
+-- 2. 创建触发器函数：R2迁移完成时自动生成缩略图（优化版：延迟10秒）
 CREATE OR REPLACE FUNCTION trigger_auto_generate_thumbnail()
 RETURNS TRIGGER AS $$
 DECLARE
   edge_function_url TEXT;
   response_id BIGINT;
+  v_supabase_url TEXT;
+  v_service_role_key TEXT;
+  migration_completed_at TIMESTAMP;
+  time_since_migration INTEGER;
 BEGIN
-  -- 仅在视频刚完成且缺少缩略图时触发
-  IF NEW.status = 'completed'
-     AND (OLD.status IS NULL OR OLD.status != 'completed')
+  -- 触发条件：迁移状态变为 completed 时触发
+  IF NEW.migration_status = 'completed'
+     AND (OLD.migration_status IS NULL OR OLD.migration_status != 'completed')
      AND NEW.video_url IS NOT NULL
      AND (NEW.thumbnail_url IS NULL OR NEW.thumbnail_url LIKE 'data:image/svg%') THEN
 
-    -- 构造 Edge Function URL
-    edge_function_url := current_setting('app.settings.supabase_url', true) || '/functions/v1/auto-generate-thumbnail';
-
-    -- 如果没有配置，使用默认值（需要在生产环境设置）
-    IF edge_function_url IS NULL OR edge_function_url = '' THEN
-      edge_function_url := 'https://' || current_setting('app.settings.project_ref', true) || '.supabase.co/functions/v1/auto-generate-thumbnail';
+    -- 计算迁移完成后经过的时间
+    migration_completed_at := NEW.r2_uploaded_at;
+    IF migration_completed_at IS NOT NULL THEN
+      time_since_migration := EXTRACT(EPOCH FROM (NOW() - migration_completed_at));
+      RAISE LOG '[AutoThumbnail] 迁移完成 % 秒前', time_since_migration;
+    ELSE
+      time_since_migration := 0;
     END IF;
 
-    RAISE LOG '[AutoThumbnail Trigger] 视频完成，触发缩略图生成: videoId=%, url=%', NEW.id, edge_function_url;
+    RAISE LOG '[AutoThumbnail] 迁移完成，触发缩略图生成: videoId=%', NEW.id;
+
+    -- 从 system_config 读取配置
+    SELECT value INTO v_supabase_url FROM system_config WHERE key = 'supabase_url';
+    SELECT value INTO v_service_role_key FROM system_config WHERE key = 'service_role_key';
+
+    IF v_supabase_url IS NULL OR v_service_role_key IS NULL THEN
+      RAISE WARNING '[AutoThumbnail] 配置缺失';
+      RETURN NEW;
+    END IF;
+
+    edge_function_url := v_supabase_url || '/functions/v1/auto-generate-thumbnail';
 
     -- 异步调用 Edge Function（使用 pg_net.http_post）
-    -- 注意：这是异步的，不会阻塞主流程
     BEGIN
+      -- 传递时间信息给 Edge Function,让它决定是否需要延迟
       SELECT net.http_post(
         url := edge_function_url,
         headers := jsonb_build_object(
           'Content-Type', 'application/json',
-          'Authorization', 'Bearer ' || current_setting('app.settings.service_role_key', true)
+          'Authorization', 'Bearer ' || v_service_role_key
         ),
         body := jsonb_build_object(
           'videoId', NEW.id,
-          'videoUrl', NEW.video_url
-        )
+          'videoUrl', NEW.video_url,
+          'migrationCompletedAt', migration_completed_at::TEXT,
+          'timeSinceMigration', time_since_migration
+        ),
+        timeout_milliseconds := 90000  -- 90 秒（延迟 10s + 重试 0s/30s）
       ) INTO response_id;
 
-      RAISE LOG '[AutoThumbnail Trigger] HTTP 请求已发送: response_id=%', response_id;
+      RAISE LOG '[AutoThumbnail] 缩略图生成请求已发送: response_id=%', response_id;
 
     EXCEPTION WHEN OTHERS THEN
       -- 即使触发器失败也不影响视频状态更新
-      RAISE WARNING '[AutoThumbnail Trigger] 触发器调用失败，但不影响视频更新: %', SQLERRM;
+      RAISE WARNING '[AutoThumbnail] 调用失败: %', SQLERRM;
     END;
 
   END IF;
@@ -66,8 +85,8 @@ CREATE TRIGGER on_video_completed_auto_thumbnail
   EXECUTE FUNCTION trigger_auto_generate_thumbnail();
 
 -- 4. 添加注释
-COMMENT ON FUNCTION trigger_auto_generate_thumbnail() IS '视频完成时自动调用 Edge Function 生成缩略图';
-COMMENT ON TRIGGER on_video_completed_auto_thumbnail ON videos IS '视频状态变为 completed 时自动触发缩略图生成';
+COMMENT ON FUNCTION trigger_auto_generate_thumbnail() IS 'R2迁移完成时自动调用 Edge Function 生成缩略图（智能延迟10秒）';
+COMMENT ON TRIGGER on_video_completed_auto_thumbnail ON videos IS '视频迁移状态变为 completed 时自动触发缩略图生成';
 
 -- 5. 创建用于存储配置的表（可选，用于灵活配置）
 CREATE TABLE IF NOT EXISTS system_config (

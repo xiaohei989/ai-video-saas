@@ -587,6 +587,7 @@
     "videoGenerationCompleteDescription": "Your video is ready for preview and download",
     "videoGenerationFailed": "Video generation failed",
     "generationError": "An error occurred during generation",
+    "generatingThumbnail": "Generating thumbnail...",
     "loginRequired": "Please log in first",
     "videoDeleted": "Video deleted",
     "deleteFailed": "Delete failed, please try again",

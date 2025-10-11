@@ -542,6 +542,7 @@
     "videoGenerationComplete": "🎉 ¡Generación de video completada!",
     "videoGenerationCompleteDescription": "Tu video está listo para vista previa y descarga",
     "videoGenerationFailed": "La generación de video falló",
+    "generatingThumbnail": "Generando miniatura...",
     "generationError": "Ocurrió un error durante la generación",
     "loginRequired": "Por favor inicia sesión primero",
     "videoDeleted": "Video eliminado",

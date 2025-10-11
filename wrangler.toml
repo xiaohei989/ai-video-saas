@@ -11,9 +11,11 @@ pages_build_output_dir = "build"
 # 环境变量配置
 [env.production.vars]
 VITE_APP_ENV = "production"
+VITE_ENABLE_FRONTEND_THUMBNAIL = "false"
 
 [env.preview.vars]
 VITE_APP_ENV = "preview"
+VITE_ENABLE_FRONTEND_THUMBNAIL = "false"
 
 # KV存储绑定（如果需要）
 # [[kv_namespaces]]

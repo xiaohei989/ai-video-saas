@@ -8,14 +8,15 @@ import aiContentService from '../aiContentService'
 import type { UserManager } from './UserManager'
 import type { SubmitJobRequest, AIMetadataResult } from './types'
 import { QUEUE_CONSTANTS } from './config'
+import { parseTitle } from '@/utils/titleParser'
 
 export class MetadataGenerator {
   constructor(private userManager: UserManager) {}
 
   /**
-   * 获取模板名称
+   * 获取模板名称（支持多语言解析）
    */
-  private async getTemplateName(templateId?: string): Promise<string> {
+  private async getTemplateName(templateId?: string, userLanguage?: string): Promise<string> {
     if (!templateId) return '视频模板'
 
     try {
@@ -25,7 +26,12 @@ export class MetadataGenerator {
         .eq('id', templateId)
         .single()
 
-      return template?.name || templateId
+      if (!template?.name) return templateId
+
+      // 使用 parseTitle 工具解析多语言名称
+      // 提取语言代码（去除地区代码，如 zh-CN -> zh）
+      const langCode = userLanguage?.split('-')[0] || 'en'
+      return parseTitle(template.name, langCode, templateId)
     } catch (error) {
       console.warn(`[METADATA GENERATOR] 获取模板名称失败: ${error}`)
       return templateId
@@ -43,11 +49,11 @@ export class MetadataGenerator {
     try {
       console.log(`[METADATA GENERATOR] 🚀 开始同步生成AI标题和简介 (超时: ${timeoutMs}ms)`)
 
-      // 获取用户语言和模板信息
-      const [userLanguage, templateName] = await Promise.all([
-        this.userManager.getUserLanguage(userId),
-        this.getTemplateName(videoData.templateId)
-      ])
+      // 获取用户语言
+      const userLanguage = await this.userManager.getUserLanguage(userId)
+
+      // 获取模板信息（传入用户语言以解析多语言名称）
+      const templateName = await this.getTemplateName(videoData.templateId, userLanguage)
 
       // 创建AI生成Promise（不在race中丢弃）
       const aiPromise = aiContentService.generateVideoMetadata({
@@ -99,7 +105,10 @@ export class MetadataGenerator {
       }
     } catch (error) {
       console.error(`[METADATA GENERATOR] AI标题生成失败，使用回退方案: ${error}`)
-      const templateName = await this.getTemplateName(videoData.templateId)
+
+      // 获取用户语言用于模板名称解析
+      const userLanguage = await this.userManager.getUserLanguage(userId).catch(() => 'en')
+      const templateName = await this.getTemplateName(videoData.templateId, userLanguage)
 
       return {
         title: videoData.title || templateName,
@@ -127,11 +136,11 @@ export class MetadataGenerator {
         const retryText = isRetry ? ` (重试 ${retryCount + 1}/${maxRetries})` : ''
         console.log(`[METADATA GENERATOR] 🤖 开始为视频 ${videoId} 异步生成AI标题和简介${retryText}`)
 
-        // 获取用户语言和模板信息
-        const [userLanguage, templateName] = await Promise.all([
-          this.userManager.getUserLanguage(userId),
-          this.getTemplateName(videoData.templateId)
-        ])
+        // 获取用户语言
+        const userLanguage = await this.userManager.getUserLanguage(userId)
+
+        // 获取模板信息（传入用户语言以解析多语言名称）
+        const templateName = await this.getTemplateName(videoData.templateId, userLanguage)
 
         // 生成AI标题和简介 - 给异步更新更多时间
         const metadata = await Promise.race([
@@ -190,7 +199,8 @@ export class MetadataGenerator {
 
         // 所有重试都失败，使用最终备用方案
         try {
-          const templateName = await this.getTemplateName(videoData.templateId)
+          const userLanguage = await this.userManager.getUserLanguage(userId).catch(() => 'en')
+          const templateName = await this.getTemplateName(videoData.templateId, userLanguage)
           const smartTitle = this.generateSmartDefaultTitle(templateName, videoData.parameters || {})
           const smartDescription = this.generateSmartDefaultDescription(
             templateName,

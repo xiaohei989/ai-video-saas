@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanguageRouter } from '@/hooks/useLanguageRouter'
+import { parseTitle, parseDescription } from '@/utils/titleParser'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { 
@@ -27,7 +28,7 @@ type Video = Database['public']['Tables']['videos']['Row']
 export default function VideoDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { navigateTo } = useLanguageRouter()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   
   const [video, setVideo] = useState<Video | null>(null)
   const [loading, setLoading] = useState(true)
@@ -36,8 +37,12 @@ export default function VideoDetailPage() {
   
   // 更新页面meta标签
   const updatePageMeta = (video: Video) => {
-    const title = `${video.title || '精彩视频'} | AI视频生成平台`
-    const description = video.prompt || 'AI生成的精彩视频内容'
+    const currentLocale = i18n.language.split('-')[0]
+    const parsedTitle = parseTitle(video.title, currentLocale, '精彩视频')
+    const parsedDescription = parseDescription(video.description, currentLocale, video.prompt || 'AI生成的精彩视频内容')
+
+    const title = `${parsedTitle} | AI视频生成平台`
+    const description = parsedDescription
     const videoUrl = video.video_url || ''
     // 确保缩略图URL是完整的HTTPS链接，如果没有则使用默认图片
     const thumbnailUrl = video.thumbnail_url || `${window.location.origin}/default-video-thumbnail.jpg`
@@ -75,7 +80,7 @@ export default function VideoDetailPage() {
     updateMetaTag('twitter:title', title, 'name')
     updateMetaTag('twitter:description', description, 'name')
     updateMetaTag('twitter:image', thumbnailUrl, 'name')
-    updateMetaTag('twitter:image:alt', `视频预览: ${video.title}`, 'name')
+    updateMetaTag('twitter:image:alt', `视频预览: ${parsedTitle}`, 'name')
     updateMetaTag('twitter:player', `${window.location.origin}/embed/${video.id}`, 'name')
     updateMetaTag('twitter:player:width', '1280', 'name')
     updateMetaTag('twitter:player:height', '720', 'name')
@@ -124,10 +129,13 @@ export default function VideoDetailPage() {
   // 处理下载
   const handleDownload = async () => {
     if (!video?.video_url) return
-    
+
+    const currentLocale = i18n.language.split('-')[0]
+    const parsedTitle = parseTitle(video.title, currentLocale, 'video')
+
     try {
       await videoShareService.downloadVideo(video.id, video.video_url, {
-        filename: `${video.title || 'video'}.mp4`
+        filename: `${parsedTitle}.mp4`
       })
       
       // 增加下载计数
@@ -170,6 +178,11 @@ export default function VideoDetailPage() {
     )
   }
   
+  // 解析标题和描述用于显示
+  const currentLocale = i18n.language.split('-')[0]
+  const parsedTitle = parseTitle(video.title, currentLocale, t('videos.untitled'))
+  const parsedDescription = parseDescription(video.description, currentLocale, '')
+
   return (
     <div className="min-h-screen bg-black">
       <div className="w-full h-screen flex items-center justify-center">
@@ -186,8 +199,8 @@ export default function VideoDetailPage() {
                 muted={false}
                 objectFit="contain"
                 videoId={video.id}
-                videoTitle={video.title}
-                alt={video.title || '视频内容'}
+                videoTitle={parsedTitle}
+                alt={parsedTitle}
                 controls={true}
               />
             ) : (
@@ -213,8 +226,8 @@ export default function VideoDetailPage() {
         onOpenChange={setShareModalOpen}
         video={{
           id: video.id,
-          title: video.title,
-          description: video.prompt,
+          title: parsedTitle,
+          description: parsedDescription || video.prompt,
           video_url: video.video_url,
           template_id: video.template_id,
           metadata: video.metadata,

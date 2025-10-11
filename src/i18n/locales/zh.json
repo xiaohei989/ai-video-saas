@@ -578,6 +578,7 @@
     "videoGenerationCompleteDescription": "您的视频已准备就绪，可以预览和下载了",
     "videoGenerationFailed": "视频生成失败",
     "generationError": "生成过程中发生错误",
+    "generatingThumbnail": "生成缩略图中...",
     "loginRequired": "请先登录",
     "videoDeleted": "视频已删除",
     "deleteFailed": "删除失败，请重试",

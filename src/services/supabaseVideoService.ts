@@ -1040,14 +1040,35 @@ class SupabaseVideoService {
   }
 
   /**
-   * 订阅用户的所有视频更新（包括状态变化）
+   * 订阅用户的所有视频更新（包括新建和状态变化）
    */
   subscribeToAllUserVideoUpdates(
     userId: string,
     onVideoUpdate: (video: Video) => void
   ): () => void {
+    const channelName = `user-all-videos-${userId}`
+    console.log(`[SUPABASE Realtime] 🔔 开始订阅频道: ${channelName}`)
+    console.log('[SUPABASE Realtime] 📋 配置检查清单：')
+    console.log('  1. Supabase Dashboard -> Database -> Replication -> 确认 "videos" 表已启用')
+    console.log('  2. Supabase Dashboard -> Database -> Replication -> 确认相关字段已勾选')
+    console.log('  3. 检查 RLS 策略是否允许用户读取自己的视频')
+    console.log('  4. 查看下方订阅状态日志，确认连接是否成功')
+
     const subscription = supabase
-      .channel(`user-all-videos-${userId}`)
+      .channel(channelName)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'videos',
+          filter: `user_id=eq.${userId}`
+        },
+        (payload) => {
+          console.log('[SUPABASE Realtime] ➕ 收到 INSERT 事件:', payload.new)
+          onVideoUpdate(payload.new as Video)
+        }
+      )
       .on(
         'postgres_changes',
         {
@@ -1057,14 +1078,42 @@ class SupabaseVideoService {
           filter: `user_id=eq.${userId}`
         },
         (payload) => {
-          console.log('[SUPABASE] Video updated via global subscription:', payload.new)
-          onVideoUpdate(payload.new as Video)
+          console.log('[SUPABASE Realtime] 🔄 收到 UPDATE 事件:', payload.new)
+          // 特别标记 AI 标题更新
+          const video = payload.new as Video
+          if (video.ai_title_status === 'ai_generated') {
+            console.log('[SUPABASE Realtime] ✨ 检测到 AI 标题生成完成:', video.id, video.title)
+          }
+          onVideoUpdate(video)
         }
       )
-      .subscribe()
+      .subscribe((status, err) => {
+        // 订阅状态回调
+        console.log(`[SUPABASE Realtime] 📡 订阅状态变化: ${status}`)
+
+        if (status === 'SUBSCRIBED') {
+          console.log('[SUPABASE Realtime] ✅ 订阅成功建立')
+        } else if (status === 'CLOSED') {
+          console.log('[SUPABASE Realtime] 🔴 订阅连接关闭')
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('[SUPABASE Realtime] ❌ 订阅频道错误:', err)
+        } else if (status === 'TIMED_OUT') {
+          console.error('[SUPABASE Realtime] ⏱️ 订阅连接超时')
+        }
+      })
+
+    // 定期检查订阅状态
+    const statusCheckInterval = setInterval(() => {
+      const state = subscription.state
+      if (state !== 'joined') {
+        console.warn(`[SUPABASE Realtime] ⚠️ 订阅状态异常: ${state}`)
+      }
+    }, 30000) // 每 30 秒检查一次
 
     // 返回取消订阅函数
     return () => {
+      console.log('[SUPABASE Realtime] 🔕 取消订阅')
+      clearInterval(statusCheckInterval)
       subscription.unsubscribe()
     }
   }
@@ -1076,6 +1125,13 @@ class SupabaseVideoService {
    */
   async autoGenerateThumbnailOnComplete(video: Video): Promise<boolean> {
     try {
+      // 检查是否启用前端缩略图生成
+      const enableFrontendThumbnail = import.meta.env.VITE_ENABLE_FRONTEND_THUMBNAIL !== 'false'
+      if (!enableFrontendThumbnail) {
+        console.log('[Thumbnail] 前端缩略图生成已禁用，依赖后端自动生成')
+        return false
+      }
+
       // 检查是否需要生成缩略图
       if (video.status !== 'completed' || !video.video_url) {
         return false
@@ -1142,6 +1198,15 @@ class SupabaseVideoService {
     options: { frameTime?: number } = {}
   ): Promise<{ success: boolean; url?: string; message?: string }> {
     try {
+      // 检查是否启用前端缩略图生成
+      const enableFrontendThumbnail = import.meta.env.VITE_ENABLE_FRONTEND_THUMBNAIL !== 'false'
+      if (!enableFrontendThumbnail) {
+        return {
+          success: false,
+          message: '前端缩略图生成已禁用，请使用后端自动生成功能'
+        }
+      }
+
       const { data: v, error } = await supabase
         .from('videos')
         .select('id, video_url, title, status, thumbnail_url')

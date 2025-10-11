@@ -536,6 +536,7 @@
     "videoGenerationComplete": "🎉 비디오 생성 완료!",
     "videoGenerationCompleteDescription": "비디오가 준비되었습니다. 미리보기와 다운로드가 가능합니다",
     "videoGenerationFailed": "비디오 생성에 실패했습니다",
+    "generatingThumbnail": "썸네일 생성 중...",
     "generationError": "생성 중 오류가 발생했습니다",
     "loginRequired": "먼저 로그인해주세요",
     "videoDeleted": "비디오가 삭제되었습니다",

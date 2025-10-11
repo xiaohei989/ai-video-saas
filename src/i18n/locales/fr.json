@@ -576,6 +576,7 @@
     "videoGenerationComplete": "🎉 Génération de vidéo terminée !",
     "videoGenerationCompleteDescription": "Votre vidéo est prête pour l'aperçu et le téléchargement",
     "videoGenerationFailed": "Échec de la génération de vidéo",
+    "generatingThumbnail": "Génération de la miniature...",
     "generationError": "Une erreur s'est produite lors de la génération",
     "loginRequired": "Veuillez vous connecter d'abord",
     "videoDeleted": "Vidéo supprimée",

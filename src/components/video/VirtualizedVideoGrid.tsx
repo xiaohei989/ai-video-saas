@@ -24,6 +24,7 @@ import { getPlayerUrl, getBestVideoUrl } from '@/utils/videoUrlPriority'
 import { getProxyVideoUrl } from '@/utils/videoUrlProxy'
 import { formatRelativeTime, formatDuration } from '@/utils/timeFormat'
 import { useTranslation } from 'react-i18next'
+import { parseTitle, parseDescription } from '@/utils/titleParser'
 import type { Database } from '@/lib/supabase'
 import type { VideoTask } from '@/services/VideoTaskManager'
 import { getCachedImage } from '@/utils/newImageCache'
@@ -115,8 +116,13 @@ const VideoCard: React.FC<{
   onRegenerate,
   onPlay
 }) => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const task = getVideoTask(video.id)
+
+  // 解析视频标题和描述（支持多语言JSON格式）
+  const currentLocale = i18n.language.split('-')[0] // zh-CN -> zh
+  const parsedTitle = parseTitle(video.title || '', currentLocale, t('videos.untitled'))
+  const parsedDescription = parseDescription(video.description || '', currentLocale, '')
 
   // 缩略图调试信息状态
   const [thumbnailDebugInfo, setThumbnailDebugInfo] = useState<{
@@ -213,8 +219,8 @@ const VideoCard: React.FC<{
                   muted={false}
                   objectFit="cover"
                   videoId={video.id}
-                  videoTitle={video.title || 'video'}
-                  alt={video.title || 'Video preview'}
+                  videoTitle={parsedTitle}
+                  alt={parsedTitle}
                   onPlay={() => onPlay(video)}
                 />
               )
@@ -238,8 +244,8 @@ const VideoCard: React.FC<{
                   muted={false}
                   objectFit="cover"
                   videoId={video.id}
-                  videoTitle={video.title || 'video'}
-                  alt={video.title || 'Video preview'}
+                  videoTitle={parsedTitle}
+                  alt={parsedTitle}
                   onPlay={() => onPlay(video)}
                 />
               )
@@ -309,11 +315,11 @@ const VideoCard: React.FC<{
           <div className="space-y-2">
             <div>
               <h3 className="font-medium text-sm line-clamp-2 min-h-[2rem]">
-                {video.title || t('videos.untitledVideo')}
+                {parsedTitle}
               </h3>
-              {video.description && (
+              {parsedDescription && (
                 <p className="text-xs text-muted-foreground mt-0 line-clamp-2">
-                  {video.description}
+                  {parsedDescription}
                 </p>
               )}
             </div>

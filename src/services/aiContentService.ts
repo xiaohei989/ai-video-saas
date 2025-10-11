@@ -24,28 +24,46 @@ export interface AIModelResponse {
 }
 
 class AIContentService {
-  private readonly apiKey: string
+  private readonly apiKeys: string[]
+  private currentKeyIndex: number = 0
   private readonly endpoint: string
-  private readonly primaryModel = 'claude-3-5-haiku-20241022'
-  private readonly fallbackModel = 'gpt-3.5-turbo-0125'
+  private readonly primaryModel = 'deepseek-v3-250324' // 主模型: DeepSeek V3 (快速,~4秒)
+  private readonly fallbackModel = 'deepseek-v3-250324' // 备用模型: 也使用 DeepSeek V3
   // private readonly maxRetries = 2 // unused
-  private readonly timeout = 10000
+  private readonly timeout = 20000 // 增加到20秒，给AI更多响应时间
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_APICORE_API_KEY || ''
-    this.endpoint = import.meta.env.VITE_APICORE_ENDPOINT || 'https://api.apicore.ai'
-    
-    if (!this.apiKey) {
-      console.warn('[AI CONTENT SERVICE] APICore API key not configured')
+    // 使用专用的 DeepSeek API Key
+    const deepseekKey = import.meta.env.VITE_DEEPSEEK_API_KEY || ''
+
+    this.apiKeys = deepseekKey ? [deepseekKey] : []
+    this.endpoint = import.meta.env.VITE_DEEPSEEK_ENDPOINT || import.meta.env.VITE_APICORE_ENDPOINT || 'https://api.apicore.ai'
+
+    if (this.apiKeys.length === 0) {
+      console.warn('[AI CONTENT SERVICE] No DeepSeek API key configured')
+    } else {
+      console.log(`[AI CONTENT SERVICE] Configured with DeepSeek API key`)
     }
+  }
+
+  /**
+   * 获取当前API Key并轮询到下一个
+   */
+  private getNextApiKey(): string {
+    if (this.apiKeys.length === 0) return ''
+
+    const key = this.apiKeys[this.currentKeyIndex]
+    this.currentKeyIndex = (this.currentKeyIndex + 1) % this.apiKeys.length
+
+    return key
   }
 
   /**
    * 生成视频标题和简介
    */
   async generateVideoMetadata(request: GenerateVideoMetadataRequest): Promise<VideoMetadata> {
-    if (!this.apiKey) {
-      console.warn('[AI CONTENT SERVICE] API key not available, using fallback')
+    if (this.apiKeys.length === 0) {
+      console.warn('[AI CONTENT SERVICE] No API keys available, using fallback')
       return this.generateFallbackMetadata(request)
     }
 
@@ -107,7 +125,9 @@ class AIContentService {
       response_format: { type: 'json_object' }
     }
 
-    console.log(`[AI CONTENT SERVICE] 调用 ${model} 模型...`)
+    const apiKey = this.getNextApiKey()
+    const keyPrefix = apiKey.substring(0, 10)
+    console.log(`[AI CONTENT SERVICE] 调用 ${model} 模型 (Key: ${keyPrefix}...)`)
 
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), this.timeout)
@@ -116,7 +136,7 @@ class AIContentService {
       const response = await fetch(`${this.endpoint}/v1/chat/completions`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(requestBody),
@@ -262,32 +282,47 @@ ${formattedParams}
 
   /**
    * 生成回退标题
+   * 注意：templateName 已经应该是解析后的字符串，而不是多语言对象
+   * 但为了防御性编程，这里也处理可能的 JSON 对象情况
    */
   private generateFallbackTitle(templateName: string, language: string): string {
+    // 防御性处理：如果 templateName 看起来像 JSON 对象，尝试解析
+    let parsedTemplateName = templateName
+    if (templateName && typeof templateName === 'string' && templateName.trim().startsWith('{')) {
+      try {
+        const parsed = JSON.parse(templateName)
+        const langCode = language.split('-')[0] // zh-CN -> zh
+        parsedTemplateName = parsed[langCode] || parsed['en'] || Object.values(parsed)[0] || templateName
+      } catch {
+        // JSON 解析失败，使用原始值
+        console.warn('[AI CONTENT SERVICE] 模板名称 JSON 解析失败，使用原始值')
+      }
+    }
+
     const titleTemplates: Record<string, string[]> = {
       'zh-CN': [
-        `精彩${templateName}视频`,
-        `创意${templateName}内容`,
-        `有趣的${templateName}`,
-        `${templateName}精选`
+        `精彩${parsedTemplateName}视频`,
+        `创意${parsedTemplateName}内容`,
+        `有趣的${parsedTemplateName}`,
+        `${parsedTemplateName}精选`
       ],
       'en': [
-        `Amazing ${templateName} Video`,
-        `Creative ${templateName} Content`,
-        `Interesting ${templateName}`,
-        `${templateName} Highlights`
+        `Amazing ${parsedTemplateName} Video`,
+        `Creative ${parsedTemplateName} Content`,
+        `Interesting ${parsedTemplateName}`,
+        `${parsedTemplateName} Highlights`
       ],
       'ja': [
-        `素晴らしい${templateName}動画`,
-        `クリエイティブな${templateName}`,
-        `面白い${templateName}`,
-        `${templateName}ハイライト`
+        `素晴らしい${parsedTemplateName}動画`,
+        `クリエイティブな${parsedTemplateName}`,
+        `面白い${parsedTemplateName}`,
+        `${parsedTemplateName}ハイライト`
       ]
     }
-    
+
     const templates = titleTemplates[language] || titleTemplates['zh-CN']
     const randomTemplate = templates[Math.floor(Math.random() * templates.length)]
-    
+
     return randomTemplate
   }
 

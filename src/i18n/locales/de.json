@@ -555,6 +555,7 @@
     "videoGenerationComplete": "🎉 Videogenerierung abgeschlossen!",
     "videoGenerationCompleteDescription": "Ihr Video ist bereit für Vorschau und Download",
     "videoGenerationFailed": "Videogenerierung fehlgeschlagen",
+    "generatingThumbnail": "Miniaturansicht wird erstellt...",
     "generationError": "Bei der Generierung ist ein Fehler aufgetreten",
     "loginRequired": "Bitte melden Sie sich zuerst an",
     "videoDeleted": "Video gelöscht",
