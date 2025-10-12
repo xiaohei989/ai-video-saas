@@ -10,7 +10,9 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {},
+    "metadata": {
+      "actualWorkers": 2
+    },
     "preserveOutput": "always",
     "reporter": [
       [
@@ -34,7 +36,9 @@
         "outputDir": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 2
+        },
         "id": "chromium",
         "name": "chromium",
         "testDir": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests",
@@ -48,7 +52,9 @@
         "outputDir": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 2
+        },
         "id": "webkit",
         "name": "webkit",
         "testDir": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests",
@@ -62,7 +68,9 @@
         "outputDir": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 2
+        },
         "id": "apple-test",
         "name": "apple-test",
         "testDir": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests",
@@ -84,25 +92,184 @@
       "reuseExistingServer": true
     }
   },
-  "suites": [],
-  "errors": [
+  "suites": [
     {
-      "message": "SyntaxError: /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/apple-login-language-test.spec.ts: Unexpected keyword 'debugger'. (356:14)\n\n  354 |     if (debuggerAvailable) {\n  355 |       const debuggerMethods = await page.evaluate(() => {\n> 356 |         const debugger = (window as any).languageDebugger;\n      |               ^\n  357 |         return {\n  358 |           hasLogMethod: typeof debugger.log === 'function',\n  359 |           hasExportMethod: typeof debugger.exportLogs === 'function',",
-      "stack": "SyntaxError: /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/apple-login-language-test.spec.ts: Unexpected keyword 'debugger'. (356:14)\n\n  354 |     if (debuggerAvailable) {\n  355 |       const debuggerMethods = await page.evaluate(() => {\n> 356 |         const debugger = (window as any).languageDebugger;\n      |               ^\n  357 |         return {\n  358 |           hasLogMethod: typeof debugger.log === 'function',\n  359 |           hasExportMethod: typeof debugger.exportLogs === 'function',",
-      "location": {
-        "file": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/apple-login-language-test.spec.ts",
-        "line": 356,
-        "column": 14
-      },
-      "snippet": "\u001b[90m   at \u001b[39mapple-login-language-test.spec.ts:356\n\n  354 |     if (debuggerAvailable) {\n  355 |       const debuggerMethods = await page.evaluate(() => {\n> 356 |         const debugger = (window as any).languageDebugger;\n      |              ^\n  357 |         return {\n  358 |           hasLogMethod: typeof debugger.log === 'function',\n  359 |           hasExportMethod: typeof debugger.exportLogs === 'function',"
+      "title": "ai-title-generation-test.spec.ts",
+      "file": "ai-title-generation-test.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "AI标题生成功能测试",
+          "file": "ai-title-generation-test.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "使用真实AI服务生成标题 - 松鼠蹦床场景",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 24048,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Generate Video\"), a[href*=\"create\"]') to be visible\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Generate Video\"), a[href*=\"create\"]') to be visible\u001b[22m\n\n    at /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/ai-title-generation-test.spec.ts:31:16",
+                        "location": {
+                          "file": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/ai-title-generation-test.spec.ts",
+                          "column": 16,
+                          "line": 31
+                        },
+                        "snippet": "  29 |\n  30 |     // 等待模板加载\n> 31 |     await page.waitForSelector('button:has-text(\"Generate Video\"), a[href*=\"create\"]', { timeout: 10000 });\n     |                ^\n  32 |\n  33 |     // 截图：页面加载完成\n  34 |     await page.screenshot({"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/ai-title-generation-test.spec.ts",
+                            "column": 16,
+                            "line": 31
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Generate Video\"), a[href*=\"create\"]') to be visible\u001b[22m\n\n\n  29 |\n  30 |     // 等待模板加载\n> 31 |     await page.waitForSelector('button:has-text(\"Generate Video\"), a[href*=\"create\"]', { timeout: 10000 });\n     |                ^\n  32 |\n  33 |     // 截图：页面加载完成\n  34 |     await page.screenshot({\n    at /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/ai-title-generation-test.spec.ts:31:16"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "📍 步骤1: 导航到视频创建页面...\n"
+                        },
+                        {
+                          "text": "📍 步骤2: 选择 Surveillance Animal Trampoline 模板...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-07T08:25:54.418Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-results/ai-title-generation-test-AI标题生成功能测试-使用真实AI服务生成标题---松鼠蹦床场景-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-results/ai-title-generation-test-AI标题生成功能测试-使用真实AI服务生成标题---松鼠蹦床场景-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/ai-title-generation-test.spec.ts",
+                        "column": 16,
+                        "line": 31
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "19832ba0e4b3afb9ca4f-6c135f8f09550906fbdc",
+              "file": "ai-title-generation-test.spec.ts",
+              "line": 4,
+              "column": 3
+            },
+            {
+              "title": "使用真实AI服务生成标题 - 松鼠蹦床场景",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 22543,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Generate Video\"), a[href*=\"create\"]') to be visible\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Generate Video\"), a[href*=\"create\"]') to be visible\u001b[22m\n\n    at /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/ai-title-generation-test.spec.ts:31:16",
+                        "location": {
+                          "file": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/ai-title-generation-test.spec.ts",
+                          "column": 16,
+                          "line": 31
+                        },
+                        "snippet": "  29 |\n  30 |     // 等待模板加载\n> 31 |     await page.waitForSelector('button:has-text(\"Generate Video\"), a[href*=\"create\"]', { timeout: 10000 });\n     |                ^\n  32 |\n  33 |     // 截图：页面加载完成\n  34 |     await page.screenshot({"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/ai-title-generation-test.spec.ts",
+                            "column": 16,
+                            "line": 31
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Generate Video\"), a[href*=\"create\"]') to be visible\u001b[22m\n\n\n  29 |\n  30 |     // 等待模板加载\n> 31 |     await page.waitForSelector('button:has-text(\"Generate Video\"), a[href*=\"create\"]', { timeout: 10000 });\n     |                ^\n  32 |\n  33 |     // 截图：页面加载完成\n  34 |     await page.screenshot({\n    at /Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/ai-title-generation-test.spec.ts:31:16"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "📍 步骤1: 导航到视频创建页面...\n"
+                        },
+                        {
+                          "text": "📍 步骤2: 选择 Surveillance Animal Trampoline 模板...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-07T08:25:54.418Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-results/ai-title-generation-test-AI标题生成功能测试-使用真实AI服务生成标题---松鼠蹦床场景-webkit/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/test-results/ai-title-generation-test-AI标题生成功能测试-使用真实AI服务生成标题---松鼠蹦床场景-webkit/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/chishengyang/Desktop/AI_ASMR/ai-video-saas/tests/ai-title-generation-test.spec.ts",
+                        "column": 16,
+                        "line": 31
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "19832ba0e4b3afb9ca4f-762502c6b996b5298f47",
+              "file": "ai-title-generation-test.spec.ts",
+              "line": 4,
+              "column": 3
+            }
+          ]
+        }
+      ]
     }
   ],
+  "errors": [],
   "stats": {
-    "startTime": "2025-09-22T09:45:35.754Z",
-    "duration": 873.1099999999999,
+    "startTime": "2025-10-07T08:25:54.112Z",
+    "duration": 26415.548,
     "expected": 0,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 2,
     "flaky": 0
   }
 }

@@ -59,6 +59,9 @@ const HelpCenterPage = lazy(() => import('./pages/HelpCenterPage'))
 const VideoDetailPage = lazy(() => import('./pages/VideoDetailPage'))
 const VideoEmbedPage = lazy(() => import('./pages/VideoEmbedPage'))
 
+// 🚀 路由懒加载 - SEO Guide
+const TemplateGuidePage = lazy(() => import('./pages/TemplateGuidePage'))
+
 // 🚀 路由懒加载 - 管理后台 (独立chunk)
 const AdminRoute = lazy(() => import('./components/admin/AdminRoute'))
 const AdminApp = lazy(() => import('./components/admin/AdminApp'))
@@ -200,6 +203,9 @@ function LanguagePrefixedRoutes() {
 
       {/* Video embed page - for Twitter Player Card */}
       <Route path="/embed/:id" element={<VideoEmbedPage />} />
+
+      {/* Template Guide page - SEO optimized user guides */}
+      <Route path="/guide/:slug" element={<Layout><TemplateGuidePage /></Layout>} />
 
       {/* Auth routes */}
       <Route path="/signin" element={<Layout><SignInForm /></Layout>} />

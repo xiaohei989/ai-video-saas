@@ -355,6 +355,7 @@
     "removeTagAria": "Eliminar etiqueta {{tag}}",
     "countDisplay": "({{count}} plantillas)",
     "loading": "Cargando lista de plantillas...",
+    "viewGuide": "Ver Guía de Usuario",
     "sortBy": {
       "popular": "Más Popular",
       "latest": "Más Reciente",
@@ -934,6 +935,7 @@
   "footer": {
     "quickLinks": "Enlaces Rápidos",
     "aboutUs": "Acerca de Nosotros",
+    "userGuides": "Guías de Usuario",
     "helpCenter": "Centro de Ayuda",
     "legal": "Legal",
     "privacyPolicy": "Política de Privacidad",

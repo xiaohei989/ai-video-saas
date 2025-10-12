@@ -1,0 +1,138 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e6]:
+        - link "Logo Viral Videos Made Simple" [ref=e7]:
+          - /url: /
+          - img "Logo" [ref=e8]
+          - generic [ref=e10]:
+            - generic [ref=e11]: Viral Videos
+            - generic [ref=e12]: Made Simple
+        - navigation [ref=e13]:
+          - link "Home" [ref=e14]:
+            - /url: /
+          - link "Trending" [ref=e15]:
+            - /url: /templates
+          - link "My Videos" [ref=e16]:
+            - /url: /videos
+          - link "Pricing" [ref=e17]:
+            - /url: /pricing
+        - generic [ref=e18]:
+          - button "US flag EN" [ref=e20]:
+            - img "US flag" [ref=e21]
+            - generic [ref=e22]: EN
+            - img [ref=e23]
+          - generic [ref=e25]:
+            - link "Sign In" [ref=e26]:
+              - /url: /signin
+              - button "Sign In" [ref=e27]:
+                - img [ref=e28]
+                - text: Sign In
+            - link "Sign Up" [ref=e31]:
+              - /url: /signup
+              - button "Sign Up" [ref=e32]
+    - main [ref=e34]:
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - heading "Sign In" [level=3] [ref=e38]
+          - paragraph [ref=e39]: Sign in to access your account
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - button "Sign in with Google" [ref=e42]:
+              - img [ref=e43]
+              - text: Sign in with Google
+            - button "Sign in with Apple" [ref=e48]:
+              - img [ref=e49]
+              - text: Sign in with Apple
+          - generic [ref=e55]: Or continue with email
+          - generic [ref=e56]:
+            - generic [ref=e57]:
+              - generic [ref=e58]: Email
+              - generic [ref=e59]:
+                - img [ref=e60]
+                - textbox "Email" [ref=e63]
+            - generic [ref=e64]:
+              - generic [ref=e65]: Password
+              - generic [ref=e66]:
+                - img [ref=e67]
+                - textbox "Password" [ref=e70]
+            - link "Forgot password?" [ref=e72]:
+              - /url: /forgot-password
+            - button "Sign In" [ref=e73]
+        - generic [ref=e75]:
+          - text: Don't have an account?
+          - link "Sign Up" [ref=e76]:
+            - /url: /signup
+    - contentinfo [ref=e77]:
+      - generic [ref=e78]:
+        - generic [ref=e79]:
+          - generic [ref=e80]:
+            - heading "Quick Links" [level=3] [ref=e81]
+            - list [ref=e82]:
+              - listitem [ref=e83]:
+                - link "Trending" [ref=e84]:
+                  - /url: /templates
+              - listitem [ref=e85]:
+                - link "Pricing" [ref=e86]:
+                  - /url: /pricing
+              - listitem [ref=e87]:
+                - link "Help Center" [ref=e88]:
+                  - /url: /help
+          - generic [ref=e89]:
+            - heading "Legal" [level=3] [ref=e90]
+            - list [ref=e91]:
+              - listitem [ref=e92]:
+                - link "Privacy Policy" [ref=e93]:
+                  - /url: /privacy
+              - listitem [ref=e94]:
+                - link "Terms of Service" [ref=e95]:
+                  - /url: /terms
+              - listitem [ref=e96]:
+                - link "Cookie Policy" [ref=e97]:
+                  - /url: /cookies
+          - generic [ref=e98]:
+            - heading "Connect" [level=3] [ref=e99]
+            - generic [ref=e100]:
+              - link "X (Twitter)" [ref=e101]:
+                - /url: https://x.com/veo3video_me
+                - img [ref=e102]
+              - link "Discord" [ref=e104]:
+                - /url: https://discord.com/invite/UxFhMG7fyY
+                - img [ref=e105]
+              - link "Facebook" [ref=e107]:
+                - /url: https://www.facebook.com/profile.php?id=61579879903619
+                - img [ref=e108]
+              - link "TikTok" [ref=e110]:
+                - /url: https://www.tiktok.com/@veo3video.me
+                - img [ref=e111]
+              - link "Instagram" [ref=e113]:
+                - /url: https://www.instagram.com/veo3video.me
+                - img [ref=e114]
+        - paragraph [ref=e117]: © 2025 veo3video.me. All rights reserved.
+  - region "Notifications alt+T"
+  - img [ref=e120] [cursor=pointer]
+  - generic [ref=e125]:
+    - img [ref=e126]
+    - generic [ref=e128]:
+      - generic [ref=e129]:
+        - paragraph [ref=e130]: We use cookies to improve your experience
+        - paragraph [ref=e131]: We use Google Analytics to understand how you use our website so we can improve our services. This data is anonymous and not used for advertising.
+      - generic [ref=e132]:
+        - button "Accept All" [ref=e133]
+        - button "Essential Only" [ref=e134]
+        - button "Learn More" [ref=e135]:
+          - img [ref=e136]
+          - text: Learn More
+      - paragraph [ref=e139]:
+        - text: View our
+        - link "Privacy Policy" [ref=e140]:
+          - /url: /privacy
+        - text: and
+        - link "Cookie Policy" [ref=e141]:
+          - /url: /cookies
+    - button "关闭" [ref=e142]:
+      - img [ref=e143]
+```

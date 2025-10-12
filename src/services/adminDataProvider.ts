@@ -112,6 +112,45 @@ export const adminDataProvider: DataProvider = {
         }
       }
 
+      // 对于seo-guides资源，使用Supabase直接查询
+      if (resource === 'seo-guides') {
+        let query = supabase
+          .from('template_seo_guides')
+          .select(`
+            *,
+            template:templates(
+              id,
+              name,
+              slug,
+              thumbnail_url,
+              category,
+              tags
+            )
+          `, { count: 'exact' })
+
+        // 应用过滤器
+        if (params.filter?.template_id) {
+          query = query.eq('template_id', params.filter.template_id)
+        }
+        if (params.filter?.language) {
+          query = query.eq('language', params.filter.language)
+        }
+        if (params.filter?.is_published) {
+          query = query.eq('is_published', params.filter.is_published === 'true')
+        }
+
+        const { data, error, count } = await query
+          .range((page - 1) * perPage, page * perPage - 1)
+          .order('updated_at', { ascending: false })
+
+        if (error) throw error
+
+        return {
+          data: data || [],
+          total: count || 0,
+        }
+      }
+
       let endpoint = ''
       let body: any = {
         pagination: { page, pageSize: perPage }
@@ -206,10 +245,11 @@ export const adminDataProvider: DataProvider = {
       console.log(`[DataProvider] getOne called for ${resource} with id:`, params.id)
       
       // 对于直接查询的资源
-      if (resource === 'templates' || resource === 'settings' || resource === 'logs') {
-        const table = resource === 'templates' ? 'templates' : 
-                     resource === 'settings' ? 'system_settings' : 'admin_operations_log'
-        
+      if (resource === 'templates' || resource === 'settings' || resource === 'logs' || resource === 'seo-guides') {
+        const table = resource === 'templates' ? 'templates' :
+                     resource === 'settings' ? 'system_settings' :
+                     resource === 'seo-guides' ? 'template_seo_guides' : 'admin_operations_log'
+
         let selectQuery = '*'
         if (resource === 'templates') {
           // 为模板添加关联查询
@@ -218,8 +258,14 @@ export const adminDataProvider: DataProvider = {
             author:profiles!author_id(username, email, avatar_url),
             reviewed_by_admin:profiles!reviewed_by(username, email)
           `
+        } else if (resource === 'seo-guides') {
+          // 为SEO指南添加模板信息
+          selectQuery = `
+            *,
+            template:templates(*)
+          `
         }
-        
+
         const { data, error } = await supabase
           .from(table)
           .select(selectQuery)
@@ -230,7 +276,7 @@ export const adminDataProvider: DataProvider = {
           console.error(`[DataProvider] getOne error for ${resource}:`, error)
           throw error
         }
-        
+
         console.log(`[DataProvider] getOne result for ${resource}:`, data)
         return { data }
       }
@@ -294,6 +340,21 @@ export const adminDataProvider: DataProvider = {
         const { data, error } = await supabase
           .from('faq_items')
           .insert(params.data)
+          .select()
+
+        if (error) throw error
+        return { data: data[0] }
+      }
+
+      if (resource === 'seo-guides') {
+        const { data, error } = await supabase
+          .from('template_seo_guides')
+          .insert({
+            ...params.data,
+            generated_by: params.data.generated_by || 'manual',
+            review_status: 'draft',
+            is_published: params.data.is_published || false
+          })
           .select()
 
         if (error) throw error
@@ -435,6 +496,17 @@ export const adminDataProvider: DataProvider = {
         return { data: data[0] }
       }
 
+      if (resource === 'seo-guides') {
+        const { data, error } = await supabase
+          .from('template_seo_guides')
+          .update(params.data)
+          .eq('id', params.id)
+          .select()
+
+        if (error) throw error
+        return { data: data[0] }
+      }
+
       let endpoint = ''
       let body: any = {}
 
@@ -544,6 +616,16 @@ export const adminDataProvider: DataProvider = {
         const { error } = await supabase
           .from('faq_items')
           .update({ is_active: false })
+          .eq('id', params.id)
+
+        if (error) throw error
+        return { data: params.previousData || {} }
+      }
+
+      if (resource === 'seo-guides') {
+        const { error } = await supabase
+          .from('template_seo_guides')
+          .delete()
           .eq('id', params.id)
 
         if (error) throw error

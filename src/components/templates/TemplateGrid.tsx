@@ -5,10 +5,10 @@
 
 import { memo, useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Play, Hash, Video, ArrowUp } from '@/components/icons'
+import { Play, Hash, Video, ArrowUp, BookOpen } from '@/components/icons'
 import { ReactVideoPlayer } from '@/components/video/ReactVideoPlayer'
 import LikeCounterButton from './LikeCounterButton'
 import CachedImage from '@/components/ui/CachedImage'
@@ -37,6 +37,7 @@ interface Template {
   isPublic?: boolean
   version?: string
   auditStatus?: string
+  hasGuide?: boolean // 是否有已发布的使用指南
 }
 
 interface TemplateGridProps {
@@ -338,7 +339,7 @@ const TemplateCard = memo(({
           <p className="text-xs text-muted-foreground line-clamp-3">
             {template.description}
           </p>
-          
+
           {/* 标签 */}
           {template.tags && template.tags.length > 0 && (
             <div className="flex flex-wrap gap-1">
@@ -354,6 +355,30 @@ const TemplateCard = memo(({
             </div>
           )}
         </div>
+
+        {/* 使用指南链接 - 仅当有已发布的指南时显示 */}
+        {template.hasGuide && (
+          <Link
+            to={`/guide/${template.slug}`}
+            className="mt-3 inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation()
+              // 跟踪用户点击指南链接
+              trackEvent({
+                action: 'guide_link_click',
+                category: 'user_engagement',
+                label: template.id,
+                custom_parameters: {
+                  template_name: template.name,
+                  template_slug: template.slug
+                }
+              })
+            }}
+          >
+            <BookOpen className="h-3 w-3" />
+            <span className="font-medium">{t('template.viewGuide', '查看使用指南')}</span>
+          </Link>
+        )}
       </CardContent>
     </Card>
   )

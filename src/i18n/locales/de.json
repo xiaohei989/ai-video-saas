@@ -366,6 +366,7 @@
     "removeTagAria": "{{tag}} Tag entfernen",
     "countDisplay": "({{count}} Vorlagen)",
     "loading": "Vorlagenliste wird geladen...",
+    "viewGuide": "Benutzerhandbuch anzeigen",
     "sortBy": {
       "popular": "Beliebt",
       "latest": "Neueste",
@@ -982,6 +983,7 @@
   "footer": {
     "quickLinks": "Schnelllinks",
     "aboutUs": "Über uns",
+    "userGuides": "Benutzerhandbücher",
     "helpCenter": "Hilfezentrum",
     "legal": "Rechtliches",
     "privacyPolicy": "Datenschutzerklärung",

@@ -1,0 +1,58 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - progressbar [ref=e5]
+      - main [ref=e13]:
+        - generic [ref=e14]:
+          - generic [ref=e16]:
+            - generic [ref=e17]:
+              - img [ref=e19]
+              - generic [ref=e24]: Sign in with Google
+            - img "veo3video" [ref=e25]
+          - generic [ref=e26]:
+            - heading "Sign in" [level=1] [ref=e27]:
+              - generic [ref=e28]: Sign in
+            - generic [ref=e30]:
+              - text: to continue to
+              - button "veo3video" [ref=e31] [cursor=pointer]
+        - generic [ref=e34]:
+          - generic [ref=e40]:
+            - generic [ref=e45]:
+              - textbox "Email or phone" [active] [ref=e46]
+              - generic: Email or phone
+            - button "Forgot email?" [ref=e50] [cursor=pointer]
+          - generic [ref=e53]:
+            - text: Before using this app, you can review veo3video’s
+            - link "privacy policy" [ref=e54] [cursor=pointer]:
+              - /url: https://veo3video.me/privacy
+            - text: and
+            - link "terms of service" [ref=e55] [cursor=pointer]:
+              - /url: https://veo3video.me/terms
+            - text: .
+        - generic [ref=e57]:
+          - button "Next" [ref=e61]:
+            - generic [ref=e64]: Next
+          - button "Create account" [ref=e69]:
+            - generic [ref=e72]: Create account
+    - contentinfo [ref=e75]:
+      - combobox "Change language English (United States)" [ref=e79] [cursor=pointer]:
+        - generic:
+          - generic: English (United States)
+        - generic:
+          - img
+      - list [ref=e81]:
+        - listitem [ref=e82]:
+          - link "Help" [ref=e83] [cursor=pointer]:
+            - /url: https://support.google.com/accounts?hl=en-US&p=account_iph
+        - listitem [ref=e84]:
+          - link "Privacy" [ref=e85] [cursor=pointer]:
+            - /url: https://accounts.google.com/TOS?loc=US&hl=en-US&privacy=true
+        - listitem [ref=e86]:
+          - link "Terms" [ref=e87] [cursor=pointer]:
+            - /url: https://accounts.google.com/TOS?loc=US&hl=en-US
+  - iframe [ref=e88]:
+    
+```

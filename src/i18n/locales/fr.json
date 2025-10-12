@@ -366,6 +366,7 @@
     "removeTagAria": "Supprimer l'étiquette {{tag}}",
     "countDisplay": "({{count}} modèles)",
     "loading": "Chargement de la liste des modèles...",
+    "viewGuide": "Voir le Guide d'Utilisation",
     "sortBy": {
       "popular": "Populaire",
       "latest": "Récent",
@@ -982,6 +983,7 @@
   "footer": {
     "quickLinks": "Liens rapides",
     "aboutUs": "À propos",
+    "userGuides": "Guides d'Utilisation",
     "helpCenter": "Centre d'aide",
     "legal": "Juridique",
     "privacyPolicy": "Politique de confidentialité",

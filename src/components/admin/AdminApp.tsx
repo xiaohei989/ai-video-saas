@@ -12,6 +12,7 @@ import { OrderList, OrderShow } from './Orders'
 import AdminDebug from './AdminDebug'
 import ErrorBoundary from './ErrorBoundary'
 import AdminThumbnailManager from './AdminThumbnailManager'
+import { SEOGuideList, SEOGuideEdit, SEOGuideCreate } from './SEOGuideGenerator'
 
 // 图标
 import {
@@ -21,7 +22,9 @@ import {
   HelpCircle,
   Settings,
   FileText,
-  Receipt
+  Receipt,
+  Search,
+  TrendingUp
 } from '@/components/icons'
 
 const AdminApp: React.FC = () => {
@@ -84,10 +87,22 @@ const AdminApp: React.FC = () => {
         show={TemplateShow}
         edit={TemplateEdit}
         create={TemplateCreate}
-        options={{ 
+        options={{
           label: '模板管理'
         }}
         icon={FileImage}
+      />
+
+      {/* SEO指南生成器 */}
+      <Resource
+        name="seo-guides"
+        list={SEOGuideList}
+        edit={SEOGuideEdit}
+        create={SEOGuideCreate}
+        options={{
+          label: 'SEO指南生成器'
+        }}
+        icon={Search}
       />
 
       {/* 缩略图管理（自定义页，集成工具入口） */}

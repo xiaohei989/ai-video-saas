@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>测试前端数据</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
+    .section { margin: 20px 0; padding: 15px; background: #2a2a2a; border-radius: 8px; }
+    .label { color: #60a5fa; font-weight: bold; }
+    .value { color: #34d399; }
+    .error { color: #f87171; }
+    button { padding: 10px 20px; margin: 5px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #2563eb; }
+  </style>
+</head>
+<body>
+  <h1>🔍 Squirrel 视频前端数据测试</h1>
+
+  <div class="section">
+    <button onclick="checkLocalStorage()">检查 localStorage</button>
+    <button onclick="checkSupabase()">查询 Supabase</button>
+    <button onclick="clearProgress()">清除进度数据</button>
+  </div>
+
+  <div id="output" class="section"></div>
+
+  <script type="module">
+    const VIDEO_ID = 'b80ccead-1634-440b-b8df-156ccaa6126a';
+
+    window.checkLocalStorage = () => {
+      const output = document.getElementById('output');
+      output.innerHTML = '<h3>📦 localStorage 数据:</h3>';
+
+      // 检查 videoProgress
+      const progressData = localStorage.getItem('videoProgress');
+      if (progressData) {
+        const parsed = JSON.parse(progressData);
+        output.innerHTML += `<div><span class="label">videoProgress:</span> 找到 ${Object.keys(parsed).length} 个任务</div>`;
+
+        if (parsed[VIDEO_ID]) {
+          output.innerHTML += `<div class="error">❌ 发现残留进度数据！</div>`;
+          output.innerHTML += `<pre>${JSON.stringify(parsed[VIDEO_ID], null, 2)}</pre>`;
+        } else {
+          output.innerHTML += `<div class="value">✅ 没有该视频的进度数据</div>`;
+        }
+      } else {
+        output.innerHTML += `<div class="value">✅ localStorage 中没有 videoProgress</div>`;
+      }
+    };
+
+    window.clearProgress = () => {
+      const progressData = localStorage.getItem('videoProgress');
+      if (progressData) {
+        const parsed = JSON.parse(progressData);
+        delete parsed[VIDEO_ID];
+        localStorage.setItem('videoProgress', JSON.stringify(parsed));
+        alert('✅ 已清除该视频的进度数据！请刷新页面。');
+      } else {
+        alert('没有需要清除的数据');
+      }
+    };
+
+    window.checkSupabase = async () => {
+      const output = document.getElementById('output');
+      output.innerHTML = '<h3>🌐 Supabase 数据:</h3><div>查询中...</div>';
+
+      try {
+        const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+        const supabase = createClient(
+          'https://hvkzwrnvxsleeonqqrzq.supabase.co',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2a3p3cm52eHNsZWVvbnFxcnpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI1NTQ3NDcsImV4cCI6MjA0ODEzMDc0N30.0iRc5YFslY1wdMsVYO_5c-MXZSFJKhp8CgJ-wBjVDNA'
+        );
+
+        const { data, error } = await supabase
+          .from('videos')
+          .select('id, title, status, thumbnail_url, video_url')
+          .eq('id', VIDEO_ID)
+          .single();
+
+        if (error) {
+          output.innerHTML = `<div class="error">❌ 查询失败: ${error.message}</div>`;
+          return;
+        }
+
+        output.innerHTML = '<h3>🌐 Supabase 数据:</h3>';
+        output.innerHTML += `<div><span class="label">状态:</span> <span class="value">${data.status}</span></div>`;
+        output.innerHTML += `<div><span class="label">video_url:</span> ${data.video_url ? '✅ 有' : '❌ 无'}</div>`;
+        output.innerHTML += `<div><span class="label">thumbnail_url:</span> ${data.thumbnail_url ? '✅ 有' : '❌ 无'}</div>`;
+
+        if (data.status === 'completed' && data.video_url && data.thumbnail_url) {
+          output.innerHTML += `<div class="value">✅ 数据库状态正常！</div>`;
+          output.innerHTML += `<div>🔗 <a href="${data.thumbnail_url}" target="_blank" style="color: #60a5fa;">查看缩略图</a></div>`;
+        }
+      } catch (error) {
+        output.innerHTML = `<div class="error">❌ 错误: ${error.message}</div>`;
+      }
+    };
+
+    // 自动检查
+    checkLocalStorage();
+  </script>
+</body>
+</html>

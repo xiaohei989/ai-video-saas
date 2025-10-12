@@ -318,9 +318,21 @@ export function useVideoOperations(options: UseVideoOperationsOptions = {}): Use
    */
   const handleVirtualRegenerate = useCallback((video: Video) => {
     // 导航到创建页面，预填充模板信息（保留语言前缀）
-    const templateId = video.template_id || ''
+    // 从 metadata 中获取模板ID（真正的存储位置），如果没有再尝试 template_id
+    const templateId = video.metadata?.templateId || video.template_id
+
+    if (!templateId) {
+      console.warn('视频没有模板ID，跳转到模板选择页面', {
+        videoId: video.id,
+        metadata: video.metadata
+      })
+      toast.warning(t('videos.noTemplateId'))
+      navigateTo('/templates')
+      return
+    }
+
     navigateTo(`/create?template=${templateId}&regenerate=${video.id}`)
-  }, [navigateTo])
+  }, [navigateTo, t])
 
   return {
     // 状态

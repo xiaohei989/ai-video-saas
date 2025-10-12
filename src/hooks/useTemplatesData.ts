@@ -113,7 +113,8 @@ function convertDatabaseTemplateToComponentFormat(template: TemplateListItem, cu
     isActive: template.is_active,
     isPublic: template.is_public,
     version: template.version,
-    auditStatus: template.audit_status
+    auditStatus: template.audit_status,
+    hasGuide: template.has_guide || false // 是否有已发布的使用指南
   };
 }
 

@@ -387,6 +387,7 @@
     "removeTagAria": "移除 {{tag}} 标签",
     "countDisplay": "({{count}} 个模板)",
     "loading": "正在加载模板列表...",
+    "viewGuide": "查看使用指南",
     "sortBy": {
       "popular": "最流行的",
       "latest": "最新的",
@@ -564,6 +565,7 @@
     "untitledVideo": "未命名视频",
     "regenerateTitle": "使用相同配置重新生成",
     "regenerate": "重新生成",
+    "noTemplateId": "视频缺少模板信息，无法重新生成",
     "download": "下载视频",
     "share": "分享视频",
     "previousPage": "上一页",
@@ -1038,6 +1040,7 @@
   "footer": {
     "quickLinks": "快速链接",
     "aboutUs": "关于我们",
+    "userGuides": "使用指南",
     "helpCenter": "帮助中心",
     "legal": "法律信息",
     "privacyPolicy": "隐私政策",

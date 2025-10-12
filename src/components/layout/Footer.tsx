@@ -26,6 +26,11 @@ export function Footer() {
                 </a>
               </li>
               <li>
+                <a href="/guides" className="link-hover inline-block text-muted-foreground">
+                  {t('footer.userGuides')}
+                </a>
+              </li>
+              <li>
                 <a href="/help" className="link-hover inline-block text-muted-foreground">
                   {t('footer.helpCenter')}
                 </a>

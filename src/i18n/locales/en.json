@@ -387,6 +387,7 @@
     "removeTagAria": "Remove {{tag}} tag",
     "countDisplay": "({{count}} templates)",
     "loading": "Loading template list...",
+    "viewGuide": "View User Guide",
     "sortBy": {
       "popular": "Popular",
       "latest": "Latest",
@@ -570,6 +571,7 @@
     "untitledVideo": "Untitled Video",
     "regenerateTitle": "Regenerate with same settings",
     "regenerate": "Regenerate",
+    "noTemplateId": "Video is missing template information, cannot regenerate",
     "download": "Download video",
     "downloading": "Downloading...",
     "downloadHD": "Download HD",
@@ -1039,6 +1041,7 @@
   "footer": {
     "quickLinks": "Quick Links",
     "aboutUs": "About Us",
+    "userGuides": "User Guides",
     "helpCenter": "Help Center",
     "legal": "Legal",
     "privacyPolicy": "Privacy Policy",

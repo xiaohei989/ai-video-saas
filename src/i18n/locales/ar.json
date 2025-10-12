@@ -366,6 +366,7 @@
     "removeTagAria": "إزالة علامة {{tag}}",
     "countDisplay": "({{count}} قالب)",
     "loading": "جاري تحميل قائمة القوالب...",
+    "viewGuide": "عرض دليل المستخدم",
     "sortBy": {
       "popular": "الشائع",
       "latest": "الأحدث",
@@ -936,6 +937,7 @@
   "footer": {
     "quickLinks": "روابط سريعة",
     "aboutUs": "من نحن",
+    "userGuides": "أدلة المستخدم",
     "helpCenter": "مركز المساعدة",
     "legal": "قانوني",
     "privacyPolicy": "سياسة الخصوصية",

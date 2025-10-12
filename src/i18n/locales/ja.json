@@ -364,6 +364,7 @@
     "removeTagAria": "{{tag}} タグを削除",
     "countDisplay": "({{count}} テンプレート)",
     "loading": "テンプレートリストを読み込み中...",
+    "viewGuide": "利用ガイドを見る",
     "sortBy": {
       "popular": "人気順",
       "latest": "最新順",
@@ -960,6 +961,7 @@
   "footer": {
     "quickLinks": "クイックリンク",
     "aboutUs": "私たちについて",
+    "userGuides": "利用ガイド",
     "helpCenter": "ヘルプセンター",
     "legal": "法的情報",
     "privacyPolicy": "プライバシーポリシー",

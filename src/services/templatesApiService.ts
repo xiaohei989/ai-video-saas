@@ -11,7 +11,7 @@ export interface TemplateListItem {
   id: string
   slug: string
   name: any // JSON object for multilingual
-  description?: any // JSON object for multilingual  
+  description?: any // JSON object for multilingual
   thumbnail_url?: string
   preview_url?: string
   category?: string
@@ -24,6 +24,7 @@ export interface TemplateListItem {
   created_at: string
   updated_at: string
   audit_status: 'pending' | 'approved' | 'rejected' | 'needs_revision'
+  has_guide?: boolean // 是否有已发布的使用指南
 }
 
 // 详细模板数据类型（创建页面需要的完整数据）
@@ -62,10 +63,23 @@ class TemplatesApiService {
    * 简化的模板数据处理（直接使用like_count字段）
    */
   private async processTemplatesData(templates: any[]): Promise<TemplateListItem[]> {
-    // 直接返回模板数据，like_count字段已经在数据库中维护
+    if (templates.length === 0) return []
+
+    // 批量检查哪些模板有已发布的指南
+    const templateIds = templates.map(t => t.id)
+    const { data: guidesData } = await supabase
+      .from('template_seo_guides')
+      .select('template_id')
+      .in('template_id', templateIds)
+      .eq('is_published', true)
+
+    const hasGuideSet = new Set(guidesData?.map(g => g.template_id) || [])
+
+    // 返回处理后的模板数据
     return templates.map(template => ({
       ...template,
-      like_count: template.like_count || 0 // 使用数据库中的like_count字段
+      like_count: template.like_count || 0, // 使用数据库中的like_count字段
+      has_guide: hasGuideSet.has(template.id) // 是否有已发布的指南
     }))
   }
 

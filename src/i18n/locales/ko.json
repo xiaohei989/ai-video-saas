@@ -355,6 +355,7 @@
     "removeTagAria": "{{tag}} 태그 제거",
     "countDisplay": "({{count}} 템플릿)",
     "loading": "템플릿 목록을 불러오는 중...",
+    "viewGuide": "사용 가이드 보기",
     "sortBy": {
       "popular": "인기순",
       "latest": "최신순",
@@ -928,6 +929,7 @@
   "footer": {
     "quickLinks": "빠른 링크",
     "aboutUs": "회사 소개",
+    "userGuides": "사용 가이드",
     "helpCenter": "도움말 센터",
     "legal": "법적 정보",
     "privacyPolicy": "개인정보 처리방침",
