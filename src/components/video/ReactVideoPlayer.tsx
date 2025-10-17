@@ -120,7 +120,9 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
   
   // 🚀 简化：只保留核心状态
   const [isPlaying, setIsPlaying] = useState(autoplay)
-  const [isMuted, setIsMuted] = useState(muted)
+  // 所有设备点击播放默认不静音（有声音）
+  const [isMuted, setIsMuted] = useState(false)
+  const [hasEnded, setHasEnded] = useState(false)
 
   // 视频缓存相关状态（保留用于内部逻辑）
   const [isVideoCached, setIsVideoCached] = useState(false)
@@ -199,7 +201,7 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
   const handlePlayPause = useCallback(async () => {
     const video = videoRef.current
     if (!video) return
-    
+
     if (isPlaying) {
       video.pause()
       // 清除全局播放状态
@@ -207,18 +209,31 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
       return
     }
 
+    // 如果视频已结束,重置状态
+    if (hasEnded) {
+      setHasEnded(false)
+      video.currentTime = 0
+    }
+
     // 播放前清除之前的错误
     clearError()
-    
+
+    // 🚀 点击播放时确保有声音
+    if (isMuted) {
+      console.log('🔊 播放: 取消静音')
+      video.muted = false
+      setIsMuted(false)
+    }
+
     // 🚀 智能判断是否需要显示加载动画
     const needsLoading = video.readyState < 3 // HAVE_FUTURE_DATA
-    console.log('🔍 点击播放 - 视频准备状态:', video.readyState, needsLoading ? '需要加载' : '可以播放')
-    
+    console.log('🔍 点击播放 - 视频准备状态:', video.readyState, needsLoading ? '需要加载' : '可以播放', '静音状态:', video.muted)
+
     // 只在真正需要加载时显示加载动画
     if (needsLoading) {
       setIsLoadingPlay(true)
     }
-    
+
     // 🚀 简化：使用Context设置当前播放视频，其他视频会自动暂停
     setCurrentPlaying(currentVideoId)
 
@@ -434,7 +449,7 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
     }
   }, [videoId, currentVideoId, videoUrl])
 
-  // 检查视频缓存状态并设置实际播放URL
+  // 🚀 优化：移除延迟，立即检查视频缓存状态 - 解决移动端加载失败问题
   useEffect(() => {
     if (!videoId) {
       return
@@ -448,19 +463,32 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
       try {
         addCacheLog(`检查视频缓存状态 - 视频ID: ${currentVideoId}`)
 
+        // 🚀 移动端优化：先设置原始URL，不阻塞渲染
+        setActualVideoUrl(videoUrl)
+
         // 验证服务是否可用
         if (!smartPreloadService || typeof smartPreloadService.isVideoCached !== 'function') {
-          setActualVideoUrl(videoUrl)
+          console.log('[VideoPlayer] ⚠️ 缓存服务不可用，使用原始URL')
           return
         }
 
-        // 检查是否已缓存
-        const isCached = await smartPreloadService.isVideoCached(currentVideoId)
+        // 🚀 使用 Promise.race 设置超时，避免长时间等待
+        const timeoutPromise = new Promise<boolean>((resolve) => {
+          setTimeout(() => {
+            console.log('[VideoPlayer] ⏰ 缓存检查超时(500ms)，使用原始URL')
+            resolve(false)
+          }, 500) // 500ms 超时
+        })
+
+        const cacheCheckPromise = smartPreloadService.isVideoCached(currentVideoId)
+
+        // 并行检查缓存，超时则使用原始URL
+        const isCached = await Promise.race([cacheCheckPromise, timeoutPromise])
         setIsVideoCached(isCached)
 
-        // 如果没有缓存，额外检查是否使用了错误的ID
+        // 如果没有缓存，额外检查是否使用了错误的ID (不阻塞)
         if (!isCached && videoId && videoId !== currentVideoId) {
-          await smartPreloadService.isVideoCached(videoId)
+          smartPreloadService.isVideoCached(videoId).catch(() => {})
         }
 
         if (isCached) {
@@ -472,27 +500,21 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
             addCacheLog(`✅ 使用本地缓存视频播放`)
             console.log(`[VideoPlayer] ✅ 使用缓存视频: ${currentVideoId}`)
           } else {
-            setActualVideoUrl(videoUrl)
-            addCacheLog(`⚠️ 缓存视频URL获取失败，使用原始URL`)
+            addCacheLog(`⚠️ 缓存视频URL获取失败，继续使用原始URL`)
           }
         } else {
-          setActualVideoUrl(videoUrl)
           addCacheLog(`❌ 视频未缓存，使用远程URL`)
         }
       } catch (error) {
         console.error('[VideoPlayer] 检查缓存失败:', error)
         addCacheLog(`❌ 缓存检查失败: ${error instanceof Error ? error.message : '未知错误'}`)
-        setActualVideoUrl(videoUrl)
+        // 已经设置了原始URL，无需再次设置
       }
     }
 
-    // 添加短暂延迟确保组件完全挂载
-    const timer = setTimeout(() => {
-      checkVideoCache()
-    }, 100) // 100ms 延迟
-
-    return () => clearTimeout(timer)
-  }, [currentVideoId, videoUrl])
+    // 🚀 立即执行，不使用延迟
+    checkVideoCache()
+  }, [currentVideoId, videoUrl, videoId])
 
 
   // 🚀 使用代理URL以解决移动端CORS问题
@@ -629,6 +651,16 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
     }
   }, [currentPlayingId, currentVideoId, isPlaying])
 
+  // 🚀 确保视频初始状态不静音（所有设备）
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    console.log('🔊 视频初始化: 设置为不静音')
+    video.muted = false
+    setIsMuted(false)
+  }, [])
+
   // 清理定时器
   useEffect(() => {
     return () => {
@@ -667,12 +699,15 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
           deviceInfo.isMobile ? "metadata" : // 其他移动设备预加载元数据
           "metadata" // 桌面端预加载元数据
         }
-        controls={
-          // 只有在播放状态下且环境变量启用时才显示原生控件
-          isPlaying && import.meta.env.VITE_VIDEO_PLAYER_NATIVE_CONTROLS === 'true'
-        }
+        controls={false}
         controlsList={deviceInfo.isMobile ? "nodownload noremoteplayback" : "nodownload"}
         className="w-full h-full object-cover"
+        style={{
+          // 完全隐藏系统播放控件
+          WebkitAppearance: 'none',
+          MozAppearance: 'none',
+          appearance: 'none',
+        } as React.CSSProperties}
         onLoadStart={() => {
           addCacheLog(`📥 开始加载视频 - ${isVideoCached ? '本地缓存' : '远程'}`)
           handleLoadStart?.()
@@ -710,6 +745,16 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
           setIsPlaying(false)
           setShowControls(true)
           onPause?.()
+        }}
+        onEnded={() => {
+          console.log('📱 视频播放结束')
+          setIsPlaying(false)
+          setHasEnded(true)
+          setShowControls(false)
+          // 重置到开始位置
+          if (videoRef.current) {
+            videoRef.current.currentTime = 0
+          }
         }}
         onError={(error) => {
           
@@ -767,21 +812,22 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
       {(() => {
         // 正在播放时不显示任何覆盖层
         if (isPlaying) return false
-        
-        // 移动端逻辑：未播放时始终显示播放按钮，或在加载/错误时显示相应状态
+
+        // 移动端逻辑：未播放时始终显示播放按钮，或在加载/错误时显示相应状态，或播放结束后显示
         if (isMobile) {
-          return !isPlaying && (isLoadingPlay || !hasEverPlayed || playbackError)
+          return !isPlaying && (isLoadingPlay || !hasEverPlayed || playbackError || hasEnded)
         }
-        
-        // 桌面端逻辑：只在用户交互时显示覆盖层
+
+        // 桌面端逻辑：只在用户交互时显示覆盖层，或播放结束后显示
         if (isDesktop) {
           return !isPlaying && (
             isLoadingPlay ||  // 点击播放或悬浮播放加载中
             playbackError ||  // 播放错误
+            hasEnded ||  // 播放结束
             (isHovering && !hasEverPlayed) // 悬浮且未播放过时显示播放按钮
           )
         }
-        
+
         return false
       })() && (
         <div className="absolute inset-0 flex items-center justify-center z-10">

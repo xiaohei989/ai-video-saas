@@ -1,10 +1,11 @@
-import { useMemo, useEffect, useState } from 'react'
+import { useMemo, useEffect, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLanguageRouter } from '@/hooks/useLanguageRouter'
-import { Play, Loader2, Clock, Zap, Monitor, Smartphone, Lock } from '@/components/icons'
+import { Play, Loader2, Clock, Zap, Monitor, Smartphone, Lock, AlertCircle } from '@/components/icons'
 import { Template } from '../data/templates'
 import { localizeTemplate } from '../data/templates/index'
 import { Progress } from '@/components/ui/progress'
+import { Button } from '@/components/ui/button'
 import { CustomSelect } from '@/components/ui/custom-select'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
@@ -55,19 +56,43 @@ export default function PreviewPanel({
 }: PreviewPanelProps) {
   const { t, i18n } = useTranslation()
   const { user } = useAuthContext()
-  
+
   // 移动端检测（和TemplatesPage保持一致）
   const isMobile = useMemo(() => {
     if (typeof window === 'undefined') return false
     return window.innerWidth <= 768
   }, [])
-  
+
   // 本地化模板
   const localizedTemplate = localizeTemplate(template, i18n.language)
   const { navigateTo } = useLanguageRouter()
   // Force re-render every second to update time
   const [, setTick] = useState(0)
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false)
+
+  // 🚀 视频加载错误状态和重试机制
+  const [videoLoadError, setVideoLoadError] = useState(false)
+  const [retryCount, setRetryCount] = useState(0)
+  const MAX_RETRIES = 2
+
+  // 🚀 处理视频加载错误
+  const handleVideoError = useCallback((error: any) => {
+    console.error('[PreviewPanel] 视频加载失败:', error)
+    setVideoLoadError(true)
+  }, [])
+
+  // 🚀 重新加载视频
+  const handleRetryLoad = useCallback(() => {
+    console.log('[PreviewPanel] 重新加载视频, 尝试次数:', retryCount + 1)
+    setVideoLoadError(false)
+    setRetryCount(prev => prev + 1)
+  }, [retryCount])
+
+  // 🚀 当模板变化时重置错误状态
+  useEffect(() => {
+    setVideoLoadError(false)
+    setRetryCount(0)
+  }, [template.id])
 
   // 查询用户订阅状态
   const { data: subscription } = useQuery({
@@ -257,7 +282,7 @@ export default function PreviewPanel({
                 <div className="relative w-full h-full">
                   {/* 缓存的缩略图作为背景层 */}
                   {template.thumbnailUrl && (
-                    <CachedImage 
+                    <CachedImage
                       src={transformCDNUrl(template.thumbnailUrl)}
                       alt={localizedTemplate.name}
                       className="absolute inset-0 w-full h-full object-cover"
@@ -265,9 +290,53 @@ export default function PreviewPanel({
                       maxAge={24 * 60 * 60 * 1000} // 24小时缓存
                     />
                   )}
+
+                  {/* 🚀 视频加载错误提示 */}
+                  {videoLoadError && retryCount < MAX_RETRIES ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-20">
+                      <div className="bg-card/95 p-6 rounded-lg shadow-lg max-w-sm mx-4 text-center">
+                        <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <AlertCircle className="w-8 h-8 text-red-500" />
+                        </div>
+                        <h3 className="text-lg font-semibold mb-2">{t('videoCreator.videoLoadError') || '视频加载失败'}</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          {isMobile
+                            ? (t('videoCreator.videoLoadErrorMobile') || '移动网络可能不稳定，请重试')
+                            : (t('videoCreator.videoLoadErrorDesktop') || '网络连接可能有问题，请重试')
+                          }
+                        </p>
+                        <Button
+                          onClick={handleRetryLoad}
+                          className="w-full"
+                        >
+                          {t('videoCreator.retry') || '重新加载'}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : videoLoadError && retryCount >= MAX_RETRIES ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-20">
+                      <div className="bg-card/95 p-6 rounded-lg shadow-lg max-w-sm mx-4 text-center">
+                        <div className="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <AlertCircle className="w-8 h-8 text-yellow-500" />
+                        </div>
+                        <h3 className="text-lg font-semibold mb-2">{t('videoCreator.videoUnavailable') || '预览视频暂时无法加载'}</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          {t('videoCreator.videoUnavailableDesc') || '不影响视频生成功能，您可以继续配置参数并生成视频'}
+                        </p>
+                        <Button
+                          onClick={() => setVideoLoadError(false)}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          {t('common.close') || '关闭'}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : null}
+
                   {/* 视频播放器在前景层 */}
                   <ReactVideoPlayer
-                    key={`${template.id}-${videoUrl || transformCDNUrl(template.previewUrl) || ''}`}
+                    key={`${template.id}-${retryCount}-${videoUrl || transformCDNUrl(template.previewUrl) || ''}`}
                     src={videoUrl || transformCDNUrl(template.previewUrl) || ''}
                     poster={transformCDNUrl(template.thumbnailUrl)}
                     className="relative z-10 w-full h-full"
@@ -278,6 +347,7 @@ export default function PreviewPanel({
                     alt={localizedTemplate.name}
                     videoId={template.id}
                     videoTitle={localizedTemplate.name}
+                    onError={handleVideoError}
                   />
                 </div>
               ) : (

@@ -34,11 +34,36 @@ export default function VideoCreator() {
 
   // SEO优化
   useSEO('create')
-  
+
+  // 🚀 检查模板数据是否已加载
+  const [isTemplatesLoaded, setIsTemplatesLoaded] = useState(false)
+
+  // 🚀 等待模板数据加载完成
+  useEffect(() => {
+    // 检查 templates 是否已加载（通过 import.meta.glob 异步加载）
+    if (templates && templates.length > 0) {
+      console.log('[VideoCreator] ✅ 模板数据已加载:', templates.length)
+      setIsTemplatesLoaded(true)
+    } else {
+      console.log('[VideoCreator] ⏳ 等待模板数据加载...')
+      // 延迟重试检查
+      const retryTimer = setTimeout(() => {
+        if (templates && templates.length > 0) {
+          setIsTemplatesLoaded(true)
+        } else {
+          console.error('[VideoCreator] ❌ 模板数据加载失败')
+          // 即使失败也标记为已加载，避免无限等待
+          setIsTemplatesLoaded(true)
+        }
+      }, 1000)
+      return () => clearTimeout(retryTimer)
+    }
+  }, [])
+
   // Find template from URL parameter or default to first template
   const foundTemplate = templateIdFromUrl ? templates.find(t => t.id === templateIdFromUrl || t.slug === templateIdFromUrl) : null
   const initialTemplate = foundTemplate || templates[0]
-  
+
   const [selectedTemplate, setSelectedTemplate] = useState(initialTemplate)
   const [params, setParams] = useState<Record<string, any>>(() => {
     // 首先尝试从URL参数恢复之前的配置
@@ -524,6 +549,18 @@ export default function VideoCreator() {
     }
   }
 
+  // 🚀 如果模板数据未加载，显示加载状态
+  if (!isTemplatesLoaded || !selectedTemplate) {
+    return (
+      <div className="h-full bg-background -mx-4 -my-6 sm:-mx-6 lg:-mx-8 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-muted-foreground">{t('videoCreator.loadingTemplates') || '正在加载模板数据...'}</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="h-full bg-background -mx-4 -my-6 sm:-mx-6 lg:-mx-8">
       {/* 桌面端：左右分栏布局 */}
@@ -542,7 +579,7 @@ export default function VideoCreator() {
             isGenerating={isGenerating}
           />
         </div>
-        
+
         {/* 右侧：预览面板 + 提示词区域 */}
         <div className="flex-1 flex flex-col min-h-0">
           <div className="flex-1">

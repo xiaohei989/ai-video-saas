@@ -16,21 +16,72 @@ class SimpleTemplatePreloadService {
   private cachedVideos = new Set<string>() // 跟踪已完整缓存的视频
   private isProcessing = false
   private activePreloads = 0 // 当前活跃的预加载任务数
-  private readonly MAX_CONCURRENT = 2 // 最大并发预加载数量
+  private readonly MAX_CONCURRENT = 4 // 🚀 最大并发预加载数量从2提升到4，优化移动端跳转体验
   private activeVideoElements = new Set<HTMLVideoElement>() // 跟踪活跃的视频元素
+  private lastRouteChangeTime = 0 // 记录最后一次路由切换时间
 
   constructor() {
     // 🛑 页面刷新时立即清理所有预加载任务
     window.addEventListener('beforeunload', () => {
       this.clearAllPreloads()
     })
-    
-    // 🛑 页面可见性变化时的处理
+
+    // 🛑 页面可见性变化时的处理 - 优化移动端切换
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
+        console.log('[SimplePreload] 🔄 页面隐藏，清理预加载任务')
         this.clearAllPreloads()
+      } else {
+        console.log('[SimplePreload] ✅ 页面可见，重置状态')
+        // 页面重新可见时，重置状态
+        this.lastRouteChangeTime = Date.now()
       }
     })
+
+    // 🚀 监听路由变化 (通过 popstate 和 pushstate)
+    this.setupRouteChangeListeners()
+  }
+
+  /**
+   * 🚀 设置路由变化监听器
+   */
+  private setupRouteChangeListeners(): void {
+    // 监听浏览器后退/前进
+    window.addEventListener('popstate', () => {
+      console.log('[SimplePreload] 🔄 检测到路由变化(popstate)，清理预加载任务')
+      this.handleRouteChange()
+    })
+
+    // 监听 pushState (需要劫持原生方法)
+    const originalPushState = history.pushState
+    history.pushState = (...args) => {
+      console.log('[SimplePreload] 🔄 检测到路由变化(pushState)，清理预加载任务')
+      this.handleRouteChange()
+      return originalPushState.apply(history, args)
+    }
+
+    // 监听 replaceState
+    const originalReplaceState = history.replaceState
+    history.replaceState = (...args) => {
+      console.log('[SimplePreload] 🔄 检测到路由变化(replaceState)，清理预加载任务')
+      this.handleRouteChange()
+      return originalReplaceState.apply(history, args)
+    }
+  }
+
+  /**
+   * 🚀 处理路由变化
+   */
+  private handleRouteChange(): void {
+    const now = Date.now()
+    // 防止频繁触发，100ms内只处理一次
+    if (now - this.lastRouteChangeTime < 100) {
+      return
+    }
+    this.lastRouteChangeTime = now
+
+    // 清理旧页面的预加载任务
+    this.clearAllPreloads()
   }
 
   /**
