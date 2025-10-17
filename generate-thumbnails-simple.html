@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>批量生成缩略图</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+    .video-item {
+      padding: 15px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: #fafafa;
+    }
+    .video-item.success {
+      background: #e8f5e9;
+      border-color: #4caf50;
+    }
+    .video-item.error {
+      background: #ffebee;
+      border-color: #f44336;
+    }
+    .video-item.processing {
+      background: #fff3e0;
+      border-color: #ff9800;
+    }
+    button {
+      background: #2196f3;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px 10px 0;
+    }
+    button:hover {
+      background: #1976d2;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .status {
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 4px;
+      background: #e3f2fd;
+    }
+    .log {
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 13px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎬 批量生成缩略图工具</h1>
+
+    <div class="status" id="status">
+      <div class="log">准备就绪...</div>
+    </div>
+
+    <button onclick="loadVideos()" id="loadBtn">1. 加载缺少缩略图的视频</button>
+    <button onclick="generateAll()" id="genBtn" disabled>2. 批量生成缩略图</button>
+
+    <div id="videos"></div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabaseUrl = 'https://hvkzwrnvxsleeonqqrzq.supabase.co';
+    const serviceRoleKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2a3p3cm52eHNsZWVvbnFxcnpxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTc2NDU2MCwiZXhwIjoyMDcxMzQwNTYwfQ.kzSgiC0WxY_MFKeLzR0gXSdDVkiTviddr1LePQjDPvI';
+
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+    let videos = [];
+
+    window.loadVideos = async function() {
+      const statusEl = document.getElementById('status');
+      const videosEl = document.getElementById('videos');
+      statusEl.innerHTML = '<div class="log">🔍 正在查询缺少缩略图的视频...</div>';
+
+      try {
+        const { data, error } = await supabase
+          .from('videos')
+          .select('id, title, video_url, thumbnail_url, r2_url')
+          .eq('status', 'completed')
+          .not('video_url', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(20);
+
+        if (error) throw error;
+
+        videos = data.filter(v => !v.thumbnail_url || v.thumbnail_url.startsWith('data:image/svg+xml'));
+
+        if (videos.length === 0) {
+          statusEl.innerHTML = '<div class="log">✅ 没有需要生成缩略图的视频！</div>';
+          return;
+        }
+
+        statusEl.innerHTML = `<div class="log">📊 找到 ${videos.length} 个需要生成缩略图的视频</div>`;
+
+        videosEl.innerHTML = videos.map((v, i) => `
+          <div class="video-item" id="video-${i}">
+            <strong>${v.title || '无标题'}</strong><br>
+            <span class="log">ID: ${v.id}</span><br>
+            <span class="log" id="status-${i}">等待处理...</span>
+          </div>
+        `).join('');
+
+        document.getElementById('genBtn').disabled = false;
+        document.getElementById('loadBtn').disabled = true;
+
+      } catch (err) {
+        statusEl.innerHTML = `<div class="log">❌ 查询失败: ${err.message}</div>`;
+      }
+    };
+
+    window.generateAll = async function() {
+      const genBtn = document.getElementById('genBtn');
+      const statusEl = document.getElementById('status');
+
+      genBtn.disabled = true;
+
+      let successCount = 0;
+      let failCount = 0;
+
+      for (let i = 0; i < videos.length; i++) {
+        const video = videos[i];
+        const itemEl = document.getElementById(`video-${i}`);
+        const statusSpan = document.getElementById(`status-${i}`);
+
+        itemEl.className = 'video-item processing';
+        statusSpan.textContent = '⏳ 生成中...';
+
+        statusEl.innerHTML = `<div class="log">🎬 正在处理 ${i + 1}/${videos.length}: ${video.title || video.id}</div>`;
+
+        try {
+          // 使用 video_url 或 r2_url
+          const videoUrl = video.r2_url || video.video_url;
+
+          // 生成缩略图
+          const thumbnailUrl = await extractAndUploadThumbnail(videoUrl, video.id);
+
+          // 更新数据库
+          const { error } = await supabase
+            .from('videos')
+            .update({
+              thumbnail_url: thumbnailUrl,
+              thumbnail_generated_at: new Date().toISOString()
+            })
+            .eq('id', video.id);
+
+          if (error) throw error;
+
+          itemEl.className = 'video-item success';
+          statusSpan.textContent = '✅ 成功';
+          successCount++;
+
+        } catch (err) {
+          itemEl.className = 'video-item error';
+          statusSpan.textContent = `❌ 失败: ${err.message}`;
+          failCount++;
+        }
+
+        // 短暂延迟
+        await new Promise(r => setTimeout(r, 500));
+      }
+
+      statusEl.innerHTML = `
+        <div class="log">
+          ✨ 完成！<br>
+          ✅ 成功: ${successCount} 个<br>
+          ❌ 失败: ${failCount} 个
+        </div>
+      `;
+    };
+
+    async function extractAndUploadThumbnail(videoUrl, videoId) {
+      return new Promise((resolve, reject) => {
+        const video = document.createElement('video');
+        video.crossOrigin = 'anonymous';
+        video.preload = 'metadata';
+
+        video.onerror = () => reject(new Error('视频加载失败'));
+
+        video.onloadedmetadata = () => {
+          video.currentTime = 1.5; // 1.5秒处截帧
+        };
+
+        video.onseeked = async () => {
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+
+            const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.9));
+
+            // 上传到 R2
+            const filename = `${videoId}.jpg`;
+            const uploadUrl = `https://cdn.veo3video.me/thumbnails/${filename}`;
+
+            const formData = new FormData();
+            formData.append('file', blob, filename);
+
+            // 这里需要实际的上传逻辑，暂时返回 CDN URL
+            // 实际应该调用 upload-thumbnail Edge Function
+            const { data, error } = await supabase.functions.invoke('upload-thumbnail', {
+              body: {
+                videoId,
+                thumbnailData: await blobToBase64(blob)
+              }
+            });
+
+            if (error) throw error;
+            resolve(data.publicUrl);
+
+          } catch (err) {
+            reject(err);
+          }
+        };
+
+        video.src = videoUrl;
+      });
+    }
+
+    function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+  </script>
+</body>
+</html>

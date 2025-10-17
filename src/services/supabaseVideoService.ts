@@ -1146,9 +1146,13 @@ class SupabaseVideoService {
 
       // 动态导入避免循环依赖
       const { extractAndUploadThumbnail } = await import('../utils/videoThumbnail')
-      
+
+      // 🎯 从视频参数中获取 aspectRatio,默认为 16:9
+      const aspectRatio = (video.parameters?.aspectRatio || '16:9') as '16:9' | '9:16'
+      console.log(`[Thumbnail] 生成缩略图 - 视频ID: ${video.id}, aspectRatio: ${aspectRatio}`)
+
       // 先生成并上传高清缩略图（R2）
-      const fullUrl = await extractAndUploadThumbnail(video.video_url, video.id)
+      const fullUrl = await extractAndUploadThumbnail(video.video_url, video.id, { aspectRatio })
 
       // 再由服务端生成模糊图（Edge Function，避免CORS）
       let blurUrl: string | null = null
@@ -1231,8 +1235,12 @@ class SupabaseVideoService {
 
       const frameTime = typeof options.frameTime === 'number' ? options.frameTime : 1.5
 
+      // 🎯 从视频参数中获取 aspectRatio,默认为 16:9
+      const aspectRatio = (v.parameters?.aspectRatio || '16:9') as '16:9' | '9:16'
+      console.log(`[RegenerateThumbnail] 重新生成缩略图 - 视频ID: ${v.id}, aspectRatio: ${aspectRatio}, frameTime: ${frameTime}`)
+
       // 仅生成高清（R2）
-      const fullUrl = await extractAndUploadThumbnail(v.video_url, v.id, { frameTime })
+      const fullUrl = await extractAndUploadThumbnail(v.video_url, v.id, { frameTime, aspectRatio })
 
       // Edge Function 生成模糊图
       let blurUrl: string | null = null

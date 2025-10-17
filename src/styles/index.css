@@ -1107,3 +1107,60 @@ html {
     scroll-behavior: auto;
   }
 }
+
+/* 完全隐藏视频播放器的系统控件 */
+video::-webkit-media-controls {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+video::-webkit-media-controls-enclosure {
+  display: none !important;
+}
+
+video::-webkit-media-controls-panel {
+  display: none !important;
+}
+
+video::-webkit-media-controls-play-button {
+  display: none !important;
+}
+
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+}
+
+video::-webkit-media-controls-timeline {
+  display: none !important;
+}
+
+video::-webkit-media-controls-current-time-display {
+  display: none !important;
+}
+
+video::-webkit-media-controls-time-remaining-display {
+  display: none !important;
+}
+
+video::-webkit-media-controls-mute-button {
+  display: none !important;
+}
+
+video::-webkit-media-controls-volume-slider {
+  display: none !important;
+}
+
+video::-webkit-media-controls-fullscreen-button {
+  display: none !important;
+}
+
+/* Firefox */
+video::-moz-media-controls {
+  display: none !important;
+}
+
+/* IE/Edge */
+video::-ms-media-controls {
+  display: none !important;
+}

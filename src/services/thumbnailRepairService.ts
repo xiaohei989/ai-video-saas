@@ -36,7 +36,7 @@ export async function repairThumbnail(
     console.log('[ThumbnailRepair] 步骤1：获取视频信息')
     const { data: video, error: queryError } = await supabase
       .from('videos')
-      .select('id, title, video_url, status')
+      .select('id, title, video_url, status, parameters')
       .eq('id', videoId)
       .single()
 
@@ -50,13 +50,18 @@ export async function repairThumbnail(
       return await uploadPlaceholderThumbnail(videoId)
     }
 
+    // 🎯 从视频参数中获取 aspectRatio,默认为 16:9
+    const aspectRatio = ((video.parameters as any)?.aspectRatio || '16:9') as '16:9' | '9:16'
+    console.log(`[ThumbnailRepair] 检测到视频 aspectRatio: ${aspectRatio}`)
+
     // Step 2: 尝试生成真正的视频缩略图
     console.log('[ThumbnailRepair] 步骤2：使用现有功能生成真正的视频缩略图')
     try {
       const thumbnailUrl = await extractAndUploadThumbnail(video.video_url, videoId, {
         frameTime: frameTime,
         quality: 0.9,
-        format: 'webp'
+        format: 'webp',
+        aspectRatio  // ✅ 新增aspectRatio参数
       })
 
       console.log('[ThumbnailRepair] 真实缩略图生成成功:', thumbnailUrl)

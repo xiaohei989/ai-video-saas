@@ -19,6 +19,7 @@ const corsHeaders = {
 interface AutoGenerateRequest {
   videoId: string
   videoUrl: string
+  aspectRatio?: '16:9' | '9:16'  // ✅ 新增aspectRatio参数
   migrationCompletedAt?: string
   timeSinceMigration?: number
 }
@@ -80,15 +81,22 @@ async function uploadToR2(blob: Blob, videoId: string): Promise<string> {
  */
 /**
  * 尝试单次截图
+ * @param videoUrl 视频URL
+ * @param aspectRatio 宽高比 (默认 16:9)
  */
-async function attemptThumbnailGeneration(videoUrl: string): Promise<Blob> {
+async function attemptThumbnailGeneration(videoUrl: string, aspectRatio: '16:9' | '9:16' = '16:9'): Promise<Blob> {
   const baseUrl = 'https://veo3video.me'
+
+  // 🎯 根据宽高比动态设置分辨率
+  const [width, height] = aspectRatio === '9:16' ? [540, 960] : [960, 540]
+  console.log(`[ThumbnailGeneration] aspectRatio: ${aspectRatio}, dimensions: ${width}x${height}`)
+
   const options = [
     'mode=frame',
     'time=0.1s',
     'format=jpg',
-    'width=960',
-    'height=540',
+    `width=${width}`,   // ✅ 动态宽度
+    `height=${height}`,  // ✅ 动态高度
     'fit=cover',
     'quality=95'
   ].join(',')
@@ -118,10 +126,13 @@ async function attemptThumbnailGeneration(videoUrl: string): Promise<Blob> {
  * 带重试逻辑的缩略图生成
  * 新上传的视频可能需要 Cloudflare 处理后才能截图
  * 重试策略: 立即 → 30秒后 → 2分钟后
+ * @param videoUrl 视频URL
+ * @param aspectRatio 宽高比
  */
-async function generateWithCloudflareMedia(videoUrl: string): Promise<Blob> {
+async function generateWithCloudflareMedia(videoUrl: string, aspectRatio: '16:9' | '9:16' = '16:9'): Promise<Blob> {
   console.log('[AutoThumbnail] 使用 Cloudflare Media Transformations 生成缩略图')
   console.log(`[AutoThumbnail] 视频 URL: ${videoUrl}`)
+  console.log(`[AutoThumbnail] 宽高比: ${aspectRatio}`)
 
   const retryDelays = [0, 30000, 120000] // 0秒、30秒、2分钟
   let lastError: Error | null = null
@@ -137,7 +148,7 @@ async function generateWithCloudflareMedia(videoUrl: string): Promise<Blob> {
     }
 
     try {
-      const blob = await attemptThumbnailGeneration(videoUrl)
+      const blob = await attemptThumbnailGeneration(videoUrl, aspectRatio)  // ✅ 传递aspectRatio
       console.log(`[AutoThumbnail] ✅ 成功! 尝试次数: ${attempt + 1}, 大小: ${(blob.size / 1024).toFixed(2)} KB`)
       return blob
     } catch (error) {
@@ -169,7 +180,7 @@ serve(async (req) => {
 
     const requestData: AutoGenerateRequest = await req.json()
     videoId = requestData.videoId  // 🆕 保存videoId
-    const { videoUrl, timeSinceMigration } = requestData
+    const { videoUrl, aspectRatio = '16:9', timeSinceMigration } = requestData  // ✅ 读取aspectRatio
 
     if (!videoId || !videoUrl) {
       return new Response(
@@ -186,6 +197,7 @@ serve(async (req) => {
 
     console.log(`[AutoThumbnail] 视频ID: ${videoId}`)
     console.log(`[AutoThumbnail] 视频URL: ${videoUrl}`)
+    console.log(`[AutoThumbnail] 宽高比: ${aspectRatio}`)  // ✅ 新增日志
 
     // 创建 Supabase Admin 客户端（提前创建，用于状态更新）
     const supabase = createClient(
@@ -229,7 +241,7 @@ serve(async (req) => {
 
     try {
       console.log('[AutoThumbnail] 🚀 使用 Cloudflare Media Transformations 生成缩略图...')
-      thumbnailBlob = await generateWithCloudflareMedia(videoUrl)
+      thumbnailBlob = await generateWithCloudflareMedia(videoUrl, aspectRatio)  // ✅ 传递aspectRatio
       console.log(`[AutoThumbnail] ✅ 缩略图生成成功，大小: ${(thumbnailBlob.size / 1024).toFixed(2)} KB`)
     } catch (error) {
       console.error('[AutoThumbnail] ❌ Cloudflare Media Transformations 失败:', error)

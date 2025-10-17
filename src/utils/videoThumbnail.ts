@@ -116,10 +116,27 @@ export async function extractAndUploadThumbnail(
       }
     })
     
-    // 错误处理
+    // 🔍 增强错误处理 - 添加详细的CORS诊断信息
     video.addEventListener('error', (e) => {
-      console.error(`[ThumbnailUpload] 视频加载失败: ${videoId}`, e)
-      reject(new Error(`Failed to load video: ${e}`))
+      const errorDetails = {
+        videoId,
+        videoUrl,
+        aspectRatio: config.aspectRatio || '16:9',
+        error: e,
+        videoSrc: video.src,
+        crossOrigin: video.crossOrigin,
+        networkState: video.networkState,
+        readyState: video.readyState,
+        currentTime: video.currentTime
+      }
+      console.error(`[ThumbnailUpload] 视频加载失败 - CORS诊断:`, errorDetails)
+
+      // 检查是否是CORS错误
+      if (video.networkState === 3) { // NETWORK_NO_SOURCE
+        console.error(`[ThumbnailUpload] ❌ 可能的CORS错误 - 检查R2 Bucket CORS配置`)
+      }
+
+      reject(new Error(`Failed to load video: ${JSON.stringify(errorDetails)}`))
     })
     
     // 开始加载
@@ -382,9 +399,19 @@ export async function extractVideoThumbnail(
       }
     })
     
-    // 增强错误处理，包括CORS和代理错误
+    // 🔍 增强错误处理，包括CORS和代理错误
     video.addEventListener('error', async (e) => {
-      console.error(`[VIDEO THUMBNAIL] 视频加载失败: ${videoUrl}`, e)
+      const errorDetails = {
+        videoUrl,
+        error: e,
+        videoSrc: video.src,
+        crossOrigin: video.crossOrigin,
+        networkState: video.networkState,
+        readyState: video.readyState,
+        errorCode: (video.error as any)?.code,
+        errorMessage: (video.error as any)?.message
+      }
+      console.error(`[VIDEO THUMBNAIL] 视频加载失败 - CORS诊断:`, errorDetails)
       
       // 如果是代理请求失败，尝试直接访问原始URL
       if (videoUrl.startsWith('/api/r2/')) {
