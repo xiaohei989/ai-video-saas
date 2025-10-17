@@ -479,6 +479,10 @@
   },
   "videoCreator": {
     "outputQuality": "出力品質",
+    "veo3Fast": "Veo 3.0 Fast (高速 · 20クレジット)",
+    "veo3High": "Veo 3.0 High Quality (高品質 · 100クレジット)",
+    "veo31Fast": "Veo 3.1 Fast (高速 · 20クレジット)",
+    "veo31High": "Veo 3.1 High Quality (高品質 · 100クレジット)",
     "fastGeneration": "⚡ 高速生成 (1-2分 · プレビュー用)",
     "highQuality": "✨ 高品質 (3-6分 · 最高の結果)",
     "aspectRatio": "アスペクト比",
@@ -535,6 +539,7 @@
     "createVideo": "動画を作成",
     "elapsedTime": "経過時間",
     "generationFailed": "生成失敗",
+    "creditsRefunded": "{{credits}} クレジット返金済み",
     "waitingForProcessing": "処理待ち",
     "untitledVideo": "無題の動画",
     "regenerateTitle": "同じ設定で再生成",

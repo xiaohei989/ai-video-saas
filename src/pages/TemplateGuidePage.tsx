@@ -6,10 +6,12 @@
 import React, { useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import rehypeSlug from 'rehype-slug'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import {
-  Clock,
-  Eye,
-  TrendingUp,
   ChevronRight,
   Play,
   FileText,
@@ -20,6 +22,31 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { TemplateSEOGuide } from '@/types/seo'
+
+// 解析多语言JSON字段的辅助函数
+function parseI18nField(field: any, language: string, fallback: string = ''): string {
+  if (!field) return fallback
+
+  // 如果是字符串且以{开头，尝试解析JSON
+  if (typeof field === 'string') {
+    if (field.startsWith('{')) {
+      try {
+        const parsed = JSON.parse(field)
+        return parsed[language] || parsed.en || parsed.zh || parsed.ja || Object.values(parsed)[0] || fallback
+      } catch (e) {
+        return field
+      }
+    }
+    return field
+  }
+
+  // 如果已经是对象
+  if (typeof field === 'object') {
+    return field[language] || field.en || field.zh || field.ja || Object.values(field)[0] || fallback
+  }
+
+  return fallback
+}
 
 // 获取SEO指南数据
 async function fetchSEOGuide(templateSlug: string, language: string) {
@@ -77,42 +104,120 @@ const Breadcrumbs: React.FC<BreadcrumbProps> = ({ items, lang }) => (
 
 // 目录组件
 interface TableOfContentsProps {
-  content: string
+  t: any
 }
 
-const TableOfContents: React.FC<TableOfContentsProps> = ({ content }) => {
-  const headings = React.useMemo(() => {
-    const lines = content.split('\n')
-    return lines
-      .filter(line => line.startsWith('## ') || line.startsWith('### '))
-      .map(line => {
-        const level = line.startsWith('## ') ? 2 : 3
-        const text = line.replace(/^#{2,3}\s+/, '')
-        const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')
-        return { level, text, id }
+const TableOfContents: React.FC<TableOfContentsProps> = ({ t }) => {
+  const [headings, setHeadings] = React.useState<Array<{ level: number; text: string; id: string }>>([])
+  const [activeId, setActiveId] = React.useState<string>('')
+
+  // 从 DOM 中提取已渲染的标题
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      const markdownContent = document.querySelector('.markdown-content')
+      if (!markdownContent) return
+
+      const headingElements = markdownContent.querySelectorAll('h2[id], h3[id]')
+      const extractedHeadings = Array.from(headingElements).map(el => {
+        // 获取纯文本，排除可能的锚点链接
+        const text = el.textContent || ''
+        return {
+          level: el.tagName === 'H2' ? 2 : 3,
+          text: text,
+          id: el.id
+        }
       })
-  }, [content])
+
+      setHeadings(extractedHeadings)
+    }, 200) // 等待 Markdown 渲染完成
+
+    return () => clearTimeout(timeout)
+  }, [])
+
+  // 监听滚动，高亮当前章节
+  React.useEffect(() => {
+    if (headings.length === 0) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveId(entry.target.id)
+          }
+        })
+      },
+      {
+        rootMargin: '-100px 0px -80% 0px',
+        threshold: 0
+      }
+    )
+
+    headings.forEach((heading) => {
+      const element = document.getElementById(heading.id)
+      if (element) {
+        observer.observe(element)
+      }
+    })
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [headings])
 
   if (headings.length === 0) return null
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault()
+    const element = document.getElementById(id)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      window.history.pushState(null, '', `#${id}`)
+    }
+  }
 
   return (
     <Card className="p-6 mb-8 sticky top-20">
       <div className="flex items-center gap-2 mb-4">
         <FileText className="h-5 w-5 text-primary" />
-        <h2 className="font-semibold text-lg">目录</h2>
+        <h2 className="font-semibold text-lg">{t('guide.tableOfContents')}</h2>
       </div>
-      <nav className="space-y-2">
-        {headings.map((heading, index) => (
-          <a
-            key={index}
-            href={`#${heading.id}`}
-            className={`block text-sm hover:text-primary transition-colors ${
-              heading.level === 3 ? 'pl-4' : ''
-            }`}
-          >
-            {heading.text}
-          </a>
-        ))}
+      <nav className="space-y-1">
+        {headings.map((heading, index) => {
+          const isActive = activeId === heading.id
+          return (
+            <a
+              key={index}
+              href={`#${heading.id}`}
+              onClick={(e) => handleClick(e, heading.id)}
+              className={`
+                block text-sm transition-all duration-200 rounded-md
+                ${heading.level === 2
+                  ? `font-semibold py-2 px-3 ${
+                      isActive
+                        ? 'text-primary bg-primary/10 border-l-2 border-primary'
+                        : 'text-foreground hover:text-primary hover:bg-primary/10'
+                    }`
+                  : `py-1.5 px-3 ml-4 border-l-2 ${
+                      isActive
+                        ? 'text-primary bg-muted border-primary font-medium'
+                        : 'text-muted-foreground hover:text-primary hover:bg-muted border-border hover:border-primary'
+                    }`
+                }
+              `}
+            >
+              <span className="flex items-center gap-2">
+                {heading.level === 3 && (
+                  <ChevronRight
+                    className={`h-3 w-3 flex-shrink-0 transition-all ${
+                      isActive ? 'opacity-100 translate-x-0.5' : 'opacity-50'
+                    }`}
+                  />
+                )}
+                <span className="line-clamp-2">{heading.text}</span>
+              </span>
+            </a>
+          )
+        })}
       </nav>
     </Card>
   )
@@ -123,25 +228,57 @@ interface RelatedTemplatesProps {
   category: string
   currentTemplateId: string
   language: string
+  t: any
 }
 
 const RelatedTemplates: React.FC<RelatedTemplatesProps> = ({
   category,
   currentTemplateId,
-  language
+  language,
+  t
 }) => {
+  // 🎲 生成一个随机种子，只在组件首次挂载时生成（页面刷新时会改变）
+  const [randomSeed] = React.useState(() => Math.random())
+
   const { data: templates } = useQuery({
-    queryKey: ['related-templates', category, currentTemplateId],
+    queryKey: ['related-templates', category, currentTemplateId, randomSeed],
     queryFn: async () => {
+      // 🎲 先获取同分类的模板
       const { data } = await supabase
         .from('templates')
-        .select('id, name, slug, thumbnail_url, description')
+        .select('id, name, slug, thumbnail_url, description, category')
         .eq('category', category)
         .eq('is_active', true)
         .neq('id', currentTemplateId)
-        .limit(3)
+        .limit(20) // 先获取更多候选，然后前端随机选择
 
-      return data || []
+      if (!data || data.length === 0) {
+        // 如果同分类下没有其他模板，尝试推荐其他热门模板
+        const { data: fallbackData } = await supabase
+          .from('templates')
+          .select('id, name, slug, thumbnail_url, description, category')
+          .eq('is_active', true)
+          .neq('id', currentTemplateId)
+          .limit(20)
+
+        if (!fallbackData) return []
+
+        // ✅ 使用 Fisher-Yates 洗牌算法进行随机打乱
+        const shuffled = [...fallbackData]
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+        }
+        return shuffled.slice(0, 3)
+      }
+
+      // ✅ 使用 Fisher-Yates 洗牌算法进行随机打乱
+      const shuffled = [...data]
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+      }
+      return shuffled.slice(0, 3)
     }
   })
 
@@ -149,7 +286,7 @@ const RelatedTemplates: React.FC<RelatedTemplatesProps> = ({
 
   return (
     <section className="mt-12">
-      <h2 className="text-2xl font-bold mb-6">相关模板推荐</h2>
+      <h2 className="text-2xl font-bold mb-6">{t('guide.relatedTemplates')}</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {templates.map((template: any) => (
           <Link
@@ -162,17 +299,17 @@ const RelatedTemplates: React.FC<RelatedTemplatesProps> = ({
                 {template.thumbnail_url && (
                   <img
                     src={template.thumbnail_url}
-                    alt={template.name}
+                    alt={parseI18nField(template.name, language, template.name)}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 )}
               </div>
               <div className="p-4">
                 <h3 className="font-semibold group-hover:text-primary transition-colors">
-                  {template.name}
+                  {parseI18nField(template.name, language, template.name)}
                 </h3>
                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                  {template.description}
+                  {parseI18nField(template.description, language, '')}
                 </p>
               </div>
             </Card>
@@ -186,6 +323,7 @@ const RelatedTemplates: React.FC<RelatedTemplatesProps> = ({
 // 主页面组件
 export default function TemplateGuidePage() {
   const { lang = 'en', slug } = useParams<{ lang: string; slug: string }>()
+  const { t } = useTranslation()
 
   const { data: guide, isLoading, error } = useQuery({
     queryKey: ['template-guide', slug, lang],
@@ -319,9 +457,9 @@ export default function TemplateGuidePage() {
         {/* 面包屑导航 */}
         <Breadcrumbs
           items={[
-            { label: '首页', href: `/${lang}` },
-            { label: '模板', href: `/${lang}/templates` },
-            { label: guide.template_name }
+            { label: t('guide.home'), href: `/${lang}` },
+            { label: t('guide.templates'), href: `/${lang}/templates` },
+            { label: parseI18nField(guide.template_name, lang, guide.template_name) }
           ]}
           lang={lang}
         />
@@ -331,23 +469,7 @@ export default function TemplateGuidePage() {
           <article className="prose prose-lg max-w-none dark:prose-invert">
             {/* 标题和元信息 */}
             <header className="mb-8 not-prose">
-              <h1 className="text-4xl font-bold mb-4">{guide.primary_keyword}</h1>
-
-              {/* 统计信息 */}
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  <span>阅读时间: 5分钟</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Eye className="h-4 w-4" />
-                  <span>{guide.page_views} 次浏览</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <TrendingUp className="h-4 w-4" />
-                  <span>SEO评分: {guide.seo_score}/100</span>
-                </div>
-              </div>
+              <h1 className="text-4xl font-bold mb-4">{guide.meta_title}</h1>
 
               {/* 关键词标签 */}
               {guide.long_tail_keywords && guide.long_tail_keywords.length > 0 && (
@@ -359,6 +481,16 @@ export default function TemplateGuidePage() {
                   ))}
                 </div>
               )}
+
+              {/* CTA 按钮 - 顶部 */}
+              <div className="mt-6">
+                <Button size="lg" asChild>
+                  <Link to={`/${lang}/create?template=${guide.template_id}`}>
+                    <Play className="mr-2 h-5 w-5" />
+                    {t('guide.useThisTemplate')}
+                  </Link>
+                </Button>
+              </div>
             </header>
 
             {/* 简介 */}
@@ -368,9 +500,17 @@ export default function TemplateGuidePage() {
               </div>
             )}
 
-            {/* 主要内容 */}
-            <div className="whitespace-pre-wrap">
-              {guide.guide_content}
+            {/* 主要内容 - Markdown渲染 */}
+            <div className="markdown-content">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[
+                  rehypeSlug,
+                  [rehypeAutolinkHeadings, { behavior: 'wrap' }]
+                ]}
+              >
+                {guide.guide_content}
+              </ReactMarkdown>
             </div>
 
             {/* FAQ部分 */}
@@ -378,7 +518,7 @@ export default function TemplateGuidePage() {
               <section className="mt-12 not-prose">
                 <div className="flex items-center gap-2 mb-6">
                   <HelpCircle className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold">常见问题</h2>
+                  <h2 className="text-2xl font-bold">{t('guide.faq')}</h2>
                 </div>
                 <div className="space-y-4">
                   {guide.faq_items.map((faq: any, index: number) => (
@@ -398,14 +538,14 @@ export default function TemplateGuidePage() {
             {/* CTA按钮 */}
             <div className="mt-12 not-prose">
               <Card className="bg-primary/5 border-primary/20 p-8 text-center">
-                <h3 className="text-2xl font-bold mb-4">准备好开始创作了吗？</h3>
+                <h3 className="text-2xl font-bold mb-4">{t('guide.readyToCreate')}</h3>
                 <p className="text-muted-foreground mb-6">
-                  使用 {guide.template_name} 模板，轻松创建专业级视频内容
+                  {t('guide.useTemplateDescription', { templateName: parseI18nField(guide.template_name, lang, guide.template_name) })}
                 </p>
                 <Button size="lg" asChild>
                   <Link to={`/${lang}/create?template=${guide.template_id}`}>
                     <Play className="mr-2 h-5 w-5" />
-                    立即使用此模板
+                    {t('guide.useThisTemplate')}
                   </Link>
                 </Button>
               </Card>
@@ -414,27 +554,27 @@ export default function TemplateGuidePage() {
 
           {/* 侧边栏 */}
           <aside className="space-y-6">
-            <TableOfContents content={guide.guide_content || ''} />
+            <TableOfContents t={t} />
 
             {/* 模板信息卡片 */}
             <Card className="p-6">
-              <h3 className="font-semibold mb-4">关于此模板</h3>
+              <h3 className="font-semibold mb-4">{t('guide.aboutThisTemplate')}</h3>
               <div className="aspect-video bg-muted rounded-lg overflow-hidden mb-4">
                 {guide.template?.thumbnail_url && (
                   <img
                     src={guide.template.thumbnail_url}
-                    alt={guide.template_name}
+                    alt={parseI18nField(guide.template_name, lang, guide.template_name)}
                     className="w-full h-full object-cover"
                   />
                 )}
               </div>
-              <h4 className="font-medium mb-2">{guide.template_name}</h4>
+              <h4 className="font-medium mb-2">{parseI18nField(guide.template_name, lang, guide.template_name)}</h4>
               <p className="text-sm text-muted-foreground mb-4">
-                {guide.template?.description}
+                {parseI18nField(guide.template?.description, lang, '')}
               </p>
               <Button className="w-full" asChild>
                 <Link to={`/${lang}/templates`}>
-                  查看所有模板
+                  {t('guide.viewAllTemplates')}
                 </Link>
               </Button>
             </Card>
@@ -446,6 +586,7 @@ export default function TemplateGuidePage() {
           category={guide.template?.category || ''}
           currentTemplateId={guide.template_id}
           language={lang}
+          t={t}
         />
       </div>
   )

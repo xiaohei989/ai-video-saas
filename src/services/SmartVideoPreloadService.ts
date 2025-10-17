@@ -175,8 +175,6 @@ class SmartVideoPreloadService {
         rtt: connection.rtt || 300,
         saveData: connection.saveData || false
       }
-      
-      console.log('[SmartPreload] 网络质量更新:', this.networkQuality)
     }
   }
 
@@ -469,13 +467,10 @@ class SmartVideoPreloadService {
       
       // 更新平均加载时间
       const loadTime = Date.now() - startTime
-      this.stats.averageLoadTime = 
-        (this.stats.averageLoadTime * (this.stats.totalPreloaded - 1) + loadTime) / 
+      this.stats.averageLoadTime =
+        (this.stats.averageLoadTime * (this.stats.totalPreloaded - 1) + loadTime) /
         this.stats.totalPreloaded
-      
-      console.log(`[SmartPreload] ✅ 预加载完成: ${taskId}`)
     } catch (error) {
-      console.error(`[SmartPreload] ❌ 预加载失败: ${taskId}`, error)
       
       task.status = 'failed'
       task.retryCount++
@@ -581,7 +576,6 @@ class SmartVideoPreloadService {
       // 首先检查是否已经缓存
       const isCached = await simpleVideoCacheService.isVideoCached(videoId)
       if (isCached) {
-        console.log(`[SmartPreload] ✅ 视频已缓存，跳过预加载: ${videoId}`)
         return
       }
 
@@ -595,10 +589,7 @@ class SmartVideoPreloadService {
         priority: 'normal'
       })
 
-      if (cacheSuccess) {
-        console.log(`[SmartPreload] ✅ 视频缓存成功: ${videoId}`)
-      } else {
-        console.warn(`[SmartPreload] ⚠️ 视频缓存失败，使用传统预加载: ${videoId}`)
+      if (!cacheSuccess) {
 
         // 降级到传统预加载
         await videoLoaderService.loadVideo(url, {
@@ -619,7 +610,7 @@ class SmartVideoPreloadService {
         }, 5000)
       }
     } catch (error) {
-      console.error(`[SmartPreload] ❌ 预加载失败: ${videoId}`, error)
+      // Error handled silently
     }
   }
 
@@ -634,7 +625,7 @@ class SmartVideoPreloadService {
       link.href = urlObj.origin
       document.head.appendChild(link)
     } catch (error) {
-      console.error('[SmartPreload] 预连接失败:', error)
+      // Error handled silently
     }
   }
 
@@ -660,14 +651,14 @@ class SmartVideoPreloadService {
    * 暂停预加载
    */
   private pausePreloading(): void {
-    console.log('[SmartPreload] ⏸️ 预加载已暂停（离线）')
+    // Preloading paused
   }
 
   /**
    * 恢复预加载
    */
   private resumePreloading(): void {
-    console.log('[SmartPreload] ▶️ 预加载已恢复（在线）')
+    // Preloading resumed
   }
 
   /**
@@ -745,8 +736,6 @@ class SmartVideoPreloadService {
       quality: { ...this.strategy.quality, ...updates.quality },
       limits: { ...this.strategy.limits, ...updates.limits }
     }
-    
-    console.log('[SmartPreload] 策略已更新:', this.strategy)
   }
 }
 

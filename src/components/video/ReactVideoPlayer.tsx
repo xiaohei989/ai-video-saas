@@ -169,9 +169,7 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
 
   // 缓存日志记录函数
   const addCacheLog = useCallback((message: string) => {
-    const timestamp = new Date().toLocaleTimeString()
-    const logMessage = `[${timestamp}] ${message}`
-    console.log(`[VideoCache] ${logMessage}`)
+    // Log removed
   }, [])
 
   // 自动隐藏控制条

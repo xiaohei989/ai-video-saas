@@ -136,9 +136,14 @@ export function VideoGrid({
         <EmptyVideoState searchTerm={searchTerm} />
       )}
 
-      {/* 视频网格 */}
+      {/* 视频网格 - 智能自适应布局 */}
       {currentPageVideos.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div
+          className="grid gap-6"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))'
+          }}
+        >
           {currentPageVideos.map((video) => {
             const activeTask = activeTasks.get(video.id)
             const progress = videoProgress.get(video.id)

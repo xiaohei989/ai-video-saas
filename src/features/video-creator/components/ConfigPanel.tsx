@@ -407,29 +407,36 @@ export default function ConfigPanel({
   }
   
   const handleGenerate = () => {
+    // 防止重复提交：如果正在生成，直接返回
+    if (isGenerating) {
+      console.log('[ConfigPanel] 防止重复提交，任务正在生成中')
+      toast.info(t('configPanel.generating'))
+      return
+    }
+
     if (!canGenerate()) {
       const missing = getMissingParams()
       setShowValidationError(true)
       toast.error(`Please fill in required fields: ${missing.join(', ')}`)
       return
     }
-    
+
     setShowValidationError(false)
     const promptResult = generatePrompt()
-    
+
     // 为了兼容现有API，同时提供字符串格式
-    const stringPrompt = typeof promptResult === 'string' 
-      ? promptResult 
+    const stringPrompt = typeof promptResult === 'string'
+      ? promptResult
       : generateLegacyPrompt()
-    
+
     console.log('Generated prompt result:', promptResult)
     console.log('Prompt type:', typeof promptResult)
     console.log('Parameters:', params)
-    
+
     // 调用实际的生成函数，传递格式化后的数据
-    onGenerate({ 
-      prompt: stringPrompt, 
-      jsonPrompt: promptResult 
+    onGenerate({
+      prompt: stringPrompt,
+      jsonPrompt: promptResult
     })
   }
 

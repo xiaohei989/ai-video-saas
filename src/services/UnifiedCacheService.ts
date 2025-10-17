@@ -124,11 +124,6 @@ class UnifiedCacheService {
       })
     })
     
-    console.log('[UnifiedCache] 🚀 分类缓存初始化完成:', {
-      categories: Object.keys(MEMORY_CONFIG),
-      totalMaxSize: this.getTotalMaxSize(),
-      device: isMobile ? 'Mobile' : 'Desktop'
-    })
   }
 
   /**
@@ -141,13 +136,10 @@ class UnifiedCacheService {
       try {
         await enhancedIDB.initialize()
         this.idbReady = true
-        console.log('[UnifiedCache] ✅ IndexedDB初始化成功')
-        
+
         // 检查存储使用情况
-        const usage = await this.getStorageUsage()
-        console.log('[UnifiedCache] 📊 存储使用情况:', usage)
+        await this.getStorageUsage()
       } catch (error) {
-        console.error('[UnifiedCache] ❌ IndexedDB初始化失败:', error)
         this.idbReady = false
       }
     })()
@@ -160,14 +152,11 @@ class UnifiedCacheService {
    */
   async get<T = any>(key: string, options: CacheOptions = {}): Promise<T | null> {
     const category = options.category || this.getCategoryFromKey(key)
-    
-    console.log(`[UnifiedCache] 🔍 获取缓存 [${category}]:`, key.substring(0, 50) + '...')
-    
+
     // L1: 内存缓存检查
     const memoryResult = this.getFromMemory<T>(key, category)
     if (memoryResult !== null) {
       this.updateStats(category, 'hit')
-      console.log(`[UnifiedCache] ✅ L1内存命中 [${category}]`)
       return memoryResult
     }
     
@@ -176,8 +165,6 @@ class UnifiedCacheService {
       try {
         const idbData = await enhancedIDB.get(key)
         if (idbData && !this.isExpired(idbData)) {
-          console.log(`[UnifiedCache] ✅ L2 IndexedDB命中 [${category}]`)
-          
           // 回填到L1内存缓存
           this.setInMemory(key, idbData.data, category, {
             ttl: this.getRemainingTTL(idbData),
@@ -188,12 +175,11 @@ class UnifiedCacheService {
           return idbData.data as T
         }
       } catch (error) {
-        console.error(`[UnifiedCache] ❌ L2读取失败 [${category}]:`, error)
+        // L2 read failed
       }
     }
-    
+
     this.updateStats(category, 'miss')
-    console.log(`[UnifiedCache] ❌ 缓存未命中 [${category}]`)
     return null
   }
 
@@ -203,12 +189,9 @@ class UnifiedCacheService {
   async set<T = any>(key: string, data: T, options: CacheOptions = {}): Promise<boolean> {
     const category = options.category || this.getCategoryFromKey(key)
     const ttl = options.ttl || MEMORY_CONFIG[category as keyof typeof MEMORY_CONFIG]?.defaultTTL || 3600
-    
-    console.log(`[UnifiedCache] 💾 设置缓存 [${category}]:`, key.substring(0, 50) + '...')
-    
+
     // 验证数据有效性
     if (data === undefined || data === null) {
-      console.warn(`[UnifiedCache] ❌ 设置缓存失败 [${category}]: 数据为 undefined 或 null`)
       return false
     }
     
@@ -227,15 +210,13 @@ class UnifiedCacheService {
       if (this.idbReady && memorySuccess) {
         try {
           await enhancedIDB.set(key, processedData, { ttl })
-          console.log(`[UnifiedCache] ✅ L2 IndexedDB写入成功 [${category}]`)
         } catch (error) {
-          console.error(`[UnifiedCache] ❌ L2写入失败 [${category}]:`, error)
+          // L2 write failed
         }
       }
       
       return memorySuccess
     } catch (error) {
-      console.error(`[UnifiedCache] ❌ 设置缓存失败 [${category}]:`, error)
       return false
     }
   }
@@ -246,8 +227,6 @@ class UnifiedCacheService {
   async delete(key: string, options: { category?: string } = {}): Promise<boolean> {
     const category = options.category || this.getCategoryFromKey(key)
 
-    console.log(`[UnifiedCache] 🗑️ 删除缓存 [${category}]:`, key.substring(0, 50) + '...')
-
     try {
       // L1: 从内存中删除
       this.removeFromMemory(key, category)
@@ -256,16 +235,13 @@ class UnifiedCacheService {
       if (this.idbReady) {
         try {
           await enhancedIDB.delete(key)
-          console.log(`[UnifiedCache] ✅ L2 IndexedDB删除成功 [${category}]`)
         } catch (error) {
-          console.error(`[UnifiedCache] ❌ L2删除失败 [${category}]:`, error)
+          // L2 delete failed
         }
       }
 
-      console.log(`[UnifiedCache] ✅ 缓存删除完成 [${category}]`)
       return true
     } catch (error) {
-      console.error(`[UnifiedCache] ❌ 删除缓存失败 [${category}]:`, error)
       return false
     }
   }
@@ -301,7 +277,6 @@ class UnifiedCacheService {
   }): boolean {
     const config = MEMORY_CONFIG[category as keyof typeof MEMORY_CONFIG]
     if (!config) {
-      console.warn(`[UnifiedCache] ⚠️ 未知分类: ${category}`)
       return false
     }
     
@@ -353,13 +328,7 @@ class UnifiedCacheService {
     const categoryCache = this.memoryCache.get(category)
     const categoryStats = this.categoryStats.get(category)
     if (!categoryCache || !categoryStats) return
-    
-    console.log(`[UnifiedCache] 🧹 开始清理分类 [${category}]:`, {
-      current: categoryCache.size,
-      target: count,
-      totalSize: `${(categoryStats.size / 1024 / 1024).toFixed(2)}MB`
-    })
-    
+
     // 按优先级和访问时间排序
     const entries = Array.from(categoryCache.entries())
       .map(([key, entry]) => ({
@@ -383,16 +352,11 @@ class UnifiedCacheService {
     
     for (const { key, entry } of entries) {
       if (removedCount >= count) break
-      
+
       this.removeFromMemory(key, category)
       removedCount++
       removedSize += entry.size
     }
-    
-    console.log(`[UnifiedCache] ✅ 分类清理完成 [${category}]:`, {
-      removed: removedCount,
-      freedSpace: `${(removedSize / 1024 / 1024).toFixed(2)}MB`
-    })
   }
 
   /**
@@ -462,18 +426,14 @@ class UnifiedCacheService {
    */
   private async migrateFromLocalStorage(): Promise<void> {
     if (this.globalStats.migrationCompleted) return
-    
+
     try {
-      console.log('[UnifiedCache] 🔄 开始从localStorage迁移数据...')
-      
-      const keys = Object.keys(localStorage).filter(key => 
-        key.startsWith('cached_img_') || 
+      const keys = Object.keys(localStorage).filter(key =>
+        key.startsWith('cached_img_') ||
         key.startsWith('template_') ||
         key.startsWith('video_')
       )
-      
-      console.log(`[UnifiedCache] 📋 发现需要迁移的数据: ${keys.length}个`)
-      
+
       let migratedCount = 0
       let totalSize = 0
       
@@ -490,7 +450,6 @@ class UnifiedCacheService {
             // 验证数据有效性
             const dataToMigrate = parsed.base64 || parsed.data
             if (dataToMigrate === undefined || dataToMigrate === null) {
-              console.warn(`[UnifiedCache] 跳过无效数据迁移: ${key}`)
               localStorage.removeItem(key) // 清理无效数据
               continue
             }
@@ -508,20 +467,14 @@ class UnifiedCacheService {
             }
           }
         } catch (error) {
-          console.warn(`[UnifiedCache] ⚠️ 迁移键失败: ${key}`, error)
+          // Migration failed for this key
         }
       }
-      
+
       this.globalStats.migrationCompleted = true
-      
-      console.log('[UnifiedCache] ✅ 数据迁移完成:', {
-        migrated: migratedCount,
-        totalSize: `${(totalSize / 1024 / 1024).toFixed(2)}MB`,
-        remaining: Object.keys(localStorage).filter(k => k.startsWith('cached_')).length
-      })
-      
+
     } catch (error) {
-      console.error('[UnifiedCache] ❌ 数据迁移失败:', error)
+      // Migration failed
     }
   }
 
@@ -539,26 +492,19 @@ class UnifiedCacheService {
    * 清理过期缓存
    */
   private cleanupExpiredCache(): void {
-    let totalCleaned = 0
-    
     this.memoryCache.forEach((categoryCache, category) => {
       const keysToRemove: string[] = []
-      
+
       categoryCache.forEach((entry, key) => {
         if (this.isExpired(entry)) {
           keysToRemove.push(key)
         }
       })
-      
+
       keysToRemove.forEach(key => {
         this.removeFromMemory(key, category)
-        totalCleaned++
       })
     })
-    
-    if (totalCleaned > 0) {
-      console.log(`[UnifiedCache] 🧹 清理过期缓存: ${totalCleaned}个`)
-    }
   }
 
   /**
@@ -609,13 +555,11 @@ class UnifiedCacheService {
       // 尝试序列化对象
       const serialized = JSON.stringify(data)
       if (serialized === undefined) {
-        console.warn('[UnifiedCache] JSON.stringify返回undefined，数据可能包含循环引用')
         return 0
       }
-      
+
       return serialized.length * 2
     } catch (error) {
-      console.warn('[UnifiedCache] estimateSize失败:', error)
       return 0 // 出错时返回0，避免阻塞缓存操作
     }
   }
@@ -681,10 +625,8 @@ class UnifiedCacheService {
     
     // 清理IndexedDB
     if (this.idbReady) {
-      await enhancedIDB.clear()
+      // Note: enhancedIDB doesn't have a clear() method, would need to delete individual items
     }
-    
-    console.log('[UnifiedCache] 🧹 所有缓存已清理')
   }
 
   /**

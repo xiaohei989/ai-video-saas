@@ -13,6 +13,7 @@ import AdminDebug from './AdminDebug'
 import ErrorBoundary from './ErrorBoundary'
 import AdminThumbnailManager from './AdminThumbnailManager'
 import { SEOGuideList, SEOGuideEdit, SEOGuideCreate } from './SEOGuideGenerator'
+import SEOManager from './SEOManager'
 
 // 图标
 import {
@@ -24,7 +25,8 @@ import {
   FileText,
   Receipt,
   Search,
-  TrendingUp
+  TrendingUp,
+  Layers
 } from '@/components/icons'
 
 const AdminApp: React.FC = () => {
@@ -93,16 +95,26 @@ const AdminApp: React.FC = () => {
         icon={FileImage}
       />
 
-      {/* SEO指南生成器 */}
+      {/* pSEO生成器 */}
       <Resource
-        name="seo-guides"
+        name="template_seo_guides"
         list={SEOGuideList}
         edit={SEOGuideEdit}
         create={SEOGuideCreate}
         options={{
-          label: 'SEO指南生成器'
+          label: 'pSEO生成器'
         }}
         icon={Search}
+      />
+
+      {/* pSEO 管理中心 - 新界面（关键词导向） */}
+      <Resource
+        name="seo-manager"
+        list={SEOManager}
+        options={{
+          label: 'pSEO 管理中心'
+        }}
+        icon={Layers}
       />
 
       {/* 缩略图管理（自定义页，集成工具入口） */}

@@ -228,14 +228,24 @@ class TaskRecoveryService {
       const existingProgress = progressManager.getProgress(video.id)
       if (!existingProgress) {
         console.log(`[TASK RECOVERY] 💾 初始化进度管理器数据...`)
-        progressManager.updateProgress(video.id, {
+
+        // 根据API提供商类型设置正确的taskId字段
+        const apiProvider = detectApiProvider(video.veo3_job_id)
+        const progressUpdate: any = {
           progress: currentProgress.percentage,
           status: video.status as any,
           statusText: currentProgress.statusText,
-          qingyunTaskId: video.veo3_job_id,
           pollingAttempts: 0,
           lastPollingStatus: 'resumed'
-        })
+        }
+
+        if (apiProvider === 'apicore') {
+          progressUpdate.apicoreTaskId = video.veo3_job_id
+        } else if (apiProvider === 'wuyin') {
+          progressUpdate.wuyinTaskId = video.veo3_job_id
+        }
+
+        progressManager.updateProgress(video.id, progressUpdate)
         
         console.log(`[TASK RECOVERY] ✅ 进度管理器初始化完成: ${video.id} -> ${currentProgress.percentage}%`)
       } else {

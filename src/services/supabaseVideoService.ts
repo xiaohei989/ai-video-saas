@@ -5,6 +5,7 @@
 
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
+import type { VideoQuality } from '@/config/credits'
 
 type Video = Database['public']['Tables']['videos']['Row']
 type VideoInsert = Omit<Database['public']['Tables']['videos']['Row'], 
@@ -94,8 +95,8 @@ class SupabaseVideoService {
     isPublic?: boolean
     veo3JobId?: string
     aspectRatio?: '16:9' | '9:16'
-    quality?: 'fast' | 'pro'
-    apiProvider?: 'qingyun' | 'apicore'
+    quality?: VideoQuality
+    // apiProvider 已移除 - 统一由环境变量控制
     aiTitleStatus?: 'pending' | 'ai_generated' | 'timeout_default' | 'user_provided' | 'error_fallback'
   }): Promise<Video | null> {
     try {
@@ -103,8 +104,8 @@ class SupabaseVideoService {
       const metadata: Record<string, any> = {
         templateId: data.templateId || null,
         aspectRatio: data.aspectRatio || '16:9',
-        quality: data.quality || 'fast',
-        apiProvider: data.apiProvider || 'qingyun'
+        quality: data.quality || 'veo3'
+        // apiProvider 已移除 - 不再存储到数据库
       }
 
       const { data: video, error } = await supabase
@@ -119,8 +120,8 @@ class SupabaseVideoService {
             ...data.parameters || {},
             // 也在parameters中存储一份，方便后续使用
             aspectRatio: data.aspectRatio || '16:9',
-            quality: data.quality || 'fast',
-            apiProvider: data.apiProvider || 'qingyun'
+            quality: data.quality || 'veo3'
+            // apiProvider 已移除 - 不再存储
           },
           credits_used: data.creditsUsed,
           status: data.status || 'pending',

@@ -24,7 +24,7 @@ export interface VideoGenerationEvent {
   template_category: string
   video_quality: 'fast' | 'high'
   aspect_ratio: '16:9' | '9:16'
-  api_provider: 'qingyun' | 'apicore'
+  api_provider: 'apicore' | 'wuyin'
   credits_used: number
   generation_duration?: number
   success: boolean

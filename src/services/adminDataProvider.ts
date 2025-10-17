@@ -1,12 +1,14 @@
 import { DataProvider } from 'react-admin'
 import { supabase } from '@/lib/supabase'
-import { 
-  uploadThumbnail, 
-  uploadPreviewVideo, 
+import {
+  uploadThumbnail,
+  uploadPreviewVideo,
   parseTemplateJson,
   validateTemplateConfig,
   deleteTemplateFiles
 } from './templateFileService'
+// Note: calculateSEOScore 不再使用，保存时使用快速的基础评分
+// AI 智能评分通过用户点击按钮调用本地服务 API (localhost:3030)
 
 
 const API_BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`
@@ -112,8 +114,8 @@ export const adminDataProvider: DataProvider = {
         }
       }
 
-      // 对于seo-guides资源，使用Supabase直接查询
-      if (resource === 'seo-guides') {
+      // 对于template_seo_guides资源，使用Supabase直接查询
+      if (resource === 'template_seo_guides') {
         let query = supabase
           .from('template_seo_guides')
           .select(`
@@ -141,7 +143,7 @@ export const adminDataProvider: DataProvider = {
 
         const { data, error, count } = await query
           .range((page - 1) * perPage, page * perPage - 1)
-          .order('updated_at', { ascending: false })
+          .order('created_at', { ascending: false })
 
         if (error) throw error
 
@@ -245,10 +247,10 @@ export const adminDataProvider: DataProvider = {
       console.log(`[DataProvider] getOne called for ${resource} with id:`, params.id)
       
       // 对于直接查询的资源
-      if (resource === 'templates' || resource === 'settings' || resource === 'logs' || resource === 'seo-guides') {
+      if (resource === 'templates' || resource === 'settings' || resource === 'logs' || resource === 'template_seo_guides') {
         const table = resource === 'templates' ? 'templates' :
                      resource === 'settings' ? 'system_settings' :
-                     resource === 'seo-guides' ? 'template_seo_guides' : 'admin_operations_log'
+                     resource === 'template_seo_guides' ? 'template_seo_guides' : 'admin_operations_log'
 
         let selectQuery = '*'
         if (resource === 'templates') {
@@ -258,7 +260,7 @@ export const adminDataProvider: DataProvider = {
             author:profiles!author_id(username, email, avatar_url),
             reviewed_by_admin:profiles!reviewed_by(username, email)
           `
-        } else if (resource === 'seo-guides') {
+        } else if (resource === 'template_seo_guides') {
           // 为SEO指南添加模板信息
           selectQuery = `
             *,
@@ -346,14 +348,51 @@ export const adminDataProvider: DataProvider = {
         return { data: data[0] }
       }
 
-      if (resource === 'seo-guides') {
+      if (resource === 'template_seo_guides') {
+        // 使用基础评分（快速），不使用AI评分（避免30-60秒等待）
+        // 用户可以点击"AI 智能评分"按钮获取详细分析
+        const contentLength = (params.data.guide_content || '').length
+        const hasKeyword = params.data.target_keyword &&
+          (params.data.meta_title || '').toLowerCase().includes(params.data.target_keyword.toLowerCase())
+        const faqCount = (params.data.faq_items || []).length
+
+        const contentScore = Math.min(Math.floor(contentLength / 50), 25)
+        const keywordScore = hasKeyword ? 15 : 5
+        const readabilityScore = contentLength > 500 ? 12 : 8
+        const performanceScore = 5
+
+        const scoreResult = {
+          total_score: contentScore + keywordScore + readabilityScore + performanceScore,
+          content_quality_score: contentScore,
+          keyword_optimization_score: keywordScore,
+          readability_score: readabilityScore,
+          performance_score: performanceScore,
+          keyword_density: {},
+          recommendations: [
+            '💡 基础评分已完成，点击"AI 智能评分"按钮获取详细的 AI 分析',
+            `内容长度: ${contentLength} 字${contentLength < 1000 ? '（建议增加到1500字以上）' : ''}`,
+            `Meta标题${hasKeyword ? '已包含' : '缺少'}主关键词`,
+            `FAQ数量: ${faqCount} 个${faqCount < 5 ? '（建议增加到5个以上）' : ''}`
+          ]
+        }
+        console.log('[SEO Score] 基础评分完成 - 新指南:', scoreResult)
+
         const { data, error } = await supabase
           .from('template_seo_guides')
           .insert({
             ...params.data,
             generated_by: params.data.generated_by || 'manual',
             review_status: 'draft',
-            is_published: params.data.is_published || false
+            is_published: params.data.is_published !== undefined ? params.data.is_published : true, // 默认发布
+            published_at: params.data.is_published !== false ? new Date().toISOString() : null,
+            // 添加SEO评分数据
+            seo_score: scoreResult.total_score,
+            content_quality_score: scoreResult.content_quality_score,
+            keyword_optimization_score: scoreResult.keyword_optimization_score,
+            readability_score: scoreResult.readability_score,
+            performance_score: scoreResult.performance_score,
+            keyword_density: scoreResult.keyword_density,
+            seo_recommendations: scoreResult.recommendations
           })
           .select()
 
@@ -496,10 +535,70 @@ export const adminDataProvider: DataProvider = {
         return { data: data[0] }
       }
 
-      if (resource === 'seo-guides') {
+      if (resource === 'template_seo_guides') {
+        // 只更新基础字段和评分字段，不包含关联数据
+        const updatePayload: any = {}
+
+        // 检查是否前端已经传入了评分数据（来自AI智能评分）
+        const hasScoreData = 'seo_score' in params.data ||
+                           'content_quality_score' in params.data ||
+                           'keyword_optimization_score' in params.data
+
+        if (hasScoreData) {
+          // 前端已提供评分数据（AI评分），直接使用
+          console.log('[SEO Score] 使用前端传入的评分数据（AI智能评分）')
+          if ('seo_score' in params.data) updatePayload.seo_score = params.data.seo_score
+          if ('content_quality_score' in params.data) updatePayload.content_quality_score = params.data.content_quality_score
+          if ('keyword_optimization_score' in params.data) updatePayload.keyword_optimization_score = params.data.keyword_optimization_score
+          if ('readability_score' in params.data) updatePayload.readability_score = params.data.readability_score
+          if ('performance_score' in params.data) updatePayload.performance_score = params.data.performance_score
+          if ('keyword_density' in params.data) updatePayload.keyword_density = params.data.keyword_density
+          if ('seo_recommendations' in params.data) updatePayload.seo_recommendations = params.data.seo_recommendations
+        } else if ('guide_content' in params.data || 'meta_title' in params.data) {
+          // 内容被修改但没有评分数据，计算基础评分
+          console.log('[SEO Score] 内容已修改，重新计算基础评分')
+          const contentLength = (params.data.guide_content || '').length
+          const hasKeyword = params.data.target_keyword &&
+            (params.data.meta_title || '').toLowerCase().includes(params.data.target_keyword.toLowerCase())
+          const faqCount = (params.data.faq_items || []).length
+
+          const contentScore = Math.min(Math.floor(contentLength / 50), 25)
+          const keywordScore = hasKeyword ? 15 : 5
+          const readabilityScore = contentLength > 500 ? 12 : 8
+          const performanceScore = 5
+
+          updatePayload.seo_score = contentScore + keywordScore + readabilityScore + performanceScore
+          updatePayload.content_quality_score = contentScore
+          updatePayload.keyword_optimization_score = keywordScore
+          updatePayload.readability_score = readabilityScore
+          updatePayload.performance_score = performanceScore
+          updatePayload.keyword_density = {}
+          updatePayload.seo_recommendations = [
+            '💡 基础评分已完成，点击"AI 智能评分"按钮获取详细的 AI 分析',
+            `内容长度: ${contentLength} 字${contentLength < 1000 ? '（建议增加到1500字以上）' : ''}`,
+            `Meta标题${hasKeyword ? '已包含' : '缺少'}主关键词`,
+            `FAQ数量: ${faqCount} 个${faqCount < 5 ? '（建议增加到5个以上）' : ''}`
+          ]
+        }
+
+        // 只添加可直接更新的字段，排除关联对象
+        const allowedFields = [
+          'template_id', 'language', 'target_keyword', 'secondary_keywords',
+          'long_tail_keywords', 'meta_title', 'meta_description', 'meta_keywords',
+          'guide_intro', 'guide_content', 'faq_items', 'page_views',
+          'avg_time_on_page', 'bounce_rate', 'conversion_rate',
+          'generated_by', 'review_status', 'is_published', 'published_at'
+        ]
+
+        allowedFields.forEach(field => {
+          if (field in params.data && params.data[field] !== undefined) {
+            updatePayload[field] = params.data[field]
+          }
+        })
+
         const { data, error } = await supabase
           .from('template_seo_guides')
-          .update(params.data)
+          .update(updatePayload)
           .eq('id', params.id)
           .select()
 
@@ -622,7 +721,7 @@ export const adminDataProvider: DataProvider = {
         return { data: params.previousData || {} }
       }
 
-      if (resource === 'seo-guides') {
+      if (resource === 'template_seo_guides') {
         const { error } = await supabase
           .from('template_seo_guides')
           .delete()

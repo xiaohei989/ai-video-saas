@@ -25,6 +25,7 @@ import { useTemplateLikes } from '@/hooks/useTemplateLikes'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useQuery } from '@tanstack/react-query'
 import stripeService from '@/services/stripeService'
+import type { VideoQuality } from '@/config/credits'
 
 
 interface PreviewPanelProps {
@@ -34,9 +35,9 @@ interface PreviewPanelProps {
   progress?: number
   status?: string
   startTime?: number | null
-  quality: 'fast' | 'high'
+  quality: VideoQuality
   aspectRatio: '16:9' | '9:16'
-  onQualityChange: (quality: 'fast' | 'high') => void
+  onQualityChange: (quality: VideoQuality) => void
   onAspectRatioChange: (aspectRatio: '16:9' | '9:16') => void
 }
 
@@ -67,19 +68,19 @@ export default function PreviewPanel({
   // Force re-render every second to update time
   const [, setTick] = useState(0)
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false)
-  
+
   // 查询用户订阅状态
   const { data: subscription } = useQuery({
     queryKey: ['user-subscription', user?.id],
     queryFn: () => user?.id ? stripeService.getUserSubscription(user.id) : null,
     enabled: !!user?.id
   })
-  
+
   // 检查用户是否为付费用户
   const isPaidUser = useMemo(() => {
     return subscription && subscription.plan && subscription.status === 'active'
   }, [subscription])
-  
+
   // 使用批量点赞管理（和TemplatesPage相同的模式）
   const templateIds = useMemo(() => [template.id], [template.id])
   
@@ -135,10 +136,12 @@ export default function PreviewPanel({
             <label className="text-sm font-medium mb-1 block">{t('videoCreator.outputQuality')}</label>
             <CustomSelect
               value={quality}
-              onChange={(value) => onQualityChange(value as 'fast' | 'high')}
+              onChange={(value) => onQualityChange(value as VideoQuality)}
               options={[
-                { value: 'fast', label: t('videoCreator.fastGeneration') },
-                { value: 'high', label: t('videoCreator.highQuality') }
+                { value: 'veo3', label: t('videoCreator.veo3Fast') },
+                { value: 'veo3-pro', label: t('videoCreator.veo3High') },
+                { value: 'veo3.1-fast', label: t('videoCreator.veo31Fast') },
+                { value: 'veo3.1-pro', label: t('videoCreator.veo31High') }
               ]}
             />
           </div>
@@ -159,8 +162,8 @@ export default function PreviewPanel({
                   <Monitor className="w-4 h-4" />
                   <span>16:9</span>
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="9:16" 
+                <TabsTrigger
+                  value="9:16"
                   className="flex items-center space-x-2 relative"
                   disabled={!isPaidUser}
                 >
@@ -307,7 +310,7 @@ export default function PreviewPanel({
           </div>
         )}
       </div>
-      
+
       {/* 升级提示对话框 */}
       <AlertDialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
         <AlertDialogContent>
@@ -322,7 +325,7 @@ export default function PreviewPanel({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('upgradeDialog.cancel')}</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={() => {
                 setShowUpgradeDialog(false)
                 navigateTo('/pricing')

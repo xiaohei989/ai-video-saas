@@ -162,10 +162,14 @@ serve(async (req) => {
     return new Response(null, { status: 200, headers: corsHeaders })
   }
 
+  let videoId: string | undefined  // 🆕 提前声明，用于错误处理
+
   try {
     console.log('[AutoThumbnail] ========== 开始自动生成缩略图 ==========')
 
-    const { videoId, videoUrl, timeSinceMigration }: AutoGenerateRequest = await req.json()
+    const requestData: AutoGenerateRequest = await req.json()
+    videoId = requestData.videoId  // 🆕 保存videoId
+    const { videoUrl, timeSinceMigration } = requestData
 
     if (!videoId || !videoUrl) {
       return new Response(
@@ -183,17 +187,7 @@ serve(async (req) => {
     console.log(`[AutoThumbnail] 视频ID: ${videoId}`)
     console.log(`[AutoThumbnail] 视频URL: ${videoUrl}`)
 
-    // 🆕 智能延迟：如果刚迁移完成，等待 Cloudflare 处理
-    if (timeSinceMigration !== undefined && timeSinceMigration < 10) {
-      const waitTime = 10 - timeSinceMigration
-      console.log(`[AutoThumbnail] ⏰ 迁移完成仅 ${timeSinceMigration} 秒，等待 ${waitTime} 秒让 Cloudflare 处理...`)
-      await new Promise(resolve => setTimeout(resolve, waitTime * 1000))
-      console.log(`[AutoThumbnail] ✅ 等待完成，开始生成缩略图`)
-    } else if (timeSinceMigration !== undefined) {
-      console.log(`[AutoThumbnail] ✅ 迁移完成已 ${timeSinceMigration} 秒，直接生成`)
-    }
-
-    // 创建 Supabase Admin 客户端
+    // 创建 Supabase Admin 客户端（提前创建，用于状态更新）
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SERVICE_ROLE_KEY') ?? '',
@@ -204,6 +198,31 @@ serve(async (req) => {
         }
       }
     )
+
+    // 🆕 更新状态为 processing
+    const { error: statusUpdateError } = await supabase
+      .from('videos')
+      .update({
+        thumbnail_generation_status: 'processing',
+        thumbnail_generation_last_attempt_at: new Date().toISOString()
+      })
+      .eq('id', videoId)
+
+    if (statusUpdateError) {
+      console.error('[AutoThumbnail] ⚠️  状态更新失败:', statusUpdateError)
+    } else {
+      console.log('[AutoThumbnail] ✅ 状态已更新为 processing')
+    }
+
+    // 🆕 智能延迟：如果刚迁移完成，等待 Cloudflare 处理
+    if (timeSinceMigration !== undefined && timeSinceMigration < 10) {
+      const waitTime = 10 - timeSinceMigration
+      console.log(`[AutoThumbnail] ⏰ 迁移完成仅 ${timeSinceMigration} 秒，等待 ${waitTime} 秒让 Cloudflare 处理...`)
+      await new Promise(resolve => setTimeout(resolve, waitTime * 1000))
+      console.log(`[AutoThumbnail] ✅ 等待完成，开始生成缩略图`)
+    } else if (timeSinceMigration !== undefined) {
+      console.log(`[AutoThumbnail] ✅ 迁移完成已 ${timeSinceMigration} 秒，直接生成`)
+    }
 
     // 使用 Cloudflare Media Transformations 生成缩略图
     let thumbnailBlob: Blob
@@ -220,17 +239,19 @@ serve(async (req) => {
     // 直接上传到 R2（移除 Base64 转换和中间 Edge Function 调用）
     const thumbnailUrl = await uploadToR2(thumbnailBlob, videoId)
 
-    // 更新数据库（移除 thumbnail_blur_url）
+    // 🆕 更新数据库：设置状态为 completed
     const { error: updateError } = await supabase
       .from('videos')
       .update({
         thumbnail_url: thumbnailUrl,
         thumbnail_generated_at: new Date().toISOString(),
+        thumbnail_generation_status: 'completed',  // 🆕 标记为完成
         thumbnail_metadata: {
           method: 'cloudflare_media_transformations',
-          generatedBy: 'auto-generate-thumbnail-optimized',
+          generatedBy: 'auto-generate-thumbnail-with-fault-tolerance',
           timestamp: new Date().toISOString(),
-          optimized: true // 标记为优化版本
+          optimized: true,
+          version: 2  // 版本号
         }
       })
       .eq('id', videoId)
@@ -257,6 +278,34 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('[AutoThumbnail] ❌ 生成失败:', error)
+
+    // 🆕 更新状态为 failed
+    if (videoId) {
+      try {
+        const supabase = createClient(
+          Deno.env.get('SUPABASE_URL') ?? '',
+          Deno.env.get('SERVICE_ROLE_KEY') ?? '',
+          {
+            auth: {
+              autoRefreshToken: false,
+              persistSession: false
+            }
+          }
+        )
+
+        await supabase
+          .from('videos')
+          .update({
+            thumbnail_generation_status: 'failed',
+            thumbnail_generation_error: error.message || 'Unknown error'
+          })
+          .eq('id', videoId)
+
+        console.log('[AutoThumbnail] 📝 失败状态已记录到数据库')
+      } catch (dbError) {
+        console.error('[AutoThumbnail] ⚠️  无法更新失败状态:', dbError)
+      }
+    }
 
     return new Response(
       JSON.stringify({

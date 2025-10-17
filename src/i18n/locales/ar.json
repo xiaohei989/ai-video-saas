@@ -463,6 +463,10 @@
   },
   "videoCreator": {
     "outputQuality": "جودة الإخراج",
+    "veo3Fast": "Veo 3.0 Fast (سريع · ٢٠ نقطة)",
+    "veo3High": "Veo 3.0 High Quality (جودة عالية · ١٠٠ نقطة)",
+    "veo31Fast": "Veo 3.1 Fast (سريع · ٢٠ نقطة)",
+    "veo31High": "Veo 3.1 High Quality (جودة عالية · ١٠٠ نقطة)",
     "fastGeneration": "⚡ إنتاج سريع (١-٢ دقيقة · للمعاينة)",
     "highQuality": "✨ جودة عالية (٣-٦ دقائق · أفضل النتائج)",
     "aspectRatio": "نسبة العرض إلى الارتفاع",

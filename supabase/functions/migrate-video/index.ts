@@ -5,6 +5,8 @@ import { S3Client, PutObjectCommand } from 'npm:@aws-sdk/client-s3@3.418.0'
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '86400',
 }
 
 interface MigrationRequest {

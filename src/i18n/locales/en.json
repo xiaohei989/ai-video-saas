@@ -511,6 +511,10 @@
   },
   "videoCreator": {
     "outputQuality": "Output Quality",
+    "veo3Fast": "Veo 3.0 Fast (Quick · 20 credits)",
+    "veo3High": "Veo 3.0 High Quality (Premium · 100 credits)",
+    "veo31Fast": "Veo 3.1 Fast (Quick · 20 credits)",
+    "veo31High": "Veo 3.1 High Quality (Premium · 100 credits)",
     "fastGeneration": "⚡ Fast Generation (1-2 minutes · For Preview)",
     "highQuality": "✨ High Quality (3-6 minutes · Best Results)",
     "aspectRatio": "Aspect Ratio",
@@ -567,6 +571,7 @@
     "createVideo": "Create Video",
     "elapsedTime": "Elapsed",
     "generationFailed": "Generation failed",
+    "creditsRefunded": "{{credits}} credits refunded",
     "waitingForProcessing": "Waiting for processing",
     "untitledVideo": "Untitled Video",
     "regenerateTitle": "Regenerate with same settings",
@@ -1513,5 +1518,17 @@
       "fileOverwritten": "File overwritten",
       "backupLocation": "Backup location"
     }
+  },
+  "guide": {
+    "tableOfContents": "Table of Contents",
+    "aboutThisTemplate": "About This Template",
+    "readyToCreate": "Ready to Start Creating?",
+    "useTemplateDescription": "Use the {{templateName}} template to easily create professional-level video content",
+    "useThisTemplate": "Use This Template",
+    "viewAllTemplates": "View All Templates",
+    "relatedTemplates": "Related Templates",
+    "home": "Home",
+    "templates": "Templates",
+    "faq": "Frequently Asked Questions"
   }
 }

@@ -3,19 +3,16 @@
  * 定义视频生成的积分消耗规则
  */
 
+// 视频质量类型
+export type VideoQuality = 'veo3' | 'veo3-pro' | 'veo3.1-fast' | 'veo3.1-pro'
+
 export const CREDIT_COSTS = {
-  // 视频生成积分消耗
+  // 视频生成积分消耗（不再区分16:9和9:16）
   VIDEO_GENERATION: {
-    // 16:9 横屏视频
-    '16:9': {
-      STANDARD: 20,    // 标准质量视频
-      HIGH_QUALITY: 100, // 高质量视频
-    },
-    // 9:16 竖屏视频
-    '9:16': {
-      STANDARD: 100,    // 标准质量视频
-      HIGH_QUALITY: 160, // 高质量视频
-    }
+    'veo3': 20,           // Veo 3.0 Fast - 快速生成
+    'veo3-pro': 100,      // Veo 3.0 High Quality - 高质量
+    'veo3.1-fast': 20,    // Veo 3.1 Fast - 新快速
+    'veo3.1-pro': 100,    // Veo 3.1 High Quality - 新高质量
   },
 
   // 其他功能积分消耗（未来扩展）
@@ -31,14 +28,12 @@ export const SUBSCRIPTION_CREDITS = {
 } as const
 
 /**
- * 根据视频质量和宽高比获取积分消耗
+ * 根据视频质量获取积分消耗
+ * @param quality - 视频质量类型
+ * @returns 积分消耗数量
  */
-export function getVideoCreditCost(
-  quality: 'standard' | 'high',
-  aspectRatio: '16:9' | '9:16' = '16:9'
-): number {
-  const costs = CREDIT_COSTS.VIDEO_GENERATION[aspectRatio]
-  return quality === 'high' ? costs.HIGH_QUALITY : costs.STANDARD
+export function getVideoCreditCost(quality: VideoQuality): number {
+  return CREDIT_COSTS.VIDEO_GENERATION[quality] || 20
 }
 
 /**
@@ -49,4 +44,37 @@ export function formatCredits(amount: number): string {
     return `${(amount / 1000).toFixed(1)}k`
   }
   return amount.toString()
+}
+
+/**
+ * 获取质量选项的显示信息
+ */
+export function getQualityInfo(quality: VideoQuality) {
+  const infoMap = {
+    'veo3': {
+      name: 'Veo 3.0 Fast',
+      credits: 20,
+      time: '1-2分钟',
+      description: '快速生成'
+    },
+    'veo3-pro': {
+      name: 'Veo 3.0 High Quality',
+      credits: 100,
+      time: '3-6分钟',
+      description: '高质量'
+    },
+    'veo3.1-fast': {
+      name: 'Veo 3.1 Fast',
+      credits: 20,
+      time: '1-2分钟',
+      description: '新快速'
+    },
+    'veo3.1-pro': {
+      name: 'Veo 3.1 High Quality',
+      credits: 100,
+      time: '3-6分钟',
+      description: '新高质量'
+    }
+  }
+  return infoMap[quality]
 }

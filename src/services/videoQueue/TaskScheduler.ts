@@ -78,8 +78,8 @@ export class TaskScheduler {
       status: 'pending',
       isPublic: request.videoData.isPublic,
       aspectRatio: request.videoData.aspectRatio || '16:9',
-      quality: request.videoData.quality || 'fast',
-      apiProvider: request.videoData.apiProvider || 'qingyun',
+      quality: request.videoData.quality || 'veo3',
+      // apiProvider 已移除 - 由全局环境变量控制
       aiTitleStatus: aiMetadata.status // 添加AI标题状态
     })
 
@@ -201,10 +201,11 @@ export class TaskScheduler {
 
       // 调用视频生成API
       const aspectRatio = (video.parameters?.aspectRatio as '16:9' | '9:16') || '16:9'
-      const quality = (video.parameters?.quality as 'fast' | 'pro') || import.meta.env.VITE_DEFAULT_VIDEO_QUALITY as 'fast' | 'pro' || 'fast'
-      const apiProvider = (video.parameters?.apiProvider as 'qingyun' | 'apicore') || import.meta.env.VITE_PRIMARY_VIDEO_API as 'qingyun' | 'apicore' || 'qingyun'
+      const quality = (video.parameters?.quality as 'veo3' | 'veo3-pro' | 'veo3.1-fast' | 'veo3.1-pro') || 'veo3'
+      // apiProvider 从全局环境变量读取，不再从数据库读取
+      const apiProvider = (import.meta.env.VITE_PRIMARY_VIDEO_API as 'apicore' | 'wuyin') || 'wuyin'
 
-      console.log(`[TASK SCHEDULER] 视频生成参数: aspectRatio=${aspectRatio}, quality=${quality}, apiProvider=${apiProvider}`)
+      console.log(`[TASK SCHEDULER] 视频生成参数: aspectRatio=${aspectRatio}, quality=${quality}, apiProvider=${apiProvider} (from env)`)
 
       const response = await veo3Service.generateVideo({
         prompt: video.prompt || '',

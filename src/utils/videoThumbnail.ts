@@ -3,14 +3,34 @@ import { generateOptimizedThumbnail } from './webpThumbnailOptimizer'
 import { supabase } from '@/lib/supabase'
 import { getR2PublicDomain, generateR2Url } from '@/config/cdnConfig'
 
-// 🌟 超高质量缩略图配置 - 提升到专业级质量标准
-const OPTIMAL_THUMBNAIL_CONFIG = {
-  width: 960,           // 🚀 升级分辨率：640 -> 960 (1.5倍提升)
-  height: 540,          // 🚀 升级分辨率：360 -> 540 (1.5倍提升，保持16:9)
-  quality: 0.95,        // 🌟 提高质量：0.90 -> 0.95 (专业级质量)
-  format: 'auto' as const,       // WebP优先，JPEG回退
-  frameTime: 0.1,       // 0.1秒处截取，快速获取画面
-  version: 'v2'         // 🔥 版本号：用于避免CDN缓存冲突
+// 🌟 超高质量缩略图配置 - 支持多种宽高比
+const THUMBNAIL_CONFIGS = {
+  '16:9': {
+    width: 960,           // 🚀 横屏分辨率
+    height: 540,          // 🚀 保持16:9比例
+    quality: 0.95,        // 🌟 专业级质量
+    format: 'auto' as const,       // WebP优先，JPEG回退
+    frameTime: 0.1,       // 0.1秒处截取，快速获取画面
+    version: 'v2'         // 🔥 版本号：用于避免CDN缓存冲突
+  },
+  '9:16': {
+    width: 540,           // 🚀 竖屏分辨率（交换宽高）
+    height: 960,          // 🚀 保持9:16比例
+    quality: 0.95,        // 🌟 专业级质量
+    format: 'auto' as const,
+    frameTime: 0.1,
+    version: 'v2'
+  }
+}
+
+// 默认配置（16:9）
+const OPTIMAL_THUMBNAIL_CONFIG = THUMBNAIL_CONFIGS['16:9']
+
+/**
+ * 根据宽高比获取缩略图配置
+ */
+function getThumbnailConfig(aspectRatio: '16:9' | '9:16' = '16:9') {
+  return THUMBNAIL_CONFIGS[aspectRatio]
 }
 
 /**
@@ -27,9 +47,12 @@ export async function extractAndUploadThumbnail(
     frameTime?: number
     quality?: number
     format?: 'webp' | 'jpeg' | 'auto'
+    aspectRatio?: '16:9' | '9:16'
   } = {}
 ): Promise<string> {
-  const config = { ...OPTIMAL_THUMBNAIL_CONFIG, ...options }
+  // 根据宽高比选择配置
+  const baseConfig = getThumbnailConfig(options.aspectRatio || '16:9')
+  const config = { ...baseConfig, ...options }
   
   console.log(`[ThumbnailUpload] 开始提取和上传缩略图: ${videoId}`)
   console.log(`[ThumbnailUpload] 配置:`, config)
@@ -113,9 +136,12 @@ export async function extractAndUploadThumbnailsBoth(
   videoId: string,
   options: {
     frameTime?: number
+    aspectRatio?: '16:9' | '9:16'
   } = {}
 ): Promise<{ fullUrl: string; blurUrl: string }> {
-  const config = { ...OPTIMAL_THUMBNAIL_CONFIG, ...options }
+  // 根据宽高比选择配置
+  const baseConfig = getThumbnailConfig(options.aspectRatio || '16:9')
+  const config = { ...baseConfig, ...options }
   
   return new Promise((resolve, reject) => {
     const video = createCorsVideo(videoUrl, true)
@@ -177,9 +203,10 @@ export async function extractAndUploadThumbnailsBoth(
 export async function extractAndUploadBlurOnly(
   videoUrl: string,
   videoId: string,
-  options: { frameTime?: number; size?: number; quality?: number } = {}
+  options: { frameTime?: number; size?: number; quality?: number; aspectRatio?: '16:9' | '9:16' } = {}
 ): Promise<string> {
-  const frameTime = options.frameTime ?? OPTIMAL_THUMBNAIL_CONFIG.frameTime
+  const config = getThumbnailConfig(options.aspectRatio || '16:9')
+  const frameTime = options.frameTime ?? config.frameTime
   const size = options.size ?? 48
   const quality = options.quality ?? 0.4
 
@@ -543,11 +570,12 @@ async function extractVideoThumbnailDirect(
 
 /**
  * 获取增强的默认缩略图
- * 🌟 升级到专业级配置：960x540分辨率
+ * 🌟 升级到专业级配置：支持多种宽高比
  */
-function getEnhancedDefaultThumbnail(): string {
-  const width = OPTIMAL_THUMBNAIL_CONFIG.width
-  const height = OPTIMAL_THUMBNAIL_CONFIG.height
+function getEnhancedDefaultThumbnail(aspectRatio: '16:9' | '9:16' = '16:9'): string {
+  const config = getThumbnailConfig(aspectRatio)
+  const width = config.width
+  const height = config.height
   
   const svg = `
     <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">

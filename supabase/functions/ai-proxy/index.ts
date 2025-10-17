@@ -42,7 +42,7 @@ serve(async (req) => {
     // Determine model name
     const modelName = model === 'claude'
       ? 'claude-opus-4-1-20250805'
-      : 'gpt-4-gizmo-g-Ln4nsMLEy'
+      : 'chatgpt-4o-latest'
 
     console.log('[AI Proxy] 调用APICore:', { modelName })
 

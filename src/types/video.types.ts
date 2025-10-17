@@ -99,6 +99,9 @@ export type VideoAction = 'play' | 'download' | 'share' | 'delete' | 'regenerate
 // 视频状态类型
 export type VideoStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled'
 
+// 🆕 缩略图生成状态类型
+export type ThumbnailGenerationStatus = 'pending' | 'processing' | 'completed' | 'failed' | null
+
 // 缓存类型
 export type CacheType = 'base64' | 'url' | 'r2' | 'external'
 

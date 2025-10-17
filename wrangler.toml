@@ -33,6 +33,12 @@ VITE_ENABLE_FRONTEND_THUMBNAIL = "false"
 # binding = "VIDEOS"
 # bucket_name = "ai-video-storage"
 
+# 定时任务配置（缩略图重试）
+# 注意：Pages 项目不支持 triggers，如需定时任务请使用 Workers
+# [triggers]
+# crons = ["0 * * * *"]  # 每小时执行一次
+
 # 安全配置
-[placement]
-mode = "smart"
+# 注意：Pages 项目不支持 placement
+# [placement]
+# mode = "smart"

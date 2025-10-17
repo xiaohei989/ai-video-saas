@@ -193,7 +193,7 @@ class VideoPollingService {
       const currentTask = videoTaskManager.getTask(taskId)
       const latestTask = this.videoToTask(video)
 
-      // 🔧 智能恢复机制：检查青云API连接状态
+      // 🔧 智能恢复机制：检查API连接状态
       if ((video.status === 'processing' || video.status === 'pending') && video.veo3_job_id) {
         await this.checkAndRestoreAPI(video, taskId)
       }
@@ -404,7 +404,7 @@ class VideoPollingService {
   }
 
   /**
-   * 检查并恢复API连接（支持青云API和APICore）
+   * 检查并恢复API连接（支持Wuyin和APICore）
    * 如果发现任务有veo3_job_id但API轮询不存在，则自动恢复
    */
   private async checkAndRestoreAPI(video: any, taskId: string): Promise<void> {
@@ -426,7 +426,7 @@ class VideoPollingService {
         const restored = await veo3Service.restoreJob(video.veo3_job_id, video.id, apiProvider)
         
         if (restored) {
-          console.log(`[POLLING] ✅ 青云API连接恢复成功: ${video.id}`)
+          console.log(`[POLLING] ✅ ${apiDisplayName}连接恢复成功: ${video.id}`)
           
           // 更新进度管理器，标记为已恢复
           const { progressManager } = await import('./progressManager')
@@ -435,17 +435,17 @@ class VideoPollingService {
             statusText: i18n.t('videoCreator.generating'), // 多语言状态文本
             lastPollingStatus: 'auto-restored'
           };
-          
+
           // 根据API提供商设置正确的task ID字段
           if (apiProvider === 'apicore') {
             progressUpdate.apicoreTaskId = video.veo3_job_id;
-          } else {
-            progressUpdate.qingyunTaskId = video.veo3_job_id;
+          } else if (apiProvider === 'wuyin') {
+            progressUpdate.wuyinTaskId = video.veo3_job_id;
           }
-          
+
           progressManager.updateProgress(video.id, progressUpdate)
         } else {
-          console.warn(`[POLLING] ❌ 青云API连接恢复失败: ${video.id}`)
+          console.warn(`[POLLING] ❌ ${apiDisplayName}连接恢复失败: ${video.id}`)
           
           // 检查任务是否已经运行太久，如果是则考虑标记为失败
           const startTime = video.processing_started_at ? new Date(video.processing_started_at) : new Date(video.created_at)
@@ -461,33 +461,33 @@ class VideoPollingService {
               statusText: i18n.t('videoCreator.processing'), // 多语言状态文本
               lastPollingStatus: 'connection-lost'
             };
-            
+
             // 根据API提供商设置正确的task ID字段
             if (apiProvider === 'apicore') {
               timeoutUpdate.apicoreTaskId = video.veo3_job_id;
-            } else {
-              timeoutUpdate.qingyunTaskId = video.veo3_job_id;
+            } else if (apiProvider === 'wuyin') {
+              timeoutUpdate.wuyinTaskId = video.veo3_job_id;
             }
-            
+
             progressManager.updateProgress(video.id, timeoutUpdate)
           }
         }
       } else {
         // 连接正常，更新最后检查时间
-        
+
         const { progressManager } = await import('./progressManager')
         const normalUpdate: any = {
           status: video.status as any,
           lastPollingStatus: 'connection-verified'
         };
-        
+
         // 根据API提供商设置正确的task ID字段
         if (apiProvider === 'apicore') {
           normalUpdate.apicoreTaskId = video.veo3_job_id;
-        } else {
-          normalUpdate.qingyunTaskId = video.veo3_job_id;
+        } else if (apiProvider === 'wuyin') {
+          normalUpdate.wuyinTaskId = video.veo3_job_id;
         }
-        
+
         progressManager.updateProgress(video.id, normalUpdate)
       }
     } catch (error) {

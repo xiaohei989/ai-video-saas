@@ -442,6 +442,10 @@
   },
   "videoCreator": {
     "outputQuality": "Ausgabequalität",
+    "veo3Fast": "Veo 3.0 Fast (Schnell · 20 Credits)",
+    "veo3High": "Veo 3.0 High Quality (Hohe Qualität · 100 Credits)",
+    "veo31Fast": "Veo 3.1 Fast (Schnell · 20 Credits)",
+    "veo31High": "Veo 3.1 High Quality (Hohe Qualität · 100 Credits)",
     "fastGeneration": "⚡ Schnelle Generierung (1-2 Minuten · Für Vorschau)",
     "highQuality": "✨ Hohe Qualität (3-6 Minuten · Beste Ergebnisse)",
     "aspectRatio": "Seitenverhältnis",
@@ -536,6 +540,7 @@
     "createVideo": "Video erstellen",
     "elapsedTime": "Verstrichene Zeit",
     "generationFailed": "Generierung fehlgeschlagen",
+    "creditsRefunded": "{{credits}} Credits zurückerstattet",
     "waitingForProcessing": "Warten auf Verarbeitung",
     "untitledVideo": "Unbenanntes Video",
     "regenerateTitle": "Mit denselben Einstellungen regenerieren",

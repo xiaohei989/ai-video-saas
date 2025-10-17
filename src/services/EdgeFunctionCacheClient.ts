@@ -90,7 +90,7 @@ class EdgeFunctionCacheClient {
   private readonly DEFAULT_TTL = 3600 // 1小时
   private readonly SHORT_TTL = 300 // 5分钟
   // private readonly LONG_TTL = 86400 // 24小时 // unused
-  
+
   // 本地内存缓存作为二级缓存
   private localCache = new Map<string, { data: any, expiry: number }>()
 
@@ -99,7 +99,7 @@ class EdgeFunctionCacheClient {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://hvkzwrnvxsleeonqqrzq.supabase.co'
     this.CACHE_FUNCTION_URL = `${supabaseUrl}/functions/v1/get-cached-data`
     this.COUNTER_FUNCTION_URL = `${supabaseUrl}/functions/v1/batch-update-counters`
-    
+
   }
 
   /**
@@ -644,13 +644,26 @@ class EdgeFunctionCacheClient {
     last_check: string
   }> {
     try {
+      // 🔧 修复：先检查用户是否已登录，未登录时跳过Redis健康检查
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session) {
+        console.log('[EDGE CACHE CLIENT] 用户未登录，跳过Redis健康检查')
+        return {
+          redis_connected: false,
+          local_cache_size: this.localCache.size,
+          counter_processing_status: null,
+          last_check: new Date().toISOString()
+        }
+      }
+
       // 测试Redis连接
       const testKey = `health_check_${Date.now()}`
       const testValue = { test: true }
-      
+
       const setSuccess = await this.set(testKey, testValue, 10) // 10秒TTL
       const getResult = await this.get(testKey)
-      
+
       // 清理测试数据
       await this.delete(testKey)
 

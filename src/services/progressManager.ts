@@ -20,9 +20,9 @@ export interface VideoProgress {
   lastProgressValue?: number // 上次进度值
   lastProgressChangeTime?: Date // 上次进度变化时间
   // API提供商信息
-  apiProvider?: 'qingyun' | 'apicore' // 使用的API提供商
-  qingyunTaskId?: string // 青云API任务ID
+  apiProvider?: 'apicore' | 'wuyin' // 使用的API提供商
   apicoreTaskId?: string // APICore任务ID
+  wuyinTaskId?: string // Wuyin任务ID
   pollingAttempts?: number // 轮询次数
   lastPollingStatus?: string // 最后轮询状态
 }
@@ -154,7 +154,7 @@ class ProgressManager {
       updated.isProgressStagnant = existing.isProgressStagnant
     } else if (data.progress !== undefined) {
       // 正常的进度更新（增长或相等）
-      if (data.qingyunTaskId || data.apicoreTaskId || data.apiProvider) {
+      if (data.wuyinTaskId || data.apicoreTaskId || data.apiProvider) {
         updated.isRealProgress = true
         
         // 检测API进度是否停滞
@@ -321,8 +321,8 @@ class ProgressManager {
     }
     
     // processing状态：根据质量模式使用不同的时间曲线
-    const timePoints = quality === 'fast' 
-      ? { total: 180, stages: [[30, 20], [90, 60], [150, 90], [180, 99]] }  // 快速模式：3分钟
+    const timePoints = quality === 'fast'
+      ? { total: 120, stages: [[20, 25], [60, 60], [100, 90], [120, 99]] }  // 快速模式：2分钟
       : { total: 300, stages: [[60, 15], [180, 50], [240, 80], [300, 99]] } // 高质量模式：5分钟
     
     // 使用分段线性插值计算进度
@@ -352,7 +352,7 @@ class ProgressManager {
    * 计算剩余时间
    */
   private calculateRemainingTime(elapsedSeconds: number, currentProgress: number, quality: 'fast' | 'pro'): number {
-    const expectedTotalTime = quality === 'fast' ? 180 : 300 // 秒
+    const expectedTotalTime = quality === 'fast' ? 120 : 300 // 秒
     
     if (currentProgress <= 5) return expectedTotalTime
     if (currentProgress >= 95) return Math.max(10, expectedTotalTime - elapsedSeconds)
@@ -627,7 +627,8 @@ class ProgressManager {
         lastUpdate: progress.updatedAt.toISOString(),
         elapsedTime: progress.elapsedTime,
         estimatedDuration: progress.estimatedRemainingTime ? progress.elapsedTime! + progress.estimatedRemainingTime : undefined,
-        qingyunTaskId: progress.qingyunTaskId,
+        wuyinTaskId: progress.wuyinTaskId,
+        apicoreTaskId: progress.apicoreTaskId,
         pollingState: {
           attempts: progress.pollingAttempts,
           lastStatus: progress.lastPollingStatus
@@ -779,7 +780,8 @@ class ProgressManager {
             startedAt: video.processing_started_at ? new Date(video.processing_started_at) : new Date(),
             elapsedTime: progressData.elapsedTime,
             estimatedRemainingTime: progressData.estimatedDuration ? progressData.estimatedDuration - progressData.elapsedTime! : undefined,
-            qingyunTaskId: progressData.qingyunTaskId,
+            wuyinTaskId: progressData.wuyinTaskId,
+            apicoreTaskId: progressData.apicoreTaskId,
             pollingAttempts: progressData.pollingState?.attempts,
             lastPollingStatus: progressData.pollingState?.lastStatus,
             lastProgressChangeTime: progressData.lastProgressChangeTime ? new Date(progressData.lastProgressChangeTime) : undefined

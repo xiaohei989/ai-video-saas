@@ -700,7 +700,7 @@ export function useVideoCacheStatus(videoId: string) {
       const cached = await smartPreloadService.isVideoCached(videoId)
       setIsCached(cached)
     } catch (error) {
-      console.error('[VideoCache] 检查状态失败:', error)
+      // Check status failed
     } finally {
       setIsLoading(false)
     }

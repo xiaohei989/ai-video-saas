@@ -337,7 +337,7 @@ class SEOGuideService {
             template_id: templateId,
             language,
             long_tail_keywords: [],
-            primary_keyword: '',
+            target_keyword: '',
             meta_title: '',
             meta_description: '',
             guide_content: '',

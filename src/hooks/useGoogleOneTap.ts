@@ -82,7 +82,7 @@ export function useGoogleOneTap(options: UseGoogleOneTapOptions = {}) {
     onError,
   } = options
 
-  const { user, signIn } = useAuth()
+  const { user } = useAuth()
   const { t } = useTranslation()
   const isInitializedRef = useRef(false)
   const delayTimerRef = useRef<NodeJS.Timeout | null>(null)
@@ -103,7 +103,9 @@ export function useGoogleOneTap(options: UseGoogleOneTapOptions = {}) {
           picture: payload.picture,
         })
 
-        // 使用Supabase的signInWithIdToken方法
+        // 🔧 修复nonce错误：根据Supabase文档，对于Google One Tap登录
+        // 应该使用 access_token 而不是 id_token，或者需要在Supabase中配置nonce
+        // 这里我们直接传递token，不带任何nonce参数
         const { data, error } = await supabase.auth.signInWithIdToken({
           provider: 'google',
           token: response.credential,
@@ -111,7 +113,18 @@ export function useGoogleOneTap(options: UseGoogleOneTapOptions = {}) {
 
         if (error) {
           console.error('[Google One Tap] Supabase登录失败:', error)
-          toast.error(t('auth.googleSignInError') + ': ' + error.message)
+
+          // 如果是nonce错误，给出更详细的提示
+          if (error.message.includes('nonce')) {
+            console.error('[Google One Tap] Nonce错误详情:')
+            console.error('  - 这通常意味着Supabase的Google OAuth配置需要调整')
+            console.error('  - 请检查Supabase Dashboard中的Google OAuth设置')
+            console.error('  - 确保"Skip nonce check"选项已启用（如果可用）')
+            toast.error(t('auth.googleSignInError') + ': Google配置错误，请联系管理员')
+          } else {
+            toast.error(t('auth.googleSignInError') + ': ' + error.message)
+          }
+
           onError?.(error)
           return
         }
@@ -264,19 +277,34 @@ export function useGoogleOneTap(options: UseGoogleOneTapOptions = {}) {
 
   // 初始化效果
   useEffect(() => {
+    console.log('[Google One Tap] 开始等待Google SDK加载...')
+    let checkCount = 0
+
     // 等待Google SDK加载
     const checkGoogleSDK = setInterval(() => {
+      checkCount++
+
       if (window.google?.accounts?.id) {
         clearInterval(checkGoogleSDK)
+        console.log(`[Google One Tap] ✅ Google SDK已加载 (检查了${checkCount}次)`)
         initializeOneTap()
+      } else if (checkCount % 10 === 0) {
+        // 每秒打印一次进度
+        console.log(`[Google One Tap] 等待SDK加载中... (${checkCount / 10}秒)`)
       }
     }, 100)
 
-    // 超时后停止检查
+    // 延长超时到30秒，给Google SDK更多加载时间
     const timeout = setTimeout(() => {
       clearInterval(checkGoogleSDK)
-      console.warn('[Google One Tap] Google SDK加载超时')
-    }, 10000)
+      console.error('[Google One Tap] ❌ Google SDK加载超时 (30秒)')
+      console.error('[Google One Tap] 可能原因:')
+      console.error('  1. 网络连接问题')
+      console.error('  2. Google服务访问受限')
+      console.error('  3. 防火墙或代理拦截')
+      console.error('  4. HTML中的SDK脚本未正确加载')
+      console.error('[Google One Tap] 建议: 检查 index.html 中的 <script src="https://accounts.google.com/gsi/client">')
+    }, 30000) // 从10秒延长到30秒
 
     return () => {
       clearInterval(checkGoogleSDK)

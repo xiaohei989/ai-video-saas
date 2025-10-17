@@ -188,8 +188,6 @@ class EnhancedIDBService {
     try {
       this.db = await openDB<EnhancedCacheDBSchema>(this.dbName, this.version, {
         upgrade(db, oldVersion, newVersion, transaction) {
-          console.log(`[EnhancedIDB] 数据库升级: ${oldVersion} → ${newVersion}`)
-          
           // 创建图片存储
           if (!db.objectStoreNames.contains('images')) {
             const imageStore = db.createObjectStore('images', { keyPath: 'key' })
@@ -226,34 +224,28 @@ class EnhancedIDBService {
           }
         },
         blocked() {
-          console.warn('[EnhancedIDB] 数据库升级被阻塞')
         },
         blocking() {
-          console.warn('[EnhancedIDB] 阻塞了其他连接')
         },
         terminated() {
-          console.error('[EnhancedIDB] 数据库连接异常终止')
         }
       })
 
       this.isInitialized = true
-      console.log('[EnhancedIDB] ✅ 数据库初始化成功')
-      
+
       // 启动定期清理
       this.startCleanupTasks()
-      
+
       // 初始化元数据
       await this.initializeMetadata()
-      
+
       // 申请持久化存储
       await this.requestPersistentStorage()
 
       // 显示存储使用情况
-      const usage = await this.getStorageUsage()
-      console.log('[EnhancedIDB] 📊 存储使用情况:', usage)
-      
+      await this.getStorageUsage()
+
     } catch (error) {
-      console.error('[EnhancedIDB] ❌ 初始化失败:', error)
       this.isInitialized = false
       throw error
     }

@@ -68,7 +68,7 @@ class SimpleVideoCacheService {
         this.defaultSettings = { ...this.defaultSettings, ...settings }
       }
     } catch (error) {
-      console.warn('[VideoCache] 加载设置失败:', error)
+      // Settings load failed
     }
   }
 
@@ -81,24 +81,19 @@ class SimpleVideoCacheService {
     priority?: 'high' | 'normal' | 'low'
   } = {}): Promise<boolean> {
     if (!this.defaultSettings.enableVideoCache) {
-      console.log('[VideoCache] 视频缓存已禁用')
       return false
     }
 
     try {
-      console.log(`[VideoCache] 🚀 开始缓存视频: ${videoId}`)
-
       // 检查是否已经缓存
       const existing = await this.getCachedVideo(videoId)
       if (existing) {
-        console.log(`[VideoCache] ✅ 视频已缓存: ${videoId}`)
         return true
       }
 
       // 检查缓存空间
       const canCache = await this.checkCacheSpace()
       if (!canCache) {
-        console.warn('[VideoCache] ⚠️ 缓存空间不足')
         await this.cleanupOldVideos()
       }
 
@@ -113,13 +108,11 @@ class SimpleVideoCacheService {
 
       // 检查文件大小（最大20MB）
       if (size > 20 * 1024 * 1024) {
-        console.warn(`[VideoCache] ⚠️ 视频文件过大: ${(size / 1024 / 1024).toFixed(2)}MB`)
         return false
       }
 
       // 存储视频文件
       const cacheKey = this.getCacheKey(videoId)
-      console.log(`[VideoCache] 💾 开始存储视频文件: ${videoId}, Blob大小: ${(blob.size / 1024 / 1024).toFixed(2)}MB`)
 
       const success = await enhancedIDB.set(cacheKey, blob, {
         ttl: 7 * 24 * 60 * 60 // 7天
@@ -129,14 +122,12 @@ class SimpleVideoCacheService {
         throw new Error('存储到IndexedDB失败')
       }
 
-      console.log(`[VideoCache] ✅ 视频文件存储成功: ${videoId}`)
-
       // 验证存储结果
       const verification = await enhancedIDB.get(cacheKey)
       if (verification && verification.data instanceof Blob) {
-        console.log(`[VideoCache] ✅ 存储验证成功: ${videoId}, 实际存储大小: ${(verification.data.size / 1024 / 1024).toFixed(2)}MB`)
+        // Verification success
       } else {
-        console.error(`[VideoCache] ❌ 存储验证失败: ${videoId}`)
+        // Verification failed
       }
 
       // 存储元数据（不包含 blob，避免重复存储）
@@ -157,11 +148,9 @@ class SimpleVideoCacheService {
       this.stats.downloads++
       this.stats.totalSize += size
 
-      console.log(`[VideoCache] ✅ 视频缓存成功: ${videoId} (${(size / 1024 / 1024).toFixed(2)}MB)`)
       return true
 
     } catch (error) {
-      console.error(`[VideoCache] ❌ 缓存视频失败: ${videoId}`, error)
       return false
     }
   }
@@ -179,14 +168,12 @@ class SimpleVideoCacheService {
         await this.updateAccessTime(videoId)
         this.stats.hits++
 
-        console.log(`[VideoCache] ✅ 缓存命中: ${videoId}`)
         return cached.data as Blob
       }
 
       this.stats.misses++
       return null
     } catch (error) {
-      console.error(`[VideoCache] ❌ 获取缓存失败: ${videoId}`, error)
       this.stats.misses++
       return null
     }
@@ -221,7 +208,6 @@ class SimpleVideoCacheService {
       if (!cached || !(cached.data instanceof Blob) || cached.data.size === 0) {
         const metadataKey = this.getMetadataKey(videoId)
         await enhancedIDB.delete(metadataKey)
-        console.log(`[VideoCache] 🧹 清理无效缓存元数据: ${videoId}`)
       }
 
       return false
@@ -262,10 +248,8 @@ class SimpleVideoCacheService {
         enhancedIDB.delete(metadataKey)
       ])
 
-      console.log(`[VideoCache] 🗑️ 删除缓存视频: ${videoId}`)
       return true
     } catch (error) {
-      console.error(`[VideoCache] ❌ 删除缓存失败: ${videoId}`, error)
       return false
     }
   }
@@ -285,12 +269,10 @@ class SimpleVideoCacheService {
 
       if (videoStats && !videoStats.error) {
         // 这里需要具体的实现来获取所有视频元数据
-        console.log(`[VideoCache] 📊 发现 ${videoStats.items} 个缓存项`)
       }
 
       return videos
     } catch (error) {
-      console.error('[VideoCache] ❌ 获取缓存列表失败:', error)
       return []
     }
   }
@@ -300,8 +282,6 @@ class SimpleVideoCacheService {
    */
   async cleanupOldVideos(keepCount: number = 50): Promise<void> {
     try {
-      console.log('[VideoCache] 🧹 开始清理旧视频缓存...')
-
       const videos = await this.getCachedVideosList()
       if (videos.length <= keepCount) {
         return
@@ -314,10 +294,8 @@ class SimpleVideoCacheService {
       for (const video of toDelete) {
         await this.removeVideo(video.videoId)
       }
-
-      console.log(`[VideoCache] ✅ 清理完成，删除了 ${toDelete.length} 个旧视频`)
     } catch (error) {
-      console.error('[VideoCache] ❌ 清理失败:', error)
+      // Cleanup failed
     }
   }
 
@@ -326,8 +304,6 @@ class SimpleVideoCacheService {
    */
   async clearAllCache(): Promise<void> {
     try {
-      console.log('[VideoCache] 🧹 清空所有视频缓存...')
-
       const videos = await this.getCachedVideosList()
       for (const video of videos) {
         await this.removeVideo(video.videoId)
@@ -340,10 +316,8 @@ class SimpleVideoCacheService {
         downloads: 0,
         totalSize: 0
       }
-
-      console.log('[VideoCache] ✅ 所有视频缓存已清空')
     } catch (error) {
-      console.error('[VideoCache] ❌ 清空缓存失败:', error)
+      // Clear failed
     }
   }
 
@@ -370,7 +344,6 @@ class SimpleVideoCacheService {
         availableSpace
       }
     } catch (error) {
-      console.error('[VideoCache] ❌ 获取统计失败:', error)
       return {
         totalVideos: 0,
         totalSize: 0,
@@ -387,7 +360,6 @@ class SimpleVideoCacheService {
   updateSettings(settings: Partial<CacheSettings>): void {
     this.defaultSettings = { ...this.defaultSettings, ...settings }
     localStorage.setItem('video_cache_settings', JSON.stringify(this.defaultSettings))
-    console.log('[VideoCache] ⚙️ 设置已更新:', this.defaultSettings)
   }
 
   /**
@@ -417,7 +389,7 @@ class SimpleVideoCacheService {
         })
       }
     } catch (error) {
-      console.warn('[VideoCache] 更新访问时间失败:', error)
+      // Update access time failed
     }
   }
 

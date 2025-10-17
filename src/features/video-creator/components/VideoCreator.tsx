@@ -10,7 +10,7 @@ import { videoQueueService } from '@/services/videoQueue'
 import { generateRandomParams } from '@/utils/randomParams'
 import { AuthContext } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
-import { getVideoCreditCost } from '@/config/credits'
+import { getVideoCreditCost, type VideoQuality } from '@/config/credits'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useSEO } from '@/hooks/useSEO'
 // import { useVideoGenerationLimiter } from '@/hooks/useRateLimiter' // 已移除限流功能
@@ -55,7 +55,7 @@ export default function VideoCreator() {
     const randomParams = generateRandomParams(initialTemplate)
     return randomParams
   })
-  const [quality, setQuality] = useState<'fast' | 'high'>('fast')
+  const [quality, setQuality] = useState<VideoQuality>('veo3')
   const [aspectRatio, setAspectRatio] = useState<'16:9' | '9:16'>('16:9')
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedVideoUrl, setGeneratedVideoUrl] = useState<string | null>(null)
@@ -208,11 +208,20 @@ export default function VideoCreator() {
   }
 
   const handleGenerate = async (promptData?: { prompt: string; jsonPrompt: any }) => {
+    // 防止重复提交：如果正在生成，直接返回
+    if (isGenerating) {
+      console.log('[防重复提交] 任务正在生成中，忽略此次点击')
+      return
+    }
+
     // Check if user is authenticated
     if (!user) {
       toast.error(t('videoCreator.loginRequired'))
       return
     }
+
+    // 立即设置为生成中状态，防止快速多次点击
+    setIsGenerating(true)
     
     // 限流检查已临时禁用 - 解决误判问题
     // if (isLimited()) {
@@ -237,7 +246,7 @@ export default function VideoCreator() {
     // 检查用户是否可以提交新任务
     try {
       const submitStatus = await videoQueueService.canUserSubmit(user.id)
-      
+
       if (!submitStatus.canSubmit) {
         const userQueueInfo = await videoQueueService.getUserQueueStatus(user.id)
         toast.error(t('videoCreator.concurrencyLimitError'), {
@@ -250,11 +259,13 @@ export default function VideoCreator() {
             onClick: () => navigateTo('/pricing')
           } : undefined
         })
+        setIsGenerating(false) // 重置状态
         return
       }
     } catch (error) {
       console.error('Failed to check submit status:', error)
       toast.error(t('videoCreator.systemBusy'))
+      setIsGenerating(false) // 重置状态
       return
     }
 
@@ -308,8 +319,8 @@ export default function VideoCreator() {
       }
     }
 
-    // Calculate credits based on quality and aspect ratio
-    const requiredCredits = getVideoCreditCost(quality === 'fast' ? 'standard' : 'high', aspectRatio)
+    // Calculate credits based on quality (aspect ratio no longer affects credits)
+    const requiredCredits = getVideoCreditCost(quality)
 
     // 前置检查：积分是否足够
     try {
@@ -327,6 +338,7 @@ export default function VideoCreator() {
             onClick: () => navigateTo('/pricing')
           }
         })
+        setIsGenerating(false) // 重置状态
         return
       }
     } catch (error) {
@@ -342,13 +354,14 @@ export default function VideoCreator() {
           onClick: () => navigateTo('/pricing')
         }
       })
+      setIsGenerating(false) // 重置状态
       return
     }
 
 
     // Removed special handling for art-coffee-machine custom images
 
-    setIsGenerating(true)
+    // isGenerating 已经在函数开始时设置为 true
     setGenerationProgress(0)
     setGenerationStatus(t('videoCreator.submittingTask'))
     setStartTime(Date.now())
@@ -389,7 +402,7 @@ export default function VideoCreator() {
           template_category: selectedTemplate.category || 'uncategorized',
           video_quality: quality,
           aspect_ratio: aspectRatio,
-          api_provider: (import.meta.env.VITE_PRIMARY_VIDEO_API as 'qingyun' | 'apicore') || 'qingyun',
+          api_provider: (import.meta.env.VITE_PRIMARY_VIDEO_API as 'apicore' | 'wuyin') || 'wuyin',
           credits_used: requiredCredits,
           success: false // 先标记为开始，完成时再更新
         })
@@ -406,8 +419,8 @@ export default function VideoCreator() {
             creditsUsed: requiredCredits,
             isPublic: false,
             aspectRatio: aspectRatio,
-            quality: quality === 'high' ? 'pro' : 'fast',
-            apiProvider: import.meta.env.VITE_PRIMARY_VIDEO_API as 'qingyun' | 'apicore' || 'qingyun'
+            quality: quality
+            // apiProvider 已移除 - 由服务器全局配置 VITE_PRIMARY_VIDEO_API 决定
           }
         })
 

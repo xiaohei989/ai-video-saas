@@ -75,6 +75,7 @@ const TemplateTranslationPage = lazy(() => import('./features/translation/Templa
 // 🚀 路由懒加载 - 测试页面 (仅开发环境)
 const TestPage = lazy(() => import('./pages/TestPage'))
 const TestVeoApi = lazy(() => import('./pages/TestVeoApi'))
+const TestWuyinApi = lazy(() => import('./pages/TestWuyinApi'))
 const TestWatermark = lazy(() => import('./pages/TestWatermark'))
 const SimpleWatermarkTest = lazy(() => import('./pages/SimpleWatermarkTest'))
 const TestApicoreApi = lazy(() => import('./pages/TestApicoreApi'))
@@ -238,6 +239,7 @@ function LanguagePrefixedRoutes() {
           <Route path="/test/thumbnails" element={<Layout><ThumbnailTestPage /></Layout>} />
           <Route path="/test" element={<TestPage />} />
           <Route path="/test-veo" element={<Layout><TestVeoApi /></Layout>} />
+          <Route path="/test-wuyin" element={<Layout><TestWuyinApi /></Layout>} />
           <Route path="/test-watermark" element={<Layout><TestWatermark /></Layout>} />
           <Route path="/test-watermark-simple" element={<Layout><SimpleWatermarkTest /></Layout>} />
           <Route path="/test-ai-content" element={<Layout><TestAIContent /></Layout>} />

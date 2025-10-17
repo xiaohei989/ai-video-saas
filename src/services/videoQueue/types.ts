@@ -3,6 +3,7 @@
  */
 
 import type { Database } from '@/lib/supabase'
+import type { VideoQuality } from '@/config/credits'
 
 export type Video = Database['public']['Tables']['videos']['Row']
 
@@ -41,8 +42,8 @@ export interface SubmitJobRequest {
     creditsUsed: number
     isPublic?: boolean
     aspectRatio?: '16:9' | '9:16'
-    quality?: 'fast' | 'pro'
-    apiProvider?: 'qingyun' | 'apicore'
+    quality?: VideoQuality
+    // apiProvider 已移除 - 统一由环境变量 VITE_PRIMARY_VIDEO_API 控制
   }
   priority?: number
 }

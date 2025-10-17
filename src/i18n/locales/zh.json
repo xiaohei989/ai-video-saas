@@ -505,6 +505,10 @@
   },
   "videoCreator": {
     "outputQuality": "输出质量",
+    "veo3Fast": "Veo 3.0 Fast (快速 · 20积分)",
+    "veo3High": "Veo 3.0 High Quality (高质量 · 100积分)",
+    "veo31Fast": "Veo 3.1 Fast (快速 · 20积分)",
+    "veo31High": "Veo 3.1 High Quality (高质量 · 100积分)",
     "fastGeneration": "⚡ 快速生成 (1-2分钟 · 适合预览)",
     "highQuality": "✨ 高质量 (3-6分钟 · 最佳效果)",
     "aspectRatio": "宽高比",
@@ -561,6 +565,7 @@
     "createVideo": "创建视频",
     "elapsedTime": "耗时",
     "generationFailed": "生成失败",
+    "creditsRefunded": "{{credits}} 积分已退还",
     "waitingForProcessing": "等待处理",
     "untitledVideo": "未命名视频",
     "regenerateTitle": "使用相同配置重新生成",
@@ -1546,5 +1551,17 @@
       "export": "导出",
       "clearAll": "清空全部"
     }
+  },
+  "guide": {
+    "tableOfContents": "目录",
+    "aboutThisTemplate": "关于此模板",
+    "readyToCreate": "准备好开始创作了吗？",
+    "useTemplateDescription": "使用 {{templateName}} 模板，轻松创建专业级视频内容",
+    "useThisTemplate": "立即使用此模板",
+    "viewAllTemplates": "查看所有模板",
+    "relatedTemplates": "相关模板推荐",
+    "home": "首页",
+    "templates": "模板",
+    "faq": "常见问题"
   }
 }
