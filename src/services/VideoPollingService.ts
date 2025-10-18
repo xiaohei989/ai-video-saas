@@ -266,8 +266,34 @@ class VideoPollingService {
           }
           
           // 强制失败 - 15分钟后任何进度都失败
+          // 🔧 修复：在标记失败前，先检查视频URL是否已存在
           if (elapsedTime > TIMEOUT_FORCE_FAIL) {
-            console.log(`[POLLING] 🚨 任务运行超过15分钟强制失败: ${taskId}`)
+            console.log(`[POLLING] ⏰ 任务运行超过15分钟，检查视频URL: ${taskId}`)
+
+            // 重新获取最新视频状态，检查是否有视频URL
+            const latestVideo = await supabaseVideoService.getVideo(taskId)
+            if (latestVideo?.video_url && latestVideo.video_url.length > 0) {
+              console.log(`[POLLING] ✅ 超时检测发现视频URL已存在，标记完成而非失败: ${taskId}`)
+
+              // 使用统一的完成处理方法
+              const handled = await this.handleTaskCompletion(taskId, latestVideo.video_url, currentTask, '超时检测-发现URL')
+              if (handled) {
+                // 更新数据库状态
+                try {
+                  await supabaseVideoService.updateVideoAsSystem(taskId, {
+                    status: 'completed',
+                    processing_completed_at: new Date().toISOString()
+                  })
+                  console.log(`[POLLING] 超时检测已更新数据库状态为completed: ${taskId}`)
+                } catch (updateError) {
+                  console.error(`[POLLING] 超时检测更新数据库失败: ${taskId}`, updateError)
+                }
+              }
+              return
+            }
+
+            // 确实没有视频URL，才标记为失败
+            console.log(`[POLLING] 🚨 任务运行超过15分钟且无视频URL，标记失败: ${taskId}`)
             await videoTaskManager.markTaskFailed(taskId, '任务超时')
             this.config?.onTaskFailed({ ...currentTask, status: 'failed', errorMessage: '任务超时' })
             return
@@ -412,10 +438,18 @@ class VideoPollingService {
     const apiProvider = detectApiProvider(video.veo3_job_id);
     const apiDisplayName = getApiProviderDisplayName(apiProvider);
     try {
-      
+
       // 动态导入veo3Service以避免循环依赖
-      const { veo3Service } = await import('./veo3Service')
-      
+      let veo3Service: any;
+      try {
+        const module = await import('./veo3Service')
+        veo3Service = module.veo3Service
+      } catch (importError) {
+        // 🔧 FIX: 开发环境中动态导入可能失败,静默跳过
+        console.warn(`[POLLING] ⚠️ Failed to import veo3Service (dev environment):`, importError)
+        return
+      }
+
       // 检查veo3Service中是否有活跃的任务跟踪
       const jobStatus = await veo3Service.getJobStatus(video.veo3_job_id)
       
