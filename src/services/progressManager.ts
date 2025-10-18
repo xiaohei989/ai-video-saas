@@ -83,26 +83,23 @@ class ProgressManager {
           }
           
           let newProgress = this.calculateSmoothedProgress(elapsedTime, progress.status, quality)
-          
+
           // 如果API停滞，确保进度不低于当前值
           if (progress.isProgressStagnant && newProgress < progress.progress) {
             newProgress = Math.min(progress.progress + 1, 99) // 至少增长1%
             // // console.log(`[PROGRESS MANAGER] 🚀 停滞模拟增长：${videoId} ${progress.progress}% → ${newProgress}%`)
           }
-          
+
+          // 🔧 FIX: 使用统一的 updateProgress 入口,确保所有进度更新都经过单调递增检查
           if (Math.abs(newProgress - progress.progress) >= 1) {
-            const updatedProgress: VideoProgress = {
-              ...progress,
+            this.updateProgress(videoId, {
               progress: newProgress,
+              status: progress.status,
               elapsedTime,
               estimatedRemainingTime: this.calculateRemainingTime(elapsedTime, newProgress, quality),
-              statusText: this.getProgressStatusText(newProgress, progress.status),
-              updatedAt: now
-            }
-            
-            this.progressMap.set(videoId, updatedProgress)
-            this.saveToLocalStorage()
-            this.notifySubscribers(videoId, updatedProgress)
+              statusText: this.getProgressStatusText(newProgress, progress.status)
+              // 注意: 不传递 apiProvider/taskId,让 updateProgress 知道这是时间模拟
+            })
           }
         }
       }
@@ -145,16 +142,20 @@ class ProgressManager {
 
     // 🔧 FIX: 严格的进度非回退保护 - 适用于所有进度更新
     if (data.progress !== undefined && data.progress < existing.progress && existing.progress > 5) {
+      // 🔧 FIX: 判断进度来源,增强日志可读性
+      const isFromAPI = !!(data.wuyinTaskId || data.apicoreTaskId || data.apiProvider);
+      const source = isFromAPI ? (data.apiProvider || 'API') : 'time-simulation';
+
       // 记录回退详情,用于诊断移动端进度跳动问题
       const rejectReason = {
         videoId,
+        source,  // 🔧 NEW: 进度来源
         attemptedProgress: data.progress,
         currentProgress: existing.progress,
-        apiProvider: data.apiProvider || existing.apiProvider || 'unknown',
-        hasTaskId: !!(data.wuyinTaskId || data.apicoreTaskId),
-        timeSinceLastUpdate: now.getTime() - existing.updatedAt.getTime()
+        diff: existing.progress - data.progress,  // 🔧 NEW: 回退幅度
+        timeSinceLastUpdate: Math.round((now.getTime() - existing.updatedAt.getTime()) / 1000) + 's'
       };
-      console.log(`[PROGRESS MANAGER] 🚫 拒绝进度回退:`, rejectReason);
+      console.log(`[PROGRESS MANAGER] 🚫 拒绝进度回退 (${source}):`, rejectReason);
 
       updated.progress = existing.progress // 强制保持现有进度
 
