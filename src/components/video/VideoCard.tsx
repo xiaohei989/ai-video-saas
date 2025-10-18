@@ -181,8 +181,17 @@ export function VideoCard({
     }
   }, [video.video_url])
 
-  // 获取视频宽高比（用于布局调整）
-  const aspectRatio = video.parameters?.aspectRatio || video.metadata?.aspectRatio || '16:9'
+  // 获取视频宽高比（用于布局调整）- 使用 useMemo 避免不必要的重新渲染
+  // 🎯 关键优化:确保 aspectRatio 在首次渲染时就是正确的值,避免从默认值变化导致的布局跳变
+  const aspectRatio = React.useMemo(() => {
+    // 优先从 parameters 获取,其次从 metadata
+    const ratio = video.parameters?.aspectRatio || video.metadata?.aspectRatio
+    // 如果都没有,使用16:9作为默认值(但这种情况应该很少见)
+    return ratio || '16:9'
+  }, [video.parameters?.aspectRatio, video.metadata?.aspectRatio])
+
+  // 判断是否为竖屏视频
+  const isPortrait = aspectRatio === '9:16'
 
 
   // 鼠标悬停预加载（类似模板页面的实现）
@@ -240,16 +249,20 @@ export function VideoCard({
   }
 
   return (
-    <Card className="relative overflow-hidden group hover:shadow-lg transition-shadow duration-200">
+    <Card
+      className="relative overflow-hidden group hover:shadow-lg transition-shadow duration-200"
+      data-aspect-ratio={aspectRatio}
+    >
       <CardContent className="p-0">
         {/* 9:16视频：两层布局 - 上层(预览+按钮)，下层(标题+描述) */}
-        {aspectRatio === '9:16' ? (
+        {isPortrait ? (
           <div className="flex flex-col">
             {/* 上层：预览+按钮横向布局 */}
             <div className="flex p-4 gap-2">
               {/* 左侧预览区域 */}
               <div
-                className="relative aspect-[9/16] flex-shrink-0 w-[85%] bg-muted rounded-lg overflow-hidden"
+                className="relative flex-shrink-0 w-[85%] bg-muted rounded-lg overflow-hidden"
+                style={{ aspectRatio: '9/16' }}
                 onMouseEnter={handleMouseEnter}
                 onTouchStart={handleTouchStart}
               >
@@ -537,7 +550,8 @@ export function VideoCard({
           <div>
             {/* 预览区域 */}
             <div
-              className="relative aspect-video bg-muted"
+              className="relative bg-muted"
+              style={{ aspectRatio: '16/9' }}
               onMouseEnter={handleMouseEnter}
               onTouchStart={handleTouchStart}
             >
