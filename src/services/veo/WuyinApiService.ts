@@ -42,6 +42,8 @@ interface WuyinQueryResponse {
 class WuyinApiService implements IVeoApiService {
   private config: VeoApiConfig;
   private headers: HeadersInit;
+  // 🔧 FIX: 保存每个任务的上次进度值,确保单调递增
+  private lastProgressMap = new Map<string, number>();
 
   /**
    * 模型到端点的映射配置
@@ -297,6 +299,16 @@ class WuyinApiService implements IVeoApiService {
           break;
       }
 
+      // 🔧 FIX: 强制单调递增保护 - 避免移动端进度回退(50→25)
+      const lastProgress = this.lastProgressMap.get(taskId) || 0;
+      if (progress < lastProgress && lastProgress < 100) {
+        console.log(`[WUYIN API] 🚫 进度回退保护: ${taskId} 保持${lastProgress}%, 拒绝${progress}% (elapsed: ${elapsedSeconds}s)`);
+        progress = lastProgress;
+      } else if (progress > lastProgress) {
+        this.lastProgressMap.set(taskId, progress);
+        console.log(`[WUYIN API] 📈 进度更新: ${taskId} ${lastProgress}% → ${progress}% (elapsed: ${elapsedSeconds}s)`);
+      }
+
       // 返回标准化的响应
       return {
         taskId: String(result.data.id),
@@ -316,13 +328,15 @@ class WuyinApiService implements IVeoApiService {
 
   /**
    * 轮询任务直到完成
+   * @param externalStartTime - 🔧 FIX: 从外部传入统一的开始时间,避免移动端进度跳动
    */
   async pollUntilComplete(
     taskId: string,
     onProgress?: (progress: number) => void,
     maxAttempts: number = 60,
     baseInterval: number = 10000,
-    quality: 'fast' | 'pro' = 'pro'
+    quality: 'fast' | 'pro' = 'pro',
+    externalStartTime?: Date  // 🔧 FIX: 新增参数,接收外部统一的开始时间
   ): Promise<VeoTaskResponse> {
     console.log('[WUYIN API] === 开始轮询任务状态 ===');
     console.log(`[WUYIN API] Task ID: ${taskId}`);
@@ -330,7 +344,14 @@ class WuyinApiService implements IVeoApiService {
 
     let attempts = 0;
     let lastStatus: string | null = null;
-    const startTime = new Date(); // 记录开始时间用于进度计算
+    // 🔧 FIX: 优先使用外部传入的开始时间,确保时间计算的一致性
+    const startTime = externalStartTime || new Date();
+
+    if (externalStartTime) {
+      console.log('[WUYIN API] 📅 Using external start time:', externalStartTime.toISOString());
+    } else {
+      console.log('[WUYIN API] ⚠️ No external start time provided, using current time');
+    }
 
     while (attempts < maxAttempts) {
       attempts++;
@@ -354,12 +375,16 @@ class WuyinApiService implements IVeoApiService {
           console.log('[WUYIN API] === 视频生成完成 ===');
           console.log('[WUYIN API] Video URL:', status.video_url);
           onProgress?.(100);
+          // 🔧 FIX: 清理进度缓存
+          this.lastProgressMap.delete(taskId);
           return status;
         }
 
         // 检查失败状态
         if (status.status === 'failed') {
           console.error('[WUYIN API] Task failed:', status.fail_reason);
+          // 🔧 FIX: 清理进度缓存
+          this.lastProgressMap.delete(taskId);
           throw new Error(`Video generation failed: ${status.fail_reason || 'Unknown error'}`);
         }
 

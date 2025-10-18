@@ -143,27 +143,50 @@ class ProgressManager {
       estimatedRemainingTime
     }
 
-    // 严格的进度非回退保护 - 适用于所有进度更新
+    // 🔧 FIX: 严格的进度非回退保护 - 适用于所有进度更新
     if (data.progress !== undefined && data.progress < existing.progress && existing.progress > 5) {
-      // // console.log(`[PROGRESS MANAGER] 🚫 拒绝进度回退: ${videoId} 保持${existing.progress}%，拒绝${data.progress}%`)
+      // 记录回退详情,用于诊断移动端进度跳动问题
+      const rejectReason = {
+        videoId,
+        attemptedProgress: data.progress,
+        currentProgress: existing.progress,
+        apiProvider: data.apiProvider || existing.apiProvider || 'unknown',
+        hasTaskId: !!(data.wuyinTaskId || data.apicoreTaskId),
+        timeSinceLastUpdate: now.getTime() - existing.updatedAt.getTime()
+      };
+      console.log(`[PROGRESS MANAGER] 🚫 拒绝进度回退:`, rejectReason);
+
       updated.progress = existing.progress // 强制保持现有进度
-      
+
       // 保持其他字段的更新，只是不回退进度值
       updated.lastProgressValue = existing.lastProgressValue
       updated.lastProgressChangeTime = existing.lastProgressChangeTime
       updated.isProgressStagnant = existing.isProgressStagnant
+
+      // 🔧 FIX: 清理 localStorage 中可能的错误值
+      this.saveToLocalStorage();
     } else if (data.progress !== undefined) {
       // 正常的进度更新（增长或相等）
       if (data.wuyinTaskId || data.apicoreTaskId || data.apiProvider) {
         updated.isRealProgress = true
-        
+
         // 检测API进度是否停滞
         const progressChanged = data.progress !== existing.lastProgressValue
         if (progressChanged) {
           updated.lastProgressValue = data.progress
           updated.lastProgressChangeTime = now
           updated.isProgressStagnant = false
-          // console.log(`[PROGRESS MANAGER] 真实API进度更新: ${videoId} ${existing.progress}% → ${data.progress}%`)
+
+          // 🔧 FIX: 添加详细的进度更新日志,用于诊断
+          const updateDetails = {
+            videoId,
+            from: existing.progress,
+            to: data.progress,
+            source: data.apiProvider || 'unknown',
+            taskId: data.wuyinTaskId || data.apicoreTaskId,
+            elapsedTime: Math.round((now.getTime() - (existing.startedAt?.getTime() || now.getTime())) / 1000)
+          };
+          console.log(`[PROGRESS MANAGER] 📈 API进度更新:`, updateDetails);
         } else {
           // 相同进度值，检查停滞时间
           const lastChangeTime = existing.lastProgressChangeTime || existing.updatedAt
@@ -539,13 +562,14 @@ class ProgressManager {
 
   /**
    * 从 localStorage 加载进度数据
+   * 🔧 FIX: 增强验证机制,避免移动端加载过期数据导致进度跳动
    */
   private loadFromLocalStorage() {
     try {
       const stored = localStorage.getItem('videoProgress')
       if (stored) {
         const data = JSON.parse(stored) as Record<string, any>
-        
+
         // 转换数据并检查是否过期
         for (const [videoId, progressData] of Object.entries(data)) {
           const progress: VideoProgress = {
@@ -554,39 +578,72 @@ class ProgressManager {
             startedAt: progressData.startedAt ? new Date(progressData.startedAt) : undefined,
             lastProgressChangeTime: progressData.lastProgressChangeTime ? new Date(progressData.lastProgressChangeTime) : undefined
           }
-          
-          // 检查数据是否过期（2小时，延长以支持长时间任务）
-          const isExpired = Date.now() - progress.updatedAt.getTime() > 2 * 60 * 60 * 1000
-          if (!isExpired && (progress.status === 'processing' || progress.status === 'pending')) {
+
+          // 🔧 FIX: 更严格的过期检查 - 移动端30分钟内数据才有效
+          const now = Date.now();
+          const dataAge = now - progress.updatedAt.getTime();
+          const maxAge = 30 * 60 * 1000; // 30分钟
+
+          // 检查进度值的合理性
+          const isProgressValid = progress.progress >= 0 && progress.progress <= 100;
+          const isNotExpired = dataAge < maxAge;
+          const isActiveStatus = progress.status === 'processing' || progress.status === 'pending';
+
+          if (isProgressValid && isNotExpired && isActiveStatus) {
             this.progressMap.set(videoId, progress)
-            // console.log(`[PROGRESS MANAGER] Restored from localStorage: ${videoId} (${progress.progress}%)`)
+            console.log(`[PROGRESS MANAGER] ✅ 从 localStorage 恢复: ${videoId} (${progress.progress}%, age: ${Math.round(dataAge/1000)}s)`)
+          } else {
+            const skipReason = !isProgressValid ? '进度值无效' :
+                              !isNotExpired ? '数据过期' :
+                              !isActiveStatus ? '状态非处理中' : '未知原因';
+            console.log(`[PROGRESS MANAGER] ⏭️ 跳过 localStorage 数据: ${videoId} (${skipReason}, progress: ${progress.progress}%, age: ${Math.round(dataAge/1000)}s)`);
           }
         }
       }
     } catch (error) {
-      // console.error('[PROGRESS MANAGER] Failed to load from localStorage:', error)
+      console.error('[PROGRESS MANAGER] Failed to load from localStorage:', error)
     }
   }
 
   /**
    * 保存进度数据到 localStorage
+   * 🔧 FIX: 添加二次验证,确保只保存有效的进度数据
    */
   private saveToLocalStorage() {
     try {
       const data: Record<string, any> = {}
+      let savedCount = 0;
+      let skippedCount = 0;
+
       for (const [videoId, progress] of this.progressMap.entries()) {
         // 只保存处理中和等待中的任务
         if (progress.status === 'processing' || progress.status === 'pending') {
-          data[videoId] = {
-            ...progress,
-            updatedAt: progress.updatedAt.toISOString(),
-            startedAt: progress.startedAt?.toISOString()
+          // 🔧 FIX: 验证进度值的合理性
+          const isProgressValid = progress.progress >= 0 && progress.progress <= 100;
+          const hasValidTimestamp = progress.updatedAt && !isNaN(progress.updatedAt.getTime());
+
+          if (isProgressValid && hasValidTimestamp) {
+            data[videoId] = {
+              ...progress,
+              updatedAt: progress.updatedAt.toISOString(),
+              startedAt: progress.startedAt?.toISOString(),
+              lastProgressChangeTime: progress.lastProgressChangeTime?.toISOString()
+            }
+            savedCount++;
+          } else {
+            console.warn(`[PROGRESS MANAGER] ⚠️ 跳过无效进度保存: ${videoId} (progress: ${progress.progress}, timestamp: ${hasValidTimestamp})`);
+            skippedCount++;
           }
         }
       }
+
       localStorage.setItem('videoProgress', JSON.stringify(data))
+
+      if (savedCount > 0 || skippedCount > 0) {
+        console.log(`[PROGRESS MANAGER] 💾 localStorage 保存完成: ${savedCount}个有效, ${skippedCount}个跳过`);
+      }
     } catch (error) {
-      // console.error('[PROGRESS MANAGER] Failed to save to localStorage:', error)
+      console.error('[PROGRESS MANAGER] Failed to save to localStorage:', error)
     }
   }
 

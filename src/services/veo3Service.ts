@@ -575,9 +575,14 @@ class Veo3Service {
       // 创建视频任务
       const task = await wuyinService.createVideo(apiParams)
 
+      // 🔧 FIX: 记录统一的开始时间,避免移动端进度跳动
+      const processingStartTime = new Date()
+      const processingStartTimeISO = processingStartTime.toISOString()
+
       // 立即保存Wuyin任务ID到数据库
       if (request.videoRecordId) {
         console.log(`[VEO3 SERVICE] ⚡ CRITICAL: Saving Wuyin task ID to database: ${task.taskId}`)
+        console.log(`[VEO3 SERVICE] 📅 Processing start time: ${processingStartTimeISO}`)
 
         let saveSuccess = false
         for (let attempt = 1; attempt <= 3; attempt++) {
@@ -585,7 +590,7 @@ class Veo3Service {
             await supabaseVideoService.updateVideoAsSystem(request.videoRecordId, {
               veo3_job_id: task.taskId,
               status: 'processing',
-              processing_started_at: new Date().toISOString()
+              processing_started_at: processingStartTimeISO
             })
             console.log(`[VEO3 SERVICE] ✅ Successfully saved veo3_job_id: ${task.taskId}`)
             saveSuccess = true
@@ -607,7 +612,7 @@ class Veo3Service {
       const videoQuality = (modelName.includes('fast') || modelName === 'veo3') ? 'fast' : 'pro'
       console.log(`[VEO3 SERVICE] Video quality mode: ${videoQuality}`)
 
-      // 轮询获取结果
+      // 🔧 FIX: 传递统一的开始时间给 Wuyin API,避免进度计算不一致
       const result = await wuyinService.pollUntilComplete(
         task.taskId,
         async (progress) => {
@@ -631,7 +636,8 @@ class Veo3Service {
         },
         60,
         10000,
-        videoQuality // 传递质量参数
+        videoQuality, // 传递质量参数
+        processingStartTime // 🔧 FIX: 传递统一的开始时间
       )
 
       if (result.video_url) {
