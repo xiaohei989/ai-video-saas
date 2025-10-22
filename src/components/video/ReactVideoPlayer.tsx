@@ -8,7 +8,8 @@ import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, Loader2 } from '@/co
 import { cn } from '@/lib/utils'
 import { getCachedImage, smartLoadImage } from '@/utils/newImageCache'
 import { useResponsiveDevice, supportsHover } from '@/utils/deviceDetection'
-import { getProxyVideoUrl, needsCorsProxy } from '@/utils/videoUrlProxy'
+// R2 CORS已正确配置,不再需要代理URL
+// import { getProxyVideoUrl, needsCorsProxy } from '@/utils/videoUrlProxy'
 import { useVideoContext } from '@/contexts/VideoContext'
 import { smartPreloadService } from '@/services/SmartVideoPreloadService'
 
@@ -522,11 +523,7 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
   }, [currentVideoId, videoUrl, videoId])
 
 
-  // 🚀 使用代理URL以解决移动端CORS问题
-  const proxyVideoUrl = getProxyVideoUrl(videoUrl)
-  
-  // 🚀 动态检查是否需要CORS设置
-  const needsCors = needsCorsProxy(proxyVideoUrl)
+  // R2 CORS已正确配置,所有视频都使用原始URL
   
   // iOS/移动端内联播放兼容属性和视频格式检测
   useEffect(() => {
@@ -641,7 +638,7 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
         poster={currentPoster}
         muted={isMuted}
         playsInline
-        {...(needsCors && { crossOrigin: "anonymous" })}
+        crossOrigin="anonymous"
         preload={
           deviceInfo.isIOSChrome ? "none" : // iOS Chrome不预加载，避免兼容问题
           deviceInfo.isWechat || deviceInfo.isQQ ? "none" : // 微信/QQ浏览器不预加载，节省流量
@@ -734,22 +731,8 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
           onError?.(error)
         }}
       >
-        {/* 🚀 优先使用本地缓存URL，回退到代理URL */}
-        {isVideoCached ? (
-          <source src={actualVideoUrl} type="video/mp4" />
-        ) : (
-          <>
-            <source src={getProxyVideoUrl(actualVideoUrl)} type="video/mp4" />
-            {/* 如果代理URL和原URL不同，提供原URL作为回退 */}
-            {getProxyVideoUrl(actualVideoUrl) !== actualVideoUrl && (
-              <source src={actualVideoUrl} type="video/mp4" />
-            )}
-            {/* 如果原视频URL不是MP4格式，尝试推测MP4版本 */}
-            {!actualVideoUrl.includes('.mp4') && (
-              <source src={actualVideoUrl.replace(/\.[^.]+$/, '.mp4')} type="video/mp4" />
-            )}
-          </>
-        )}
+        {/* 🚀 R2 CORS已正确配置，直接使用实际视频URL */}
+        <source src={actualVideoUrl} type="video/mp4" />
         {deviceInfo.isIOSChrome ? 
           'iOS Chrome不支持此视频格式，建议使用Safari浏览器' :
           '您的浏览器不支持视频播放，建议使用Chrome或Safari浏览器'
