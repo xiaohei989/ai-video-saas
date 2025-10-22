@@ -13,7 +13,7 @@
  * 4. 可验证性 - 提供清单格式,AI可自我检查
  */
 
-import type { SectionStructure } from './promptBuilderService'
+import type { SectionStructure } from './seoTypes'
 
 /**
  * 关键词任务分配结果

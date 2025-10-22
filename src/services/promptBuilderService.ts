@@ -18,6 +18,9 @@ import {
   type KeywordTaskAllocation
 } from './keywordTaskAllocator'
 
+// 🔥 Re-export shared types from seoTypes to maintain backward compatibility
+export type { SectionStructure, SubsectionStructure } from './seoTypes'
+
 export interface PromptBuildOptions {
   templateSlug: string              // how-to, alternatives, platform-specific
   targetKeyword: string             // 目标长尾关键词

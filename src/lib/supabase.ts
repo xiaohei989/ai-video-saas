@@ -1,7 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
 import { createSecureSupabaseClient } from '../services/secureSupabaseClient'
-// 🔥 修复循环依赖：改为动态导入 securityMonitor
-// import { securityMonitor } from '../services/securityMonitorService'
 import { InputValidator } from '../utils/inputValidator'
 
 // Supabase 配置

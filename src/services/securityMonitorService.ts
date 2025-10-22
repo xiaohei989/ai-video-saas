@@ -10,7 +10,6 @@ import {
   SECURITY_CONFIG 
 } from '../config/security';
 // 避免循环依赖，延迟导入 Supabase
-// import { supabase } from '../lib/supabase';
 
 export interface AlertConfig {
   email?: string;

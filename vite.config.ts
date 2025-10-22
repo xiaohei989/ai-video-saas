@@ -355,107 +355,15 @@ export default defineConfig(({ mode }) => {
           unknownGlobalSideEffects: false
         },
         output: {
-          // 🚀 智能代码分割 - 优化首屏加载,管理后台完全分离
-          manualChunks: (id) => {
-            // 排除node_modules之外的代码
-            if (!id.includes('node_modules')) {
-              return undefined
-            }
-
-            // 🎯 管理后台相关 (最大chunk,完全分离 - 首页不加载)
-            if (id.includes('react-admin') || id.includes('ra-') || id.includes('ra-supabase')) {
-              return 'admin'
-            }
-
-            // 📊 图表库 (仅管理后台使用 - 首页不加载)
-            if (id.includes('recharts') || id.includes('victory') || id.includes('d3-')) {
-              return 'charts'
-            }
-
-            // ☁️ AWS SDK (大型库,按需加载 - 仅视频上传时使用)
-            // 🔥 修复: 将不同的AWS SDK包分开打包,避免循环依赖和初始化问题
-            if (id.includes('@aws-sdk/client-s3')) {
-              return 'aws-s3'
-            }
-            if (id.includes('@aws-sdk/s3-request-presigner')) {
-              return 'aws-presigner'
-            }
-            if (id.includes('@aws-sdk')) {
-              return 'aws-core'
-            }
-
-            // 🤖 Google AI (AI功能专用 - 按需加载)
-            if (id.includes('@google/genai') || id.includes('@google/generative-ai')) {
-              return 'google-ai'
-            }
-
-            // 🎨 Radix UI组件库 (统一打包,首页需要)
-            if (id.includes('@radix-ui')) {
-              return 'ui-vendor'
-            }
-
-            // 💰 支付相关 (Stripe - 按需加载)
-            if (id.includes('stripe') || id.includes('@stripe')) {
-              return 'payment'
-            }
-
-            // 🗄️ Supabase (首页需要,独立chunk便于缓存)
-            if (id.includes('@supabase/supabase-js') || id.includes('@supabase/')) {
-              return 'supabase'
-            }
-
-            // 📡 React Query (首页需要,独立chunk)
-            if (id.includes('@tanstack/react-query')) {
-              return 'react-query'
-            }
-
-            // 🌐 国际化 (首页需要,但可独立)
-            if (id.includes('i18next') || id.includes('react-i18next')) {
-              return 'i18n'
-            }
-
-            // 🎬 视频播放器 (按需加载)
-            if (id.includes('react-player') || id.includes('hls.js')) {
-              return 'video-player'
-            }
-
-            // ⚛️ React核心库 - 统一打包避免加载顺序问题 (首页必需)
-            if (id.includes('/react/') || id.includes('/react-dom/') ||
-                id.includes('/scheduler/') || id.match(/node_modules\/react$/)) {
-              return 'react-core'
-            }
-
-            // 🛣️ React Router (首页必需,与react-core分开以便缓存)
-            if (id.includes('react-router') || id.includes('react-router-dom')) {
-              return 'react-router'
-            }
-
-            // 📦 工具库 (首页需要,但体积小可独立)
-            if (id.includes('date-fns') || id.includes('clsx') ||
-                id.includes('tailwind-merge') || id.includes('class-variance-authority')) {
-              return 'utils'
-            }
-
-            // 🎨 Lucide图标 (首页需要,独立便于优化)
-            if (id.includes('lucide-react')) {
-              return 'icons'
-            }
-
-            // 📝 Markdown处理 (仅帮助页面使用)
-            if (id.includes('react-markdown') || id.includes('remark-') || id.includes('rehype-')) {
-              return 'markdown'
-            }
-
-            // 其他node_modules统一打包为vendor
-            return 'vendor'
-          },
+          // 🔥 临时禁用手动chunk分割，使用Vite自动分割避免初始化问题
+          // manualChunks: undefined,
           // 优化chunk文件名
           chunkFileNames: 'assets/[name]-[hash].js',
           // 启用实验性CSS代码分割
           experimentalMinChunkSize: 10000
         },
       },
-      // 🔥 使用 esbuild 压缩
+      // 🔥 使用 esbuild 压缩生产代码
       minify: mode === 'production' ? 'esbuild' : false,
       // terserOptions: mode === 'production' ? {
       //   compress: {
