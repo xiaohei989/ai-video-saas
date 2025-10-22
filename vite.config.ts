@@ -92,6 +92,12 @@ export default defineConfig(({ mode }) => {
       '@types': path.resolve(__dirname, './src/types'),
     },
     },
+    // 🔥 全局 esbuild 配置 - 生产环境移除 console 和 debugger
+    esbuild: mode === 'production' ? {
+      drop: ['console', 'debugger'],
+    } : {
+      // 开发环境保留 console
+    },
     // 🔥 优化依赖预构建,排除所有AWS SDK模块
     optimizeDeps: {
       exclude: [
@@ -363,14 +369,8 @@ export default defineConfig(({ mode }) => {
           experimentalMinChunkSize: 10000
         },
       },
-      // 🔥 使用 esbuild 压缩生产代码
+      // 🔥 使用 esbuild 压缩生产代码（console移除在顶层esbuild配置）
       minify: mode === 'production' ? 'esbuild' : false,
-      // terserOptions: mode === 'production' ? {
-      //   compress: {
-      //     drop_console: true,
-      //     drop_debugger: true,
-      //   },
-      // } : undefined,
       // 构建优化
       chunkSizeWarningLimit: 1500, // 放宽限制避免警告
       // 🚀 模块预加载配置 - 排除管理员模块
