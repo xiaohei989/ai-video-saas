@@ -6,9 +6,9 @@
 import React, { useState, useCallback, useRef, useEffect, useId } from 'react'
 import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, Loader2 } from '@/components/icons'
 import { cn } from '@/lib/utils'
-import { getCachedImage, smartLoadImage } from '@/utils/newImageCache'
+import { smartLoadImage } from '@/utils/newImageCache'
 import { useResponsiveDevice, supportsHover } from '@/utils/deviceDetection'
-// R2 CORS已正确配置,不再需要代理URL
+// R2 CORS已正确配置,视频不再需要代理URL
 // import { getProxyVideoUrl, needsCorsProxy } from '@/utils/videoUrlProxy'
 import { useVideoContext } from '@/contexts/VideoContext'
 import { smartPreloadService } from '@/services/SmartVideoPreloadService'
@@ -166,6 +166,7 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
 
   // 缓存相关状态 - 直接使用最优URL作为初始值
   const [currentPoster, setCurrentPoster] = useState<string>(optimalPosterUrl)
+  const [isPosterLoading, setIsPosterLoading] = useState(false)
   
   // 🚀 简化：只保留必要的悬停状态
   const [isHovering, setIsHovering] = useState(false)
@@ -575,16 +576,69 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
     }
   }, [deviceInfo])
 
-  // ✅ 优化：直接使用 thumbnailUrl，避免异步加载导致的灰屏
-  // 移除 smartLoadImage 异步加载，让浏览器原生缓存处理
+  // 🚀 启用 IndexedDB 缓存的智能缩略图加载
   useEffect(() => {
-    // 直接设置缩略图URL，浏览器会自动缓存
-    setCurrentPoster(optimalPosterUrl)
+    if (!optimalPosterUrl) return
 
-    if (videoRef.current) {
-      videoRef.current.poster = optimalPosterUrl
+    const loadPosterWithCache = async () => {
+      try {
+        setIsPosterLoading(true)
+
+        // 如果有低分辨率占位图,先显示
+        if (lowResPosterUrl && lowResPosterUrl !== optimalPosterUrl) {
+          setCurrentPoster(lowResPosterUrl)
+          if (videoRef.current) {
+            videoRef.current.poster = lowResPosterUrl
+          }
+        }
+
+        // 检查缓存禁用状态
+        const isCacheDisabled = import.meta.env.VITE_DISABLE_TEMPLATE_THUMBNAIL_CACHE === 'true'
+
+        if (isCacheDisabled) {
+          // 缓存禁用:直接使用原始 URL
+          setCurrentPoster(optimalPosterUrl)
+          if (videoRef.current) {
+            videoRef.current.poster = optimalPosterUrl
+          }
+          setIsPosterLoading(false)
+          return
+        }
+
+        // 使用 smartLoadImage 加载并缓存
+        const cachedUrl = await smartLoadImage(optimalPosterUrl, {
+          enableFastPreview: false,
+          onFinalLoad: (finalUrl) => {
+            setCurrentPoster(finalUrl)
+            if (videoRef.current) {
+              videoRef.current.poster = finalUrl
+            }
+            setIsPosterLoading(false)
+          }
+        })
+
+        // 如果立即返回了缓存结果
+        if (cachedUrl && cachedUrl.startsWith('data:')) {
+          setCurrentPoster(cachedUrl)
+          if (videoRef.current) {
+            videoRef.current.poster = cachedUrl
+          }
+        }
+
+        setIsPosterLoading(false)
+      } catch (error) {
+        console.error('[ReactVideoPlayer] 缩略图缓存加载失败:', error)
+        // 失败回退到原始 URL
+        setCurrentPoster(optimalPosterUrl)
+        if (videoRef.current) {
+          videoRef.current.poster = optimalPosterUrl
+        }
+        setIsPosterLoading(false)
+      }
     }
-  }, [optimalPosterUrl])
+
+    loadPosterWithCache()
+  }, [optimalPosterUrl, lowResPosterUrl])
 
 
   // 🚀 Context监听效果：当其他视频开始播放时自动暂停当前视频
