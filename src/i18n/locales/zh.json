@@ -1293,6 +1293,11 @@
     }
   },
   "seo": {
+    "tryThisTemplate": "尝试{{template}}模板",
+    "templatePreviewDescription": "观看真实示例视频，了解此模板的效果",
+    "createYourVideo": "立即创建视频",
+    "watchPreview": "观看预览",
+    "clickToStartCreating": "点击上方按钮开始创建您的专属视频",
     "pages": {
       "home": {
         "title": "爆款视频轻松做 | AI视频生成器比Google便宜70% | 3分钟出片",

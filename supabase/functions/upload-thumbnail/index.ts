@@ -16,6 +16,7 @@ interface ThumbnailUploadRequest {
   base64Data?: string
   directUpload?: boolean
   version?: string
+  customKey?: string  // 自定义 R2 key (用于 SEO 图片等非缩略图场景)
 }
 
 serve(async (req) => {
@@ -35,14 +36,15 @@ serve(async (req) => {
       )
     }
 
-    const { 
-      videoId, 
-      contentType = 'image/webp', 
+    const {
+      videoId,
+      contentType = 'image/webp',
       fileSize = 0,
       expiresIn = 3600,
       base64Data,
       directUpload = false,
-      version = 'v1'
+      version = 'v1',
+      customKey
     }: ThumbnailUploadRequest = await req.json()
 
     if (!videoId) {
@@ -84,9 +86,11 @@ serve(async (req) => {
 
     const extension = getFileExtension(contentType)
     // 🔥 使用版本化文件名避免CDN缓存冲突
-    const key = version && version !== 'v1' 
-      ? `thumbnails/${videoId}-${version}.${extension}`
-      : `thumbnails/${videoId}.${extension}`
+    // 如果提供了 customKey,则使用自定义 key (用于 SEO 图片等场景)
+    const key = customKey ||
+      (version && version !== 'v1'
+        ? `thumbnails/${videoId}-${version}.${extension}`
+        : `thumbnails/${videoId}.${extension}`)
 
     // 生成最终的公开访问URL
     const publicDomain = Deno.env.get('VITE_CLOUDFLARE_R2_PUBLIC_DOMAIN')

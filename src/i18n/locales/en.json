@@ -1291,6 +1291,11 @@
     }
   },
   "seo": {
+    "tryThisTemplate": "Try {{template}} Template",
+    "templatePreviewDescription": "See how this template works with a real example video",
+    "createYourVideo": "Create Your Video Now",
+    "watchPreview": "Watch Preview",
+    "clickToStartCreating": "Click the button above to start creating your own video",
     "pages": {
       "home": {
         "title": "Viral Videos Made Simple | AI Video Generator 70% Cheaper | 3-Minute Creation",

@@ -1225,6 +1225,13 @@
     "networkNotSuitableForPreload": "ネットワーク条件がプリロードに適していません",
     "videoPreloadFailed": "動画のプリロードに失敗しました"
   },
+  "seo": {
+    "tryThisTemplate": "{{template}}テンプレートを試す",
+    "templatePreviewDescription": "実際のサンプル動画でこのテンプレートの動作を確認",
+    "createYourVideo": "今すぐ動画を作成",
+    "watchPreview": "プレビューを見る",
+    "clickToStartCreating": "上のボタンをクリックして、あなた専用の動画作成を始めましょう"
+  },
   "admin": {
     "clearVideoCache": "動画キャッシュを削除",
     "clearCacheConfirm": "動画関連のキャッシュをすべて削除してもよろしいですか？動画プレビュー、サムネイルキャッシュなどのデータが削除されます。",

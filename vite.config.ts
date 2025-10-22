@@ -92,6 +92,21 @@ export default defineConfig(({ mode }) => {
       '@types': path.resolve(__dirname, './src/types'),
     },
     },
+    // 🔥 优化依赖预构建,排除所有AWS SDK模块
+    optimizeDeps: {
+      exclude: [
+        '@aws-sdk/client-s3',
+        '@aws-sdk/signature-v4-crt',
+        '@aws-sdk/signature-v4',
+        '@aws-sdk/s3-request-presigner'
+      ],
+      esbuildOptions: {
+        target: 'esnext',
+        supported: {
+          'top-level-await': true
+        }
+      }
+    },
     server: {
       port: 3000,
       strictPort: false, // 🚀 允许端口自动切换，支持3001、3002、3003
@@ -320,8 +335,19 @@ export default defineConfig(({ mode }) => {
       cssCodeSplit: true, // 按路由分割CSS
       // 🚀 优化资源内联
       assetsInlineLimit: 4096, // 小于4KB的资源内联为base64
+      // 🔥 CommonJS 选项 - 确保正确处理 AWS SDK
+      commonjsOptions: {
+        include: [/node_modules/],
+        transformMixedEsModules: true,
+      },
       // Cloudflare Pages 优化配置
       rollupOptions: {
+        // 🔥 将 AWS SDK 标记为 external，完全排除在浏览器构建之外
+        external: [
+          '@aws-sdk/client-s3',
+          '@aws-sdk/signature-v4',
+          '@aws-sdk/s3-request-presigner'
+        ],
         // 🚀 增强Tree Shaking配置
         treeshake: {
           moduleSideEffects: false,
@@ -329,103 +355,114 @@ export default defineConfig(({ mode }) => {
           unknownGlobalSideEffects: false
         },
         output: {
-          // 🔧 临时禁用代码分割以诊断模块加载问题
-          manualChunks: undefined,
-
-          /*
-          // 🚀 智能代码分割 - 使用函数方式实现更精细的控制
+          // 🚀 智能代码分割 - 优化首屏加载,管理后台完全分离
           manualChunks: (id) => {
             // 排除node_modules之外的代码
             if (!id.includes('node_modules')) {
               return undefined
             }
 
-            // 🎯 管理后台相关 (最大chunk,完全分离)
-            if (id.includes('react-admin') || id.includes('ra-supabase')) {
+            // 🎯 管理后台相关 (最大chunk,完全分离 - 首页不加载)
+            if (id.includes('react-admin') || id.includes('ra-') || id.includes('ra-supabase')) {
               return 'admin'
             }
 
-            // 📊 图表库 (仅管理后台使用)
-            if (id.includes('recharts') || id.includes('victory')) {
+            // 📊 图表库 (仅管理后台使用 - 首页不加载)
+            if (id.includes('recharts') || id.includes('victory') || id.includes('d3-')) {
               return 'charts'
             }
 
-            // ☁️ AWS SDK (大型库,按需加载)
+            // ☁️ AWS SDK (大型库,按需加载 - 仅视频上传时使用)
+            // 🔥 修复: 将不同的AWS SDK包分开打包,避免循环依赖和初始化问题
+            if (id.includes('@aws-sdk/client-s3')) {
+              return 'aws-s3'
+            }
+            if (id.includes('@aws-sdk/s3-request-presigner')) {
+              return 'aws-presigner'
+            }
             if (id.includes('@aws-sdk')) {
-              return 'aws'
+              return 'aws-core'
             }
 
-            // 🤖 Google AI (AI功能专用)
-            if (id.includes('@google/genai')) {
+            // 🤖 Google AI (AI功能专用 - 按需加载)
+            if (id.includes('@google/genai') || id.includes('@google/generative-ai')) {
               return 'google-ai'
             }
 
-            // 🎨 Radix UI组件库 (统一打包)
+            // 🎨 Radix UI组件库 (统一打包,首页需要)
             if (id.includes('@radix-ui')) {
               return 'ui-vendor'
             }
 
-            // 💰 支付相关 (Stripe)
+            // 💰 支付相关 (Stripe - 按需加载)
             if (id.includes('stripe') || id.includes('@stripe')) {
               return 'payment'
             }
 
-            // 🗄️ 数据库和状态管理
-            if (id.includes('@supabase/supabase-js')) {
-              return 'data'
-            }
-            if (id.includes('@tanstack/react-query')) {
-              return 'data'
-            }
-            if (id.includes('zustand')) {
-              return 'data'
+            // 🗄️ Supabase (首页需要,独立chunk便于缓存)
+            if (id.includes('@supabase/supabase-js') || id.includes('@supabase/')) {
+              return 'supabase'
             }
 
-            // 🌐 国际化
+            // 📡 React Query (首页需要,独立chunk)
+            if (id.includes('@tanstack/react-query')) {
+              return 'react-query'
+            }
+
+            // 🌐 国际化 (首页需要,但可独立)
             if (id.includes('i18next') || id.includes('react-i18next')) {
               return 'i18n'
             }
 
-            // 🎬 视频播放器
-            if (id.includes('react-player')) {
+            // 🎬 视频播放器 (按需加载)
+            if (id.includes('react-player') || id.includes('hls.js')) {
               return 'video-player'
             }
 
-            // ⚛️ React核心库 - 统一打包避免加载顺序问题
-            if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/react-router') ||
+            // ⚛️ React核心库 - 统一打包避免加载顺序问题 (首页必需)
+            if (id.includes('/react/') || id.includes('/react-dom/') ||
                 id.includes('/scheduler/') || id.match(/node_modules\/react$/)) {
-              return 'react-vendor'
+              return 'react-core'
             }
 
-            // 📦 工具库
+            // 🛣️ React Router (首页必需,与react-core分开以便缓存)
+            if (id.includes('react-router') || id.includes('react-router-dom')) {
+              return 'react-router'
+            }
+
+            // 📦 工具库 (首页需要,但体积小可独立)
             if (id.includes('date-fns') || id.includes('clsx') ||
                 id.includes('tailwind-merge') || id.includes('class-variance-authority')) {
               return 'utils'
             }
 
-            // 🎨 Lucide图标 (优化后应该很小)
+            // 🎨 Lucide图标 (首页需要,独立便于优化)
             if (id.includes('lucide-react')) {
               return 'icons'
+            }
+
+            // 📝 Markdown处理 (仅帮助页面使用)
+            if (id.includes('react-markdown') || id.includes('remark-') || id.includes('rehype-')) {
+              return 'markdown'
             }
 
             // 其他node_modules统一打包为vendor
             return 'vendor'
           },
-          */
           // 优化chunk文件名
           chunkFileNames: 'assets/[name]-[hash].js',
           // 启用实验性CSS代码分割
           experimentalMinChunkSize: 10000
         },
       },
-      // 生产环境使用 terser 压缩并移除 console
-      minify: mode === 'production' ? 'terser' : false,
-      terserOptions: mode === 'production' ? {
-        compress: {
-          drop_console: true,
-          drop_debugger: true,
-        },
-      } : undefined,
+      // 🔥 使用 esbuild 压缩
+      minify: mode === 'production' ? 'esbuild' : false,
+      // terserOptions: mode === 'production' ? {
+      //   compress: {
+      //     drop_console: true,
+      //     drop_debugger: true,
+      //   },
+      // } : undefined,
       // 构建优化
       chunkSizeWarningLimit: 1500, // 放宽限制避免警告
       // 🚀 模块预加载配置 - 排除管理员模块

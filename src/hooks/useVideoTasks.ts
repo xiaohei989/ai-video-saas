@@ -158,23 +158,25 @@ export function useVideoTasks(options: UseVideoTasksOptions = {}): UseVideoTasks
     console.log(`[useVideoTasks] 任务失败: ${task.id}`, task.errorMessage)
 
     try {
-      // 更新任务状态但保留在列表中，让用户看到失败状态
+      // 移除失败的任务，避免干扰UI渲染
       setActiveTasks(prev => {
         const newMap = new Map(prev)
-        newMap.set(task.id, { ...task, status: 'failed' })
+        newMap.delete(task.id)
         return newMap
       })
 
-      // 更新进度状态
+      // 移除进度信息
       setVideoProgress(prev => {
         const newMap = new Map(prev)
-        newMap.set(task.id, {
-          progress: 0,
-          statusText: task.errorMessage || t('videos.videoGenerationFailed'),
-          lastUpdate: Date.now()
-        })
+        newMap.delete(task.id)
         return newMap
       })
+
+      // 🔄 任务失败后，刷新视频列表以更新数据库中的失败状态
+      if (onVideoUpdate) {
+        console.log('[useVideoTasks] 🔄 任务失败，刷新视频列表以获取最新状态')
+        await onVideoUpdate()
+      }
 
       // 显示错误通知
       toast.error(`${t('videos.videoGenerationFailed')}: ${task.errorMessage || t('videos.unknownError')}`)
@@ -185,7 +187,7 @@ export function useVideoTasks(options: UseVideoTasksOptions = {}): UseVideoTasks
     } catch (error) {
       console.error('[useVideoTasks] 处理任务失败失败:', error)
     }
-  }, [t])
+  }, [onVideoUpdate, t])
 
   /**
    * 刷新任务列表
@@ -382,6 +384,37 @@ export function useVideoTasks(options: UseVideoTasksOptions = {}): UseVideoTasks
       videoPollingService.stop()
     }
   }, [activeTasks.size, enablePolling, user?.id, handleTaskUpdate, handleTaskComplete, handleTaskFailed])
+
+  /**
+   * 🔧 FIX: 监听页面可见性变化，移动端后台恢复时强制同步任务状态
+   */
+  useEffect(() => {
+    if (!enablePolling || !user?.id) return
+
+    const handleVisibilityChange = async () => {
+      // 只在页面从隐藏变为可见时处理
+      if (!document.hidden && activeTasks.size > 0) {
+        console.log('[useVideoTasks] 📱 页面从后台恢复，强制同步任务状态')
+
+        // 强制重新从数据库加载任务状态
+        await refreshTasks()
+
+        // 重启轮询服务（带强制同步标志）
+        videoPollingService.start({
+          userId: user.id,
+          onTaskUpdate: handleTaskUpdate,
+          onTaskComplete: handleTaskComplete,
+          onTaskFailed: handleTaskFailed
+        }, true) // forceSync = true
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [enablePolling, user?.id, activeTasks.size, refreshTasks, handleTaskUpdate, handleTaskComplete, handleTaskFailed])
 
   return {
     // 状态

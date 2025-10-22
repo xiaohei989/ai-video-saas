@@ -1,4 +1,5 @@
-import { Template, MultilingualText, TemplateParam } from '../templates'
+// 🔥 修复循环依赖：从 types 文件导入而不是从 templates.ts
+import { Template, MultilingualText, TemplateParam } from '../types'
 import i18n from '../../../../i18n/config'
 
 // 多语言文本解析函数

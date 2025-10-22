@@ -5,6 +5,9 @@
 
 import { getR2PublicDomain } from './cdnConfig'
 
+// 兼容 Node.js 和 Vite 环境
+const env = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env : {}
+
 export const SECURITY_CONFIG = {
   // CSRF 保护配置
   CSRF: {
@@ -18,40 +21,40 @@ export const SECURITY_CONFIG = {
 
   // Rate Limiting 配置 (可通过环境变量覆盖)
   RATE_LIMIT: {
-    WINDOW_SIZE: parseInt(import.meta.env.VITE_RATE_LIMIT_WINDOW_SIZE) || 60000, // 1分钟窗口
-    MAX_REQUESTS: parseInt(import.meta.env.VITE_RATE_LIMIT_MAX_REQUESTS) || 100,  // 每窗口最大请求数
-    BLOCK_DURATION: parseInt(import.meta.env.VITE_RATE_LIMIT_BLOCK_DURATION) || 300000, // 阻塞5分钟
-    CLEANUP_INTERVAL: parseInt(import.meta.env.VITE_RATE_LIMIT_CLEANUP_INTERVAL) || 300000, // 5分钟清理一次
+    WINDOW_SIZE: parseInt(env.VITE_RATE_LIMIT_WINDOW_SIZE) || 60000, // 1分钟窗口
+    MAX_REQUESTS: parseInt(env.VITE_RATE_LIMIT_MAX_REQUESTS) || 100,  // 每窗口最大请求数
+    BLOCK_DURATION: parseInt(env.VITE_RATE_LIMIT_BLOCK_DURATION) || 300000, // 阻塞5分钟
+    CLEANUP_INTERVAL: parseInt(env.VITE_RATE_LIMIT_CLEANUP_INTERVAL) || 300000, // 5分钟清理一次
     
     // 不同操作的限流配置
     LIMITS: {
-      API_GENERAL: { 
-        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_API_GENERAL_MAX) || 1000, 
-        windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_API_GENERAL_WINDOW) || 60000 
+      API_GENERAL: {
+        maxRequests: parseInt(env.VITE_RATE_LIMIT_API_GENERAL_MAX) || 1000,
+        windowMs: parseInt(env.VITE_RATE_LIMIT_API_GENERAL_WINDOW) || 60000
       },
-      VIDEO_GENERATION: { 
-        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_VIDEO_GENERATION_MAX) || 100, 
-        windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_VIDEO_GENERATION_WINDOW) || 3600000 
+      VIDEO_GENERATION: {
+        maxRequests: parseInt(env.VITE_RATE_LIMIT_VIDEO_GENERATION_MAX) || 100,
+        windowMs: parseInt(env.VITE_RATE_LIMIT_VIDEO_GENERATION_WINDOW) || 3600000
       },
-      LOGIN_ATTEMPT: { 
-        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_LOGIN_ATTEMPT_MAX) || 20, 
-        windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_LOGIN_ATTEMPT_WINDOW) || 900000 
+      LOGIN_ATTEMPT: {
+        maxRequests: parseInt(env.VITE_RATE_LIMIT_LOGIN_ATTEMPT_MAX) || 20,
+        windowMs: parseInt(env.VITE_RATE_LIMIT_LOGIN_ATTEMPT_WINDOW) || 900000
       },
-      PASSWORD_RESET: { 
-        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_PASSWORD_RESET_MAX) || 5, 
-        windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_PASSWORD_RESET_WINDOW) || 3600000 
+      PASSWORD_RESET: {
+        maxRequests: parseInt(env.VITE_RATE_LIMIT_PASSWORD_RESET_MAX) || 5,
+        windowMs: parseInt(env.VITE_RATE_LIMIT_PASSWORD_RESET_WINDOW) || 3600000
       },
-      FILE_UPLOAD: { 
-        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_FILE_UPLOAD_MAX) || 100, 
-        windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_FILE_UPLOAD_WINDOW) || 3600000 
+      FILE_UPLOAD: {
+        maxRequests: parseInt(env.VITE_RATE_LIMIT_FILE_UPLOAD_MAX) || 100,
+        windowMs: parseInt(env.VITE_RATE_LIMIT_FILE_UPLOAD_WINDOW) || 3600000
       },
-      LIKE_ACTION: { 
-        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_LIKE_ACTION_MAX) || 200, 
-        windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_LIKE_ACTION_WINDOW) || 300000 
+      LIKE_ACTION: {
+        maxRequests: parseInt(env.VITE_RATE_LIMIT_LIKE_ACTION_MAX) || 200,
+        windowMs: parseInt(env.VITE_RATE_LIMIT_LIKE_ACTION_WINDOW) || 300000 
       },
       COMMENT_POST: { 
-        maxRequests: parseInt(import.meta.env.VITE_RATE_LIMIT_COMMENT_POST_MAX) || 50, 
-        windowMs: parseInt(import.meta.env.VITE_RATE_LIMIT_COMMENT_POST_WINDOW) || 600000 
+        maxRequests: parseInt(env.VITE_RATE_LIMIT_COMMENT_POST_MAX) || 50, 
+        windowMs: parseInt(env.VITE_RATE_LIMIT_COMMENT_POST_WINDOW) || 600000 
       },
     }
   },
@@ -342,7 +345,7 @@ export function validateSecurityConfig(): boolean {
     'VITE_SUPABASE_ANON_KEY'
   ];
   
-  const missing = requiredEnvVars.filter(envVar => !import.meta.env[envVar]);
+  const missing = requiredEnvVars.filter(envVar => !env[envVar]);
   
   if (missing.length > 0) {
     console.error('Missing required environment variables:', missing);

@@ -1149,5 +1149,12 @@
     "networkConnectionCheck": "네트워크 연결을 확인하고 다시 시도하세요",
     "tryAgainLater": "잠시 후 다시 시도하세요",
     "contactSupport": "문제가 지속되면 고객 지원에 문의하세요"
+  },
+  "seo": {
+    "tryThisTemplate": "{{template}} 템플릿 시도하기",
+    "templatePreviewDescription": "실제 예시 영상으로 이 템플릿의 작동 방식 확인",
+    "createYourVideo": "지금 비디오 만들기",
+    "watchPreview": "미리보기 시청",
+    "clickToStartCreating": "위 버튼을 클릭하여 나만의 비디오 제작을 시작하세요"
   }
 }

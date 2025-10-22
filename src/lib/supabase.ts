@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { createSecureSupabaseClient } from '../services/secureSupabaseClient'
-import { securityMonitor } from '../services/securityMonitorService'
+// 🔥 修复循环依赖：改为动态导入 securityMonitor
+// import { securityMonitor } from '../services/securityMonitorService'
 import { InputValidator } from '../utils/inputValidator'
 
 // Supabase 配置
@@ -200,7 +201,8 @@ export const uploadFile = async (
   // 文件安全验证
   const fileValidation = await InputValidator.validateFile(file)
   if (!fileValidation.isValid) {
-    // 记录恶意文件上传尝试
+    // 记录恶意文件上传尝试（动态导入避免循环依赖）
+    const { securityMonitor } = await import('../services/securityMonitorService')
     await securityMonitor.logFileUpload(
       '', // 将在session检查后获取用户ID
       file.name,
@@ -264,7 +266,8 @@ export const uploadFile = async (
           continue
         }
       } else {
-        // 记录成功的文件上传
+        // 记录成功的文件上传（动态导入避免循环依赖）
+        const { securityMonitor } = await import('../services/securityMonitorService')
         await securityMonitor.logFileUpload(
           userId,
           file.name,
@@ -273,7 +276,7 @@ export const uploadFile = async (
           true,
           false
         )
-        
+
         // 成功上传
         return data
       }

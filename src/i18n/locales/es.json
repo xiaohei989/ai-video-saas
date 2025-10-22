@@ -1155,5 +1155,12 @@
     "networkConnectionCheck": "Por favor verifica tu conexión de red e intenta nuevamente",
     "tryAgainLater": "Por favor intenta nuevamente más tarde",
     "contactSupport": "Si el problema persiste, contacta a soporte"
+  },
+  "seo": {
+    "tryThisTemplate": "Prueba la Plantilla {{template}}",
+    "templatePreviewDescription": "Mira cómo funciona esta plantilla con un video de ejemplo real",
+    "createYourVideo": "Crear Tu Video Ahora",
+    "watchPreview": "Ver Vista Previa",
+    "clickToStartCreating": "Haz clic en el botón de arriba para comenzar a crear tu propio video"
   }
 }

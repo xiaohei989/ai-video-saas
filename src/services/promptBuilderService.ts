@@ -1,9 +1,22 @@
 /**
  * Prompt构建服务
  * 负责根据内容模板和关键词分析结果，构建AI生成内容的Prompt
+ *
+ * v3.0 更新:
+ * - 集成 keywordTaskAllocator 算法化关键词分配
+ * - 生成精确的位置级任务清单
+ * - 替换抽象的"密度2.0%"为具体的"插入X次"
  */
 
 import type { DifferentiationFactors } from './keywordAnalysisService'
+import { supabase } from '@/lib/supabase'
+import { loadContentGenerationPrompt } from '@/utils/promptLoader'
+import {
+  calculateKeywordTaskAllocation,
+  formatKeywordTaskChecklist,
+  generateTaskSummary,
+  type KeywordTaskAllocation
+} from './keywordTaskAllocator'
 
 export interface PromptBuildOptions {
   templateSlug: string              // how-to, alternatives, platform-specific
@@ -52,28 +65,55 @@ export interface PromptMetadata {
 class PromptBuilderService {
 
   /**
-   * 构建AI Prompt（主入口）
+   * 从数据库加载内容模板（包含prompt_template）
    */
-  buildPrompt(options: PromptBuildOptions): GeneratedPrompt {
-    const { templateSlug } = options
+  private async loadContentTemplateFromDB(slug: string): Promise<string | null> {
+    try {
+      const { data, error } = await supabase
+        .from('seo_content_templates')
+        .select('prompt_template')
+        .eq('slug', slug)
+        .eq('is_active', true)
+        .single()
 
-    switch (templateSlug) {
-      case 'how-to':
-        return this.buildHowToPrompt(options)
-      case 'alternatives':
-        return this.buildAlternativesPrompt(options)
-      case 'platform-specific':
-        return this.buildPlatformSpecificPrompt(options)
-      default:
-        throw new Error(`Unknown template slug: ${templateSlug}`)
+      if (error) {
+        console.error(`[PromptBuilder] 加载内容模板失败 (${slug}):`, error)
+        return null
+      }
+
+      if (!data?.prompt_template || data.prompt_template === 'TEMPLATE_PLACEHOLDER') {
+        console.error(`[PromptBuilder] 模板内容为空或占位符 (${slug})`)
+        return null
+      }
+
+      return data.prompt_template
+    } catch (err) {
+      console.error(`[PromptBuilder] 加载模板异常 (${slug}):`, err)
+      return null
     }
   }
 
   /**
-   * 构建How-To模板的Prompt
+   * 填充提示词模板中的变量
    */
-  private buildHowToPrompt(options: PromptBuildOptions): GeneratedPrompt {
+  private fillTemplate(template: string, variables: Record<string, any>): string {
+    let result = template
+
+    Object.entries(variables).forEach(([key, value]) => {
+      const placeholder = `{{${key}}}`
+      const replacement = value !== undefined && value !== null ? String(value) : ''
+      result = result.replaceAll(placeholder, replacement)
+    })
+
+    return result
+  }
+
+  /**
+   * 构建AI Prompt（主入口）- 统一使用数据库模板
+   */
+  async buildPrompt(options: PromptBuildOptions): Promise<GeneratedPrompt> {
     const {
+      templateSlug,
       targetKeyword,
       differentiationFactors,
       language,
@@ -82,334 +122,81 @@ class PromptBuilderService {
       keywordDensityTargets
     } = options
 
-    // 提取required_sections
+    // 从数据库加载模板
+    const templateContent = await this.loadContentTemplateFromDB(templateSlug)
+
+    if (!templateContent) {
+      throw new Error(`[PromptBuilder] 无法加载模板: ${templateSlug}`)
+    }
+
+    console.log(`[PromptBuilder] ✅ 使用数据库模板: ${templateSlug}`)
+
+    // 提取required_sections和faqConfig
     const sections = structureSchema.required_sections || []
     const faqConfig = structureSchema.faq_config || {}
 
+    // 格式化章节信息（通用）
+    const sectionsFormatted = this.formatSections(sections, targetKeyword, differentiationFactors)
+
+    // 格式化FAQ模式
+    const faqPatterns = faqConfig.question_patterns?.map((pattern: string) =>
+      `  - ${this.replaceKeywordPlaceholder(pattern, targetKeyword, differentiationFactors)}`
+    ).join('\n') || ''
+
+    // ========== v3.0 新增: 计算关键词任务分配 ==========
+    const keywordTasks = this.calculateKeywordTasks(
+      recommendedWordCount,
+      sections,
+      targetKeyword,
+      differentiationFactors,
+      keywordDensityTargets
+    )
+
+    // 生成任务清单Markdown
+    const keywordTaskChecklist = formatKeywordTaskChecklist(keywordTasks, targetKeyword)
+
+    console.log(`[PromptBuilder] ✅ 关键词任务分配完成:`)
+    console.log(generateTaskSummary(keywordTasks))
+
+    // 准备模板变量
+    const variables: Record<string, any> = {
+      targetKeyword,
+      platform: differentiationFactors.platform || 'TikTok',
+      platformName: this.capitalizeFirstLetter(differentiationFactors.platform || 'TikTok'),
+      audience: differentiationFactors.audience || '普通用户',
+      recommendedWordCount,
+      minWordCount: Math.floor(recommendedWordCount * 0.8),
+      maxWordCount: Math.ceil(recommendedWordCount * 1.2),
+      faqMinItems: faqConfig.min_items || 3,
+      faqMaxItems: faqConfig.max_items || 5,
+      faqPatterns,
+      sections: sectionsFormatted,
+      differentiationFactors: this.formatDifferentiationFactors(differentiationFactors),
+      keywordDensityIdeal: keywordDensityTargets.target_keyword?.ideal || 2.0,
+      competitorDensityIdeal: keywordDensityTargets.competitor_names?.ideal || 0.8,
+      platformDensityIdeal: keywordDensityTargets.platform_name?.ideal || 2.0,
+      minCompetitors: (structureSchema.competitors_schema?.min_competitors) || 5,
+      maxCompetitors: (structureSchema.competitors_schema?.max_competitors) || 10,
+
+      // ========== v3.0 新增变量 ==========
+      keywordTotalTarget: keywordTasks.totalTarget,
+      keywordTaskChecklist: keywordTaskChecklist,
+      keywordTasks: keywordTasks, // 完整对象,供需要的模板使用
+    }
+
+    // 填充用户提示词
+    const userPrompt = this.fillTemplate(templateContent, variables)
+
     // 构建系统提示词
-    const systemPrompt = this.buildSystemPrompt(language, 'how-to')
-
-    // 构建用户提示词
-    const userPrompt = `
-# 任务：生成SEO优化的How-To教程
-
-## 目标关键词
-"${targetKeyword}"
-
-## 文章要求
-
-### 1. Meta信息
-
-Meta信息将包含在最终的 JSON 输出中（见最后的输出格式）
-
-**Meta Title要求**：
-- 必须包含"${targetKeyword}"
-- 添加修饰语（如"Ultimate Guide", "Complete Tutorial", "Best Tips", "Step-by-Step"）
-- 包含年份"2025"提升时效性
-- 总长度50-60字符
-- 首字母大写，专业格式
-- 示例："The Ultimate Guide to ${targetKeyword} for ${differentiationFactors.platform || 'TikTok'} (2025)"
-
-**Meta Description要求**：
-- **必须150-160字符**（充分利用Google展示空间）
-- 必须包含"${targetKeyword}"
-- 突出独特卖点（如"proven tips", "step-by-step", "professional results", "for beginners"）
-- 包含数字（如"10+ tips", "5 simple steps", "3x faster"）
-- 包含明确CTA（如"Learn how", "Discover", "Master", "Get started"）
-- 包含情感词（如"easy", "proven", "effective", "professional", "complete"）
-- 首字母大写，专业格式
-- 示例："Master ${targetKeyword} with our complete 2025 guide. Learn 10+ proven techniques, step-by-step tutorials, and expert tips to create professional results in minutes. Perfect for beginners!"
-
-### 2. 内容结构
-请严格按照以下结构编写文章：
-
-${sections.map((section: any, index: number) => `
-#### 第${index + 1}部分：${section.name}
-- **H2标题**：${this.replaceKeywordPlaceholder(section.h2_title, targetKeyword, differentiationFactors)}
-- **字数要求**：${section.min_words}-${section.max_words}字
-- **关键词提及**：${JSON.stringify(section.keyword_mentions)}
-- **内容要点**：
-${Array.isArray(section.content_requirements) && section.content_requirements.length > 0
-  ? section.content_requirements.map((req: string) => `  - ${req}`).join('\n')
-  : '  - 提供详细实用的内容'}
-
-${section.subsections ? `**子章节结构**：
-${section.subsections.map((sub: any) => `  - ${sub.level}标题：${this.replaceKeywordPlaceholder(sub.pattern, targetKeyword, differentiationFactors)}
-  - 数量：${sub.count}个
-  ${sub.each_subsection ? `- 每个子章节${sub.each_subsection.min_words}-${sub.each_subsection.max_words}字` : ''}`).join('\n')}
-` : ''}
-`).join('\n')}
-
-### 2. FAQ部分
-- **数量**：${faqConfig.min_items}-${faqConfig.max_items}个问答
-- **问题类型参考**：
-${faqConfig.question_patterns?.map((pattern: string) => `  - ${this.replaceKeywordPlaceholder(pattern, targetKeyword, differentiationFactors)}`).join('\n') || ''}
-
-### 3. SEO要求
-
-⚠️ **重要**：本页面采用单关键词优化策略，只关注"${targetKeyword}"的密度优化。
-
-- **总字数**：约${recommendedWordCount}字（最少${recommendedWordCount * 0.8}字，最多${recommendedWordCount * 1.2}字）
-- **目标关键词密度**：1.5-2.5%（理想：2.0%）
-  - 只针对主关键词"${targetKeyword}"进行优化
-  - **不要刻意堆砌关键词**，保持自然流畅
-  - 关键词必须自然出现在以下位置：
-    * H1标题（1次）
-    * 第一段前100字内（1次）
-    * 至少3个H2标题中
-    * 每个主要章节的内容中（均匀分布）
-    * 最后一段结论中（1次）
-  - 使用语义变体和同义词增加自然度
-    * 例如："${targetKeyword} tutorial", "${targetKeyword} guide", "how to ${targetKeyword}"
-    * 避免机械重复同一个词组
-
-### 4. 差异化因子
-请根据以下因子定制内容：
-${this.formatDifferentiationFactors(differentiationFactors)}
-
-### 5. 内容深度与质量标准
-
-#### 必须包含的元素：
-- ✅ **实用步骤**：每个步骤详细且可执行，包含具体参数和设置
-- ✅ **具体示例**：至少2-3个真实场景或用例
-- ✅ **数据支持**：包含统计数据、最佳实践标准、行业基准
-  - 例："Studies show that videos with ${targetKeyword} get 3x more engagement"
-  - 例："The ideal ${differentiationFactors.platform || 'TikTok'} video length is 15-60 seconds for maximum reach"
-- ✅ **成功案例**：提及成功的创作者或品牌案例（可匿名化）
-  - 例："Many TikTok creators report 300%+ view increase after mastering ${targetKeyword}"
-- ✅ **2025趋势**：在引言或相关章节包含最新趋势
-  - 必须提到"as of 2025"或"in 2025"至少1次
-  - 引用最新的平台算法变化或功能更新
-  - 例："As of 2025, ${differentiationFactors.platform || 'TikTok'} algorithm prioritizes..."
-- ✅ **常见错误**：专门章节或段落列出"Common Mistakes to Avoid"
-  - 列出3-5个常见错误
-  - 说明为什么这是错误
-  - 提供正确的解决方法
-
-#### 写作技巧：
-- ✅ 解释"为什么"而不只是"怎么做"
-- ✅ 使用"you"和"your"增加亲和力
-- ✅ 每段100-150字，保持可读性
-- ✅ 使用过渡词连接段落（However, Moreover, Therefore, Additionally）
-- ✅ 适当使用emoji增加视觉吸引力（但不过度，仅在重要提示处如💡 🎯 ⚠️）
-- ✅ 语言清晰易懂，适合${differentiationFactors.audience || '普通用户'}
-- ✅ 避免空洞的泛泛之谈，提供可执行的建议
-
-### 6. 技术SEO要素
-
-#### 6.1 目录导航（TOC）
-在文章开头（定义部分之后）添加目录：
-\`\`\`markdown
-## 📋 Table of Contents
-- [What is ${targetKeyword}?](#what-is)
-- [Why Use ${targetKeyword}?](#why-use)
-- [Step-by-Step Guide](#guide)
-- [Best Practices](#best-practices)
-- [Common Mistakes](#mistakes)
-- [FAQ](#faq)
-\`\`\`
-
-#### 6.2 内部链接占位符
-在适当位置添加3-5个内部链接占位符：
-- 格式：\`[Related: ${differentiationFactors.platform || 'Platform'} video templates](#internal-link)\`
-- 位置：每个主要章节末尾或相关提示处
-- 类型：相关教程、工具推荐、模板链接
-
-#### 6.3 图片Alt Text占位符
-为应该配图的位置添加图片占位符（至少3-5个）：
-\`\`\`markdown
-![${targetKeyword} step 1 tutorial screenshot - setting up equipment](image-placeholder-1.jpg)
-\`\`\`
-注意：Alt text必须描述图片内容并包含关键词
-
-#### 6.4 CTA行动召唤
-在以下位置添加CTA：
-- **文章开头**（引言之后）：
-  \`> 💡 **Ready to get started?** [Try our ${targetKeyword} template](#cta-link) and create professional videos in minutes!\`
-
-- **教程部分之后**：
-  \`> 🎯 **Start creating now!** [Use our ${targetKeyword} tool](#cta-link) to put these tips into practice.\`
-
-- **文章结尾**（结论中）：
-  \`> ✨ **Take action today!** [Get started with ${targetKeyword}](#cta-link) and see results fast!\`
-
-### 7. 格式要求
-- 使用Markdown格式
-- H1标题仅出现1次（文章标题）
-- H2、H3层级清晰
-- 适当使用列表、粗体、斜体
-- 每段100-150字
-- 使用blockquote (\`>\`) 突出重要提示和CTA
-- 使用代码块突出技术参数或设置
-
-## 输出格式
-
-⚠️ **CRITICAL**: You MUST return ONLY valid JSON in the following format. NO explanations, NO markdown code blocks, NO additional text!
-
-\`\`\`json
-{
-  "title": "H1标题（包含关键词）",
-  "meta_title": "SEO优化的标题（50-60字符）",
-  "meta_description": "SEO优化的描述（150-160字符）",
-  "meta_keywords": "关键词1, 关键词2, 关键词3",
-  "guide_content": "完整的Markdown格式正文内容（包含所有章节、H2/H3标题、列表、代码块等）",
-  "faq_items": [
-    {"question": "问题1？", "answer": "详细回答1"},
-    {"question": "问题2？", "answer": "详细回答2"},
-    {"question": "问题3？", "answer": "详细回答3"},
-    {"question": "问题4？", "answer": "详细回答4"},
-    {"question": "问题5？", "answer": "详细回答5"}
-  ],
-  "secondary_keywords": ["相关关键词1", "相关关键词2", "相关关键词3"]
-}
-\`\`\`
-
-**重要提醒**：
-- guide_content 字段包含完整的 Markdown 格式正文
-- 从 H1 标题开始，包含所有章节内容
-- 保持 Markdown 格式：H2标题用 ##，H3标题用 ###，列表、粗体、代码块等
-- FAQ 单独作为 JSON 数组，不要放在 guide_content 中
-- 只返回 JSON 对象，不要有任何其他文字
-    `.trim()
+    const systemPrompt = this.buildSystemPrompt(language, templateSlug)
 
     // 构建约束条件
-    const constraints = [
-      `文章必须围绕关键词"${targetKeyword}"展开`,
-      `总字数控制在${recommendedWordCount * 0.8}-${recommendedWordCount * 1.2}字`,
-      `主关键词密度${keywordDensityTargets.target_keyword?.min || 2.0}%-${keywordDensityTargets.target_keyword?.max || 3.0}%`,
-      `必须包含${sections.length}个主要章节`,
-      `必须包含${faqConfig.min_items}-${faqConfig.max_items}个FAQ`,
-      `内容必须具有实用性和可操作性`,
-      `语言风格适配${language}语言习惯`
-    ]
+    const constraints = this.buildConstraints(options)
 
     // 提取预期结构
     const expectedStructure: SectionStructure[] = sections.map((section: any) => ({
       sectionName: section.name,
       h2Title: this.replaceKeywordPlaceholder(section.h2_title, targetKeyword, differentiationFactors),
-      minWords: section.min_words,
-      maxWords: section.max_words,
-      keywordMentions: section.keyword_mentions,
-      contentRequirements: section.content_requirements,
-      subsections: section.subsections
-    }))
-
-    return {
-      systemPrompt,
-      userPrompt,
-      constraints,
-      expectedStructure,
-      metadata: {
-        templateType: 'how-to',
-        targetKeyword,
-        language,
-        wordCountTarget: recommendedWordCount,
-        estimatedTokens: Math.ceil(recommendedWordCount * 1.5) // 粗略估算token数
-      }
-    }
-  }
-
-  /**
-   * 构建Alternatives模板的Prompt
-   */
-  private buildAlternativesPrompt(options: PromptBuildOptions): GeneratedPrompt {
-    const {
-      targetKeyword,
-      differentiationFactors,
-      language,
-      structureSchema,
-      recommendedWordCount,
-      keywordDensityTargets
-    } = options
-
-    const sections = structureSchema.required_sections || []
-    const faqConfig = structureSchema.faq_config || {}
-    const competitorsSchema = structureSchema.competitors_schema || {}
-
-    const systemPrompt = this.buildSystemPrompt(language, 'alternatives')
-
-    const userPrompt = `
-# 任务：生成SEO优化的Alternatives对比文章
-
-## 目标关键词
-"${targetKeyword}"
-
-## 文章要求
-
-### 1. 内容结构
-请严格按照以下结构编写文章：
-
-${sections.map((section: any, index: number) => `
-#### 第${index + 1}部分：${section.name}
-- **H2标题**：${this.replaceKeywordPlaceholder(section.h2_title, targetKeyword, differentiationFactors)}
-${section.min_words ? `- **字数要求**：${section.min_words}-${section.max_words}字` : ''}
-${section.keyword_mentions ? `- **关键词提及**：${JSON.stringify(section.keyword_mentions)}` : ''}
-${section.content_type ? `- **内容类型**：${section.content_type}` : ''}
-- **内容要点**：
-${Array.isArray(section.content_requirements) && section.content_requirements.length > 0
-  ? section.content_requirements.map((req: string) => `  - ${req}`).join('\n')
-  : '  - 提供详细实用的内容'}
-
-${section.subsections ? `**子章节结构**：
-${section.subsections.map((sub: any) => `  - ${sub.level}标题模式：${this.replaceKeywordPlaceholder(sub.pattern, targetKeyword, differentiationFactors)}
-  - 数量：${sub.count}个
-  ${sub.each_subsection ? `- 每个子章节内容：
-${sub.each_subsection.structure?.map((item: string) => `    * ${item}`).join('\n') || ''}
-  - 每个子章节${sub.each_subsection.min_words}-${sub.each_subsection.max_words}字` : ''}`).join('\n')}
-` : ''}
-`).join('\n')}
-
-### 2. 竞品对比要求
-- **竞品数量**：${competitorsSchema.min_competitors}-${competitorsSchema.max_competitors}个
-- **每个竞品必须包含**：
-  - 名称和简介
-  - 评分（1-5分）
-  - 定价信息（是否有免费版，起始价格）
-  - 3-5个核心功能
-  - 2-3个优点
-  - 1-2个缺点
-  - 最适合的用户类型
-
-- **竞品对比表格**：
-  - 必须包含对比维度：价格、功能、易用性、评分
-  - 表格后需要200-300字的总结分析
-
-### 3. FAQ部分
-- **数量**：${faqConfig.min_items}-${faqConfig.max_items}个问答
-- **问题类型参考**：
-${faqConfig.question_patterns?.map((pattern: string) => `  - ${this.replaceKeywordPlaceholder(pattern, targetKeyword, differentiationFactors)}`).join('\n') || ''}
-
-### 4. SEO要求
-- **总字数**：约${recommendedWordCount}字
-- **主关键词密度**：${keywordDensityTargets.target_keyword?.ideal || 2.2}%
-- **竞品名称密度**：${keywordDensityTargets.competitor_names?.ideal || 0.8}%
-
-### 5. 差异化因子
-${this.formatDifferentiationFactors(differentiationFactors)}
-
-### 6. 内容质量标准
-- ✅ 提供客观、公正的对比分析
-- ✅ 每个竞品的信息准确具体
-- ✅ 避免过度推销某个产品
-- ✅ 给出明确的选择建议
-- ✅ 适配目标受众（${differentiationFactors.audience || '普通用户'}）
-
-## 输出格式
-请直接输出完整的Markdown格式文章，无需任何前言或解释。
-    `.trim()
-
-    const constraints = [
-      `文章必须围绕关键词"${targetKeyword}"展开`,
-      `总字数控制在${recommendedWordCount * 0.8}-${recommendedWordCount * 1.2}字`,
-      `必须包含${competitorsSchema.min_competitors}-${competitorsSchema.max_competitors}个竞品对比`,
-      `必须包含对比表格`,
-      `内容必须客观公正`,
-      `给出明确的选择建议`
-    ]
-
-    const expectedStructure: SectionStructure[] = sections.map((section: any) => ({
-      sectionName: section.name,
-      h2Title: this.replaceKeywordPlaceholder(section.h2_title, targetKeyword, differentiationFactors),
       minWords: section.min_words || 0,
       maxWords: section.max_words || 0,
       keywordMentions: section.keyword_mentions || {},
@@ -423,7 +210,7 @@ ${this.formatDifferentiationFactors(differentiationFactors)}
       constraints,
       expectedStructure,
       metadata: {
-        templateType: 'alternatives',
+        templateType: templateSlug,
         targetKeyword,
         language,
         wordCountTarget: recommendedWordCount,
@@ -433,138 +220,105 @@ ${this.formatDifferentiationFactors(differentiationFactors)}
   }
 
   /**
-   * 构建Platform-Specific模板的Prompt
+   * 格式化章节信息（通用方法）
    */
-  private buildPlatformSpecificPrompt(options: PromptBuildOptions): GeneratedPrompt {
-    const {
-      targetKeyword,
-      differentiationFactors,
-      language,
-      structureSchema,
-      recommendedWordCount,
-      keywordDensityTargets
-    } = options
-
-    const sections = structureSchema.required_sections || []
-    const faqConfig = structureSchema.faq_config || {}
-    const platformSpecs = structureSchema.platform_specs_schema || {}
-
-    const platformName = differentiationFactors.platform || 'Platform'
-    const platformNameCapitalized = platformName.charAt(0).toUpperCase() + platformName.slice(1)
-
-    const systemPrompt = this.buildSystemPrompt(language, 'platform-specific')
-
-    const userPrompt = `
-# 任务：生成SEO优化的Platform-Specific指南
-
-## 目标关键词
-"${targetKeyword}"
-
-## 目标平台
-${platformNameCapitalized}
-
-## 文章要求
-
-### 1. 内容结构
-请严格按照以下结构编写文章：
-
-${sections.map((section: any, index: number) => `
+  private formatSections(
+    sections: any[],
+    targetKeyword: string,
+    differentiationFactors: DifferentiationFactors
+  ): string {
+    return sections.map((section: any, index: number) => {
+      let formatted = `
 #### 第${index + 1}部分：${section.name}
-- **H2标题**：${this.replaceKeywordPlaceholder(section.h2_title, targetKeyword, differentiationFactors)}
-${section.min_words ? `- **字数要求**：${section.min_words}-${section.max_words}字` : ''}
-${section.keyword_mentions ? `- **关键词提及**：${JSON.stringify(section.keyword_mentions)}` : ''}
-${section.special_format ? `- **特殊格式**：${section.special_format}` : ''}
-- **内容要点**：
+- **H2标题**：${this.replaceKeywordPlaceholder(section.h2_title, targetKeyword, differentiationFactors)}`
+
+      if (section.min_words) {
+        formatted += `\n- **字数要求**：${section.min_words}-${section.max_words}字`
+      }
+
+      if (section.keyword_mentions) {
+        formatted += `\n- **关键词提及**：${JSON.stringify(section.keyword_mentions)}`
+      }
+
+      if (section.content_type) {
+        formatted += `\n- **内容类型**：${section.content_type}`
+      }
+
+      if (section.special_format) {
+        formatted += `\n- **特殊格式**：${section.special_format}`
+      }
+
+      formatted += `\n- **内容要点**：
 ${Array.isArray(section.content_requirements) && section.content_requirements.length > 0
   ? section.content_requirements.map((req: string) => `  - ${req}`).join('\n')
-  : '  - 提供详细实用的内容'}
+  : '  - 提供详细实用的内容'}`
 
-${Array.isArray(section.subsections) && section.subsections.length > 0 ? `**子章节结构**：
-${section.subsections.map((sub: any) => `  - ${sub.level}标题模式：${this.replaceKeywordPlaceholder(sub.pattern, targetKeyword, differentiationFactors)}
-  - 数量：${sub.count}个
-  ${sub.each_subsection ? `- 每个子章节${sub.each_subsection.min_words}-${sub.each_subsection.max_words}字` : ''}`).join('\n')}
-` : ''}
-`).join('\n')}
+      if (section.subsections && Array.isArray(section.subsections) && section.subsections.length > 0) {
+        formatted += `\n\n**子章节结构**：
+${section.subsections.map((sub: any) => {
+  let subFormatted = `  - ${sub.level}标题模式：${this.replaceKeywordPlaceholder(sub.pattern, targetKeyword, differentiationFactors)}`
+  subFormatted += `\n  - 数量：${sub.count}个`
 
-### 2. 平台规格要求
-必须包含${platformNameCapitalized}平台的详细技术规格：
-- **视频格式要求**：支持的格式、编码器
-- **分辨率要求**：推荐分辨率、宽高比
-- **时长限制**：最小/最大时长
-- **文件大小限制**：最大文件大小
-- **其他技术要求**
+  if (sub.each_subsection) {
+    if (sub.each_subsection.structure) {
+      subFormatted += `\n  - 每个子章节内容：\n${sub.each_subsection.structure.map((item: string) => `    * ${item}`).join('\n')}`
+    }
+    if (sub.each_subsection.min_words) {
+      subFormatted += `\n  - 每个子章节${sub.each_subsection.min_words}-${sub.each_subsection.max_words}字`
+    }
+  }
 
-以清晰的表格或列表形式呈现。
+  return subFormatted
+}).join('\n')}`
+      }
 
-### 3. 平台优化建议
-针对${platformNameCapitalized}平台的算法和用户行为，提供：
-- 内容策略建议
-- 发布时间建议
-- 标题和描述优化技巧
-- 标签/话题标签使用建议
-- 互动策略（如何提高点赞、评论、分享）
+      return formatted
+    }).join('\n\n')
+  }
 
-### 4. FAQ部分
-- **数量**：${faqConfig.min_items}-${faqConfig.max_items}个问答
-- **问题类型参考**：
-${faqConfig.question_patterns?.map((pattern: string) => `  - ${this.replaceKeywordPlaceholder(pattern, targetKeyword, differentiationFactors)}`).join('\n') || ''}
-
-### 5. SEO要求
-- **总字数**：约${recommendedWordCount}字
-- **主关键词密度**：${keywordDensityTargets.target_keyword?.ideal || 2.5}%
-- **平台名称密度**：${keywordDensityTargets.platform_name?.ideal || 2.0}%
-
-### 6. 差异化因子
-${this.formatDifferentiationFactors(differentiationFactors)}
-
-### 7. 内容质量标准
-- ✅ 提供平台专属的实用建议
-- ✅ 技术信息准确且最新
-- ✅ 包含具体的优化案例
-- ✅ 解释平台算法的工作原理
-- ✅ 适配目标受众（${differentiationFactors.audience || '普通用户'}）
-
-## 输出格式
-请直接输出完整的Markdown格式文章，无需任何前言或解释。
-    `.trim()
+  /**
+   * 构建约束条件（通用）
+   */
+  private buildConstraints(options: PromptBuildOptions): string[] {
+    const { targetKeyword, templateSlug, recommendedWordCount, structureSchema, keywordDensityTargets } = options
+    const sections = structureSchema.required_sections || []
+    const faqConfig = structureSchema.faq_config || {}
 
     const constraints = [
       `文章必须围绕关键词"${targetKeyword}"展开`,
-      `必须针对${platformNameCapitalized}平台`,
-      `总字数控制在${recommendedWordCount * 0.8}-${recommendedWordCount * 1.2}字`,
-      `必须包含平台技术规格表`,
-      `必须包含平台专属优化建议`,
-      `内容必须准确且最新`
+      `总字数控制在${Math.floor(recommendedWordCount * 0.8)}-${Math.ceil(recommendedWordCount * 1.2)}字`,
+      `⚠️ 严格要求: 绝对不能超过${Math.ceil(recommendedWordCount * 1.2)}字的最大字数限制`
     ]
 
-    const expectedStructure: SectionStructure[] = sections.map((section: any) => ({
-      sectionName: section.name,
-      h2Title: this.replaceKeywordPlaceholder(section.h2_title, targetKeyword, differentiationFactors),
-      minWords: section.min_words || 0,
-      maxWords: section.max_words || 0,
-      keywordMentions: section.keyword_mentions || {},
-      contentRequirements: section.content_requirements,
-      subsections: section.subsections
-    }))
-
-    return {
-      systemPrompt,
-      userPrompt,
-      constraints,
-      expectedStructure,
-      metadata: {
-        templateType: 'platform-specific',
-        targetKeyword,
-        language,
-        wordCountTarget: recommendedWordCount,
-        estimatedTokens: Math.ceil(recommendedWordCount * 1.5)
-      }
+    if (templateSlug === 'how-to') {
+      constraints.push(
+        `主关键词密度${keywordDensityTargets.target_keyword?.min || 1.5}%-${keywordDensityTargets.target_keyword?.max || 2.5}%`,
+        `必须包含${sections.length}个主要章节`,
+        `必须包含${faqConfig.min_items}-${faqConfig.max_items}个FAQ`,
+        `每个FAQ答案保持简洁: 中文150-250字符,英文80-120词`,
+        `内容必须具有实用性和可操作性`
+      )
+    } else if (templateSlug === 'alternatives') {
+      const competitorsSchema = structureSchema.competitors_schema || {}
+      constraints.push(
+        `必须包含${competitorsSchema.min_competitors || 5}-${competitorsSchema.max_competitors || 10}个竞品对比`,
+        `必须包含对比表格`,
+        `内容必须客观公正`,
+        `给出明确的选择建议`,
+        `每个FAQ答案保持简洁: 中文150-250字符,英文80-120词`
+      )
+    } else if (templateSlug === 'platform-specific') {
+      constraints.push(
+        `必须针对${options.differentiationFactors.platform || 'Platform'}平台`,
+        `必须包含平台技术规格表`,
+        `必须包含平台专属优化建议`,
+        `内容必须准确且最新`,
+        `每个FAQ答案保持简洁: 中文150-250字符,英文80-120词`
+      )
     }
-  }
 
-  /**
-   * 构建系统提示词（根据语言和模板类型）
-   */
+    return constraints
+  }
   private buildSystemPrompt(language: string, templateType: string): string {
     const languageNames: Record<string, string> = {
       en: 'English',
@@ -597,7 +351,36 @@ Key requirements:
 - Adapt tone and style to the target audience
 - Focus on providing actionable insights and practical value
 
-Output ONLY the article content in Markdown format. Do NOT include any meta-commentary, explanations, or additional text outside the article itself.`
+⚠️ CRITICAL LENGTH CONSTRAINTS:
+- The user prompt specifies EXACT word count targets - YOU MUST STRICTLY FOLLOW THEM
+- Do NOT exceed the maximum word count under any circumstances
+- Meta description MUST be 145-160 characters (optimal for Google SERP display)
+- Each FAQ answer should be concise: 150-250 characters for Chinese/Japanese/Korean, 80-120 words for English
+- Keep content focused and avoid unnecessary verbosity
+
+⚠️ CRITICAL OUTPUT FORMAT REQUIREMENT:
+You MUST return ONLY a valid JSON object with the following structure:
+{
+  "title": "文章标题 (${languageNames[language] || language})",
+  "meta_title": "SEO meta标题 (55-60字符, ${languageNames[language] || language})",
+  "meta_description": "SEO meta描述 (145-160字符, ${languageNames[language] || language})",
+  "meta_keywords": "关键词1, 关键词2, 关键词3 (${languageNames[language] || language})",
+  "guide_content": "完整的Markdown格式文章内容 (${languageNames[language] || language})",
+  "faq_items": [
+    {"question": "问题1 (${languageNames[language] || language})", "answer": "答案1 - 简洁精炼,英文80-120词,中文150-250字符 (${languageNames[language] || language})"},
+    {"question": "问题2 (${languageNames[language] || language})", "answer": "答案2 - 简洁精炼,英文80-120词,中文150-250字符 (${languageNames[language] || language})"}
+  ],
+  "secondary_keywords": ["关键词1", "关键词2", "关键词3 (${languageNames[language] || language})"]
+}
+
+⚠️ CRITICAL RULES:
+1. Return ONLY the JSON object - NO explanations, NO commentary, NO additional text
+2. Do NOT add phrases like "已完成生成", "我注意到", "这是内容" etc.
+3. Do NOT wrap in markdown code blocks (\`\`\`json)
+4. Start with { and end with } - nothing before or after
+5. All content fields MUST be in ${languageNames[language] || language}
+6. Ensure valid JSON syntax - properly escape quotes and special characters
+7. STRICTLY adhere to word count limits specified in the user prompt`
   }
 
   /**
@@ -703,6 +486,46 @@ Output ONLY the article content in Markdown format. Do NOT include any meta-comm
     // 粗略估算：英文约4字符=1token，中文约1.5字符=1token
     const avgCharsPerToken = 3.5
     return Math.ceil(totalText.length / avgCharsPerToken)
+  }
+
+  /**
+   * v3.0 新增: 计算关键词任务分配
+   *
+   * 将章节结构转换为 SectionStructure 数组并调用 keywordTaskAllocator
+   */
+  private calculateKeywordTasks(
+    wordCount: number,
+    sections: any[],
+    targetKeyword: string,
+    differentiationFactors: DifferentiationFactors,
+    keywordDensityTargets: any
+  ): KeywordTaskAllocation {
+
+    // 转换章节结构为 SectionStructure 格式
+    const sectionStructures: SectionStructure[] = sections.map((section: any) => ({
+      sectionName: section.name || 'Untitled Section',
+      h2Title: this.replaceKeywordPlaceholder(
+        section.h2_title || '',
+        targetKeyword,
+        differentiationFactors
+      ),
+      minWords: section.min_words || 100,
+      maxWords: section.max_words || 300,
+      keywordMentions: section.keyword_mentions || {},
+      contentRequirements: section.content_requirements || [],
+      subsections: section.subsections
+    }))
+
+    // 获取目标密度
+    const targetDensity = keywordDensityTargets.target_keyword?.ideal || 2.0
+
+    // 调用算法
+    return calculateKeywordTaskAllocation(
+      wordCount,
+      sectionStructures,
+      targetKeyword,
+      { targetDensity }
+    )
   }
 }
 

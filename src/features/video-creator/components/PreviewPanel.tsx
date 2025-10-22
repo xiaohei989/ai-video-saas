@@ -280,7 +280,7 @@ export default function PreviewPanel({
                 </div>
               ) : videoUrl || template.previewUrl ? (
                 <div className="relative w-full h-full">
-                  {/* 缓存的缩略图作为背景层 */}
+                  {/* 缓存的缩略图作为背景层 - 使用两级加载机制 */}
                   {template.thumbnailUrl && (
                     <CachedImage
                       src={transformCDNUrl(template.thumbnailUrl)}
@@ -288,6 +288,8 @@ export default function PreviewPanel({
                       className="absolute inset-0 w-full h-full object-cover"
                       cacheKey={`template_${template.id}`}
                       maxAge={24 * 60 * 60 * 1000} // 24小时缓存
+                      fastPreview={true} // 启用两级加载：模糊图→高清图
+                      placeholderSrc={template.blurThumbnailUrl ? transformCDNUrl(template.blurThumbnailUrl) : undefined}
                     />
                   )}
 
@@ -336,7 +338,7 @@ export default function PreviewPanel({
 
                   {/* 视频播放器在前景层 */}
                   <ReactVideoPlayer
-                    key={`${template.id}-${retryCount}-${videoUrl || transformCDNUrl(template.previewUrl) || ''}`}
+                    key={`preview-${template.id}-${retryCount}`}
                     src={videoUrl || transformCDNUrl(template.previewUrl) || ''}
                     poster={transformCDNUrl(template.thumbnailUrl)}
                     className="relative z-10 w-full h-full"

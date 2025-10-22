@@ -126,9 +126,19 @@ INSERT INTO public.seo_content_templates (
       }
     ],
     "faq_config": {
-      "min_items": 5,
-      "max_items": 8,
+      "min_items": 4,
+      "max_items": 6,
       "keyword_mentions_per_faq": "1-2",
+      "answer_length_guide": {
+        "en": "80-120 words (concise and focused)",
+        "zh": "150-250 characters",
+        "ja": "150-250 characters",
+        "ko": "150-250 characters",
+        "es": "80-120 words",
+        "de": "80-120 words",
+        "fr": "80-120 words",
+        "ar": "150-250 characters"
+      },
       "question_patterns": [
         "How long does it take to {keyword}?",
         "What is the best way to {keyword}?",
@@ -284,8 +294,18 @@ INSERT INTO public.seo_content_templates (
       }
     ],
     "faq_config": {
-      "min_items": 5,
-      "max_items": 7,
+      "min_items": 4,
+      "max_items": 6,
+      "answer_length_guide": {
+        "en": "80-120 words (concise and focused)",
+        "zh": "150-250 characters",
+        "ja": "150-250 characters",
+        "ko": "150-250 characters",
+        "es": "80-120 words",
+        "de": "80-120 words",
+        "fr": "80-120 words",
+        "ar": "150-250 characters"
+      },
       "question_patterns": [
         "What are the best alternatives to {keyword}?",
         "Is there a free alternative to {keyword}?",
@@ -478,8 +498,18 @@ INSERT INTO public.seo_content_templates (
       }
     ],
     "faq_config": {
-      "min_items": 6,
-      "max_items": 8,
+      "min_items": 5,
+      "max_items": 7,
+      "answer_length_guide": {
+        "en": "80-120 words (concise and focused)",
+        "zh": "150-250 characters",
+        "ja": "150-250 characters",
+        "ko": "150-250 characters",
+        "es": "80-120 words",
+        "de": "80-120 words",
+        "fr": "80-120 words",
+        "ar": "150-250 characters"
+      },
       "question_patterns": [
         "What is the best format for {keyword} on {Platform}?",
         "How long should {keyword} be for {Platform}?",

@@ -1180,7 +1180,12 @@
         "description": "Guide complet pour création vidéo virale. Tutoriels étape par étape, FAQ, guides templates. Maîtrisez création contenu TikTok & Instagram en minutes.",
         "keywords": "centre d'aide,tutoriels vidéo,guide créateur,démarrage rapide,guide TikTok,tutoriels Instagram,aide création contenu"
       }
-    }
+    },
+    "tryThisTemplate": "Essayer le Modèle {{template}}",
+    "templatePreviewDescription": "Découvrez comment fonctionne ce modèle avec une vraie vidéo d'exemple",
+    "createYourVideo": "Créer Votre Vidéo Maintenant",
+    "watchPreview": "Voir l'Aperçu",
+    "clickToStartCreating": "Cliquez sur le bouton ci-dessus pour commencer à créer votre propre vidéo"
   },
   "admin": {
     "clearVideoCache": "Effacer le Cache Vidéo",

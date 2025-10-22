@@ -12,8 +12,8 @@ import { OrderList, OrderShow } from './Orders'
 import AdminDebug from './AdminDebug'
 import ErrorBoundary from './ErrorBoundary'
 import AdminThumbnailManager from './AdminThumbnailManager'
-import { SEOGuideList, SEOGuideEdit, SEOGuideCreate } from './SEOGuideGenerator'
 import SEOManager from './SEOManager'
+import PromptTemplateManager from './PromptTemplateManager'
 
 // 图标
 import {
@@ -26,7 +26,8 @@ import {
   Receipt,
   Search,
   TrendingUp,
-  Layers
+  Layers,
+  BookOpen
 } from '@/components/icons'
 
 const AdminApp: React.FC = () => {
@@ -95,19 +96,7 @@ const AdminApp: React.FC = () => {
         icon={FileImage}
       />
 
-      {/* pSEO生成器 */}
-      <Resource
-        name="template_seo_guides"
-        list={SEOGuideList}
-        edit={SEOGuideEdit}
-        create={SEOGuideCreate}
-        options={{
-          label: 'pSEO生成器'
-        }}
-        icon={Search}
-      />
-
-      {/* pSEO 管理中心 - 新界面（关键词导向） */}
+      {/* pSEO 管理中心 - 关键词导向的程序化SEO系统 */}
       <Resource
         name="seo-manager"
         list={SEOManager}
@@ -115,6 +104,16 @@ const AdminApp: React.FC = () => {
           label: 'pSEO 管理中心'
         }}
         icon={Layers}
+      />
+
+      {/* 提示词模板管理 */}
+      <Resource
+        name="prompt-templates"
+        list={PromptTemplateManager}
+        options={{
+          label: '提示词模板管理'
+        }}
+        icon={BookOpen}
       />
 
       {/* 缩略图管理（自定义页，集成工具入口） */}

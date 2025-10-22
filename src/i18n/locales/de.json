@@ -1180,7 +1180,12 @@
         "description": "Komplette Anleitung für virale Video-Erstellung. Schritt-für-Schritt Tutorials, FAQ, Vorlagen-Anleitungen. Meistern Sie TikTok & Instagram Content-Erstellung in Minuten.",
         "keywords": "Hilfezentrum,Video Tutorials,Creator Anleitung,Schnellstart,TikTok Anleitung,Instagram Tutorials,Content Creation Hilfe"
       }
-    }
+    },
+    "tryThisTemplate": "{{template}}-Vorlage Ausprobieren",
+    "templatePreviewDescription": "Sehen Sie, wie diese Vorlage mit einem echten Beispielvideo funktioniert",
+    "createYourVideo": "Jetzt Ihr Video Erstellen",
+    "watchPreview": "Vorschau Ansehen",
+    "clickToStartCreating": "Klicken Sie auf die Schaltfläche oben, um mit der Erstellung Ihres eigenen Videos zu beginnen"
   },
   "admin": {
     "clearVideoCache": "Video-Cache löschen",

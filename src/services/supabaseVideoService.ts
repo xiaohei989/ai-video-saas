@@ -108,36 +108,46 @@ class SupabaseVideoService {
         // apiProvider 已移除 - 不再存储到数据库
       }
 
+      // 🔧 FIX: 如果状态为 processing，立即设置 processing_started_at
+      const now = new Date().toISOString()
+      const insertData: any = {
+        user_id: data.userId,
+        template_id: null,  // Keep null since we don't have UUID templates in DB
+        title: data.title || null,
+        description: data.description || null,
+        prompt: data.prompt || null,
+        parameters: {
+          ...data.parameters || {},
+          // 也在parameters中存储一份，方便后续使用
+          aspectRatio: data.aspectRatio || '16:9',
+          quality: data.quality || 'veo3'
+          // apiProvider 已移除 - 不再存储
+        },
+        credits_used: data.creditsUsed,
+        status: data.status || 'pending',
+        is_public: data.isPublic || false,
+        veo3_job_id: data.veo3JobId || null,
+        is_deleted: false,
+        view_count: 0,
+        download_count: 0,
+        like_count: 0,
+        comment_count: 0,
+        share_count: 0,
+        version: 1,
+        tags: [],
+        metadata: metadata,
+        ai_title_status: data.aiTitleStatus || 'pending'
+      }
+
+      // ✅ 关键修复：如果创建时状态就是 processing，立即设置开始时间
+      if (data.status === 'processing') {
+        insertData.processing_started_at = now
+        console.log('[CREATE VIDEO] ✅ 状态为processing，立即设置processing_started_at:', now)
+      }
+
       const { data: video, error } = await supabase
         .from('videos')
-        .insert({
-          user_id: data.userId,
-          template_id: null,  // Keep null since we don't have UUID templates in DB
-          title: data.title || null,
-          description: data.description || null,
-          prompt: data.prompt || null,
-          parameters: {
-            ...data.parameters || {},
-            // 也在parameters中存储一份，方便后续使用
-            aspectRatio: data.aspectRatio || '16:9',
-            quality: data.quality || 'veo3'
-            // apiProvider 已移除 - 不再存储
-          },
-          credits_used: data.creditsUsed,
-          status: data.status || 'pending',
-          is_public: data.isPublic || false,
-          veo3_job_id: data.veo3JobId || null,
-          is_deleted: false,
-          view_count: 0,
-          download_count: 0,
-          like_count: 0,
-          comment_count: 0,
-          share_count: 0,
-          version: 1,
-          tags: [],
-          metadata: metadata,
-          ai_title_status: data.aiTitleStatus || 'pending'
-        })
+        .insert(insertData)
         .select()
         .single()
 
@@ -160,12 +170,29 @@ class SupabaseVideoService {
     try {
       // 如果状态变为完成，设置完成时间
       const updateData: any = { ...updates }
+      const now = new Date().toISOString()
+
       if (updates.status === 'completed') {
-        updateData.processing_completed_at = new Date().toISOString()
-      } else if (updates.status === 'processing' && !updates.processing_started_at) {
-        // 只在没有开始时间时才设置，避免重复更新
-        updateData.processing_started_at = new Date().toISOString()
-        console.log('[UPDATE VIDEO] Setting processing_started_at for first time')
+        updateData.processing_completed_at = now
+        console.log('[UPDATE VIDEO] ✅ 状态变为completed，设置processing_completed_at:', now)
+      } else if (updates.status === 'processing') {
+        // 🔧 FIX: 检查数据库中是否已有 processing_started_at
+        // 如果没有明确传入，需要先查询数据库
+        if (!updates.processing_started_at) {
+          const { data: currentVideo } = await supabase
+            .from('videos')
+            .select('processing_started_at')
+            .eq('id', id)
+            .single()
+
+          // 只有数据库中也没有时，才设置新的开始时间
+          if (!currentVideo?.processing_started_at) {
+            updateData.processing_started_at = now
+            console.log('[UPDATE VIDEO] ✅ 状态变为processing且数据库无开始时间，设置processing_started_at:', now)
+          } else {
+            console.log('[UPDATE VIDEO] ℹ️ 状态为processing，但数据库已有processing_started_at，保持不变')
+          }
+        }
       }
 
       const { data: video, error } = await supabase

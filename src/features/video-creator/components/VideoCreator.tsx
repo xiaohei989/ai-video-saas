@@ -247,6 +247,14 @@ export default function VideoCreator() {
 
     // 立即设置为生成中状态，防止快速多次点击
     setIsGenerating(true)
+
+    // 🚀 添加超时保护：30秒后自动重置状态（防止卡死）
+    const timeoutId = setTimeout(() => {
+      console.warn('[VideoCreator] 提交超时，自动重置loading状态')
+      setIsGenerating(false)
+      setGenerationProgress(0)
+      setGenerationStatus('')
+    }, 30000) // 30秒超时
     
     // 限流检查已临时禁用 - 解决误判问题
     // if (isLimited()) {
@@ -469,17 +477,27 @@ export default function VideoCreator() {
           setQueueStatus({ isQueued: false })
         }
 
-        // 清除视频列表缓存，确保跳转后能看到新视频
-        console.log('[VideoCreator] 清除视频列表缓存，准备跳转')
-        await videoCacheService.clearUserCache(user.id)
+        // 🚀 优化：异步清除缓存，不阻塞跳转
+        console.log('[VideoCreator] 异步清除视频列表缓存')
+        videoCacheService.clearUserCache(user.id).catch(e => {
+          console.warn('[VideoCreator] 缓存清除失败（不影响跳转）:', e)
+        })
 
-        // 立即跳转到我的视频页面，添加 refresh 参数确保强制刷新
+        // 🚀 立即跳转到我的视频页面，添加 refresh 参数确保强制刷新
+        console.log('[VideoCreator] 立即跳转到视频列表页面')
         navigateTo('/videos?refresh=true')
 
-        console.log('Task submitted successfully, redirecting to videos page')
-        
+        console.log('[VideoCreator] 任务提交成功，已触发页面跳转')
+
+        // 🚀 跳转成功，清除超时定时器
+        clearTimeout(timeoutId)
+
     } catch (error) {
         console.error('Failed to submit video generation job:', error)
+
+        // 🚀 清除超时定时器
+        clearTimeout(timeoutId)
+
         setIsGenerating(false)
         setGenerationProgress(0)
         setGenerationStatus('')

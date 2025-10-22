@@ -339,11 +339,22 @@ class VideoTaskManager {
 
   /**
    * 将数据库视频记录转换为任务对象
+   * 🔧 FIX: 改进时间基准点选择逻辑，添加日志记录
    */
   private videoToTask(video: Video): VideoTask {
-    const startedAt = video.processing_started_at 
-      ? new Date(video.processing_started_at)
-      : new Date(video.created_at)
+    // 🔧 FIX: 优先使用 processing_started_at，只在不存在时才 fallback
+    let startedAt: Date
+    let timeSource: string
+
+    if (video.processing_started_at) {
+      startedAt = new Date(video.processing_started_at)
+      timeSource = 'processing_started_at'
+    } else {
+      startedAt = new Date(video.created_at)
+      timeSource = 'created_at(fallback)'
+      // 记录 fallback 情况，便于调试
+      console.warn(`[TASK MANAGER] ⚠️ 视频 ${video.id} 缺少 processing_started_at，使用 created_at 作为时间基准`)
+    }
 
     // 🚀 增强逻辑：如果有视频URL，优先判定为完成状态
     const hasVideoUrl = !!(video.video_url || video.r2_url)

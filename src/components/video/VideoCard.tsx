@@ -364,13 +364,18 @@ export function VideoCard({
 
                 {/* 失败状态覆盖 */}
                 {video.status === 'failed' && (
-                  <div className="absolute inset-0 bg-red-500/20 flex flex-col items-center justify-center text-white">
+                  <div className="absolute inset-0 bg-red-500/20 flex flex-col items-center justify-center text-white px-2">
                     <AlertCircle className="w-6 h-6 text-red-500 mb-2" />
-                    <div className="text-xs font-medium text-red-500">{t('videos.generationFailed')}</div>
+                    <div className="text-xs font-medium text-red-500 mb-1">{t('videos.generationFailed')}</div>
+                    {video.error_message && (
+                      <div className="text-[10px] text-red-400 text-center mb-2 max-w-[90%] line-clamp-3">
+                        {video.error_message}
+                      </div>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"
-                      className="mt-2 text-red-500 border-red-500"
+                      className="mt-1 text-red-500 border-red-500"
                       onClick={() => onRegenerate(video)}
                     >
                       {t('videos.regenerate')}
@@ -637,13 +642,18 @@ export function VideoCard({
 
               {/* 失败状态覆盖 */}
               {video.status === 'failed' && (
-                <div className="absolute inset-0 bg-red-500/20 flex flex-col items-center justify-center text-white">
+                <div className="absolute inset-0 bg-red-500/20 flex flex-col items-center justify-center text-white px-4">
                   <AlertCircle className="w-8 h-8 text-red-500 mb-2" />
-                  <div className="text-sm font-medium text-red-500">{t('videos.generationFailed')}</div>
+                  <div className="text-sm font-medium text-red-500 mb-2">{t('videos.generationFailed')}</div>
+                  {video.error_message && (
+                    <div className="text-xs text-red-400 text-center mb-3 max-w-[80%] line-clamp-3">
+                      {video.error_message}
+                    </div>
+                  )}
                   <Button
                     variant="outline"
                     size="sm"
-                    className="mt-2 text-red-500 border-red-500"
+                    className="mt-1 text-red-500 border-red-500"
                     onClick={() => onRegenerate(video)}
                   >
                     {t('videos.regenerate')}

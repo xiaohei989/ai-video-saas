@@ -4,7 +4,8 @@
  */
 
 import { createClient } from '@supabase/supabase-js'
-import cloudflareR2Service from './cloudflareR2Service'
+// 🔥 改为动态导入，避免在浏览器环境中预加载 AWS SDK
+// import cloudflareR2Service from './cloudflareR2Service'
 
 interface VideoRecord {
   id: string
@@ -251,7 +252,8 @@ class VideoMigrationService {
       // 3. 更新状态为下载中
       await this.updateMigrationStatus(videoId, 'downloading')
 
-      // 4. 使用R2服务上传视频
+      // 4. 使用R2服务上传视频 (动态导入避免打包 AWS SDK)
+      const { cloudflareR2Service } = await import('./cloudflareR2Service')
       const uploadResult = await cloudflareR2Service.uploadVideoFromURL(
         video.video_url,
         videoId

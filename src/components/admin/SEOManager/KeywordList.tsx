@@ -2,7 +2,7 @@
  * Keyword List - 关键词管理列表
  */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   Typography,
@@ -37,7 +37,9 @@ import {
   CheckCircle,
   RadioButtonUnchecked,
   Edit,
-  DeleteOutline
+  DeleteOutline,
+  Launch,
+  Publish
 } from '@mui/icons-material'
 import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -71,6 +73,11 @@ interface KeywordRow {
   secondary_keywords?: string[]
 }
 
+interface RowMenuState {
+  anchorEl: HTMLElement | null
+  keyword: KeywordRow | null
+}
+
 const KeywordList: React.FC<KeywordListProps> = ({
   templateId,
   language,
@@ -82,6 +89,8 @@ const KeywordList: React.FC<KeywordListProps> = ({
   const queryClient = useQueryClient()
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([])
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [templateSlug, setTemplateSlug] = useState<string | null>(null)
+  const [rowMenuState, setRowMenuState] = useState<RowMenuState>({ anchorEl: null, keyword: null })
   const [importDialogOpen, setImportDialogOpen] = useState(false)
   const [importText, setImportText] = useState('')
   const [editDialogOpen, setEditDialogOpen] = useState(false)
@@ -106,6 +115,15 @@ const KeywordList: React.FC<KeywordListProps> = ({
     currentKeyword: '',
     logs: [] as string[]
   })
+  const [publishDialogOpen, setPublishDialogOpen] = useState(false)
+  const [publishing, setPublishing] = useState(false)
+  const [publishCompleted, setPublishCompleted] = useState(false)
+  const [publishProgress, setPublishProgress] = useState({
+    total: 0,
+    current: 0,
+    currentKeyword: '',
+    logs: [] as string[]
+  })
 
   // Toast 状态
   const [toastOpen, setToastOpen] = useState(false)
@@ -118,6 +136,37 @@ const KeywordList: React.FC<KeywordListProps> = ({
     setToastSeverity(severity)
     setToastOpen(true)
   }
+
+  // 获取template slug
+  useEffect(() => {
+    const fetchTemplateSlug = async () => {
+      if (!templateId) {
+        setTemplateSlug(null)
+        return
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('templates')
+          .select('slug')
+          .eq('id', templateId)
+          .single()
+
+        if (error || !data) {
+          console.error('获取模板slug失败:', error)
+          setTemplateSlug(null)
+          return
+        }
+
+        setTemplateSlug(data.slug)
+      } catch (err) {
+        console.error('获取模板slug异常:', err)
+        setTemplateSlug(null)
+      }
+    }
+
+    fetchTemplateSlug()
+  }, [templateId])
 
   // 获取关键词列表数据
   const { data: keywords = [], isLoading } = useQuery({
@@ -327,6 +376,84 @@ const KeywordList: React.FC<KeywordListProps> = ({
     setScoreDialogOpen(true)
   }
 
+  // 处理批量发布
+  const handleBatchPublish = () => {
+    if (selectionModel.length === 0) {
+      showToast('请先选择要发布的关键词', 'warning')
+      return
+    }
+    setPublishCompleted(false)
+    setPublishDialogOpen(true)
+  }
+
+  // 确认批量发布
+  const handleConfirmPublish = async () => {
+    setPublishing(true)
+    const selectedKeywords = keywords.filter(k => selectionModel.includes(k.id))
+
+    setPublishProgress({
+      total: selectedKeywords.length,
+      current: 0,
+      currentKeyword: '',
+      logs: [`开始批量发布 ${selectedKeywords.length} 个SEO页面...`]
+    })
+
+    let successCount = 0
+    let failedCount = 0
+
+    for (let i = 0; i < selectedKeywords.length; i++) {
+      const kw = selectedKeywords[i]
+
+      setPublishProgress(prev => ({
+        ...prev,
+        current: i + 1,
+        currentKeyword: kw.keyword,
+        logs: [...prev.logs, `\n[${i + 1}/${selectedKeywords.length}] 正在发布: ${kw.keyword}`]
+      }))
+
+      try {
+        // 检查是否已生成内容
+        if (!kw.guide_content) {
+          throw new Error('该关键词尚未生成内容，无法发布')
+        }
+
+        // 更新发布状态
+        const { error } = await supabase
+          .from('seo_page_variants')
+          .update({
+            is_published: true,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', kw.id)
+
+        if (error) throw error
+
+        successCount++
+        setPublishProgress(prev => ({
+          ...prev,
+          logs: [...prev.logs, `✓ 发布成功: ${kw.keyword}`]
+        }))
+      } catch (error: any) {
+        failedCount++
+        setPublishProgress(prev => ({
+          ...prev,
+          logs: [...prev.logs, `✗ 发布失败: ${kw.keyword} - ${error.message}`]
+        }))
+      }
+    }
+
+    setPublishProgress(prev => ({
+      ...prev,
+      logs: [...prev.logs, `\n批量发布完成！成功: ${successCount}，失败: ${failedCount}`]
+    }))
+
+    setPublishing(false)
+    setPublishCompleted(true)
+
+    // 刷新列表
+    queryClient.invalidateQueries({ queryKey: ['seo-keywords', templateId, language, contentTemplate] })
+  }
+
   // 确认批量评分
   const handleConfirmScore = async () => {
     setScoring(true)
@@ -508,6 +635,10 @@ const KeywordList: React.FC<KeywordListProps> = ({
           ...prev,
           logs: [...prev.logs, `✓ 成功生成: ${kw.keyword}`]
         }))
+
+        // 立即刷新数据,让用户实时看到更新
+        queryClient.invalidateQueries({ queryKey: ['seo-keywords', templateId, language, contentTemplate] })
+        queryClient.invalidateQueries({ queryKey: ['seo-page-data'] })
       } catch (error) {
         console.error('[批量生成] 错误:', error)
         failedCount++
@@ -529,8 +660,12 @@ const KeywordList: React.FC<KeywordListProps> = ({
     setGenerateCompleted(true)
     console.log('[批量生成] 设置 generating = false, generateCompleted = true')
 
-    // 刷新列表
+    // 刷新列表和页面详情数据
+    console.log('[批量生成] 刷新关键词列表和页面详情数据...')
     queryClient.invalidateQueries({ queryKey: ['seo-keywords', templateId, language, contentTemplate] })
+    // 同时刷新所有页面详情数据(PageEditor组件使用)
+    queryClient.invalidateQueries({ queryKey: ['seo-page-data'] })
+    console.log('[批量生成] 数据刷新完成')
   }
 
   // 确认导入
@@ -679,6 +814,39 @@ const KeywordList: React.FC<KeywordListProps> = ({
     setDeleteConfirmOpen(true)
   }
 
+  // 访问SEO页面
+  const handleVisitPage = (keyword: KeywordRow) => {
+    if (!templateSlug) {
+      showToast('无法获取模板信息', 'error')
+      return
+    }
+
+    if (!keyword.is_published) {
+      showToast('该页面尚未发布，请先发布后再访问', 'warning')
+      return
+    }
+
+    // 构建URL: /:lang/:templateSlug/guide/:keywordSlug
+    const url = `/${language}/${templateSlug}/guide/${keyword.keyword.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`
+
+    // 在新标签页打开
+    window.open(url, '_blank')
+
+    // 关闭菜单
+    handleRowMenuClose()
+  }
+
+  // 打开行菜单
+  const handleRowMenuOpen = (event: React.MouseEvent<HTMLElement>, keyword: KeywordRow) => {
+    event.stopPropagation()
+    setRowMenuState({ anchorEl: event.currentTarget, keyword })
+  }
+
+  // 关闭行菜单
+  const handleRowMenuClose = () => {
+    setRowMenuState({ anchorEl: null, keyword: null })
+  }
+
   const handleDeleteConfirm = async () => {
     if (deletingKeywords.length === 0) return
 
@@ -743,6 +911,16 @@ const KeywordList: React.FC<KeywordListProps> = ({
             onClick={handleBatchScore}
           >
             批量评分 ({selectionModel.length})
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            size="small"
+            startIcon={<Publish />}
+            disabled={!templateId || selectionModel.length === 0}
+            onClick={handleBatchPublish}
+          >
+            批量发布 ({selectionModel.length})
           </Button>
           <IconButton
             size="small"
@@ -881,29 +1059,12 @@ const KeywordList: React.FC<KeywordListProps> = ({
                       }
                       size="small"
                     />
-                    <Tooltip title="编辑">
-                      <IconButton
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleEditClick(kw)
-                        }}
-                      >
-                        <Edit fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="删除">
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleDeleteClick([kw.id])
-                        }}
-                      >
-                        <DeleteOutline fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => handleRowMenuOpen(e, kw)}
+                    >
+                      <MoreVert fontSize="small" />
+                    </IconButton>
                   </Box>
                 </Box>
               </Box>
@@ -918,6 +1079,48 @@ const KeywordList: React.FC<KeywordListProps> = ({
           共 {keywords.length} 个关键词 | 已选择 {selectionModel.length} 个
         </Typography>
       </Box>
+
+      {/* 行操作菜单 */}
+      <Menu
+        anchorEl={rowMenuState.anchorEl}
+        open={Boolean(rowMenuState.anchorEl)}
+        onClose={handleRowMenuClose}
+      >
+        <MenuItem
+          onClick={() => {
+            if (rowMenuState.keyword) {
+              handleVisitPage(rowMenuState.keyword)
+            }
+          }}
+          disabled={!rowMenuState.keyword?.is_published || !templateSlug}
+        >
+          <Launch sx={{ mr: 1 }} fontSize="small" />
+          访问页面
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            if (rowMenuState.keyword) {
+              handleEditClick(rowMenuState.keyword)
+              handleRowMenuClose()
+            }
+          }}
+        >
+          <Edit sx={{ mr: 1 }} fontSize="small" />
+          编辑
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            if (rowMenuState.keyword) {
+              handleDeleteClick([rowMenuState.keyword.id])
+              handleRowMenuClose()
+            }
+          }}
+          sx={{ color: 'error.main' }}
+        >
+          <DeleteOutline sx={{ mr: 1 }} fontSize="small" />
+          删除
+        </MenuItem>
+      </Menu>
 
       {/* 导入关键词对话框 */}
       <Dialog
@@ -1151,6 +1354,93 @@ const KeywordList: React.FC<KeywordListProps> = ({
           <Button variant="contained" color="error" onClick={handleDeleteConfirm}>
             确认删除
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* 批量发布对话框 */}
+      <Dialog
+        open={publishDialogOpen}
+        onClose={() => !publishing && setPublishDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>批量发布 SEO 页面</DialogTitle>
+        <DialogContent>
+          {!publishing && !publishCompleted ? (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              即将发布 {selectionModel.length} 个SEO页面，发布后用户可以在前台访问这些页面。确认开始？
+            </Alert>
+          ) : publishCompleted ? (
+            <>
+              <Alert severity="success" sx={{ mb: 2 }}>
+                批量发布已完成！
+              </Alert>
+              <Box
+                sx={{
+                  mt: 2,
+                  p: 2,
+                  bgcolor: 'grey.100',
+                  borderRadius: 1,
+                  maxHeight: 300,
+                  overflow: 'auto',
+                  fontFamily: 'monospace',
+                  fontSize: '0.875rem',
+                  whiteSpace: 'pre-wrap'
+                }}
+              >
+                {publishProgress.logs.join('\n')}
+              </Box>
+            </>
+          ) : (
+            <>
+              <LinearProgress
+                variant="determinate"
+                value={(publishProgress.current / publishProgress.total) * 100}
+                sx={{ mb: 2 }}
+              />
+              <Typography variant="body2" gutterBottom>
+                进度: {publishProgress.current} / {publishProgress.total}
+              </Typography>
+              {publishProgress.currentKeyword && (
+                <Typography variant="body2" color="primary" gutterBottom>
+                  当前: {publishProgress.currentKeyword}
+                </Typography>
+              )}
+              <Box
+                sx={{
+                  mt: 2,
+                  p: 2,
+                  bgcolor: 'grey.100',
+                  borderRadius: 1,
+                  maxHeight: 300,
+                  overflow: 'auto',
+                  fontFamily: 'monospace',
+                  fontSize: '0.875rem',
+                  whiteSpace: 'pre-wrap'
+                }}
+              >
+                {publishProgress.logs.join('\n')}
+              </Box>
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          {publishCompleted ? (
+            <Button variant="contained" onClick={() => setPublishDialogOpen(false)}>
+              关闭
+            </Button>
+          ) : (
+            <>
+              <Button onClick={() => setPublishDialogOpen(false)} disabled={publishing}>
+                {publishing ? '发布中...' : '取消'}
+              </Button>
+              {!publishing && (
+                <Button variant="contained" color="success" onClick={handleConfirmPublish}>
+                  开始发布
+                </Button>
+              )}
+            </>
+          )}
         </DialogActions>
       </Dialog>
 

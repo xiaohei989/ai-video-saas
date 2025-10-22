@@ -1133,7 +1133,12 @@
         "description": "دليل كامل لإنشاء الفيديوهات الفيروسية. دروس خطوة بخطوة، أسئلة شائعة، أدلة القوالب. أتقن إنشاء محتوى TikTok وInstagram في دقائق.",
         "keywords": "مركز المساعدة,دروس فيديو,دليل المنشئ,بدء سريع,دليل TikTok,دروس Instagram,مساعدة إنشاء المحتوى"
       }
-    }
+    },
+    "tryThisTemplate": "جرب قالب {{template}}",
+    "templatePreviewDescription": "شاهد كيف يعمل هذا القالب مع فيديو مثال حقيقي",
+    "createYourVideo": "أنشئ الفيديو الآن",
+    "watchPreview": "مشاهدة المعاينة",
+    "clickToStartCreating": "انقر على الزر أعلاه لبدء إنشاء الفيديو الخاص بك"
   },
   "admin": {
     "clearVideoCache": "مسح تخزين الفيديو المؤقت",

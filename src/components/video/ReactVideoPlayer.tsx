@@ -158,8 +158,13 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
     }
   }, [])
 
-  // 缓存相关状态
-  const [currentPoster, setCurrentPoster] = useState<string>(thumbnailUrl || lowResPosterUrl || defaultPoster)
+  // ✅ 优化：使用 useMemo 计算最优缩略图URL，避免重复计算
+  const optimalPosterUrl = React.useMemo(() => {
+    return thumbnailUrl || lowResPosterUrl || defaultPoster
+  }, [thumbnailUrl, lowResPosterUrl, defaultPoster])
+
+  // 缓存相关状态 - 直接使用最优URL作为初始值
+  const [currentPoster, setCurrentPoster] = useState<string>(optimalPosterUrl)
   
   // 🚀 简化：只保留必要的悬停状态
   const [isHovering, setIsHovering] = useState(false)
@@ -573,72 +578,16 @@ export function ReactVideoPlayer(props: ReactVideoPlayerProps) {
     }
   }, [deviceInfo])
 
-  // 智能缓存 poster 加载 - 移动端优化
+  // ✅ 优化：直接使用 thumbnailUrl，避免异步加载导致的灰屏
+  // 移除 smartLoadImage 异步加载，让浏览器原生缓存处理
   useEffect(() => {
-    if (!thumbnailUrl) {
-      const fallbackPoster = lowResPosterUrl || defaultPoster
-      setCurrentPoster(fallbackPoster)
-      if (videoRef.current) {
-        videoRef.current.poster = fallbackPoster
-      }
-      return
-    }
+    // 直接设置缩略图URL，浏览器会自动缓存
+    setCurrentPoster(optimalPosterUrl)
 
-    // 移动端优化策略：启用轻量级Base64缓存
-    if (isMobile) {
-      
-      const loadMobilePoster = async () => {
-        try {
-          // 移动端直接尝试智能缓存，但禁用渐进式加载
-          await smartLoadImage(thumbnailUrl, {
-            enableFastPreview: false, // 移动端禁用渐进式加载
-            onFinalLoad: (finalUrl) => {
-              setCurrentPoster(finalUrl)
-              if (videoRef.current) {
-                videoRef.current.poster = finalUrl
-              }
-            }
-          })
-          
-        } catch (error) {
-          setCurrentPoster(thumbnailUrl)
-          if (videoRef.current) {
-            videoRef.current.poster = thumbnailUrl
-          }
-        }
-      }
-      
-      loadMobilePoster()
-      return
+    if (videoRef.current) {
+      videoRef.current.poster = optimalPosterUrl
     }
-
-    const loadCachedPoster = async () => {
-      
-      try {
-        // 桌面端使用高质量直接加载（完全禁用模糊图）
-        await smartLoadImage(thumbnailUrl, {
-          enableFastPreview: false, // 强制禁用快速预览，彻底消除模糊图
-          onFinalLoad: (finalUrl) => {
-            setCurrentPoster(finalUrl)
-            
-            // 同步更新video元素的poster
-            if (videoRef.current) {
-              videoRef.current.poster = finalUrl
-            }
-          }
-        })
-        
-      } catch (error) {
-        // 降级到原始URL
-        setCurrentPoster(thumbnailUrl)
-        if (videoRef.current) {
-          videoRef.current.poster = thumbnailUrl
-        }
-      }
-    }
-
-    loadCachedPoster()
-  }, [thumbnailUrl, lowResPosterUrl])
+  }, [optimalPosterUrl])
 
 
   // 🚀 Context监听效果：当其他视频开始播放时自动暂停当前视频

@@ -1,0 +1,348 @@
+/**
+ * E-E-A-T 评分计算器
+ * Experience, Expertise, Authoritativeness, Trustworthiness
+ * 符合 Google 2025 年搜索质量评估标准
+ *
+ * 完全独立于旧的 seoScoreCalculator.ts
+ */
+
+import { seoAIService } from './seoAIService'
+import { promptTemplateService } from './promptTemplateService'
+import {
+  calculateKeywordDensity,
+  calculateKeywordDensityScore as calculateDensityScore7Point,
+  extractFullContent
+} from './seoScoreCalculator'
+import type {
+  EEATGuideData,
+  EEATScoreResult,
+  EEATAIScoreResult,
+  EngagementMetricsData,
+  EEATScoreGrade
+} from '@/types/eeat'
+
+/**
+ * 构建 E-E-A-T 专家评分 Prompt
+ * 使用 Google 2025 年最新标准
+ * ✅ 新版本：从数据库加载提示词模板
+ */
+async function buildEEATExpertPrompt(data: EEATGuideData): Promise<string> {
+  // ✅ 从数据库加载 E-E-A-T 评分提示词模板
+  const prompt = await promptTemplateService.buildPrompt('eeat-score', {
+    meta_title: data.meta_title || '未提供',
+    meta_description: data.meta_description || '未提供',
+    meta_keywords: data.meta_keywords || '未提供',
+    target_keyword: data.target_keyword || '未提供',
+    long_tail_keywords: (data.long_tail_keywords || []).join(', ') || '未提供',
+    guide_intro: data.guide_intro || '未提供',
+    guide_content: data.guide_content || '未提供',
+    content_length: (data.guide_content || '').length,
+    faq_count: (data.faq_items || []).length,
+    faq_items: (data.faq_items || []).map((item, i) =>
+      `Q${i + 1}: ${item.question}\nA${i + 1}: ${item.answer}`
+    ).join('\n\n') || '未提供',
+    page_views: data.page_views || 0,
+    avg_time_on_page: data.avg_time_on_page || 0,
+    bounce_rate: data.bounce_rate || 0,
+    conversion_rate: data.conversion_rate || 0,
+    keyword_density_info: data.keyword_density ? `
+### 实时关键词密度（仅供参考）
+${Object.entries(data.keyword_density).map(([kw, density]) =>
+  `- ${kw}: ${density}%`
+).join('\n')}
+` : ''
+  })
+
+  return prompt
+}
+
+/**
+ * 计算用户参与度评分 (0-12分)
+ * 基于数据库已有字段: page_views, avg_time_on_page, bounce_rate, conversion_rate
+ *
+ * 根据 2024 Google API 泄露: Google 追踪 "long clicks"（用户在页面停留的时间）
+ */
+export function calculateEngagementScore(data: EngagementMetricsData): number {
+  let score = 0
+
+  // 1. 停留时间评分 (0-4分)
+  // 基于 Google "long clicks" - 停留时间越长，内容质量越高的信号
+  if (data.avg_time_on_page >= 180) {
+    score += 4 // 3分钟+ = 优秀 (用户深度阅读)
+  } else if (data.avg_time_on_page >= 120) {
+    score += 3 // 2分钟+ = 良好
+  } else if (data.avg_time_on_page >= 60) {
+    score += 2 // 1分钟+ = 及格
+  } else if (data.avg_time_on_page >= 30) {
+    score += 1 // 30秒+ = 差
+  }
+  // < 30秒 = 0分 (可能是误点或内容不相关)
+
+  // 2. 跳出率评分 (0-4分)
+  // 跳出率越低，表示用户找到了想要的内容
+  if (data.bounce_rate <= 40) {
+    score += 4 // ≤40% = 优秀
+  } else if (data.bounce_rate <= 55) {
+    score += 3 // ≤55% = 良好
+  } else if (data.bounce_rate <= 70) {
+    score += 2 // ≤70% = 及格
+  } else if (data.bounce_rate <= 85) {
+    score += 1 // ≤85% = 差
+  }
+  // > 85% = 0分
+
+  // 3. 转化率评分 (0-2分)
+  // 转化率反映内容是否真正帮助用户解决问题
+  if (data.conversion_rate >= 5) {
+    score += 2 // ≥5% = 优秀
+  } else if (data.conversion_rate >= 2) {
+    score += 1 // ≥2% = 良好
+  }
+  // < 2% = 0分
+
+  // 4. 访问量评分 (0-2分)
+  // 访问量反映内容的吸引力和搜索排名
+  if (data.page_views >= 1000) {
+    score += 2 // ≥1000 = 优秀
+  } else if (data.page_views >= 100) {
+    score += 1 // ≥100 = 良好
+  }
+  // < 100 = 0分
+
+  return Math.min(score, 12) // 确保不超过最大值
+}
+
+/**
+ * 计算关键词密度评分 (0-7分)
+ * 复用旧系统的算法，但分值从10分调整为7分
+ */
+export function calculateKeywordDensityScore(
+  keywordDensity: Record<string, number>,
+  targetKeyword?: string
+): number {
+  // 复用旧算法计算10分制评分
+  const oldScore = calculateDensityScore7Point(keywordDensity, targetKeyword)
+
+  // 映射到7分制: 10分 → 7分
+  // 映射规则: 7分制 = (10分制 / 10) * 7
+  const newScore = Math.round((oldScore / 10) * 7)
+
+  return newScore
+}
+
+/**
+ * 调用 AI 服务进行 E-E-A-T 评分
+ * 注意：AI 只返回 88分的评分（不包括 engagement_score 和 keyword_density_score）
+ */
+async function callEEATAI(
+  prompt: string,
+  aiModel: 'claude' | 'gpt' | 'gemini' | 'claude-code-cli'
+): Promise<EEATAIScoreResult> {
+  try {
+    console.log('[E-E-A-T Score] 调用 AI 服务...')
+
+    // 调用 seoAIService (支持多种AI模型，包括本地 claude-code-cli)
+    const response = await seoAIService.callAI(prompt, aiModel)
+
+    // 解析响应
+    let jsonContent = response
+
+    // 如果响应包含 markdown 代码块，提取 JSON
+    const jsonMatch = jsonContent.match(/```json\n([\s\S]*?)\n```/) ||
+                     jsonContent.match(/```\n([\s\S]*?)\n```/)
+
+    if (jsonMatch) {
+      jsonContent = jsonMatch[1]
+    }
+
+    const result = JSON.parse(jsonContent.trim())
+
+    // 🔄 适配多种AI响应格式
+    let eeatResult: EEATAIScoreResult
+
+    if (result.dimension_scores) {
+      // ✅ 新格式 (从数据库提示词模板): {dimension_scores: {...}, suggestions: [...]}
+      console.log('[E-E-A-T Score] 检测到新格式响应 (dimension_scores)')
+
+      // 转换suggestions对象数组为字符串数组
+      const rawSuggestions = result.suggestions || []
+      const recommendations = rawSuggestions.map((sug: any) => {
+        if (typeof sug === 'string') {
+          return sug
+        }
+        // 新格式: {category, issue, suggestion, priority, expected_impact}
+        return `【${sug.category}】${sug.issue}\n建议: ${sug.suggestion}\n预期效果: ${sug.expected_impact || '提升EEAT分数'}`
+      })
+
+      eeatResult = {
+        trustworthiness_score: result.dimension_scores.trustworthiness || 0,
+        authoritativeness_score: result.dimension_scores.authoritativeness || 0,
+        expertise_score: result.dimension_scores.expertise || 0,
+        comprehensiveness_score: result.dimension_scores.comprehensiveness || 0,
+        information_gain_score: result.dimension_scores.information_gain || 0,
+        structured_quality_score: result.dimension_scores.structured_quality || 0,
+        readability_score: result.dimension_scores.readability || 0,
+        keyword_optimization_score: result.dimension_scores.keyword_optimization || 0,
+        recommendations: recommendations
+      }
+    } else {
+      // ⚠️ 旧格式 (兼容性): {trustworthiness_score, authoritativeness_score, ...}
+      console.log('[E-E-A-T Score] 检测到旧格式响应 (直接字段)')
+      eeatResult = result as EEATAIScoreResult
+    }
+
+    // 验证必需字段
+    if (
+      typeof eeatResult.trustworthiness_score !== 'number' ||
+      typeof eeatResult.authoritativeness_score !== 'number' ||
+      typeof eeatResult.expertise_score !== 'number' ||
+      !Array.isArray(eeatResult.recommendations)
+    ) {
+      console.error('[E-E-A-T Score] AI 返回格式不正确:', result)
+      throw new Error('AI 返回的评分格式不正确')
+    }
+
+    console.log('[E-E-A-T Score] AI 评分完成:', {
+      trust: eeatResult.trustworthiness_score,
+      authority: eeatResult.authoritativeness_score,
+      expertise: eeatResult.expertise_score,
+      recommendations: eeatResult.recommendations.length
+    })
+
+    return eeatResult
+
+  } catch (error) {
+    console.error('[E-E-A-T Score] AI 调用失败:', error)
+    throw error
+  }
+}
+
+/**
+ * 主评分函数 - 计算完整的 E-E-A-T 评分
+ *
+ * @param data - SEO 指南数据
+ * @param aiModel - AI 模型选择 ('claude' | 'gpt' | 'gemini' | 'claude-code-cli')
+ * @returns E-E-A-T 评分结果
+ */
+export async function calculateEEATScore(
+  data: EEATGuideData,
+  aiModel: 'claude' | 'gpt' | 'gemini' | 'claude-code-cli' = 'claude'
+): Promise<EEATScoreResult> {
+  try {
+    console.log('[E-E-A-T Score] 开始计算评分...')
+
+    // 1. 提取完整内容
+    const fullContent = extractFullContent({
+      meta_title: data.meta_title,
+      meta_description: data.meta_description,
+      meta_keywords: data.meta_keywords,
+      guide_intro: data.guide_intro,
+      guide_content: data.guide_content,
+      faq_items: data.faq_items
+    })
+
+    // 2. 计算关键词密度（单关键词优化策略，仅计算目标关键词）
+    const allKeywords = data.target_keyword ? [data.target_keyword] : []
+
+    const keywordDensity = calculateKeywordDensity(fullContent, allKeywords)
+    console.log('[E-E-A-T Score] 关键词密度计算完成:', {
+      关键词数量: allKeywords.length,
+      密度结果数: Object.keys(keywordDensity).length
+    })
+
+    // 3. 将密度数据传递给 AI（用于生成准确建议）
+    const dataWithDensity: EEATGuideData = {
+      ...data,
+      keyword_density: keywordDensity
+    }
+
+    // 4. 调用 AI 进行评分 (88分)
+    const aiPrompt = await buildEEATExpertPrompt(dataWithDensity)
+    const aiScore = await callEEATAI(aiPrompt, aiModel)
+
+    // 5. 算法计算用户参与度评分 (12分)
+    const engagementScore = calculateEngagementScore({
+      page_views: data.page_views || 0,
+      unique_visitors: data.unique_visitors || 0,
+      avg_time_on_page: data.avg_time_on_page || 0,
+      bounce_rate: data.bounce_rate || 0,
+      conversion_rate: data.conversion_rate || 0
+    })
+    console.log('[E-E-A-T Score] 用户参与度评分:', engagementScore)
+
+    // 6. 算法计算关键词密度评分 (7分)
+    const densityScore = calculateKeywordDensityScore(keywordDensity, data.target_keyword)
+    console.log('[E-E-A-T Score] 关键词密度评分:', densityScore)
+
+    // 7. 合并所有评分
+    const totalScore =
+      aiScore.trustworthiness_score +       // 0-15
+      aiScore.authoritativeness_score +     // 0-10
+      aiScore.expertise_score +             // 0-10
+      aiScore.comprehensiveness_score +     // 0-12
+      aiScore.information_gain_score +      // 0-10
+      aiScore.structured_quality_score +    // 0-8
+      engagementScore +                     // 0-12 (算法)
+      aiScore.readability_score +           // 0-8
+      aiScore.keyword_optimization_score +  // 0-8
+      densityScore                          // 0-7 (算法)
+
+    console.log('[E-E-A-T Score] 总分计算完成:', {
+      总分: totalScore,
+      AI评分: totalScore - engagementScore - densityScore,
+      参与度评分: engagementScore,
+      密度评分: densityScore
+    })
+
+    const result: EEATScoreResult = {
+      total_score: totalScore,
+
+      // E-E-A-T 维度 (35分)
+      trustworthiness_score: aiScore.trustworthiness_score,
+      authoritativeness_score: aiScore.authoritativeness_score,
+      expertise_score: aiScore.expertise_score,
+
+      // 内容质量维度 (30分)
+      comprehensiveness_score: aiScore.comprehensiveness_score,
+      information_gain_score: aiScore.information_gain_score,
+      structured_quality_score: aiScore.structured_quality_score,
+
+      // 用户满意度维度 (20分)
+      engagement_score: engagementScore,
+      readability_score: aiScore.readability_score,
+
+      // 技术SEO维度 (15分)
+      keyword_optimization_score: aiScore.keyword_optimization_score,
+      keyword_density_score: densityScore,
+
+      // 其他数据
+      keyword_density: keywordDensity,
+      recommendations: aiScore.recommendations || []
+    }
+
+    return result
+
+  } catch (error) {
+    console.error('[E-E-A-T Score] 评分失败:', error)
+    throw error
+  }
+}
+
+/**
+ * 获取 E-E-A-T 评分等级
+ */
+export function getEEATScoreGrade(score: number): EEATScoreGrade {
+  if (score >= 90) {
+    return { grade: 'A+', color: 'success', label: '卓越 (Google 2025 标准)' }
+  } else if (score >= 80) {
+    return { grade: 'A', color: 'success', label: '优秀' }
+  } else if (score >= 70) {
+    return { grade: 'B', color: 'info', label: '良好' }
+  } else if (score >= 60) {
+    return { grade: 'C', color: 'warning', label: '及格' }
+  } else if (score >= 40) {
+    return { grade: 'D', color: 'warning', label: '需改进' }
+  } else {
+    return { grade: 'F', color: 'error', label: '不合格' }
+  }
+}

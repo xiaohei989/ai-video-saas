@@ -83,3 +83,57 @@ export function loadSEOScorePrompt(
     noKeywordWarning: params.noKeywordWarning || ''
   })
 }
+
+/**
+ * 内容生成提示词专用加载器
+ */
+export interface ContentGenerationPromptParams {
+  targetKeyword: string
+  platform?: string
+  audience?: string
+  recommendedWordCount: number
+  minWordCount: number
+  maxWordCount: number
+  faqMinItems: number
+  faqMaxItems: number
+  faqPatterns: string
+  sections: string
+  differentiationFactors: string
+  keywordDensityIdeal?: number
+  competitorDensityIdeal?: number
+  platformDensityIdeal?: number
+  minCompetitors?: number
+  maxCompetitors?: number
+  platformName?: string
+}
+
+/**
+ * 加载内容生成提示词
+ * @param templateContent - Markdown模板内容
+ * @param params - 参数对象
+ * @returns 填充后的提示词
+ */
+export function loadContentGenerationPrompt(
+  templateContent: string,
+  params: ContentGenerationPromptParams
+): string {
+  return fillPromptTemplate(templateContent, {
+    targetKeyword: params.targetKeyword,
+    platform: params.platform || 'TikTok',
+    platformName: params.platformName || params.platform || 'TikTok',
+    audience: params.audience || '普通用户',
+    recommendedWordCount: params.recommendedWordCount,
+    minWordCount: params.minWordCount,
+    maxWordCount: params.maxWordCount,
+    faqMinItems: params.faqMinItems,
+    faqMaxItems: params.faqMaxItems,
+    faqPatterns: params.faqPatterns,
+    sections: params.sections,
+    differentiationFactors: params.differentiationFactors,
+    keywordDensityIdeal: params.keywordDensityIdeal || 2.0,
+    competitorDensityIdeal: params.competitorDensityIdeal || 0.8,
+    platformDensityIdeal: params.platformDensityIdeal || 2.0,
+    minCompetitors: params.minCompetitors || 5,
+    maxCompetitors: params.maxCompetitors || 10
+  })
+}

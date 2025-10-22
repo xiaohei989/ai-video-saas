@@ -406,6 +406,71 @@ class TemplatesApiService {
   }
 
   /**
+   * 获取随机推荐模板（用于SEO页面侧边栏推荐）
+   */
+  async getRandomRecommendedTemplates(
+    limit: number = 3,
+    excludeTemplateId?: string
+  ): Promise<TemplateListItem[]> {
+    try {
+      // 获取所有可用模板
+      const { data, error } = await supabase
+        .from('templates')
+        .select(`
+          id,
+          slug,
+          name,
+          description,
+          thumbnail_url,
+          preview_url,
+          category,
+          credit_cost,
+          tags,
+          like_count,
+          is_active,
+          is_public,
+          version,
+          created_at,
+          updated_at,
+          audit_status
+        `)
+        .eq('is_active', true)
+        .eq('is_public', true)
+        .eq('audit_status', 'approved')
+
+      if (error) {
+        console.error('[TemplatesApiService] 获取随机推荐模板失败:', error)
+        throw new Error(`获取随机推荐模板失败: ${error.message}`)
+      }
+
+      let templates = data || []
+
+      // 排除指定模板
+      if (excludeTemplateId) {
+        templates = templates.filter(t => t.id !== excludeTemplateId)
+      }
+
+      // 处理模板数据
+      const processedTemplates = await this.processTemplatesData(templates)
+
+      // 随机打乱数组（Fisher-Yates shuffle）
+      const shuffled = [...processedTemplates]
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+      }
+
+      // 返回指定数量的随机模板
+      const result = shuffled.slice(0, limit)
+      console.log(`[TemplatesApiService] 获取随机推荐模板成功: ${result.length} 个模板`)
+      return result
+    } catch (error) {
+      console.error('[TemplatesApiService] 获取随机推荐模板异常:', error)
+      throw error
+    }
+  }
+
+  /**
    * 获取模板统计信息
    */
   async getTemplateStats(): Promise<{

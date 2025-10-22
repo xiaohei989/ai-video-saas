@@ -12,8 +12,16 @@ import type {
   KeywordDensityOptimizeRequest,
   KeywordDensityOptimizeResult
 } from '@/types/seo'
-import { calculateKeywordDensity, extractFullContent } from './seoScoreCalculator'
-import { buildSEOScorePrompt } from '@/config/seoPrompts'
+// 🔥 修复循环依赖：从 seoUtils 导入而不是 seoScoreCalculator
+import { calculateKeywordDensity, extractFullContent, calculateKeywordDensityScore } from './seoUtils'
+import { buildSEOScorePrompt, buildOptimizePrompt } from '@/config/seoPrompts'
+import {
+  SEO_SCORE_JSON_SCHEMA,
+  SEO_CONTENT_JSON_SCHEMA,
+  SEO_OPTIMIZE_JSON_SCHEMA,
+  KEYWORD_DENSITY_OPTIMIZE_SCHEMA
+} from '@/schemas/seoScoreSchema'
+import { robustJSONParse, robustJSONParseWithValidation } from '@/utils/robustJSONParser'
 
 interface APIResponse {
   success: boolean
@@ -65,12 +73,32 @@ class SEOAIService {
   }
 
   /**
-   * 调用APICore大模型（直接调用API）
+   * 调用AI大模型（支持在线和本地模型）
+   * 支持的模型：
+   * - claude: Claude Opus 4.1 (APICore)
+   * - gpt: GPT-4 Omni (APICore)
+   * - gemini: Gemini 2.5 Pro (APICore)
+   * - claude-code-cli: 本地 Claude Code CLI (localhost:3030)
+   *
+   * @param prompt - 提示词
+   * @param model - 模型名称
+   * @param jsonSchema - 可选的JSON Schema，用于强制结构化输出（仅在线API支持）
    */
-  private async callAI(
+  async callAI(
     prompt: string,
-    model: 'claude' | 'gpt' | 'gemini' = 'claude'
+    model: 'claude' | 'gpt' | 'gemini' | 'claude-code-cli' = 'claude',
+    jsonSchema?: {
+      name: string
+      strict: boolean
+      schema: any
+    }
   ): Promise<string> {
+    // 如果是本地模型，调用本地服务
+    if (model === 'claude-code-cli') {
+      return this.callLocalAI(prompt)
+    }
+
+    // 在线模型需要 API Key
     if (!this.apiKey) {
       throw new Error('未配置APICore API Key')
     }
@@ -84,6 +112,13 @@ class SEOAIService {
     // Claude/GPT-4o 支持 16K 输出，Gemini 支持 8K
     const maxTokens = model === 'gemini' ? 6000 : 8000
 
+    // 🔧 构建 response_format 参数
+    // 如果提供了 jsonSchema，使用 json_schema 模式（OpenAI/Anthropic Structured Output）
+    // 否则使用传统的 json_object 模式
+    const responseFormat = jsonSchema
+      ? { type: 'json_schema' as const, json_schema: jsonSchema }
+      : { type: 'json_object' as const }
+
     // 计算请求体大小用于诊断
     const requestBody = JSON.stringify({
       model: modelName,
@@ -95,12 +130,15 @@ class SEOAIService {
       ],
       max_tokens: maxTokens,
       temperature: 0.7,
-      response_format: { type: 'json_object' }
+      response_format: responseFormat
     })
     const bodySizeKB = (new Blob([requestBody]).size / 1024).toFixed(2)
 
     console.log(`[SEOAIService] 调用 ${modelName} 模型 (直接调用APICore)...`)
     console.log(`[SEOAIService] 📊 请求信息: prompt长度=${prompt.length}字符, 请求体大小=${bodySizeKB}KB`)
+    if (jsonSchema) {
+      console.log(`[SEOAIService] 🎯 使用 Structured Output (JSON Schema: ${jsonSchema.name})`)
+    }
 
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), this.timeout)
@@ -202,6 +240,69 @@ class SEOAIService {
         throw error
       }
 
+      throw error
+    }
+  }
+
+  /**
+   * 调用本地 Claude Code CLI (通用版本)
+   * 通过 localhost:3030 调用本地 AI 服务
+   */
+  private async callLocalAI(prompt: string): Promise<string> {
+    console.log('[SEOAIService] 使用本地 Claude Code CLI...')
+
+    try {
+      const response = await fetch('http://localhost:3030/call-ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `本地服务返回错误: ${response.status}`)
+      }
+
+      const result = await response.json()
+
+      if (!result.success || !result.data) {
+        throw new Error('本地服务返回数据格式错误')
+      }
+
+      // 如果返回的是对象格式(Claude Code CLI的响应格式),提取text字段
+      let aiResponse = result.data
+
+      console.log('[SEOAIService] 响应类型:', typeof aiResponse)
+      console.log('[SEOAIService] 响应对象keys:', aiResponse && typeof aiResponse === 'object' ? Object.keys(aiResponse).join(', ') : 'N/A')
+
+      if (typeof aiResponse === 'object' && aiResponse !== null) {
+        if (aiResponse.text) {
+          console.log('[SEOAIService] 提取text字段, 长度:', aiResponse.text.length)
+          aiResponse = aiResponse.text
+        } else {
+          console.warn('[SEOAIService] 对象格式但没有text字段,可能是错误的响应格式')
+          console.log('[SEOAIService] 响应内容:', JSON.stringify(aiResponse).substring(0, 500))
+        }
+      }
+
+      console.log('[SEOAIService] 最终响应类型:', typeof aiResponse)
+      console.log('[SEOAIService] 最终响应长度:', typeof aiResponse === 'string' ? aiResponse.length : 'N/A')
+
+      return aiResponse
+
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('Failed to fetch')) {
+        throw new Error(
+          '无法连接到本地服务器 (http://localhost:3030)。\n' +
+          '请确保:\n' +
+          '1. 已运行 npm run seo:server 启动本地服务\n' +
+          '2. 本地服务器正在 3030 端口运行\n' +
+          '3. 没有防火墙阻止连接'
+        )
+      }
+      console.error('[SEOAIService] 本地 AI 调用失败:', error)
       throw error
     }
   }
@@ -359,21 +460,20 @@ class SEOAIService {
 
     try {
       console.log('[SEOAIService] 开始生成内容...')
-      const response = await this.callAI(prompt, request.aiModel)
+      const response = await this.callAI(prompt, request.aiModel, SEO_CONTENT_JSON_SCHEMA)
 
-      // 提取JSON内容
-      const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/) ||
-                       response.match(/```\n([\s\S]*?)\n```/) ||
-                       [null, response]
-
-      let jsonContent = jsonMatch[1] || response
-      jsonContent = jsonContent.trim()
-
-      // 尝试解析JSON
-      const parsedContent = JSON.parse(jsonContent)
+      // 🔧 使用健壮的JSON解析器
+      const parsedContent = robustJSONParseWithValidation<GeneratedSEOContent>(
+        response,
+        ['meta_title', 'meta_description', 'guide_content', 'faq_items'],
+        {
+          logPrefix: '[SEOAIService]',
+          verbose: false
+        }
+      )
 
       console.log('[SEOAIService] 内容生成成功')
-      return parsedContent as GeneratedSEOContent
+      return parsedContent
     } catch (error) {
       console.error('[SEOAIService] 内容生成失败:', error)
       throw new Error('AI内容生成失败，请检查API配置或重试')
@@ -482,17 +582,13 @@ ${request.templateName} makes video creation simple and effective. Start creatin
     // 提取完整内容用于关键词密度计算
     const fullContent = extractFullContent(data)
 
-    // 收集所有关键词
-    const allKeywords = [
-      ...(data.target_keyword ? [data.target_keyword] : []),
-      ...(data.long_tail_keywords || []),
-      ...(data.secondary_keywords || [])
-    ].filter(Boolean)
+    // 仅计算目标关键词密度（单关键词优化策略）
+    const allKeywords = data.target_keyword ? [data.target_keyword] : []
 
     // 计算关键词密度
     const keywordDensity = calculateKeywordDensity(fullContent, allKeywords)
 
-    const prompt = buildSEOScorePrompt({
+    const prompt = await buildSEOScorePrompt({
       languageName,
       languageCode: data.language || 'en',
       targetKeyword: data.target_keyword || '',
@@ -500,7 +596,6 @@ ${request.templateName} makes video creation simple and effective. Start creatin
       metaDescription: data.meta_description || '',
       metaKeywords: data.meta_keywords || '',
       longTailKeywords: data.long_tail_keywords || [],
-      secondaryKeywords: data.secondary_keywords || [],
       keywordDensity,
       guideIntro: data.guide_intro || '',
       guideContent: data.guide_content || '',
@@ -510,48 +605,102 @@ ${request.templateName} makes video creation simple and effective. Start creatin
 
     try {
       console.log('[SEO AI Score] 开始在线AI评分...')
-      const response = await this.callAI(prompt, model)
+      const response = await this.callAI(prompt, model, SEO_SCORE_JSON_SCHEMA)
 
-      // 提取JSON内容
-      const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/) ||
-                       response.match(/```\n([\s\S]*?)\n```/) ||
-                       [null, response]
+      // 🔧 使用健壮的JSON解析器
+      const parsedContent = robustJSONParseWithValidation(
+        response,
+        ['overall_score', 'dimension_scores', 'actionable_recommendations'],
+        {
+          logPrefix: '[SEO AI Score]',
+          verbose: false
+        }
+      )
 
-      let jsonContent = jsonMatch[1] || response
-      jsonContent = jsonContent.trim()
+      // 🔄 适配新的AI响应格式
+      let metaInfoScore: number | undefined
+      let contentQualityScore: number
+      let keywordOptimizationScore: number
+      let readabilityScore: number
+      let recommendations: string[]
 
-      // 尝试解析JSON
-      const parsedContent = JSON.parse(jsonContent)
+      if (parsedContent.dimension_scores) {
+        // ✅ 新格式 (从数据库提示词模板): {dimension_scores: {...}, suggestions: [...]}
+        console.log('[SEO AI Score] 检测到新格式响应 (dimension_scores)')
 
-      console.log('[SEO AI Score] AI评分完成:', {
-        total: parsedContent.total_score,
-        recommendations: parsedContent.recommendations?.length || 0
-      })
+        metaInfoScore = parsedContent.dimension_scores.meta_info_quality || 0
+        contentQualityScore = parsedContent.dimension_scores.content_quality || 0
+        keywordOptimizationScore = parsedContent.dimension_scores.keyword_optimization || 0
+        readabilityScore = parsedContent.dimension_scores.readability || 0
+
+        // 转换suggestions对象数组为字符串数组
+        const rawSuggestions = parsedContent.suggestions || []
+        recommendations = rawSuggestions.map((sug: any) => {
+          if (typeof sug === 'string') {
+            return sug
+          }
+          // 新格式: {category, issue, suggestion, priority, expected_impact}
+          return `【${sug.category}】${sug.issue}\n建议: ${sug.suggestion}\n预期效果: ${sug.expected_impact || '提升SEO分数'}`
+        })
+      } else {
+        // ⚠️ 旧格式 (兼容性): {content_quality_score, keyword_optimization_score, ...}
+        console.log('[SEO AI Score] 检测到旧格式响应 (直接字段)')
+
+        metaInfoScore = undefined
+        contentQualityScore = parsedContent.content_quality_score || 0
+        keywordOptimizationScore = parsedContent.keyword_optimization_score || 0
+        readabilityScore = parsedContent.readability_score || 0
+        recommendations = parsedContent.recommendations || []
+      }
 
       // ✅ 使用确定性算法重新计算关键词密度（替代AI估算）
-      const fullContent = extractFullContent(data)
-      const allKeywords = [
-        ...(data.target_keyword ? [data.target_keyword] : []),
-        ...(data.long_tail_keywords || []),
-        ...(data.secondary_keywords || [])
-      ].filter(Boolean)
-
       const accurateKeywordDensity = calculateKeywordDensity(fullContent, allKeywords)
+      const densityScore = calculateKeywordDensityScore(accurateKeywordDensity, data.target_keyword)
 
       console.log('[SEO AI Score] 使用算法重新计算密度:', {
         keywords: allKeywords.length,
-        aiDensity: Object.keys(parsedContent.keyword_density || {}).length,
-        algorithmDensity: Object.keys(accurateKeywordDensity).length
+        algorithmDensity: Object.keys(accurateKeywordDensity).length,
+        densityScore
+      })
+
+      // ✅ 直接使用AI原始评分，但限制最大值防止AI超出范围
+      // AI标准: meta_info(30) + content(25) + keyword(25) + readability(20) + density(10) = 110分
+      const cappedMetaInfoScore = metaInfoScore ? Math.min(metaInfoScore, 30) : undefined
+      const cappedContentScore = Math.min(contentQualityScore, 25)
+      const cappedKeywordScore = Math.min(keywordOptimizationScore, 25)
+      const cappedReadabilityScore = Math.min(readabilityScore, 20)
+      const cappedDensityScore = Math.min(densityScore, 10)
+
+      const totalScore = (cappedMetaInfoScore || 0) + cappedContentScore + cappedKeywordScore + cappedReadabilityScore + cappedDensityScore
+
+      console.log('[SEO AI Score] AI评分完成 (在线，含上限限制):', {
+        原始: {
+          meta_info: metaInfoScore,
+          content: contentQualityScore,
+          keyword: keywordOptimizationScore,
+          readability: readabilityScore,
+          density: densityScore
+        },
+        限制后: {
+          meta_info: cappedMetaInfoScore,
+          content: cappedContentScore,
+          keyword: cappedKeywordScore,
+          readability: cappedReadabilityScore,
+          density: cappedDensityScore
+        },
+        总分: totalScore,
+        recommendations: recommendations.length
       })
 
       return {
-        total_score: parsedContent.total_score || 0,
-        content_quality_score: parsedContent.content_quality_score || 0,
-        keyword_optimization_score: parsedContent.keyword_optimization_score || 0,
-        readability_score: parsedContent.readability_score || 0,
-        keyword_density_score: parsedContent.keyword_density_score || 0,
-        keyword_density: accurateKeywordDensity, // 使用算法计算的密度，不是AI估算的
-        recommendations: parsedContent.recommendations || []
+        total_score: totalScore,
+        meta_info_quality_score: cappedMetaInfoScore, // 最大30分
+        content_quality_score: cappedContentScore, // 最大25分
+        keyword_optimization_score: cappedKeywordScore, // 最大25分
+        readability_score: cappedReadabilityScore, // 最大20分
+        keyword_density_score: cappedDensityScore, // 最大10分
+        keyword_density: accurateKeywordDensity,
+        recommendations: recommendations
       }
     } catch (error) {
       console.error('[SEO AI Score] 评分失败:', error)
@@ -742,18 +891,17 @@ ${request.faq_items.map((item, i) => `Q${i + 1}: ${item.question}\nA${i + 1}: ${
         )
       })
 
-      const response = await this.callAI(prompt, model)
+      const response = await this.callAI(prompt, model, KEYWORD_DENSITY_OPTIMIZE_SCHEMA)
 
-      // 提取JSON内容
-      const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/) ||
-                       response.match(/```\n([\s\S]*?)\n```/) ||
-                       [null, response]
-
-      let jsonContent = jsonMatch[1] || response
-      jsonContent = jsonContent.trim()
-
-      // 尝试解析JSON
-      const parsedContent = JSON.parse(jsonContent)
+      // 🔧 使用健壮的JSON解析器
+      const parsedContent = robustJSONParseWithValidation<KeywordDensityOptimizeResult>(
+        response,
+        ['optimized_content', 'key_improvements'],
+        {
+          logPrefix: '[SEO Keyword Density]',
+          verbose: false
+        }
+      )
 
       console.log('[SEO Keyword Density] ✅ 优化完成:', {
         改进项数量: parsedContent.key_improvements?.length || 0
@@ -772,109 +920,206 @@ ${request.faq_items.map((item, i) => `Q${i + 1}: ${item.question}\nA${i + 1}: ${
   }
 
   /**
+   * 计算实际关键词密度（精确算法）
+   */
+  private calculateActualDensity(content: string, keyword: string): number {
+    if (!content || !keyword) return 0
+
+    const normalizedContent = content.toLowerCase()
+    const normalizedKeyword = keyword.toLowerCase()
+
+    // 计算总词数
+    const words = content.split(/[\s\p{P}]+/u).filter(w => w.length > 0)
+    const totalWords = words.length
+
+    if (totalWords === 0) return 0
+
+    // 计算关键词出现次数
+    const keywordWords = normalizedKeyword.split(/\s+/)
+    let count = 0
+
+    if (keywordWords.length === 1) {
+      // 单词关键词
+      words.forEach(word => {
+        if (word.toLowerCase() === keywordWords[0]) count++
+      })
+    } else {
+      // 多词关键词(使用正则)
+      const regex = new RegExp(`\\b${normalizedKeyword.replace(/\s+/g, '\\s+')}\\b`, 'gi')
+      const matches = content.match(regex)
+      count = matches ? matches.length : 0
+    }
+
+    const density = (count / totalWords) * 100
+    return Math.round(density * 10) / 10
+  }
+
+  /**
    * AI 内容优化 - 在线版本（一键优化）
-   * 使用 APICore 调用大模型进行内容优化
+   * ✅ v2.1: 增加密度验证和自动重试机制
    */
   async optimizeSEOContent(
     request: SEOOptimizeRequest,
     model: 'claude' | 'gpt' | 'gemini' = 'claude'
   ): Promise<SEOOptimizeResult> {
     const languageName = this.getLanguageName(request.language || 'en')
-    const recommendations = request.seo_recommendations || []
+    const MAX_RETRIES = 2 // 最多重试2次
+    let attempt = 0
+    let lastDensity = 0
 
-    const prompt = `你是一位拥有10年经验的资深 SEO 专家和内容创作大师。
+    while (attempt < MAX_RETRIES) {
+      attempt++
 
-⚠️ CRITICAL LANGUAGE REQUIREMENT - 语言一致性要求（最重要！）
-目标语言: ${languageName} (${request.language})
+      console.log(`[SEO AI Optimize] 第${attempt}次尝试优化...`)
 
-**这是最关键的要求，必须严格遵守：**
-1. ALL content MUST be written ENTIRELY in ${languageName}
-2. 所有优化后的内容必须 100% 使用 ${languageName}
-3. DO NOT mix any other languages - 绝对不能混用其他语言
-
-## 当前状态分析
-
-**当前评分**: ${request.seo_score}/100分
-
-**主要问题和改进建议**:
-${recommendations.map((rec, i) => `${i + 1}. ${rec}`).join('\n')}
-
----
-
-## 优化任务
-
-请对内容进行全面优化：
-
-1. **Meta 标题优化** (必须 ${languageName}, 55-60字符, 主关键词前置)
-2. **Meta 描述优化** (必须 ${languageName}, 150-155字符, 包含CTA)
-3. **Meta 关键词优化** (必须 ${languageName}, 5-8个关键词)
-4. **引言优化** (必须 ${languageName}, 100-150字, 第一句话吸引注意力)
-5. **正文内容优化** (必须 ${languageName}, 1500-2000字, Markdown格式, 清晰结构)
-   - **⚠️ 长尾关键词密度优化（最高优先级）**：
-     * **逐个检查每个长尾关键词**：${(request.long_tail_keywords || []).join(', ')}
-     * 确保每个长尾关键词至少出现2-3次
-     * 主关键词密度：2-3%
-     * 每个长尾关键词密度：1-2%（至少出现2-3次）
-     * 在Introduction、How to Use、Best Practices、Troubleshooting、Creative Ideas、Conclusion等各部分自然融入
-     * 避免关键词堆砌，要在完整句子中自然使用
-6. **FAQ 优化** (必须 ${languageName}, 5-7个问题, 每个回答80-150字)
-   - **在问题和答案中自然融入长尾关键词**，特别是那些在正文中密度不足的关键词
-7. **次要关键词优化** (必须 ${languageName}, 5-8个相关关键词)
-
-## 输出格式
-
-\`\`\`json
-{
-  "optimized_content": {
-    "meta_title": "优化后的Meta标题（55-60字符，${languageName}）",
-    "meta_description": "优化后的Meta描述（150-155字符，${languageName}）",
-    "meta_keywords": "关键词1, 关键词2, 关键词3（${languageName}）",
-    "guide_intro": "优化后的引言（100-150字，${languageName}）",
-    "guide_content": "优化后的完整Markdown正文（1500-2000字，${languageName}）",
-    "faq_items": [
-      {"question": "问题1（${languageName}）", "answer": "回答1（80-150字，${languageName}）"}
-    ],
-    "secondary_keywords": ["关键词1", "关键词2"（${languageName}）]
-  },
-  "optimization_summary": "本次优化的核心改进点和策略（100-150字）",
-  "key_improvements": [
-    "改进点1：具体说明",
-    "改进点2：具体说明"
-  ]
-}
-\`\`\`
-
-⚠️ 记住：100% ${languageName}！请只返回 JSON，不要添加任何其他说明文字。`
-
-    try {
-      console.log('[SEO AI Optimize] 开始在线AI优化...')
-      const response = await this.callAI(prompt, model)
-
-      // 提取JSON内容
-      const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/) ||
-                       response.match(/```\n([\s\S]*?)\n```/) ||
-                       [null, response]
-
-      let jsonContent = jsonMatch[1] || response
-      jsonContent = jsonContent.trim()
-
-      // 尝试解析JSON
-      const parsedContent = JSON.parse(jsonContent)
-
-      console.log('[SEO AI Optimize] 优化完成:', {
-        improvements: parsedContent.key_improvements?.length || 0
+      // ✅ 使用统一的提示词配置（从数据库加载）
+      const prompt = await buildOptimizePrompt({
+        languageName,
+        languageCode: request.language || 'en',
+        currentScore: request.seo_score || 0,
+        metaTitle: request.meta_title || '',
+        metaDescription: request.meta_description || '',
+        metaKeywords: request.meta_keywords || '',
+        targetKeyword: request.target_keyword || '',
+        longTailKeywords: request.long_tail_keywords || [],
+        secondaryKeywords: request.secondary_keywords || [],
+        guideIntro: request.guide_intro || '',
+        guideContent: request.guide_content || '',
+        faqItems: request.faq_items || [],
+        recommendations: request.seo_recommendations || []
       })
 
-      return parsedContent as SEOOptimizeResult
-    } catch (error) {
-      console.error('[SEO AI Optimize] 优化失败:', error)
-      throw new Error('AI优化失败，请检查API配置或重试')
+      try {
+        const response = await this.callAI(prompt, model, SEO_OPTIMIZE_JSON_SCHEMA)
+
+        // 🔧 使用健壮的JSON解析器
+        const parsedContent = robustJSONParseWithValidation<SEOOptimizeResult>(
+          response,
+          ['optimized_content', 'optimization_summary', 'key_improvements'],
+          {
+            logPrefix: '[SEO AI Optimize]',
+            verbose: false
+          }
+        )
+
+        // ========== v2.1 新增: 验证优化结果的密度 ==========
+        const optimizedContent = parsedContent.optimized_content
+        if (!optimizedContent || !optimizedContent.guide_content) {
+          throw new Error('优化结果缺少必要字段')
+        }
+
+        // 拼接完整可索引内容计算密度（SEO标准：包含Meta+正文+FAQ）
+        const faqText = optimizedContent.faq_items
+          ? optimizedContent.faq_items.map((item: any) => `${item.question} ${item.answer}`).join(' ')
+          : ''
+
+        const fullContent = [
+          optimizedContent.meta_title || '',      // ✅ Meta标题（最重要的SEO位置）
+          optimizedContent.meta_description || '', // ✅ Meta描述（显示在搜索结果）
+          optimizedContent.guide_intro || '',      // ✅ 引言
+          optimizedContent.guide_content || '',    // ✅ 正文
+          faqText                                  // ✅ FAQ（可显示为富摘要）
+        ].filter(Boolean).join('\n\n')
+
+        const actualDensity = this.calculateActualDensity(
+          fullContent,
+          request.target_keyword || ''
+        )
+
+        lastDensity = actualDensity
+
+        console.log(`[SEO AI Optimize] 第${attempt}次尝试结果:`, {
+          实际密度: `${actualDensity}%`,
+          目标范围: '1.5-3.5%',
+          improvements: parsedContent.key_improvements?.length || 0
+        })
+
+        // 密度检查（调整为1.5-3.5%，因为现在包含了所有可索引内容）
+        if (actualDensity >= 1.5 && actualDensity <= 3.5) {
+          console.log(`✅ 密度合格(${actualDensity}%), 接受结果`)
+
+          // 在返回结果中增加实际密度信息
+          if (!parsedContent.keyword_density_verification) {
+            parsedContent.keyword_density_verification = {} as any
+          }
+
+          parsedContent.keyword_density_verification = {
+            ...parsedContent.keyword_density_verification,
+            actual_density: `${actualDensity}%`,
+            density_status: 'optimal',
+            attempts: attempt
+          }
+
+          return parsedContent
+        }
+
+        // 密度不合格
+        if (attempt === MAX_RETRIES) {
+          console.warn(`⚠️ 已达最大重试次数(${MAX_RETRIES}), 密度仍为${actualDensity}%, 接受当前结果`)
+
+          if (!parsedContent.keyword_density_verification) {
+            parsedContent.keyword_density_verification = {} as any
+          }
+
+          parsedContent.keyword_density_verification = {
+            ...parsedContent.keyword_density_verification,
+            actual_density: `${actualDensity}%`,
+            density_status: actualDensity < 1.5 ? 'too_low' : 'too_high',
+            attempts: attempt,
+            warning: `密度${actualDensity}%不在理想范围(1.5-3.5%)`
+          }
+
+          return parsedContent
+        }
+
+        // 准备重试
+        const densityIssue = actualDensity < 1.5 ? '过低' : '过高'
+        console.log(`⚠️ 密度${densityIssue}(${actualDensity}%), 准备第${attempt + 1}次尝试...`)
+
+        // 为下次尝试添加特殊指导
+        if (actualDensity < 1.5) {
+          // 密度过低,需要增加关键词
+          request.seo_recommendations = [
+            `🚨 上次优化失败: 全局关键词密度太低(${actualDensity}%, 包含Meta+正文+FAQ)`,
+            '⚠️ 这次必须按照任务清单逐项执行,不要省略任何任务',
+            '⚠️ 特别注意在Meta标题、Meta描述、FAQ中插入关键词',
+            '⚠️ 如果不确定,宁可多插入也不要少插入',
+            ...(request.seo_recommendations || [])
+          ]
+        } else {
+          // 密度过高,需要用语义变体替换部分精确匹配
+          request.seo_recommendations = [
+            `🚨 上次优化失败: 全局关键词密度太高(${actualDensity}%, 包含Meta+正文+FAQ)`,
+            '⚠️ 用语义变体替换部分精确匹配的关键词',
+            '⚠️ 不要删除关键词,要用同义词替换',
+            '⚠️ 保持60%精确匹配 + 40%语义变体的比例',
+            ...(request.seo_recommendations || [])
+          ]
+        }
+
+        // 继续下一次循环
+        continue
+
+      } catch (error) {
+        console.error(`[SEO AI Optimize] 第${attempt}次尝试失败:`, error)
+
+        if (attempt === MAX_RETRIES) {
+          throw new Error('AI优化失败，请检查API配置或重试')
+        }
+
+        // 继续下一次尝试
+        continue
+      }
     }
+
+    // 理论上不会到这里,但为了类型安全
+    throw new Error('优化失败: 超出最大重试次数')
   }
 
   /**
    * AI 智能评分 - 本地版本
    * 通过本地 3030 端口服务调用 Claude Code CLI
+   * ✅ 使用通用 /call-ai 端点,提示词由前端构建传递
    */
   private async calculateSEOScoreLocal(data: SEOGuideData): Promise<SEOScoreResult> {
     console.log('[SEO AI Score] 使用本地 Claude Code CLI 评分...')
@@ -884,49 +1129,174 @@ ${recommendations.map((rec, i) => `${i + 1}. ${rec}`).join('\n')}
       const fullContent = extractFullContent(data)
 
       // 收集所有关键词
-      const allKeywords = [
-        ...(data.target_keyword ? [data.target_keyword] : []),
-        ...(data.long_tail_keywords || []),
-        ...(data.secondary_keywords || [])
-      ].filter(Boolean)
+      // 仅计算目标关键词密度（单关键词优化策略）
+      const allKeywords = data.target_keyword ? [data.target_keyword] : []
 
       // 计算关键词密度
       const keywordDensity = calculateKeywordDensity(fullContent, allKeywords)
 
-      // 调用本地 3030 端口服务
-      const response = await fetch('http://localhost:3030/calculate-seo-score', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...data,
-          keyword_density: keywordDensity
-        })
+      // ✅ 使用统一的提示词配置,从数据库读取
+      const languageName = this.getLanguageName(data.language || 'en')
+      const prompt = await buildSEOScorePrompt({
+        languageName,
+        languageCode: data.language || 'en',
+        targetKeyword: data.target_keyword || '',
+        metaTitle: data.meta_title || '',
+        metaDescription: data.meta_description || '',
+        metaKeywords: data.meta_keywords || '',
+        longTailKeywords: data.long_tail_keywords || [],
+        keywordDensity: keywordDensity,
+        guideIntro: data.guide_intro || '',
+        guideContent: data.guide_content || '',
+        faqItems: data.faq_items || [],
+        pageViews: data.page_views,
+        avgTimeOnPage: data.avg_time_on_page,
+        bounceRate: data.bounce_rate,
+        conversionRate: data.conversion_rate
       })
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || `本地服务返回错误: ${response.status}`)
+      console.log('[SEO AI Score] 提示词已构建,长度:', prompt.length)
+
+      // 调用通用 /call-ai 端点
+      const aiResponse = await this.callLocalAI(prompt)
+
+      // 🔧 使用健壮的JSON解析器，自动处理各种格式
+      console.log('[SEO AI Score] 开始解析AI响应 (使用 robustJSONParser)...')
+      const result = robustJSONParseWithValidation(
+        aiResponse,
+        ['overall_score', 'dimension_scores', 'actionable_recommendations'],
+        {
+          logPrefix: '[SEO AI Score]',
+          verbose: true
+        }
+      )
+      console.log('[SEO AI Score] ✅ JSON解析和验证成功')
+
+      // 🔧 字段名标准化（兼容 total_score/overall_score）
+      if ('total_score' in result && !('overall_score' in result)) {
+        console.log('[SEO AI Score] 检测到 total_score 字段，转换为 overall_score')
+        result.overall_score = result.total_score
       }
 
-      const result = await response.json()
+      // 🔄 适配新的AI响应格式
+      // 新格式: {overall_score, dimension_scores: {meta_info_quality, keyword_optimization, content_quality, readability}, suggestions}
+      // 旧格式: {content_quality_score, keyword_optimization_score, readability_score, recommendations}
 
-      if (!result.success || !result.data) {
-        throw new Error('本地服务返回数据格式错误')
+      let metaInfoScore: number | undefined
+      let contentQualityScore: number
+      let keywordOptimizationScore: number
+      let readabilityScore: number
+      let uxScore: number
+      let recommendations: any[]
+
+      if (result.dimension_scores) {
+        // ✅ 新格式 (从数据库提示词模板) - 5个AI维度
+        console.log('[SEO AI Score] 检测到新格式响应 (dimension_scores)')
+
+        // 支持两种字段名: meta_quality (v2.0提示词) 或 meta_info_quality (旧版)
+        metaInfoScore = result.dimension_scores.meta_quality || result.dimension_scores.meta_info_quality || 0
+        contentQualityScore = result.dimension_scores.content_quality || 0
+        keywordOptimizationScore = result.dimension_scores.keyword_optimization || 0
+        readabilityScore = result.dimension_scores.readability || 0
+        uxScore = result.dimension_scores.ux || 0
+
+        // 转换suggestions对象数组为字符串数组
+        // 支持两种字段名: actionable_recommendations (v2.0) 或 suggestions (旧版)
+        const rawSuggestions = result.actionable_recommendations || result.suggestions || []
+        console.log('[SEO AI Score] 原始suggestions类型:', typeof rawSuggestions[0], '数量:', rawSuggestions.length)
+        if (rawSuggestions.length > 0) {
+          console.log('[SEO AI Score] 第一个suggestion:', rawSuggestions[0])
+        }
+
+        recommendations = rawSuggestions.map((sug: any) => {
+          if (typeof sug === 'string') {
+            console.log('[SEO AI Score] 发现字符串格式建议 (v2.0格式或旧格式)')
+            return sug
+          }
+          // 旧对象格式: {category, issue, suggestion, priority, expected_impact}
+          const formatted = `【${sug.category}】${sug.issue}\n建议: ${sug.suggestion}\n预期效果: ${sug.expected_impact || '提升SEO分数'}`
+          console.log('[SEO AI Score] 转换对象为字符串:', formatted.substring(0, 100))
+          return formatted
+        })
+
+        console.log('[SEO AI Score] 转换后recommendations类型:', typeof recommendations[0])
+
+        console.log('[SEO AI Score] 新版5维度评分:', {
+          meta_info_quality: metaInfoScore,
+          content_quality: contentQualityScore,
+          keyword_optimization: keywordOptimizationScore,
+          readability: readabilityScore,
+          ux: uxScore
+        })
+      } else {
+        // ⚠️ 旧格式 (兼容性处理) - 3个AI维度
+        console.log('[SEO AI Score] 检测到旧格式响应 (直接字段)')
+        metaInfoScore = undefined // 旧格式没有这个字段
+        contentQualityScore = result.content_quality_score || 0
+        keywordOptimizationScore = result.keyword_optimization_score || 0
+        readabilityScore = result.readability_score || 0
+        uxScore = 0 // 旧格式没有这个字段
+        recommendations = result.recommendations || []
+      }
+
+      // 验证必需字段
+      if (
+        typeof contentQualityScore !== 'number' ||
+        typeof keywordOptimizationScore !== 'number' ||
+        typeof readabilityScore !== 'number' ||
+        typeof uxScore !== 'number'
+      ) {
+        console.error('[SEO AI Score] AI 返回格式不正确:', result)
+        throw new Error('AI 返回的评分格式不正确')
+      }
+
+      // ✅ v2.0 标准: 100分制 (Meta20 + Content30 + Keyword20 + Readability20 + UX10)
+      // 限制最大值防止AI超出范围
+      const cappedMetaInfoScore = metaInfoScore ? Math.min(metaInfoScore, 20) : 0
+      const cappedContentScore = Math.min(contentQualityScore, 30)
+      const cappedKeywordScore = Math.min(keywordOptimizationScore, 20)
+      const cappedReadabilityScore = Math.min(readabilityScore, 20)
+      const cappedUxScore = Math.min(uxScore, 10)
+
+      const totalScore = cappedMetaInfoScore + cappedContentScore + cappedKeywordScore + cappedReadabilityScore + cappedUxScore
+
+      console.log('[SEO AI Score] AI原始评分（含上限限制）:', {
+        原始: {
+          meta_quality: metaInfoScore,
+          content: contentQualityScore,
+          keyword: keywordOptimizationScore,
+          readability: readabilityScore,
+          ux: uxScore
+        },
+        限制后: {
+          meta_quality: cappedMetaInfoScore,
+          content: cappedContentScore,
+          keyword: cappedKeywordScore,
+          readability: cappedReadabilityScore,
+          ux: cappedUxScore
+        },
+        总分: totalScore
+      })
+
+      const scoreResult: SEOScoreResult = {
+        total_score: totalScore,
+        meta_info_quality_score: cappedMetaInfoScore, // v2.0: 最大20分
+        content_quality_score: cappedContentScore, // v2.0: 最大30分
+        keyword_optimization_score: cappedKeywordScore, // v2.0: 最大20分
+        readability_score: cappedReadabilityScore, // v2.0: 最大20分
+        ux_score: cappedUxScore, // v2.0: 最大10分
+        keyword_density: keywordDensity,
+        recommendations: recommendations
       }
 
       console.log('[SEO AI Score] 本地评分完成:', {
-        total: result.data.total_score,
-        recommendations: result.data.recommendations?.length || 0
+        total: scoreResult.total_score,
+        recommendations: scoreResult.recommendations.length
       })
 
-      return result.data as SEOScoreResult
+      return scoreResult
 
     } catch (error) {
-      if (error instanceof Error && error.message.includes('Failed to fetch')) {
-        throw new Error('无法连接到本地服务器 (http://localhost:3030)。\n请确保:\n1. 已运行 npm run seo:server 启动本地服务\n2. 本地服务器正在 3030 端口运行\n3. 没有防火墙阻止连接')
-      }
       console.error('[SEO AI Score] 本地评分失败:', error)
       throw error
     }

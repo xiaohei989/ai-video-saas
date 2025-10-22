@@ -17,7 +17,7 @@ import { createClient } from '@supabase/supabase-js'
 import { readFileSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
-import { buildSEOScorePrompt } from './seoPrompts.js'
+import { buildSEOScorePrompt, buildOptimizePrompt } from './seoPrompts.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -147,15 +147,25 @@ function extractFullContent(data) {
 /**
  * 调用 Claude Code CLI
  * @param {string} prompt - 提示词
- * @param {number} timeout - 超时时间（毫秒），默认180000（3分钟）
+ * @param {number} timeout - 超时时间（毫秒），默认300000（5分钟）
  */
-async function callClaudeCLI(prompt, timeout = 180000) {
+async function callClaudeCLI(prompt, timeout = 300000) {
   return new Promise((resolve, reject) => {
     const timeoutMinutes = Math.round(timeout / 60000)
     console.log(`🤖 调用 Claude Code CLI（超时：${timeoutMinutes}分钟）...`)
 
+    // 🔧 上下文隔离: 在提示词前添加明确指令，避免继承当前会话上下文
+    const isolatedPrompt = `<SYSTEM_RESET>
+You are starting a COMPLETELY NEW conversation. IGNORE ALL previous messages and context.
+
+This is a standalone task with NO relation to any prior discussion.
+
+</SYSTEM_RESET>
+
+${prompt}`
+
     // 使用 --output-format json 强制JSON输出 (必须配合-p使用)
-    const claude = spawn('claude', ['-p', '--output-format=json', prompt], {
+    const claude = spawn('claude', ['-p', '--output-format=json', isolatedPrompt], {
       stdio: ['inherit', 'pipe', 'pipe']
     })
 
@@ -191,7 +201,98 @@ async function callClaudeCLI(prompt, timeout = 180000) {
       if (code !== 0) {
         reject(new Error(`Claude CLI 退出码: ${code}\nError: ${errorOutput}`))
       } else {
-        resolve(output)
+        // 🔧 解析 --output-format json 的包装格式
+        try {
+          const wrapper = JSON.parse(output)
+          if (wrapper.type === 'result' && wrapper.result) {
+            console.log('✅ 提取Claude CLI JSON包装格式的result字段')
+            resolve(wrapper.result) // 返回AI的实际输出
+          } else {
+            resolve(output)
+          }
+        } catch (e) {
+          // 不是JSON包装，原样返回
+          resolve(output)
+        }
+      }
+    })
+
+    claude.on('error', (error) => {
+      clearInterval(timeoutCheck)
+      reject(new Error(`无法启动 Claude CLI: ${error.message}\n请确保已安装 Claude Code CLI`))
+    })
+  })
+}
+
+/**
+ * 调用 Claude Code CLI 获取纯文本响应（用于评分等任务）
+ * 不使用 --output-format json,返回AI的原始文本输出
+ */
+async function callClaudeCLIRaw(prompt, timeout = 300000) {
+  return new Promise((resolve, reject) => {
+    const timeoutMinutes = Math.round(timeout / 60000)
+    console.log(`🤖 调用 Claude Code CLI (raw mode)（超时：${timeoutMinutes}分钟）...`)
+
+    // 🔧 上下文隔离: 在提示词前添加明确指令，避免继承当前会话上下文
+    const isolatedPrompt = `<SYSTEM_RESET>
+You are starting a COMPLETELY NEW conversation. IGNORE ALL previous messages and context.
+
+This is a standalone task with NO relation to any prior discussion.
+
+</SYSTEM_RESET>
+
+${prompt}`
+
+    // 不使用 --output-format json,获取原始AI文本响应
+    const claude = spawn('claude', ['-p', isolatedPrompt], {
+      stdio: ['inherit', 'pipe', 'pipe']
+    })
+
+    let output = ''
+    let errorOutput = ''
+    let lastOutputTime = Date.now()
+
+    // 超时检测
+    const timeoutCheck = setInterval(() => {
+      const now = Date.now()
+      if (now - lastOutputTime > timeout) {
+        clearInterval(timeoutCheck)
+        claude.kill()
+        reject(new Error(`Claude CLI 超时（${timeoutMinutes}分钟无响应）`))
+      }
+    }, 10000) // 每10秒检查一次
+
+    claude.stdout.on('data', (data) => {
+      output += data.toString()
+      lastOutputTime = Date.now()
+      // 实时输出进度
+      process.stdout.write('.')
+    })
+
+    claude.stderr.on('data', (data) => {
+      errorOutput += data.toString()
+      lastOutputTime = Date.now()
+    })
+
+    claude.on('close', (code) => {
+      clearInterval(timeoutCheck)
+      console.log('') // 换行
+      if (code !== 0) {
+        reject(new Error(`Claude CLI 退出码: ${code}\nError: ${errorOutput}`))
+      } else {
+        // 🔧 解析 --output-format json 的包装格式
+        try {
+          const wrapper = JSON.parse(output)
+          if (wrapper.type === 'result' && wrapper.result) {
+            console.log('✅ 提取Claude CLI JSON包装格式的result字段 (Raw)')
+            resolve(wrapper.result) // 返回AI的实际输出
+          } else {
+            resolve(output)
+          }
+        } catch (e) {
+          // 不是JSON包装，原样返回
+          resolve(output)
+        }
       }
     })
 
@@ -291,49 +392,170 @@ function parseClaudeOutput(output) {
     if (wrapper.type === 'result' && wrapper.result) {
       console.log('   策略0: 检测到 Claude CLI JSON 包装格式,提取 result 字段')
       output = wrapper.result
+      console.log(`   提取后输出长度: ${output.length} 字符`)
       console.log(`   提取后输出开头: ${output.substring(0, 200).replace(/\n/g, '\\n')}`)
+
+      // 🔧 如果提取的 result 已经是 JSON 对象,直接返回
+      if (typeof output === 'object') {
+        console.log('   ✅ result 已是 JSON 对象,直接返回')
+        return output
+      }
     }
   } catch (e) {
     // 不是JSON包装格式,继续使用原输出
+    console.log('   策略0跳过: 不是JSON包装格式')
   }
 
-  // 策略1: 尝试匹配代码块中的JSON
-  let jsonMatch = output.match(/```json\n([\s\S]*?)\n```/)
+  // 策略1: 优先直接解析整个输出（如果输出本身就是JSON）
+  try {
+    const trimmed = output.trim()
+    if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+      console.log('   策略1: 检测到输出是纯JSON，直接解析...')
+      const parsed = JSON.parse(trimmed)
+      console.log('   ✅ 策略1成功: 直接解析完成')
+      return parsed
+    }
+  } catch (e) {
+    console.log(`   策略1失败: ${e.message}，继续尝试其他策略...`)
+  }
+
+  // 策略2: 优先尝试匹配 Markdown 代码块中的JSON (最可靠)
+  let jsonMatch = output.match(/```json\s*([\s\S]*?)\s*```/)
   if (jsonMatch) {
-    console.log('   策略1: 找到 ```json 代码块')
+    console.log('   策略2: 找到 ```json 代码块')
     try {
       return JSON.parse(jsonMatch[1].trim())
     } catch (e) {
-      console.log('   策略1解析失败，继续尝试其他策略...')
+      console.log(`   策略2解析失败: ${e.message}，继续尝试其他策略...`)
     }
   }
 
-  // 策略2: 尝试匹配普通代码块
-  jsonMatch = output.match(/```\n([\s\S]*?)\n```/)
+  // 策略3: 尝试匹配普通代码块 (无json标记)
+  jsonMatch = output.match(/```\s*([\s\S]*?)\s*```/)
   if (jsonMatch) {
-    console.log('   策略2: 找到 ``` 代码块')
+    console.log('   策略3: 找到 ``` 代码块')
     try {
       return JSON.parse(jsonMatch[1].trim())
     } catch (e) {
-      console.log('   策略2解析失败，继续尝试其他策略...')
+      console.log(`   策略3解析失败: ${e.message}，继续尝试其他策略...`)
     }
   }
 
-  // 策略3: 查找第一个 { 到最后一个 } (最激进的方法)
+  // 如果代码块提取失败，尝试清理说明文字后再解析
+  console.log('   代码块提取失败，尝试清理说明文字...')
+
+  const explanationPatterns = [
+    // Markdown 标题格式（最常见！）
+    /^[\s\S]*?##\s*[📊✅🎯💡🔍]\s*[\s\S]*?(?=\{)/,  // "## 📊 分析完成" / "## ✅ 评分完成"
+    /^[\s\S]*?###\s*[\s\S]*?(?=\{)/,                 // "### 标题"
+    /^[\s\S]*?##\s+[\w\s]+\n[\s\S]*?(?=\{)/,         // "## 任意标题\n..."
+
+    // 中文说明文字
+    /^[\s\S]*?我已经完成[\s\S]*?(?=\{)/,   // "我已经完成了深度的SEO分析"
+    /^[\s\S]*?我已完成[\s\S]*?(?=\{)/,     // "我已完成..."
+    /^[\s\S]*?我注意到[\s\S]*?(?=\{)/,     // "我注意到..."
+    /^[\s\S]*?已完成生成[\s\S]*?(?=\{)/,   // "已完成生成..."
+    /^[\s\S]*?这是生成的[\s\S]*?(?=\{)/,   // "这是生成的..."
+    /^[\s\S]*?以下是[\s\S]*?(?=\{)/,       // "以下是..."
+    /^[\s\S]*?我已经[\s\S]*?(?=\{)/,       // "我已经..."
+    /^[\s\S]*?根据您的[\s\S]*?(?=\{)/,     // "根据您的..."
+    /^[\s\S]*?分析完成[\s\S]*?(?=\{)/,     // "分析完成"
+    /^[\s\S]*?评分完成[\s\S]*?(?=\{)/,     // "评分完成"
+    /^[\s\S]*?\*\*总分[:：][\s\S]*?(?=\{)/, // "**总分：83/100**"
+
+    // 英文说明文字
+    /^[\s\S]*?I have completed[\s\S]*?(?=\{)/,  // "I have completed..."
+    /^[\s\S]*?Here is the[\s\S]*?(?=\{)/,       // "Here is the..."
+    /^[\s\S]*?Analysis complete[\s\S]*?(?=\{)/  // "Analysis complete..."
+  ]
+
+  let cleanedOutput = output
+  for (const pattern of explanationPatterns) {
+    if (pattern.test(cleanedOutput)) {
+      console.log(`   检测到说明文字,正在移除...`)
+      cleanedOutput = cleanedOutput.replace(pattern, '')
+      console.log(`   清理后开头: ${cleanedOutput.substring(0, 100).replace(/\n/g, '\\n')}`)
+      break
+    }
+  }
+
+  output = cleanedOutput
+
+  // 策略4: 查找第一个 { 到最后一个 } (最激进的方法)
   const firstBrace = output.indexOf('{')
   const lastBrace = output.lastIndexOf('}')
 
   if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-    console.log(`   策略3: 提取 JSON 对象 (位置 ${firstBrace} 到 ${lastBrace})`)
+    console.log(`   策略4: 提取 JSON 对象 (位置 ${firstBrace} 到 ${lastBrace})`)
     const jsonContent = output.substring(firstBrace, lastBrace + 1)
 
     try {
-      return JSON.parse(jsonContent)
+      const parsed = JSON.parse(jsonContent)
+      console.log('   ✅ 策略4成功: JSON解析完成')
+      return parsed
     } catch (error) {
       // 如果直接解析失败，尝试清理内容
-      console.log('   策略3失败，尝试清理后再解析...')
+      console.log('   策略4失败，尝试清理后再解析...')
       console.log(`   JSON解析错误: ${error.message}`)
-      console.log(`   提取内容的开头: ${jsonContent.substring(0, 200)}`)
+      console.log(`   错误位置: ${error.message.match(/position (\d+)/) ? error.message.match(/position (\d+)/)[1] : '未知'}`)
+      console.log(`   提取内容长度: ${jsonContent.length}`)
+      console.log(`   提取内容的开头: ${jsonContent.substring(0, 300)}`)
+
+      // 🔧 策略4.1: 尝试逐字符找到合法的JSON结束位置
+      // 有时AI会在JSON后面添加说明文字,我们需要精确找到JSON的真实结束位置
+      let validJsonEnd = -1
+      let braceCount = 0
+      let bracketCount = 0
+      let inString = false
+      let escapeNext = false
+
+      for (let i = 0; i < jsonContent.length; i++) {
+        const char = jsonContent[i]
+
+        if (escapeNext) {
+          escapeNext = false
+          continue
+        }
+
+        if (char === '\\') {
+          escapeNext = true
+          continue
+        }
+
+        if (char === '"' && !escapeNext) {
+          inString = !inString
+          continue
+        }
+
+        if (!inString) {
+          if (char === '{') {
+            braceCount++
+          } else if (char === '}') {
+            braceCount--
+            if (braceCount === 0 && bracketCount === 0) {
+              // 找到完整的JSON对象结束位置（所有括号都闭合）
+              validJsonEnd = i + 1
+              break
+            }
+          } else if (char === '[') {
+            bracketCount++
+          } else if (char === ']') {
+            bracketCount--
+          }
+        }
+      }
+
+      if (validJsonEnd > 0 && validJsonEnd < jsonContent.length) {
+        const trimmedJson = jsonContent.substring(0, validJsonEnd)
+        console.log(`   策略4.1: 截取到有效JSON结束位置 (${validJsonEnd}字符)`)
+        console.log(`   丢弃的内容: ${jsonContent.substring(validJsonEnd, Math.min(validJsonEnd + 100, jsonContent.length))}`)
+
+        try {
+          return JSON.parse(trimmedJson)
+        } catch (thirdError) {
+          console.log(`   策略4.1失败: ${thirdError.message}`)
+        }
+      }
 
       // 移除Markdown标题和说明文字
       const lines = jsonContent.split('\n')
@@ -362,8 +584,8 @@ function parseClaudeOutput(output) {
     }
   }
 
-  // 策略4: 尝试直接解析整个输出（最后的fallback）
-  console.log('   策略4: 尝试直接解析整个输出')
+  // 策略5: 尝试直接解析整个输出（最后的fallback）
+  console.log('   策略5: 尝试直接解析整个输出')
   try {
     return JSON.parse(output.trim())
   } catch (error) {
@@ -373,282 +595,6 @@ function parseClaudeOutput(output) {
     console.error('原始输出（最后200字符）:', output.substring(Math.max(0, output.length - 200)))
     throw new Error(`无法解析 Claude 输出的 JSON: ${error.message}`)
   }
-}
-
-/**
- * 将建议分类到不同优化步骤
- */
-function categorizeRecommendations(recommendations) {
-  const categories = {
-    meta: [],      // Meta信息相关
-    intro: [],     // 引言相关
-    content: [],   // 正文内容相关
-    faq: []        // FAQ相关
-  }
-
-  recommendations.forEach(rec => {
-    const lowerRec = rec.toLowerCase()
-
-    // Meta信息相关
-    if (lowerRec.includes('meta') ||
-        lowerRec.includes('标题') ||
-        lowerRec.includes('title') ||
-        lowerRec.includes('描述') ||
-        lowerRec.includes('description') ||
-        lowerRec.includes('关键词') ||
-        lowerRec.includes('keyword')) {
-      categories.meta.push(rec)
-    }
-    // 引言相关
-    else if (lowerRec.includes('引言') ||
-             lowerRec.includes('intro') ||
-             lowerRec.includes('introduction') ||
-             lowerRec.includes('开头') ||
-             lowerRec.includes('第一段')) {
-      categories.intro.push(rec)
-    }
-    // FAQ相关
-    else if (lowerRec.includes('faq') ||
-             lowerRec.includes('问题') ||
-             lowerRec.includes('question') ||
-             lowerRec.includes('回答') ||
-             lowerRec.includes('answer')) {
-      categories.faq.push(rec)
-    }
-    // 其他归入正文内容
-    else {
-      categories.content.push(rec)
-    }
-  })
-
-  return categories
-}
-
-/**
- * 构建步骤1：Meta信息优化提示词
- */
-function buildStep1Prompt(requestBody, languageName, relatedRecommendations) {
-  const recText = relatedRecommendations.length > 0
-    ? relatedRecommendations.map((rec, i) => `${i + 1}. ${rec}`).join('\n')
-    : '暂无针对Meta信息的具体建议，请全面优化。'
-
-  return `你是SEO专家。优化Meta信息（标题、描述、关键词）。
-
-⚠️ 语言：ALL content MUST be 100% ${languageName}!
-
-## 当前Meta信息
-**Meta标题** (${(requestBody.meta_title || '').length}字符): ${requestBody.meta_title || '未提供'}
-**Meta描述** (${(requestBody.meta_description || '').length}字符): ${requestBody.meta_description || '未提供'}
-**Meta关键词**: ${requestBody.meta_keywords || '未提供'}
-
-**关键词策略**:
-- 目标关键词: ${requestBody.target_keyword}
-- 长尾关键词: ${(requestBody.long_tail_keywords || []).join(', ')}
-- 次要关键词: ${(requestBody.secondary_keywords || []).join(', ')}
-
-## 必须解决的问题（来自AI评分）
-${recText}
-
-⚠️ 你的优化必须**直接解决**上述每条建议！
-
-## 优化要求
-1. Meta标题：55-60字符，主关键词前置，吸引点击
-2. Meta描述：150-155字符，包含CTA，自然融入1-2个关键词
-3. Meta关键词：5-8个，逗号分隔
-4. 次要关键词：5-8个，语义相关
-
-## 输出格式（JSON）
-\`\`\`json
-{
-  "optimized_content": {
-    "meta_title": "优化后标题(${languageName})",
-    "meta_description": "优化后描述(${languageName})",
-    "meta_keywords": "关键词1, 关键词2(${languageName})",
-    "secondary_keywords": ["词1", "词2"(${languageName})]
-  },
-  "key_improvements": [
-    "解决建议1: 具体说明如何解决",
-    "解决建议2: 具体说明如何解决"
-  ]
-}
-\`\`\`
-
-只返回JSON，100% ${languageName}！`
-}
-
-/**
- * 构建步骤2：引言优化提示词
- */
-function buildStep2Prompt(requestBody, languageName, relatedRecommendations) {
-  const recText = relatedRecommendations.length > 0
-    ? relatedRecommendations.map((rec, i) => `${i + 1}. ${rec}`).join('\n')
-    : '暂无针对引言的具体建议，请全面优化。'
-
-  return `你是SEO专家。优化引言部分。
-
-⚠️ 语言：ALL content MUST be 100% ${languageName}!
-
-## 当前引言 (${(requestBody.guide_intro || '').length}字符)
-${requestBody.guide_intro || '未提供'}
-
-**目标关键词**: ${requestBody.target_keyword}
-
-## 必须解决的问题
-${recText}
-
-⚠️ 你的优化必须**直接解决**上述每条建议！
-
-## 优化要求
-1. 长度：100-150字
-2. 第一句吸引注意力
-3. 明确说明指南价值
-4. 自然融入主关键词
-5. 语言：100% ${languageName}
-
-## 输出格式（JSON）
-\`\`\`json
-{
-  "optimized_content": {
-    "guide_intro": "优化后的引言(100-150字，${languageName})"
-  },
-  "key_improvements": [
-    "解决建议X: 具体说明"
-  ]
-}
-\`\`\`
-
-只返回JSON，100% ${languageName}！`
-}
-
-/**
- * 构建步骤3：正文内容优化提示词
- */
-function buildStep3Prompt(requestBody, languageName, relatedRecommendations) {
-  const recText = relatedRecommendations.length > 0
-    ? relatedRecommendations.map((rec, i) => `${i + 1}. ${rec}`).join('\n')
-    : '暂无针对正文的具体建议，请全面优化。'
-
-  return `⚠️ CRITICAL: You MUST return ONLY valid JSON. NO explanations, NO text before or after the JSON!
-
-你是SEO专家。优化正文内容（Markdown格式）。
-
-⚠️ 语言：ALL content MUST be 100% ${languageName}!
-
-## 当前正文 (${(requestBody.guide_content || '').length}字符)
-${requestBody.guide_content || '未提供'}
-
-**目标关键词**: ${requestBody.target_keyword}
-**长尾关键词（必须优化）**: ${(requestBody.long_tail_keywords || []).join(', ')}
-
-## 必须解决的问题
-${recText}
-
-⚠️ 你的优化必须**直接解决**上述每条建议！
-
-## ⚠️ 目标关键词密度优化要求（最高优先级）
-
-当前目标关键词密度需要优化到1.5-2.5%的理想范围（最佳：2.0%）！
-
-**必须做到：**
-1. **密度目标**：
-   - 目标关键词：1.5-2.5%（理想值：2.0%）
-   - 自然分布，不要堆砌
-2. **自然融入位置**：
-   - Introduction段落：自然引入目标关键词
-   - How to Use步骤中：在关键步骤中融入目标关键词
-   - Best Practices：结合最佳实践提及目标关键词
-   - Troubleshooting：在问题解决场景中使用目标关键词
-   - Creative Ideas：创意想法中自然包含目标关键词
-   - Conclusion：总结时再次强调目标关键词
-3. **避免堆砌**：每次提及要在完整的句子中自然使用，确保语义通顺
-
-## 其他优化要求
-1. 长度：1500-2000字
-2. Markdown格式，清晰结构（标题用${languageName}）:
-   - # Introduction
-   - ## Key Features (3-5要点)
-   - ## How to Use (5-8步骤)
-   - ## Best Practices (3-5建议)
-   - ## Troubleshooting (2-3场景)
-   - ## Creative Ideas (3-5想法)
-   - ## Conclusion
-3. 段落：100-300字
-4. 加入具体例子和场景
-5. 语言：100% ${languageName}
-
-## ⚠️ CRITICAL OUTPUT REQUIREMENT ⚠️
-You MUST return ONLY this JSON structure, with NO additional text:
-
-\`\`\`json
-{
-  "optimized_content": {
-    "guide_content": "优化后的完整Markdown正文(1500-2000字，${languageName})"
-  },
-  "key_improvements": [
-    "解决建议X: 具体说明如何解决"
-  ]
-}
-\`\`\`
-
-⚠️ DO NOT add any explanations before or after the JSON!
-⚠️ DO NOT say "已完成优化" or any other text!
-⚠️ ONLY return the JSON structure shown above!
-⚠️ Content must be 100% ${languageName}!`
-}
-
-/**
- * 构建步骤4：FAQ优化提示词
- */
-function buildStep4Prompt(requestBody, languageName, relatedRecommendations) {
-  const currentFAQ = (requestBody.faq_items || [])
-    .map((item, i) => `Q${i + 1}: ${item.question}\nA${i + 1}: ${item.answer}`)
-    .join('\n\n')
-
-  const recText = relatedRecommendations.length > 0
-    ? relatedRecommendations.map((rec, i) => `${i + 1}. ${rec}`).join('\n')
-    : '暂无针对FAQ的具体建议，请全面优化。'
-
-  return `你是SEO专家。优化FAQ部分。
-
-⚠️ 语言：ALL content MUST be 100% ${languageName}!
-
-## 当前FAQ (${(requestBody.faq_items || []).length}个问题)
-${currentFAQ || '未提供'}
-
-**长尾关键词**: ${(requestBody.long_tail_keywords || []).join(', ')}
-
-## 必须解决的问题
-${recText}
-
-⚠️ 你的优化必须**直接解决**上述每条建议！
-
-## 优化要求
-1. 提供5-7个高质量问题
-2. 每个问题具体、用户真实关心
-3. 每个回答：80-150字，详细实用
-4. 自然融入长尾关键词
-5. 覆盖不同用户场景
-6. 语言：100% ${languageName}
-
-## 输出格式（JSON）
-\`\`\`json
-{
-  "optimized_content": {
-    "faq_items": [
-      {"question": "问题1(${languageName})", "answer": "回答1(80-150字，${languageName})"},
-      {"question": "问题2(${languageName})", "answer": "回答2(80-150字，${languageName})"},
-      {"question": "问题3(${languageName})", "answer": "回答3(80-150字，${languageName})"},
-      {"question": "问题4(${languageName})", "answer": "回答4(80-150字，${languageName})"},
-      {"question": "问题5(${languageName})", "answer": "回答5(80-150字，${languageName})"}
-    ]
-  },
-  "key_improvements": [
-    "解决建议X: 具体说明"
-  ]
-}
-\`\`\`
-
-只返回JSON，100% ${languageName}！`
 }
 
 /**
@@ -833,6 +779,49 @@ const server = createServer(async (req, res) => {
     return
   }
 
+  // 通用 AI 调用端点 (用于 EEAT 评分等)
+  if (req.url === '/call-ai' && req.method === 'POST') {
+    let body = ''
+
+    req.on('data', chunk => {
+      body += chunk.toString()
+    })
+
+    req.on('end', async () => {
+      try {
+        const { prompt } = JSON.parse(body)
+
+        if (!prompt) {
+          res.writeHead(400, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({
+            success: false,
+            error: 'Missing prompt parameter'
+          }))
+          return
+        }
+
+        console.log(`[/call-ai] 收到通用 AI 调用请求, prompt 长度: ${prompt.length}`)
+
+        // 调用 Claude Code CLI (原始文本模式,不使用JSON包装)
+        const result = await callClaudeCLIRaw(prompt)
+
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({
+          success: true,
+          data: result
+        }))
+      } catch (error) {
+        console.error('[/call-ai] 处理失败:', error)
+        res.writeHead(500, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({
+          success: false,
+          error: error.message
+        }))
+      }
+    })
+    return
+  }
+
   // AI 智能评分
   if (req.url === '/calculate-seo-score' && req.method === 'POST') {
     let body = ''
@@ -853,8 +842,33 @@ const server = createServer(async (req, res) => {
         // 获取目标关键词（兼容 target_keyword 和 primary_keyword）
         const targetKeyword = requestBody.target_keyword || requestBody.primary_keyword || ''
 
-        // ✅ 使用统一的提示词配置
-        const prompt = buildSEOScorePrompt({
+        // 🔧 绝对JSON输出约束（必须放在开头！）
+        const jsonConstraint = `⚠️⚠️⚠️ CRITICAL OUTPUT FORMAT REQUIREMENT (HIGHEST PRIORITY):
+
+你的输出必须是**纯JSON对象**，不能包含任何其他文字！
+
+**ABSOLUTE RULES**:
+1. 输出必须直接以 { 开始，以 } 结束
+2. { 之前和 } 之后不能有任何字符（包括空格、换行、解释文字）
+3. **绝对禁止**在JSON之前或之后添加任何说明，例如:
+   ❌ "我已经完成了深度的SEO分析"
+   ❌ "## ✅ 评分完成"
+   ❌ 任何形式的解释、评论、总结、markdown标题
+4. **绝对禁止**使用markdown代码块:
+   ❌ \`\`\`json ... \`\`\`
+   ❌ \`\`\` ... \`\`\`
+5. 必须是合法的JSON格式，所有字符串正确转义
+
+✅ CORRECT: {"overall_score":85,"dimension_scores":{...},"actionable_recommendations":[...]}
+❌ WRONG: 我已完成分析\\n{"overall_score":85,...}
+❌ WRONG: \`\`\`json\\n{"overall_score":85,...}\\n\`\`\`
+
+---
+
+`
+
+        // ✅ 使用统一的提示词配置（从数据库加载）
+        const prompt = await buildSEOScorePrompt({
           languageName,
           languageCode: targetLanguage,
           targetKeyword,
@@ -873,10 +887,12 @@ const server = createServer(async (req, res) => {
           conversionRate: requestBody.conversion_rate || 0
         })
 
+        // 🔧 将JSON约束放在提示词开头（AI更重视开头）
+        const enhancedPrompt = jsonConstraint + prompt
 
-        // 调用 Claude CLI
+        // 调用 Claude CLI (深度评分需要详细分析,设置8分钟超时)
         console.log('🧠 调用 Claude AI 进行深度分析...')
-        const output = await callClaudeCLI(prompt)
+        const output = await callClaudeCLI(enhancedPrompt, 480000) // 8分钟超时
         console.log('✅ Claude 响应成功')
 
         // 解析输出
@@ -1010,17 +1026,34 @@ const server = createServer(async (req, res) => {
         // ⚠️ 在提示词中强调只返回 JSON
         const fullPrompt = `${requestBody.systemPrompt}\n\n${requestBody.userPrompt}
 
-⚠️ CRITICAL OUTPUT REQUIREMENT (再次强调):
-- You MUST return ONLY valid JSON
-- NO markdown code blocks (\`\`\`json)
-- NO explanations before or after the JSON
-- NO additional text like "已完成生成" or "这是生成的内容"
-- Just start with { and end with }
-- Return the raw JSON object directly`
+⚠️⚠️⚠️ CRITICAL OUTPUT REQUIREMENT (最高优先级 - 必须严格遵守):
+
+1. 你必须只返回纯JSON对象,不能有任何其他文字
+2. 绝对禁止添加任何中文或英文的说明文字,例如:
+   ❌ "我注意到您提供的内容"
+   ❌ "已完成生成"
+   ❌ "这是生成的内容"
+   ❌ "## ✅ SEO指南已完成生成"
+   ❌ 任何形式的解释、总结、评论
+3. 绝对禁止使用markdown代码块包裹JSON:
+   ❌ \`\`\`json
+   ❌ \`\`\`
+4. 输出必须直接以 { 开始,以 } 结束
+5. 不能在 { 之前或 } 之后有任何字符(包括空格、换行)
+6. 必须是合法的JSON格式,所有字段都要正确转义
+
+正确示例:
+{"title":"文章标题","meta_title":"SEO标题","guide_content":"# Introduction\\n\\n内容...","faq_items":[{"question":"问题1","answer":"答案1"}],"secondary_keywords":["词1","词2"]}
+
+错误示例:
+我已经生成了内容:\\n{"title":"..."}  ← 这是错误的!
+\`\`\`json\\n{"title":"..."}\\n\`\`\`  ← 这是错误的!
+
+⚠️ 请立即开始输出JSON,不要有任何其他文字!`
 
         // 调用 Claude CLI
         console.log('🤖 调用 Claude CLI...')
-        const output = await callClaudeCLI(fullPrompt, 180000) // 3分钟超时
+        const output = await callClaudeCLI(fullPrompt, 300000) // 5分钟超时
         console.log('✅ Claude 响应成功')
         console.log(`   原始输出长度: ${output.length} 字符`)
 
@@ -1101,260 +1134,6 @@ const server = createServer(async (req, res) => {
     return
   }
 
-  // AI 分步优化内容（新端点）
-  if (req.url === '/optimize-seo-content-step' && req.method === 'POST') {
-    let body = ''
-
-    req.on('data', chunk => {
-      body += chunk.toString()
-    })
-
-    req.on('end', async () => {
-      let requestBody
-      let step = 1
-
-      try {
-        requestBody = JSON.parse(body)
-        step = requestBody.step || 1
-        console.log(`🚀 AI 分步优化 - 步骤 ${step}/4...`)
-
-        // 检测目标语言
-        const targetLanguage = requestBody.language || 'en'
-        const languageName = LANGUAGE_NAMES[targetLanguage] || 'English'
-
-        // 分类建议
-        const recommendations = requestBody.seo_recommendations || []
-        const categorized = categorizeRecommendations(recommendations)
-
-        // 根据步骤选择对应的提示词构建函数和相关建议
-        let prompt
-        let relatedRecommendations = []
-
-        switch (step) {
-          case 1:
-            relatedRecommendations = categorized.meta
-            prompt = buildStep1Prompt(requestBody, languageName, relatedRecommendations)
-            console.log(`   Meta信息相关建议: ${relatedRecommendations.length}条`)
-            break
-          case 2:
-            relatedRecommendations = categorized.intro
-            prompt = buildStep2Prompt(requestBody, languageName, relatedRecommendations)
-            console.log(`   引言相关建议: ${relatedRecommendations.length}条`)
-            break
-          case 3:
-            relatedRecommendations = categorized.content
-            prompt = buildStep3Prompt(requestBody, languageName, relatedRecommendations)
-            console.log(`   正文相关建议: ${relatedRecommendations.length}条`)
-            break
-          case 4:
-            relatedRecommendations = categorized.faq
-            prompt = buildStep4Prompt(requestBody, languageName, relatedRecommendations)
-            console.log(`   FAQ相关建议: ${relatedRecommendations.length}条`)
-            break
-          default:
-            throw new Error(`无效的步骤: ${step}`)
-        }
-
-        // 调用 Claude CLI（步骤3使用更长超时）
-        console.log(`🧠 调用 Claude AI 优化步骤 ${step}...`)
-        const timeout = step === 3 ? 360000 : 180000 // 步骤3: 6分钟，其他: 3分钟
-        const output = await callClaudeCLI(prompt, timeout)
-        console.log('✅ Claude 响应成功')
-
-        // 解析输出
-        console.log('🔍 解析优化结果...')
-        const result = parseClaudeOutput(output)
-
-        // 验证格式
-        if (!result.optimized_content || !result.key_improvements) {
-          throw new Error('AI 返回的优化结果格式不正确')
-        }
-
-        console.log(`✅ 步骤 ${step}/4 优化完成!`)
-        console.log(`   改进点: ${result.key_improvements.length}个`)
-
-        res.writeHead(200, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify({
-          success: true,
-          step: step,
-          data: result
-        }))
-
-      } catch (error) {
-        console.error(`\n❌ 步骤 ${step} 优化失败:`, error.message)
-        res.writeHead(500, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify({
-          success: false,
-          step: step,
-          error: error.message
-        }))
-      }
-    })
-
-    return
-  }
-
-  // AI 优化关键词密度（新端点）
-  if (req.url === '/optimize-keyword-density' && req.method === 'POST') {
-    let body = ''
-
-    req.on('data', chunk => {
-      body += chunk.toString()
-    })
-
-    req.on('end', async () => {
-      try {
-        const requestBody = JSON.parse(body)
-        console.log('🎯 关键词密度优化开始...')
-
-        const targetLanguage = requestBody.language || 'en'
-        const languageName = LANGUAGE_NAMES[targetLanguage] || 'English'
-
-        // 构建需要优化的关键词列表
-        const lowDensityKeywords = requestBody.low_density_keywords || []
-        const keywordsToOptimize = lowDensityKeywords
-          .map(k => `- **${k.keyword}**: 当前密度 ${k.currentDensity.toFixed(2)}% → 目标 ${k.targetDensity.toFixed(2)}%`)
-          .join('\n')
-
-        console.log(`   需优化关键词: ${lowDensityKeywords.length}个`)
-
-        const prompt = `你是一位专业的SEO内容优化专家。请针对性地优化以下内容中的关键词密度。
-
-⚠️ 目标语言: ${languageName} (${targetLanguage})
-所有内容必须保持 ${languageName} 语言。
-
-## 任务目标
-
-以下关键词密度不足，需要针对性优化：
-
-${keywordsToOptimize}
-
-## 当前内容
-
-### 正文内容 (${(requestBody.guide_content || '').length}字符)
-${requestBody.guide_content || '未提供'}
-
-### FAQ (${(requestBody.faq_items || []).length}个问题)
-${(requestBody.faq_items || []).map((item, i) => `Q${i + 1}: ${item.question}\nA${i + 1}: ${item.answer}`).join('\n\n') || '未提供'}
-
-## 优化要求
-
-⚠️ **关键词密度优化策略（最高优先级）**：
-
-**⚠️ 核心要求：确保每个关键词密度在1.0%-2.5%的理想范围内！**
-
-1. **密度目标范围（严格遵守）**：
-   - **最低密度**：1.0%（约15次）- 任何关键词不得低于此值
-   - **理想密度**：1.5%-2.5%（约22-37次）- 大部分关键词应在此范围
-   - **最高上限**：3.0%（约45次）- 超过此值会被视为关键词堆砌，严重影响SEO
-
-2. **关键词优化优先级**（按此顺序处理）：
-   - **优先级1（必须优化）**：密度<1.0%的关键词，增加至1.5%左右
-   - **优先级2（适度优化）**：密度1.0%-1.4%的关键词，增加至1.8%左右
-   - **优先级3（保持不变）**：密度1.5%-2.5%的关键词，无需修改
-   - **优先级4（必须减少）**：密度>2.5%的关键词，减少至2.0%左右
-
-3. **计算每个关键词需要调整的次数**：
-   - 假设正文总字数约1500字
-   - **增加示例**：如果某关键词当前密度0.30%（约4-5次），需要增加约18次达到1.5%
-   - **减少示例**：如果某关键词当前密度4.0%（约60次），需要减少约30次降至2.0%
-
-4. **分布要求（根据关键词当前密度灵活调整）**：
-
-   **对于需要增加的低密度关键词（<1.5%）**：
-   - **Introduction 段落**：增加1-2次
-   - **How to Use 步骤**：在3-4个步骤中各增加1次
-   - **Best Practices**：增加1-2次
-   - **Troubleshooting**：增加1次
-   - **Creative Ideas**：增加1-2次
-   - **Conclusion**：增加1次
-   - **FAQ**：在2-3个问题/答案中增加，总计2-3次
-
-   **对于需要减少的高密度关键词（>2.5%）**：
-   - 检查每个章节，移除不必要的重复提及
-   - 保留最自然、最有价值的提及
-   - 可以用同义词或变体替换部分重复
-
-5. **关键词融入技巧**：
-   - 作为主语："{关键词} provides unique benefits"
-   - 作为宾语："Learn how to create {关键词}"
-   - 在问题中："What makes {关键词} so effective?"
-   - 在列表中："Try {关键词} for..."
-   - 变体使用：可以略微调整顺序，如 "{词A} {词B}" 也算 "{词B} {词A}"
-
-6. **质量与数量平衡（严格遵守）**：
-   - **质量优先**：永远不要为了达到数量而生硬重复
-   - **密度范围**：每个关键词必须保持在1.0%-2.5%之间
-   - **自然流畅**：每次提及都要在完整、有意义的句子中
-   - **避免堆砌**：如果某个位置已经有该关键词，不要强行再加
-
-7. **自我验证（最关键步骤）**：
-   在返回结果前，你必须逐个检查每个关键词：
-   - ✅ 当前密度<1.0%的关键词，是否已增加到1.5%-2.0%？
-   - ✅ 当前密度1.0%-2.5%的关键词，是否保持不变？
-   - ✅ 当前密度>2.5%的关键词，是否已减少到2.0%以下？
-   - ❌ 不要让任何关键词超过3.0%！这会严重损害SEO效果！
-
-## ⚠️ CRITICAL OUTPUT REQUIREMENT ⚠️
-You MUST return ONLY this JSON structure, with NO additional text:
-
-\`\`\`json
-{
-  "optimized_guide_content": "优化后的正文内容（Markdown格式，${languageName}）",
-  "optimized_faq_items": [
-    {"question": "问题1（${languageName}）", "answer": "答案1（${languageName}）"},
-    {"question": "问题2（${languageName}）", "answer": "答案2（${languageName}）"}
-  ],
-  "key_improvements": [
-    "为 '{关键词1}' 在 Introduction 段落增加X次提及",
-    "为 '{关键词2}' 在 Best Practices 中增加X次自然使用",
-    "在FAQ新增问题使用 '{关键词3}'",
-    "为 '{关键词4}' 在 Conclusion 中增加X次总结性提及"
-  ]
-}
-\`\`\`
-
-⚠️ DO NOT add any explanations before or after the JSON!
-⚠️ DO NOT say "已完成优化" or any other text!
-⚠️ ONLY return the JSON structure shown above!
-⚠️ Content must be 100% ${languageName}!`
-
-        // 调用 Claude CLI
-        console.log('🧠 调用 Claude AI 进行关键词密度优化...')
-        const output = await callClaudeCLI(prompt, 180000) // 3分钟超时
-        console.log('✅ Claude 响应成功')
-
-        // 解析输出
-        console.log('🔍 解析优化结果...')
-        const optimizeResult = parseClaudeOutput(output)
-
-        // 验证格式
-        if (!optimizeResult.optimized_guide_content || !optimizeResult.optimized_faq_items) {
-          throw new Error('AI 返回的优化结果格式不正确')
-        }
-
-        console.log('✅ 关键词密度优化完成!')
-        console.log(`   改进点: ${optimizeResult.key_improvements?.length || 0}个`)
-
-        res.writeHead(200, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify({
-          success: true,
-          data: optimizeResult
-        }))
-
-      } catch (error) {
-        console.error('\n❌ 关键词密度优化失败:', error.message)
-        res.writeHead(500, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify({
-          success: false,
-          error: error.message
-        }))
-      }
-    })
-
-    return
-  }
-
   // AI 一键优化内容（原有端点，保留兼容）
   if (req.url === '/optimize-seo-content' && req.method === 'POST') {
     let body = ''
@@ -1372,188 +1151,58 @@ You MUST return ONLY this JSON structure, with NO additional text:
         const targetLanguage = requestBody.language || 'en'
         const languageName = LANGUAGE_NAMES[targetLanguage] || 'English'
 
-        // 构建 SEO 专家优化提示词
-        const currentScore = requestBody.seo_score || 0
-        const recommendations = requestBody.seo_recommendations || []
+        // 🔧 绝对JSON输出约束（必须放在开头！）
+        const jsonConstraint = `⚠️⚠️⚠️ CRITICAL OUTPUT FORMAT REQUIREMENT (HIGHEST PRIORITY):
 
-        const prompt = `你是一位拥有10年经验的资深 SEO 专家和内容创作大师。
+你的输出必须是**纯JSON对象**，不能包含任何其他文字！
 
-⚠️ CRITICAL LANGUAGE REQUIREMENT - 语言一致性要求（最重要！）
-目标语言: ${languageName} (${targetLanguage})
+**ABSOLUTE RULES**:
+1. 输出必须直接以 { 开始，以 } 结束
+2. { 之前和 } 之后不能有任何字符（包括空格、换行、解释文字）
+3. **绝对禁止**在JSON之前或之后添加任何说明，例如:
+   ❌ "我已经完成了优化"
+   ❌ "## ✅ 优化完成"
+   ❌ 任何形式的解释、评论、总结、markdown标题
+4. **绝对禁止**使用markdown代码块:
+   ❌ \`\`\`json ... \`\`\`
+   ❌ \`\`\` ... \`\`\`
+5. 必须是合法的JSON格式，所有字符串正确转义
 
-**这是最关键的要求，必须严格遵守：**
-1. ALL content MUST be written ENTIRELY in ${languageName}
-2. 所有优化后的内容必须 100% 使用 ${languageName}
-3. DO NOT mix any other languages - 绝对不能混用其他语言
-4. Even if the current content has mixed languages, YOU MUST fix it
-5. Meta title, meta description, meta keywords, intro, content, FAQ - ALL must be in ${languageName}
-6. If ${languageName} is not English, avoid English words unless they are commonly used technical terms
-7. 如果发现原内容有语言混用，必须在优化时全部改为 ${languageName}
-
-## 当前状态分析
-
-**当前评分**: ${currentScore}/100分
-
-**当前内容**:
-
-### Meta 信息
-- **Meta 标题** (${(requestBody.meta_title || '').length}字符): ${requestBody.meta_title || '未提供'}
-- **Meta 描述** (${(requestBody.meta_description || '').length}字符): ${requestBody.meta_description || '未提供'}
-- **Meta 关键词**: ${requestBody.meta_keywords || '未提供'}
-
-### 关键词策略
-- **目标关键词**: ${requestBody.target_keyword || '未提供'}
-- **长尾关键词**: ${(requestBody.long_tail_keywords || []).join(', ') || '未提供'}
-- **次要关键词**: ${(requestBody.secondary_keywords || []).join(', ') || '未提供'}
-
-### 引言 (${(requestBody.guide_intro || '').length}字符)
-${requestBody.guide_intro || '未提供'}
-
-### 正文内容 (${(requestBody.guide_content || '').length}字符)
-${requestBody.guide_content || '未提供'}
-
-### FAQ (${(requestBody.faq_items || []).length}个问题)
-${(requestBody.faq_items || []).map((item, i) => `Q${i + 1}: ${item.question}\nA${i + 1}: ${item.answer}`).join('\n\n') || '未提供'}
-
-**主要问题和改进建议**:
-${recommendations.map((rec, i) => `${i + 1}. ${rec}`).join('\n')}
+✅ CORRECT: {"optimized_meta_title":"...","optimized_meta_description":"...","improvements_summary":[...]}
+❌ WRONG: 我已完成优化\\n{"optimized_meta_title":"...",...}
+❌ WRONG: \`\`\`json\\n{"optimized_meta_title":"...",...}\\n\`\`\`
 
 ---
 
-## 优化任务
+`
 
-请对以上内容进行**深度思考**和**全面优化**。你需要：
+        // ✅ 使用统一的提示词配置（从数据库加载）
+        const prompt = await buildOptimizePrompt({
+          languageName,
+          languageCode: targetLanguage,
+          currentScore: requestBody.seo_score || 0,
+          metaTitle: requestBody.meta_title || '',
+          metaDescription: requestBody.meta_description || '',
+          metaKeywords: requestBody.meta_keywords || '',
+          targetKeyword: requestBody.target_keyword || '',
+          longTailKeywords: requestBody.long_tail_keywords || [],
+          secondaryKeywords: requestBody.secondary_keywords || [],
+          guideIntro: requestBody.guide_intro || '',
+          guideContent: requestBody.guide_content || '',
+          faqItems: requestBody.faq_items || [],
+          recommendations: requestBody.seo_recommendations || []
+        })
 
-### 1. Meta 标题优化
-- **必须使用 ${languageName}**
-- 长度控制在 55-60 字符
-- 必须包含主关键词（靠前位置）
-- 吸引点击，传递核心价值
-- 避免关键词堆砌
+        // 🔧 将JSON约束放在提示词开头（AI更重视开头）
+        const enhancedPrompt = jsonConstraint + prompt
 
-### 2. Meta 描述优化
-- **必须使用 ${languageName}**
-- 长度控制在 150-155 字符
-- 包含行动号召（CTA）
-- 自然融入 1-2 个关键词
-- 突出独特价值主张
-
-### 3. Meta 关键词优化
-- **必须使用 ${languageName}**
-- 提供 5-8 个相关关键词
-- 主关键词 + 长尾关键词组合
-- 用逗号分隔
-
-### 4. 引言优化
-- **必须使用 ${languageName}**
-- 长度 100-150 字
-- 第一句话吸引注意力
-- 明确说明本指南的价值
-- 自然融入主关键词
-
-### 5. 正文内容优化
-- **必须使用 ${languageName}**
-- 目标长度 1500-2000 字
-- 使用 Markdown 格式
-- 清晰的结构层次（标题也必须是 ${languageName}）：
-  * # Introduction（简短介绍）
-  * ## Key Features（核心特性，3-5个要点）
-  * ## How to Use（使用步骤，5-8个步骤）
-  * ## Best Practices（最佳实践，3-5个建议）
-  * ## Troubleshooting（常见问题解决，2-3个场景）
-  * ## Creative Ideas（创意用法，3-5个想法）
-  * ## Conclusion（总结）
-- 段落长度控制在 100-300 字
-- **⚠️ 长尾关键词密度优化（最高优先级）**：
-  * **逐个检查每个长尾关键词**，确保每个关键词至少出现2-3次
-  * 主关键词密度：2-3%
-  * 每个长尾关键词密度：1-2%（至少出现2-3次）
-  * 在Introduction、How to Use、Best Practices、Troubleshooting、Creative Ideas、Conclusion等各部分自然融入
-  * 避免关键词堆砌，要在完整句子中自然使用
-- 使用 H2/H3 标题分割内容
-- 加入具体例子和使用场景
-
-### 6. FAQ 优化
-- **问题和答案都必须使用 ${languageName}**
-- 提供 5-7 个高质量问题
-- 每个问题要具体、用户真实关心的
-- 每个回答 80-150 字，详细实用
-- **⚠️ 长尾关键词融入（重要）**：
-  * FAQ是融入长尾关键词的绝佳位置
-  * 在问题和答案中自然使用至少3-5个不同的长尾关键词
-  * 特别是那些在正文中密度不足的长尾关键词
-- 覆盖不同的用户场景
-
-### 7. 次要关键词优化
-- **必须使用 ${languageName}**
-- 提供 5-8 个相关次要关键词
-- 与主题相关的语义变体
-- 可用于后续内容扩展
-
----
-
-## 输出格式
-
-请严格按照以下 JSON 格式返回优化结果：
-
-⚠️ 再次提醒：所有字段内容都必须是 ${languageName}！
-
-\`\`\`json
-{
-  "optimized_content": {
-    "meta_title": "优化后的Meta标题（55-60字符，必须是 ${languageName}）",
-    "meta_description": "优化后的Meta描述（150-155字符，必须是 ${languageName}）",
-    "meta_keywords": "关键词1, 关键词2, 关键词3, 关键词4, 关键词5（必须是 ${languageName}）",
-    "guide_intro": "优化后的引言（100-150字，必须是 ${languageName}）",
-    "guide_content": "优化后的完整Markdown正文（1500-2000字，包含所有章节，必须是 ${languageName}）",
-    "faq_items": [
-      {
-        "question": "优化后的问题1？（必须是 ${languageName}）",
-        "answer": "详细的回答1（80-150字，必须是 ${languageName}）"
-      },
-      {
-        "question": "优化后的问题2？（必须是 ${languageName}）",
-        "answer": "详细的回答2（80-150字，必须是 ${languageName}）"
-      },
-      {
-        "question": "优化后的问题3？（必须是 ${languageName}）",
-        "answer": "详细的回答3（80-150字，必须是 ${languageName}）"
-      }
-    ],
-    "secondary_keywords": ["次要关键词1", "次要关键词2", "次要关键词3", "次要关键词4", "次要关键词5（必须是 ${languageName}）"]
-  },
-  "optimization_summary": "简要说明本次优化的核心改进点和策略（100-150字）",
-  "key_improvements": [
-    "具体改进点1：例如 'Meta标题从45字符扩展到58字符，并将主关键词前置'",
-    "具体改进点2：例如 '正文新增3个H2标题，优化内容结构'",
-    "具体改进点3：例如 '关键词密度从5.2%优化到2.8%，避免堆砌'",
-    "具体改进点4：例如 'FAQ从3个扩展到6个，覆盖更多用户场景'",
-    "具体改进点5：例如 'Meta描述增加明确的CTA，提升点击率'",
-    "具体改进点6：如果原内容有语言混用，必须说明：'修复语言混用问题，全部改为 ${languageName}'"
-  ]
-}
-\`\`\`
-
-## 重要提醒
-
-1. **⚠️ 语言一致性（最高优先级）**：ALL content must be 100% ${languageName}, NO mixed languages!
-2. **内容必须原创且高质量**：不要简单复制现有内容，要真正优化和改进
-3. **关键词自然融入**：避免生硬插入，保持语言流畅
-4. **用户价值优先**：内容要真正有用，而不是为了SEO而SEO
-5. **具体可操作**：给出的建议要明确、具体、可执行
-6. **保持专业性**：语言要准确、权威，体现专业水平
-7. **结构清晰**：使用 Markdown 格式，层次分明
-8. **语言纯净检查**：如果原内容混用了语言，你必须全部改为 ${languageName}
-
-请只返回 JSON，不要添加任何其他说明文字。记住：100% ${languageName}！开始深度思考并全面优化吧！`
-
-        // 调用 Claude CLI
+        // 调用 Claude CLI (一键优化需要更长时间,设置10分钟超时)
         console.log('🧠 调用 Claude AI 进行深度优化...')
         console.log(`   目标语言: ${languageName} (${targetLanguage})`)
-        console.log(`   当前评分: ${currentScore}分`)
-        console.log(`   建议数量: ${recommendations.length}条`)
+        console.log(`   当前评分: ${requestBody.seo_score || 0}分`)
+        console.log(`   建议数量: ${(requestBody.seo_recommendations || []).length}条`)
 
-        const output = await callClaudeCLI(prompt)
+        const output = await callClaudeCLI(enhancedPrompt, 600000) // 10分钟超时
         console.log('✅ Claude 响应成功')
 
         // 解析输出
@@ -1603,8 +1252,6 @@ ${recommendations.map((rec, i) => `${i + 1}. ${rec}`).join('\n')}
       'POST /generate-seo-from-prompt',
       'POST /generate-seo',
       'POST /calculate-seo-score',
-      'POST /optimize-keyword-density',
-      'POST /optimize-seo-content-step',
       'POST /optimize-seo-content'
     ]
   }))
@@ -1619,8 +1266,6 @@ server.listen(PORT, () => {
   console.log(`  - POST http://localhost:${PORT}/generate-seo-from-prompt - 从 Prompt 生成（给前端用）`)
   console.log(`  - POST http://localhost:${PORT}/generate-seo - 生成 SEO 内容`)
   console.log(`  - POST http://localhost:${PORT}/calculate-seo-score - AI 智能评分`)
-  console.log(`  - POST http://localhost:${PORT}/optimize-keyword-density - AI 优化关键词密度`)
-  console.log(`  - POST http://localhost:${PORT}/optimize-seo-content-step - AI 分步优化`)
   console.log(`  - POST http://localhost:${PORT}/optimize-seo-content - AI 一键优化`)
   console.log('\n💡 提示: 保持此终端窗口运行，然后在浏览器中访问管理后台')
   console.log('  1. 在管理后台选择 "Claude Code CLI" 模型')

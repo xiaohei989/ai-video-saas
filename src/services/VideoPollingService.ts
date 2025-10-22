@@ -33,17 +33,22 @@ class VideoPollingService {
   /**
    * 启动轮询
    */
-  start(config: PollingConfig): void {
-    if (this.isPolling) {
+  start(config: PollingConfig, forceSync: boolean = false): void {
+    if (this.isPolling && !forceSync) {
       this.stop()
     }
 
     this.config = config
     this.isPolling = true
 
+    // 🔧 FIX: 如果是强制同步（例如移动端后台恢复），先强制刷新所有任务状态
+    if (forceSync) {
+      console.log('[POLLING] 📱 移动端后台恢复，强制同步所有任务状态')
+    }
+
     // 立即执行一次轮询
     this.poll()
-    
+
     // 开始定时轮询
     this.scheduleNextPoll()
   }
@@ -251,27 +256,53 @@ class VideoPollingService {
       
       // 🕐 超时检测 - 基于10分钟正常生成时间的超时处理
       if (currentTask && currentTask.status === 'processing') {
-        const elapsedTime = Date.now() - currentTask.startedAt.getTime()
+        // 🔧 FIX: 首先验证时间基准点是否有效
+        // 重新从数据库获取最新的 processing_started_at
+        const latestVideo = await supabaseVideoService.getVideo(taskId)
+
+        if (!latestVideo) {
+          console.warn(`[POLLING] ⚠️ 无法获取视频信息，跳过超时检测: ${taskId}`)
+          return
+        }
+
+        // 🔧 FIX: 确定正确的时间基准点
+        let timeBase: Date | null = null
+        let timeSource: string = 'unknown'
+
+        if (latestVideo.processing_started_at) {
+          timeBase = new Date(latestVideo.processing_started_at)
+          timeSource = 'processing_started_at'
+        } else {
+          // 如果没有 processing_started_at，使用更宽松的超时阈值
+          timeBase = new Date(latestVideo.created_at)
+          timeSource = 'created_at(fallback)'
+          console.warn(`[POLLING] ⚠️ 视频 ${taskId} 缺少 processing_started_at，使用 created_at 作为 fallback`)
+        }
+
+        const elapsedTime = Date.now() - timeBase.getTime()
         const elapsedMinutes = Math.round(elapsedTime / (1000 * 60))
-        
+
+        // 🔧 FIX: 根据时间来源使用不同的超时阈值
+        const TIMEOUT_THRESHOLD = timeSource === 'processing_started_at'
+          ? TIMEOUT_FORCE_FAIL    // 15分钟（有准确开始时间）
+          : 30 * 60 * 1000         // 30分钟（fallback时更宽松）
+
         // 8分钟后开始检查
         if (elapsedTime > TIMEOUT_START) {
           const now = Date.now()
           const lastLog = this.lastTimeoutLog.get(taskId) || 0
-          
+
           // 控制日志频率：每分钟最多输出一次
           if (now - lastLog > LOG_INTERVAL) {
-            console.log(`[POLLING] ⏰ 任务运行 ${elapsedMinutes} 分钟，进度 ${currentTask.progress}%: ${taskId}`)
+            console.log(`[POLLING] ⏰ 任务运行 ${elapsedMinutes} 分钟，进度 ${currentTask.progress}%，时间基准: ${timeSource}: ${taskId}`)
             this.lastTimeoutLog.set(taskId, now)
           }
-          
-          // 强制失败 - 15分钟后任何进度都失败
-          // 🔧 修复：在标记失败前，先检查视频URL是否已存在
-          if (elapsedTime > TIMEOUT_FORCE_FAIL) {
-            console.log(`[POLLING] ⏰ 任务运行超过15分钟，检查视频URL: ${taskId}`)
 
-            // 重新获取最新视频状态，检查是否有视频URL
-            const latestVideo = await supabaseVideoService.getVideo(taskId)
+          // 强制失败 - 根据时间来源使用不同的阈值
+          // 🔧 修复：在标记失败前，先检查视频URL是否已存在
+          if (elapsedTime > TIMEOUT_THRESHOLD) {
+            const thresholdMinutes = Math.round(TIMEOUT_THRESHOLD / (1000 * 60))
+            console.log(`[POLLING] ⏰ 任务运行超过${thresholdMinutes}分钟（时间基准: ${timeSource}），检查视频URL: ${taskId}`)
             if (latestVideo?.video_url && latestVideo.video_url.length > 0) {
               console.log(`[POLLING] ✅ 超时检测发现视频URL已存在，标记完成而非失败: ${taskId}`)
 
@@ -293,18 +324,21 @@ class VideoPollingService {
             }
 
             // 确实没有视频URL，才标记为失败
-            console.log(`[POLLING] 🚨 任务运行超过15分钟且无视频URL，标记失败: ${taskId}`)
-            await videoTaskManager.markTaskFailed(taskId, '任务超时')
-            this.config?.onTaskFailed({ ...currentTask, status: 'failed', errorMessage: '任务超时' })
+            const failureMessage = timeSource === 'processing_started_at'
+              ? '视频处理超时（15分钟）'
+              : '任务总超时（30分钟，含队列等待）'
+            console.log(`[POLLING] 🚨 任务超时且无视频URL，标记失败: ${taskId}，原因: ${failureMessage}`)
+            await videoTaskManager.markTaskFailed(taskId, failureMessage)
+            this.config?.onTaskFailed({ ...currentTask, status: 'failed', errorMessage: failureMessage })
             return
           }
-          
+
           // 99%进度强制完成 - 12分钟后如果是99%进度则强制完成
-          if (elapsedTime > TIMEOUT_FORCE_COMPLETE && currentTask.progress >= 99) {
+          // 🔧 FIX: 只在有准确的 processing_started_at 时才使用这个强制完成逻辑
+          if (timeSource === 'processing_started_at' && elapsedTime > TIMEOUT_FORCE_COMPLETE && currentTask.progress >= 99) {
             console.log(`[POLLING] 🎯 99%进度运行超过12分钟，强制完成检测: ${taskId}`)
-            
-            // 重新获取最新视频状态
-            const latestVideo = await supabaseVideoService.getVideo(taskId)
+
+            // latestVideo 已经在上面获取过，直接使用
             if (latestVideo?.video_url && latestVideo.video_url.length > 0) {
               console.log(`[POLLING] ✅ 发现视频URL，强制标记完成: ${taskId}`)
               
@@ -376,11 +410,22 @@ class VideoPollingService {
 
   /**
    * 将数据库视频记录转换为任务对象
+   * 🔧 FIX: 改进时间基准点选择逻辑，添加日志记录
    */
   private videoToTask(video: any): VideoTask {
-    const startedAt = video.processing_started_at 
-      ? new Date(video.processing_started_at)
-      : new Date(video.created_at)
+    // 🔧 FIX: 优先使用 processing_started_at，只在不存在时才 fallback
+    let startedAt: Date
+    let timeSource: string
+
+    if (video.processing_started_at) {
+      startedAt = new Date(video.processing_started_at)
+      timeSource = 'processing_started_at'
+    } else {
+      startedAt = new Date(video.created_at)
+      timeSource = 'created_at(fallback)'
+      // 记录 fallback 情况，便于调试
+      console.warn(`[POLLING] ⚠️ 视频 ${video.id} 缺少 processing_started_at，使用 created_at 作为时间基准`)
+    }
 
     let progress = 0
     let statusText = i18n.t('videoCreator.preparing')
