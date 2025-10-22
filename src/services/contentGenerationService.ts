@@ -8,6 +8,7 @@ import { createClient } from '@supabase/supabase-js'
 import keywordAnalysisService, { type KeywordAnalysisResult, type DifferentiationFactors } from './keywordAnalysisService'
 import promptBuilderService, { type GeneratedPrompt, type PromptBuildOptions } from './promptBuilderService'
 import { calculateKeywordDensity, extractFullContent } from './seoScoreCalculator'
+import { seoImageGenerationService } from './seoImageGenerationService'
 
 // 兼容Vite和Node环境
 const getEnv = (key: string): string => {
@@ -80,6 +81,10 @@ class ContentGenerationService {
   private endpoint: string | null = null
   private readonly timeout = 180000 // 3分钟超时（生成长文需要更多时间）
 
+  constructor() {
+    // 构造函数
+  }
+
   private getAPIKey(): string {
     if (!this.apiKey) {
       this.apiKey = getEnv('VITE_APICORE_SEO_API_KEY') || getEnv('VITE_APICORE_API_KEY')
@@ -132,7 +137,7 @@ class ContentGenerationService {
       keywordDensityTargets: contentTemplate.keyword_density_targets
     }
 
-    const prompt = promptBuilderService.buildPrompt(promptOptions)
+    const prompt = await promptBuilderService.buildPrompt(promptOptions)
     console.log(`[ContentGen] ✅ Prompt已生成:`, {
       系统提示词长度: prompt.systemPrompt.length,
       用户提示词长度: prompt.userPrompt.length,
@@ -188,6 +193,22 @@ class ContentGenerationService {
       userId: request.userId
     })
     console.log(`[ContentGen] ✅ 已保存: ${pageVariantId}`)
+
+    // 8. 🔥 异步生成 SEO 图片 (已禁用 - 2025-01-22)
+    // console.log(`[ContentGen] 🎨 启动异步图片生成...`)
+    // seoImageGenerationService.generateImagesForArticle({
+    //   pageVariantId,
+    //   markdown: generatedContent.guide_content,
+    //   slug: analysis.keywordSlug,
+    //   targetKeyword: request.targetKeyword
+    // })
+    //   .then(result => {
+    //     console.log(`[ContentGen] 🖼️  图片生成完成: ${result.generatedCount}/${result.totalCount} 张成功`)
+    //   })
+    //   .catch(err => {
+    //     console.warn(`[ContentGen] ⚠️  图片生成失败:`, err)
+    //     // 不影响主流程,仅记录错误
+    //   })
 
     console.log(`[ContentGen] 🎉 内容生成完成！\n`)
 
@@ -281,9 +302,16 @@ class ContentGenerationService {
           secondary_keywords: data.secondary_keywords || []
         }
 
+        // 验证meta_description长度
+        if (generatedContent.meta_description && generatedContent.meta_description.length > 155) {
+          console.warn(`[ContentGen AI] ⚠️ Meta描述过长: ${generatedContent.meta_description.length}字符 (建议150-155)`)
+          console.warn(`[ContentGen AI] 内容: "${generatedContent.meta_description.substring(0, 100)}..."`)
+        }
+
         console.log('[ContentGen AI] 数据转换完成:', {
           title: generatedContent.title,
           meta_title: generatedContent.meta_title,
+          meta_description_length: generatedContent.meta_description.length,
           guide_content_length: generatedContent.guide_content.length,
           faq_count: generatedContent.faq_items.length
         })
@@ -566,10 +594,28 @@ class ContentGenerationService {
     // 提取次要关键词（从内容中自动提取）
     const secondary_keywords = this.extractSecondaryKeywords(guide_content, targetKeyword)
 
+    // 智能截断meta_description到155字符
+    let finalMetaDesc = meta_description
+    if (finalMetaDesc.length > 155) {
+      console.warn(`[ContentGeneration] Meta描述过长(${finalMetaDesc.length}字符),截断到155字符`)
+      // 尝试在最后一个完整句子或词处截断
+      const truncated = finalMetaDesc.substring(0, 155)
+      const lastPeriod = truncated.lastIndexOf('.')
+      const lastSpace = truncated.lastIndexOf(' ')
+
+      if (lastPeriod > 140) {
+        finalMetaDesc = truncated.substring(0, lastPeriod + 1)
+      } else if (lastSpace > 140) {
+        finalMetaDesc = truncated.substring(0, lastSpace) + '...'
+      } else {
+        finalMetaDesc = truncated + '...'
+      }
+    }
+
     return {
       title,
       meta_title: meta_title.slice(0, 60), // 限制长度
-      meta_description: meta_description.slice(0, 160),
+      meta_description: finalMetaDesc,
       meta_keywords: meta_keywords.slice(0, 200),
       guide_content,
       faq_items: faqItems.length > 0 ? faqItems : this.generateDefaultFAQ(targetKeyword),
@@ -603,27 +649,30 @@ class ContentGenerationService {
   }
 
   /**
-   * 智能生成Meta Description（150-160字符，包含USP、数字、年份、CTA）
+   * 智能生成Meta Description（150-155字符，包含USP、数字、年份、CTA）
    */
   private generateSmartMetaDescription(keyword: string, year: number): string {
     const templates = [
-      `Master ${keyword} with our comprehensive ${year} guide. Learn proven techniques, step-by-step tutorials, and expert tips to achieve professional results quickly. Perfect for beginners and pros!`,
-      `Discover how to excel at ${keyword} with our complete ${year} tutorial. Get actionable insights, detailed walkthroughs, and proven strategies for success. Start creating today!`,
-      `Complete ${keyword} guide for ${year}. Learn 10+ proven methods, easy-to-follow steps, and pro-level techniques to get results fast. Ideal for content creators of all levels!`,
-      `Learn ${keyword} the right way with our ${year} expert guide. Step-by-step instructions, best practices, and insider tips to create amazing content. Get started now!`,
-      `Ultimate ${keyword} tutorial for ${year}. Master proven techniques, avoid common mistakes, and create professional results in minutes. Perfect for beginners and experts alike!`
+      `Master ${keyword} with our ${year} guide. Learn proven techniques and expert tips to achieve professional results. Perfect for all levels!`,
+      `Discover how to excel at ${keyword} in ${year}. Get actionable insights and proven strategies for success. Start creating today!`,
+      `Complete ${keyword} guide for ${year}. Learn proven methods and pro techniques to get results fast. Ideal for creators of all levels!`,
+      `Learn ${keyword} with our ${year} expert guide. Step-by-step instructions and insider tips to create amazing content. Get started now!`,
+      `Ultimate ${keyword} tutorial for ${year}. Master techniques, avoid mistakes, and create professional results. Perfect for beginners!`
     ]
 
     // 随机选择一个模板以增加多样性
     const selected = templates[Math.floor(Math.random() * templates.length)]
 
-    // 确保长度在150-160字符（不截断句子）
-    if (selected.length > 160) {
+    // 确保长度在150-155字符（不截断句子）
+    if (selected.length > 155) {
       // 找到最后一个完整句子
-      const lastPeriod = selected.substring(0, 160).lastIndexOf('.')
+      const lastPeriod = selected.substring(0, 155).lastIndexOf('.')
       if (lastPeriod > 140) {
         return selected.substring(0, lastPeriod + 1)
       }
+      // 如果找不到合适的句子结束位置,在空格处截断并加省略号
+      const lastSpace = selected.substring(0, 152).lastIndexOf(' ')
+      return selected.substring(0, lastSpace) + '...'
     }
 
     return selected

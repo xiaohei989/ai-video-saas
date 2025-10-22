@@ -33,7 +33,7 @@ import {
 import { Edit, Assessment, Visibility, Save, Publish, Article, Search, TrendingUp, Lightbulb, CheckCircle, AutoFixHigh } from '@mui/icons-material'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
-import { getSEOScoreGrade, extractFullContent, calculateKeywordDensity, calculateKeywordDensityScore } from '@/services/seoScoreCalculator'
+import { getSEOScoreGrade, extractFullContent, calculateKeywordDensity } from '@/services/seoScoreCalculator'
 import { seoAIService } from '@/services/seoAIService'
 import ReactMarkdown from 'react-markdown'
 
@@ -72,7 +72,7 @@ interface ScoreBarProps {
 }
 
 const ScoreBar: React.FC<ScoreBarProps> = ({ label, score, maxScore, icon }) => {
-  const percentage = (score / maxScore) * 100
+  const percentage = Math.min((score / maxScore) * 100, 100) // 确保不超过100%
   const color =
     percentage >= 80 ? 'success' : percentage >= 60 ? 'warning' : 'error'
 
@@ -84,7 +84,7 @@ const ScoreBar: React.FC<ScoreBarProps> = ({ label, score, maxScore, icon }) => 
           {label}
         </Typography>
         <Typography variant="body2" color="textSecondary" ml="auto">
-          {score}/{maxScore}分
+          {Math.round(score)}/{maxScore}分
         </Typography>
       </Box>
       <LinearProgress
@@ -95,6 +95,26 @@ const ScoreBar: React.FC<ScoreBarProps> = ({ label, score, maxScore, icon }) => 
       />
     </Box>
   )
+}
+
+/**
+ * 计算文本字数 (支持中英文)
+ * - 中文/日文/韩文: 按字符数计算
+ * - 英文: 按单词数计算
+ */
+const calculateWordCount = (text: string, language: string = 'zh'): { wordCount: number; charCount: number } => {
+  if (!text) return { wordCount: 0, charCount: 0 }
+
+  const charCount = text.length
+
+  // 对于中文、日文、韩文,字数=字符数
+  if (['zh', 'ja', 'ko'].includes(language)) {
+    return { wordCount: charCount, charCount }
+  }
+
+  // 对于英文等,字数=单词数
+  const wordCount = text.trim().split(/\s+/).filter(word => word.length > 0).length
+  return { wordCount, charCount }
 }
 
 const PageEditor: React.FC<PageEditorProps> = ({
@@ -164,14 +184,25 @@ const PageEditor: React.FC<PageEditorProps> = ({
         faq: pageData.faq_items || pageData.faq || []
       })
       if (pageData.seo_score) {
+        // 🔒 防御性转换: 确保从数据库加载的recommendations也是字符串数组
+        const safeRecommendations = (pageData.seo_recommendations || []).map((rec: any) => {
+          if (typeof rec === 'string') {
+            return rec
+          }
+          // 如果数据库中存储的是旧的对象格式,转换为字符串
+          console.warn('[PageEditor] 从数据库加载到对象格式的recommendation,正在转换...', rec)
+          return `【${rec.category || '优化建议'}】${rec.issue || ''}\n建议: ${rec.suggestion || ''}\n预期效果: ${rec.expected_impact || '提升SEO分数'}`
+        })
+
         setScoreResult({
           total_score: pageData.seo_score,
           meta_info_quality_score: pageData.meta_info_quality_score || 0,
           keyword_optimization_score: pageData.keyword_optimization_score || 0,
           content_quality_score: pageData.content_quality_score || 0,
           readability_score: pageData.readability_score || 0,
-          keyword_density_score: pageData.keyword_density_score || 0,
-          recommendations: pageData.seo_recommendations || []
+          ux_score: pageData.ux_score || 0,
+          keyword_density: pageData.keyword_density || {},
+          recommendations: safeRecommendations
         })
       } else {
         setScoreResult(null)
@@ -309,26 +340,30 @@ const PageEditor: React.FC<PageEditorProps> = ({
       const scoreResult = await seoAIService.calculateSEOScore(seoGuideData, aiModel)
       console.log('[SEO Score] AI 评分结果:', scoreResult)
 
-      // 5. 使用客户端算法重新计算关键词密度评分（确保准确性）
-      const clientKeywordDensityScore = calculateKeywordDensityScore(
-        keywordDensity,
-        pageData.target_keyword
-      )
-      console.log('[SEO Score] 客户端关键词密度评分:', clientKeywordDensityScore)
+      // 🔒 防御性转换: 确保recommendations始终是字符串数组
+      scoreResult.recommendations = (scoreResult.recommendations || []).map((rec: any) => {
+        if (typeof rec === 'string') {
+          return rec
+        }
+        // 如果是对象格式,转换为字符串
+        console.warn('[SEO Score] 发现对象格式的recommendation,正在转换...', rec)
+        return `【${rec.category || '优化建议'}】${rec.issue || ''}\n建议: ${rec.suggestion || ''}\n预期效果: ${rec.expected_impact || '提升SEO分数'}`
+      })
+      console.log('[SEO Score] recommendations类型检查:', scoreResult.recommendations.map((r: any) => typeof r))
 
-      // 6. 直接使用AI返回的总分（不要重新计算）
-      // AI评分系统已经综合考虑了所有维度，前端不应该覆盖
+      // 5. 直接使用AI返回的总分和所有维度分数（不要重新计算）
+      // v2.0: AI评分系统已经综合考虑了所有5个维度
       const totalScore = scoreResult.total_score
       console.log('[SEO Score] AI总分:', totalScore)
-      console.log('[SEO Score] 各维度分数 (严格4个维度):', {
+      console.log('[SEO Score] v2.0 各维度分数 (5个维度):', {
         meta_info_quality: scoreResult.meta_info_quality_score,
-        keyword_optimization: scoreResult.keyword_optimization_score,
         content_quality: scoreResult.content_quality_score,
+        keyword_optimization: scoreResult.keyword_optimization_score,
         readability: scoreResult.readability_score,
-        keyword_density: clientKeywordDensityScore
+        ux: scoreResult.ux_score
       })
 
-      // 7. 更新数据库 - 严格保存4个维度
+      // 6. 更新数据库 - v2.0: 保存5个维度
       const { error } = await supabase
         .from('seo_page_variants')
         .update({
@@ -337,7 +372,7 @@ const PageEditor: React.FC<PageEditorProps> = ({
           keyword_optimization_score: scoreResult.keyword_optimization_score,
           content_quality_score: scoreResult.content_quality_score,
           readability_score: scoreResult.readability_score,
-          keyword_density_score: clientKeywordDensityScore,
+          ux_score: scoreResult.ux_score,
           keyword_density: keywordDensity,
           seo_recommendations: scoreResult.recommendations || [],
           updated_at: new Date().toISOString()
@@ -346,14 +381,15 @@ const PageEditor: React.FC<PageEditorProps> = ({
 
       if (error) throw error
 
-      // 8. 更新本地状态 - 严格保存4个维度
+      // 7. 更新本地状态 - v2.0: 保存5个维度
       setScoreResult({
         total_score: totalScore,
         meta_info_quality_score: scoreResult.meta_info_quality_score,
         keyword_optimization_score: scoreResult.keyword_optimization_score,
         content_quality_score: scoreResult.content_quality_score,
         readability_score: scoreResult.readability_score,
-        keyword_density_score: clientKeywordDensityScore,
+        ux_score: scoreResult.ux_score,
+        keyword_density: keywordDensity,
         recommendations: scoreResult.recommendations || []
       })
 
@@ -409,17 +445,11 @@ const PageEditor: React.FC<PageEditorProps> = ({
       const scoreResult = await seoAIService.calculateSEOScore(seoGuideData, aiModel)
       console.log('[SEO Score] 优化后的评分结果:', scoreResult)
 
-      // 5. 使用客户端算法重新计算关键词密度评分
-      const clientKeywordDensityScore = calculateKeywordDensityScore(
-        keywordDensity,
-        pageData.target_keyword
-      )
-
-      // 6. 直接使用AI返回的总分（不要重新计算）
+      // 5. 直接使用AI返回的总分和所有维度分数
       const totalScore = scoreResult.total_score
       console.log('[SEO Score] 优化后AI总分:', totalScore)
 
-      // 7. 更新数据库 - 严格保存4个维度
+      // 6. 更新数据库 - v2.0: 保存5个维度
       const { error } = await supabase
         .from('seo_page_variants')
         .update({
@@ -428,7 +458,7 @@ const PageEditor: React.FC<PageEditorProps> = ({
           keyword_optimization_score: scoreResult.keyword_optimization_score,
           content_quality_score: scoreResult.content_quality_score,
           readability_score: scoreResult.readability_score,
-          keyword_density_score: clientKeywordDensityScore,
+          ux_score: scoreResult.ux_score,
           keyword_density: keywordDensity,
           seo_recommendations: scoreResult.recommendations || [],
           updated_at: new Date().toISOString()
@@ -437,14 +467,15 @@ const PageEditor: React.FC<PageEditorProps> = ({
 
       if (error) throw error
 
-      // 8. 更新本地状态 - 严格保存4个维度
+      // 7. 更新本地状态 - v2.0: 保存5个维度
       setScoreResult({
         total_score: totalScore,
         meta_info_quality_score: scoreResult.meta_info_quality_score,
         keyword_optimization_score: scoreResult.keyword_optimization_score,
         content_quality_score: scoreResult.content_quality_score,
         readability_score: scoreResult.readability_score,
-        keyword_density_score: clientKeywordDensityScore,
+        ux_score: scoreResult.ux_score,
+        keyword_density: keywordDensity,
         recommendations: scoreResult.recommendations || []
       })
 
@@ -648,7 +679,16 @@ const PageEditor: React.FC<PageEditorProps> = ({
             size="small"
             value={formData.main_content}
             onChange={(e) => setFormData({ ...formData, main_content: e.target.value })}
-            helperText={`使用 Markdown 格式编写 (当前: ${(formData.main_content || '').length} 字符)`}
+            helperText={(() => {
+              const { wordCount, charCount } = calculateWordCount(formData.main_content || '', language)
+              const isOverLength = wordCount > 2500 // 超过2500字警告
+              return (
+                <span style={{ color: isOverLength ? '#f44336' : 'inherit' }}>
+                  使用 Markdown 格式编写 (当前: {wordCount} 字, {charCount} 字符)
+                  {isOverLength && ' ⚠️ 内容过长,建议控制在1200-2500字'}
+                </span>
+              )
+            })()}
             placeholder="# H1 标题
 
 ## H2 章节
@@ -670,12 +710,30 @@ const PageEditor: React.FC<PageEditorProps> = ({
             {formData.faq && formData.faq.length > 0 && (
               <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {formData.faq.map((item, index) => (
-                  <Box key={index} sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 1 }}>
+                  <Box
+                    key={index}
+                    sx={{
+                      p: 2,
+                      border: 1,
+                      borderColor: 'divider',
+                      borderRadius: 1
+                    }}
+                  >
                     <Typography variant="subtitle2" gutterBottom>
                       Q{index + 1}: {item.question}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
                       A: {item.answer}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: 'block',
+                        mt: 1,
+                        color: 'text.secondary'
+                      }}
+                    >
+                      {(item.answer || '').length} 字符
                     </Typography>
                   </Box>
                 ))}
@@ -687,6 +745,7 @@ const PageEditor: React.FC<PageEditorProps> = ({
 
           {/* 操作按钮 */}
           <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+            {/* 保存/发布按钮 */}
             <Button
               variant="outlined"
               startIcon={<Save />}
@@ -827,26 +886,32 @@ const PageEditor: React.FC<PageEditorProps> = ({
                       <ScoreBar
                         label="Meta信息质量"
                         score={scoreResult.meta_info_quality_score || 0}
+                        maxScore={20}
+                        icon={<Article fontSize="small" color="primary" />}
+                      />
+                      <ScoreBar
+                        label="内容质量"
+                        score={scoreResult.content_quality_score || 0}
                         maxScore={30}
                         icon={<Article fontSize="small" color="primary" />}
                       />
                       <ScoreBar
                         label="关键词优化"
                         score={scoreResult.keyword_optimization_score || 0}
-                        maxScore={25}
+                        maxScore={20}
                         icon={<Search fontSize="small" color="primary" />}
-                      />
-                      <ScoreBar
-                        label="内容质量"
-                        score={scoreResult.content_quality_score || 0}
-                        maxScore={25}
-                        icon={<Article fontSize="small" color="primary" />}
                       />
                       <ScoreBar
                         label="可读性"
                         score={scoreResult.readability_score || 0}
                         maxScore={20}
                         icon={<Visibility fontSize="small" color="primary" />}
+                      />
+                      <ScoreBar
+                        label="用户体验"
+                        score={scoreResult.ux_score || 0}
+                        maxScore={10}
+                        icon={<CheckCircle fontSize="small" color="success" />}
                       />
                     </CardContent>
                   </Card>
