@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import compression from 'vite-plugin-compression'
+import { visualizer } from 'rollup-plugin-visualizer'
 import { removeUnnecessaryPreloads, smartResourceHints, devPerformanceOptimizer } from './src/utils/vite-plugins'
 import { stripeSyncPlugin } from './src/utils/vite-plugin-stripe-sync'
 
@@ -47,8 +48,15 @@ export default defineConfig(({ mode }) => {
         ext: '.gz',
         threshold: 10240,
         deleteOriginFile: false
+      }),
+      // 📊 Bundle分析工具 - 生产构建时生成报告
+      mode === 'production' && visualizer({
+        filename: './dist/stats.html',
+        open: false,
+        gzipSize: true,
+        brotliSize: true,
       })
-    ],
+    ].filter(Boolean),
     define: {
       // Pass env variables to the app
       // API Provider Configuration
@@ -361,8 +369,9 @@ export default defineConfig(({ mode }) => {
           unknownGlobalSideEffects: false
         },
         output: {
-          // 🔥 临时禁用手动chunk分割，使用Vite自动分割避免初始化问题
-          // manualChunks: undefined,
+          // 🔥 极简代码分割策略 - 权衡bundle大小与HTTP请求数
+          // 策略：首页单bundle(快速FCP) + 管理后台懒加载(减小首屏)
+          manualChunks: undefined,  // 使用Vite自动分割，避免过度分割
           // 优化chunk文件名
           chunkFileNames: 'assets/[name]-[hash].js',
           // 启用实验性CSS代码分割
